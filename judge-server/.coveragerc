@@ -1,0 +1,21 @@
+[report]
+exclude_lines =
+    pragma: no cover
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    except ImportError:
+    except OSError:
+
+ignore_errors = True
+
+[run]
+concurrency = multiprocessing
+source = dmoj
+omit =
+    dmoj/cli.py
+    dmoj/citest.py
+    dmoj/testsuite.py
+    dmoj/commands/*
+    dmoj/packet.py
+    dmoj/executors/autoconfig.py

@@ -1,0 +1,7 @@
+cython
+pylru
+pygments
+pyyaml
+setproctitle
+termcolor
+watchdog

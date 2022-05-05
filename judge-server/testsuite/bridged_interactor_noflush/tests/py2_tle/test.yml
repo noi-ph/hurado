@@ -1,0 +1,5 @@
+language: PY2
+time: 1
+memory: 65536
+source: seed2.py
+expect: TLE

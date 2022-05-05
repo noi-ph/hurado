@@ -1,0 +1,5 @@
+sysctl _sysctl
+sgetmask siggetmask
+ssetmask sigsetmask
+restart_syscall setup
+rt_sigaction sigaction
