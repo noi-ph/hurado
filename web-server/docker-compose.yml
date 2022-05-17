@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  be_boilerplate:
+    container_name: 'be_boilerplate'
+    build: .
+    restart: always
+    volumes:
+      - .:/app/
+      - /app/node_modules
