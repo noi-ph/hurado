@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  be_boilerplate:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.90'
+          # memory: 400M
+    command: /bin/sh -c "echo 'Running API on production!' && npm run build && npm start"
+    ports:
+      - '4000:4000'
+    env_file:
+      - ./config/prod.env
