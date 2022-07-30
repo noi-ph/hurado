@@ -1,61 +1,55 @@
-import bcrypt from 'bcryptjs';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { 
+  Entity,
+  Check,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
+import { Country } from './types';
 
-import { Role, Language } from './types';
-
-@Entity('users')
+@Entity('user')
+@Check('"username" ~* "[a-zA-Z]+_-\..*[0-9]+"')  // Unverified regex recipe
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     unique: true,
+    nullable: false,
   })
   email: string;
 
-  @Column()
-  password: string;
-
   @Column({
-    nullable: true,
     unique: true,
+    nullable: false,
   })
   username: string;
 
   @Column({
-    nullable: true,
+    nullable: false,
   })
-  name: string;
-
-  @Column({
-    default: 'STANDARD' as Role,
-    length: 30,
-  })
-  role: string;
-
-  @Column({
-    default: 'en-US' as Language,
-    length: 15,
-  })
-  language: string;
+  password_hash: string;
 
   @Column()
   @CreateDateColumn()
   created_at: Date;
 
+  @Column({
+    default: false
+  })
+  is_admin: boolean;
+
   @Column()
-  @UpdateDateColumn()
-  updated_at: Date;
+  school: string;
 
-  setLanguage(language: Language) {
-    this.language = language;
-  }
+  @Column()
+  first_name: string;
 
-  hashPassword() {
-    this.password = bcrypt.hashSync(this.password, 8);
-  }
+  @Column()
+  last_name: string;
 
-  checkIfPasswordMatch(unencryptedPassword: string) {
-    return bcrypt.compareSync(unencryptedPassword, this.password);
-  }
+  @Column({
+    default: 'PH' as Country,
+  })
+  country: string;
 }
