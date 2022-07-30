@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Country } from './types';
 
-@Entity('user')
+@Entity('users')
 @Check('"username" ~* "[a-zA-Z]+_-\..*[0-9]+"')  // Unverified regex recipe
 export class User {
   @PrimaryGeneratedColumn()
