@@ -28,25 +28,25 @@ export class User {
   @Column({
     nullable: false,
   })
-  password_hash: string;
+  passwordHash: string;
 
   @Column()
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
 
   @Column({
     default: false,
   })
-  is_admin: boolean;
+  isAdmin: boolean;
 
   @Column()
   school: string;
 
   @Column()
-  first_name: string;
+  firstName: string;
 
   @Column()
-  last_name: string;
+  lastName: string;
 
   @Column({
     default: 'PH' as Country,
