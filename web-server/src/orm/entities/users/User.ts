@@ -35,7 +35,7 @@ export class User {
   created_at: Date;
 
   @Column({
-    default: false
+    default: false,
   })
   is_admin: boolean;
 
