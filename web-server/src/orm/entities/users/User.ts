@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Country } from './types';
+import { Task } from '../tasks/Task'
 
 @Entity('users')
 @Check('"username" ~* "[a-zA-Z]+_-\..*[0-9]+"')  // Unverified regex recipe
@@ -15,19 +17,15 @@ export class User {
 
   @Column({
     unique: true,
-    nullable: false,
   })
   email: string;
 
   @Column({
     unique: true,
-    nullable: false,
   })
-  username: string;
+  name: string;
 
-  @Column({
-    nullable: false,
-  })
+  @Column()
   passwordHash: string;
 
   @Column()
@@ -52,4 +50,7 @@ export class User {
     default: 'PH' as Country,
   })
   country: string;
+
+  @OneToMany(type => Task, task => task.owner)
+  tasks: Task[];
 }
