@@ -47,7 +47,7 @@ export class User {
   lastName: string;
 
   @Column({
-    default: 'PH' as Country,
+    default: Country.PH,
   })
   country: string;
 

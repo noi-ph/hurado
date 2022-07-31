@@ -1,1 +1,3 @@
-export type Country = 'PH';  // TODO: add more to this?
+export enum Country {
+    PH = 'PH',
+};  // TODO: add more to this?
