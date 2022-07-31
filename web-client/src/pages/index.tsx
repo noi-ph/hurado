@@ -1,5 +1,15 @@
 import React from 'react';
 
+import { LoginPage } from '../login/LoginPage';
+
+const Index = () => <LoginPage />;
+
+export default Index;
+
+/*  The pre-made index.tsx content
+
+import React from 'react';
+
 import { GetStaticProps } from 'next';
 
 import { BlogGallery, IBlogGalleryProps } from '../blog/BlogGallery';
@@ -39,3 +49,4 @@ export const getStaticProps: GetStaticProps<IBlogGalleryProps> = async () => {
 };
 
 export default Index;
+*/
