@@ -12,7 +12,7 @@ const doStuff = async (args: any) => {
     if (err instanceof AxiosError) {
       alert(err.message);
     } else {
-      alert('An unkown error occured')
+      alert('An unknown error occured');
       console.log(err);
     }
   }
