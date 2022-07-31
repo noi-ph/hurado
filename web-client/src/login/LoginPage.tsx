@@ -1,7 +1,21 @@
 import React from 'react';
+import axios, { AxiosError } from 'axios';
 
-const doStuff = (props: any) => {
-  alert(`Everyone, ${props.email}'s password is ${props.password}!!11!!`);
+const doStuff = async (args: any) => {
+  try {
+    const response = await axios.post(`http://localhost:4000/v1/auth/login`, {
+      email: args.email,
+      password: args.password,
+    });
+    // TODO
+  } catch (err: unknown) {
+    if (err instanceof AxiosError) {
+      alert(err.message);
+    } else {
+      alert('An unkown error occured')
+      console.log(err);
+    }
+  }
 };
 
 const LoginPage = () => {
