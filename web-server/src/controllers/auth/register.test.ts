@@ -1,15 +1,14 @@
 import 'mocha';
 import { expect } from 'chai';
 import { agent as request } from 'supertest';
-import { getRepository, Connection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
-import { dbCreateConnection } from 'orm/dbCreateConnection';
+import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 
 import { app } from '../../';
 
 describe('Register', () => {
-  let dbConnection: Connection;
   let userRepository: Repository<User>;
 
   const userPassword = 'pass1';
@@ -19,8 +18,8 @@ describe('Register', () => {
   user.hashPassword();
 
   before(async () => {
-    dbConnection = await dbCreateConnection();
-    userRepository = getRepository(User);
+    await AppDataSource.initialize();
+    userRepository = AppDataSource.getRepository(User);
   });
 
   it('should register a new user', async () => {

@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
 
+import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
 export const show = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
 
-  const userRepository = getRepository(User);
+  const userRepository = AppDataSource.getRepository(User);
   try {
-    const user = await userRepository.findOne(id, {
+    const user = await userRepository.findOne({
+      where: { id: +id },
       select: ['id', 'username', 'name', 'email', 'role', 'language', 'created_at', 'updated_at'],
     });
 

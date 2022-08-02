@@ -10,9 +10,10 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import './utils/response/customSuccess';
+import { AppDataSource } from 'orm/data-source';
+
 import { errorHandler } from './middleware/errorHandler';
 import { getLanguage } from './middleware/getLanguage';
-import { dbCreateConnection } from './orm/dbCreateConnection';
 import routes from './routes';
 
 export const app = express();
@@ -37,10 +38,11 @@ app.use('/', routes);
 app.use(errorHandler);
 
 const port = process.env.PORT || 4000;
+
+(async () => {
+  await AppDataSource.initialize();
+})();
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
-(async () => {
-  await dbCreateConnection();
-})();

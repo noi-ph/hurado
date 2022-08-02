@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
 
+import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
@@ -8,9 +8,9 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
   const { username, name } = req.body;
 
-  const userRepository = getRepository(User);
+  const userRepository = AppDataSource.getRepository(User);
   try {
-    const user = await userRepository.findOne({ where: { id } });
+    const user = await userRepository.findOne({ where: { id: +id } });
 
     if (!user) {
       const customError = new CustomError(404, 'General', `User with id:${id} not found.`, ['User not found.']);
