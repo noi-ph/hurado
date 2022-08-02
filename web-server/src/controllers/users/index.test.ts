@@ -1,18 +1,16 @@
 import 'mocha';
 import { expect } from 'chai';
 import { agent as request } from 'supertest';
-import { getRepository, Connection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
-import { dbCreateConnection } from 'orm/dbCreateConnection';
+import { AppDataSource } from 'orm/data-source';
 import { Role } from 'orm/entities/users/types';
 import { User } from 'orm/entities/users/User';
 
 import { app } from '../../';
 
 describe('Users', () => {
-  let dbConnection: Connection;
   let userRepository: Repository<User>;
-
   const userPassword = 'pass1';
   let adminUserToken = null;
   const adminUser = new User();
@@ -33,8 +31,8 @@ describe('Users', () => {
   standardUser.role = 'STANDARD' as Role;
 
   before(async () => {
-    dbConnection = await dbCreateConnection();
-    userRepository = getRepository(User);
+    await AppDataSource.initialize();
+    userRepository = AppDataSource.getRepository(User);
   });
 
   beforeEach(async () => {
@@ -73,7 +71,7 @@ describe('Users', () => {
 
   describe('GET /v1/auth/users//:id([0-9]+)', () => {
     it('should get user', async () => {
-      const user = await userRepository.findOne({ email: adminUser.email });
+      const user = await userRepository.findOne({ where: { email: adminUser.email } });
       const res = await request(app).get(`/v1/users/${user.id}`).set('Authorization', adminUserToken);
       expect(res.status).to.equal(200);
       expect(res.body.message).to.equal('User found');
