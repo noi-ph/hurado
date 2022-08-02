@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
 
+import { AppDataSource } from 'orm/data-source';
 import { Role } from 'orm/entities/users/types';
 import { User } from 'orm/entities/users/User';
 import { JwtPayload } from 'types/JwtPayload';
@@ -10,7 +10,7 @@ import { CustomError } from 'utils/response/custom-error/CustomError';
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
-  const userRepository = getRepository(User);
+  const userRepository = AppDataSource.getRepository(User);
   try {
     const user = await userRepository.findOne({ where: { email } });
 

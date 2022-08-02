@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
 
+import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
@@ -8,7 +8,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
   const { password, passwordNew } = req.body;
   const { id, name } = req.jwtPayload;
 
-  const userRepository = getRepository(User);
+  const userRepository = AppDataSource.getRepository(User);
   try {
     const user = await userRepository.findOne({ where: { id } });
 
