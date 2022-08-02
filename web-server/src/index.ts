@@ -40,7 +40,13 @@ app.use(errorHandler);
 const port = process.env.PORT || 4000;
 
 (async () => {
-  await AppDataSource.initialize();
+  try {
+    await AppDataSource.initialize();
+    console.log('Database connection initialized successfully');
+  } catch (err) {
+    console.warn('Database connection failed initializing');
+    console.warn(err);
+  }
 })();
 
 app.listen(port, () => {
