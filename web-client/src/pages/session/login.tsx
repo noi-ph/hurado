@@ -58,7 +58,7 @@ const LoginPage = () => {
       const response = await axios.post(`http://localhost:4000/v1/auth/login`, payload);
   
       const jwt = response.data.data;
-      const data = jwt.split(' ')[1];   // The first half is just 'Bearer'
+      const data = jwt.split(' ')[1];  // The first half is just 'Bearer'
       const second = data.split('.')[1];  // The first half is unimportant
       const userJson = atob(second);
   
@@ -66,9 +66,9 @@ const LoginPage = () => {
       localStorage.setItem(User.JWT, jwt);
       console.log(userJson, jwt);
       redirectToHomepage();
-      alert('You have logged in')
+      alert('You have logged in');
     } catch (err: unknown) {
-      // TODO debug
+      alert('Invalid email or password!');
     }
   }
 
