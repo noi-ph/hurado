@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@mapbox/rehype-prism": "^0.8.0",
+    "axios": "^0.27.2",
     "date-fns": "^2.28.0",
     "gray-matter": "^4.0.3",
     "next": "^12.0.10",
@@ -26,7 +27,8 @@
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
     "styled-jsx-plugin-postcss": "^4.0.1",
-    "unified": "^10.1.1"
+    "unified": "^10.1.1",
+    "use-async-effect": "^2.2.6"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.0.10",
