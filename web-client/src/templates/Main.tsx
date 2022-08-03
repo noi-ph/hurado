@@ -30,14 +30,19 @@ const Main = (props: IMainProps) => (
               </Link>
             </li>
             <li className="mr-6">
-              <Link href="/about/">
-                <a>About</a>
+              <Link href="/session/login">
+                <a>Log-in</a>
               </Link>
             </li>
             <li className="mr-6">
-              <a href="https://github.com/ixartz/Next-js-Blog-Boilerplate">
-                GitHub
-              </a>
+              <Link href="/session/logout">
+                <a>Log-out</a>
+              </Link>
+            </li>
+            <li className="mr-6">
+              <Link href="/session/test">
+                <a>Test</a>
+              </Link>
             </li>
           </Navbar>
         </div>
