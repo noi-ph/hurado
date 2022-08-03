@@ -69,7 +69,6 @@ const LoginPage = () => {
 
       localStorage.setItem(UserConstants.CURRENT, userJson); // key-value pair must be strings
       localStorage.setItem(UserConstants.JWT, jwt);
-      console.log(userJson, jwt);
       redirectToHomepage();
       alert('You have logged in');
     } catch (err: unknown) {
