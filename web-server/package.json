@@ -23,9 +23,10 @@
     "migration:revert": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/typeorm/cli.js migration:revert --dataSource ./src/orm/data-source.ts",
     "migration:generate": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:generate --pretty --dataSource ./src/orm/data-source.ts -n ",
     "migration:create": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:create --dataSource ./src/orm/data-source.ts -n ",
-    "seed:run": "NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:run --dataSource ./src/orm/data-source.ts",
-    "seed:run:dev": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:run --dataSource ./src/orm/data-source.ts",
-    "seed:create": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:create --dataSource ./src/orm/data-source.ts -n "
+    "seed:run": "NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:run --dataSource ./src/orm/seed-data-source.ts",
+    "seed:run:dev": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:run --dataSource ./src/orm/seed-data-source.ts",
+    "seed:revert": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/typeorm/cli.js migration:revert --dataSource ./src/orm/seed-data-source.ts",
+    "seed:create": "PG_HOST=localhost NODE_PATH=./src ts-node ./node_modules/.bin/typeorm migration:create --dataSource ./src/orm/seed-data-source.ts -n "
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
