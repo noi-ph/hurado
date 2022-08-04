@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-import { AppDataSource } from 'orm/data-source';
+import { SeedDataSource } from 'orm/seed-data-source';
 
 import { Role } from '../entities/users/types';
 import { User } from '../entities/users/User';
@@ -8,7 +8,7 @@ import { User } from '../entities/users/User';
 export class SeedUsers1590519635401 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
     let user = new User();
-    const userRepository = AppDataSource.getRepository(User);
+    const userRepository = SeedDataSource.getRepository(User);
 
     user.username = 'Heisenberg';
     user.name = 'Walter White';
