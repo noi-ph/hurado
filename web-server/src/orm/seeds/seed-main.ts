@@ -4,6 +4,8 @@ import { Role } from '../entities/users/types';
 import { User } from '../entities/users/User';
 
 async function runSeedData() {
+  await AppDataSource.initialize();
+
   let user = new User();
   const userRepository = AppDataSource.getRepository(User);
 
@@ -89,4 +91,4 @@ async function runSeedData() {
   await userRepository.save(user);
 }
 
-// runSeedData();
+runSeedData();

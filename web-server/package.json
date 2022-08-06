@@ -5,7 +5,7 @@
   "scripts": {
     "servers": "docker-compose --file docker-compose.dev.yml up",
     "backend:bash": "docker exec -it backend bash",
-    "backend:seed": "docker exec backend sh -c 'ts-node src/orm/seeds/seed-main.ts",
+    "backend:seed": "docker exec backend sh -c 'ts-node src/orm/seeds/seed-main.ts'",
     "sql": "docker exec -it postgres sh -c 'PGPASSWORD=$POSTGRES_PASSWORD psql $POSTGRES_DB -U $POSTGRES_USER'",
     "migration:run": "docker exec backend sh -c 'ts-node ./node_modules/typeorm/cli.js migration:run --dataSource ./src/orm/data-source.ts'",
     "migration:revert": "docker exec backend sh -c 'ts-node ./node_modules/typeorm/cli.js migration:revert --dataSource ./src/orm/data-source.ts'",
