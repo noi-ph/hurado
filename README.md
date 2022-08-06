@@ -58,44 +58,59 @@ npm install --global yarn
 ## Running the Web Server
 
 1. Move to the `web-server` directory (`cd web-server`)
-2. Run `npm docker:dev`
+2. Run `npm run servers`
 3. Wait a few minutes for it to download needed stuff. You should get a bunch of messages like:
 
 ```bash
-# This is downloading the necessary images from the itnernet
-Pulling db_postgres (postgres:14.2-alpine)...
+# This is downloading the necessary images from the internet
+Pulling db_postgres (postgres:14-bullseye)...
 ...
-Status: Downloaded newer image for node:16.14.0-alpine
+Status: Downloaded newer image for node:16-bullseye
 ...
 # This is building the web-server specific image
 Step 5/9 : RUN npm install && npm cache clean --force
  ---> Running in 8e1211058803
 ...
-Creating db_boilerplate ... done
-Creating be_boilerplate      ... done
-Creating be_boilerplate_test ... done
+Creating postgres ... done
+Creating backend      ... done
 ...
 # This is the postgresql image running
-db_boilerplate         | 2022-07-31 08:44:36.706 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-db_boilerplate         | 2022-07-31 08:44:36.706 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres         | 2022-07-31 08:44:36.706 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres         | 2022-07-31 08:44:36.706 UTC [1] LOG:  listening on IPv6 address "::", port 5432
 ...
 # This is web-server running
-be_boilerplate         | [INFO] 08:44:45 ts-node-dev ver. 1.1.8 (using ts-node ver. 9.1.1, typescript ver. 4.6.4)
-be_boilerplate         | Server running on port 4000
-be_boilerplate         | Database connection success. Connection name: 'default' Database: 'boilerplate'
+backend         | [INFO] 08:44:45 ts-node-dev ver. 1.1.8 (using ts-node ver. 9.1.1, typescript ver. 4.6.4)
+backend         | Server running on port 4000
+backend         | Database connection success. Connection name: 'default' Database: 'hurado'
 ```
 
-Once you see  that final Server running on port 4000, that means your server is running. You can test it by opening your browser and going to localhost:4000 and you should see this "💊 RESTful API boilerplate"
+Once you see that final Server running on port 4000, that means your server is running. You can test it by opening your browser and going to localhost:4000 and you should see this "💊 RESTful API boilerplate"
 
 ## Running the Web Client
 
 1. Move to the web-client directory and run npm install
 2. Wait a few minutes for it to install.
-3. Run npm run dev and it should work. 
+3. Run npm run dev and it should work.
 
 You should see this message:
 
 `ready - started server on 0.0.0.0:3000, url: http://localhost:3000`
+
+## Useful backend commands
+
+`npm run servers` - Run all the necessary servers
+
+`npm run backend:bash` - Get a bash shell into the backend server. Useful for updating npm via `npm install` and random debugging
+
+`npm run sql` - Get into a psql shell on the postgres server.
+
+`npm run migration:run` - Run all the migrations to the latest version
+
+`npm run migration:revert` - Revert the last migration
+
+`npm run backend:seed` - Seed the database with dummy data
+
+Note that as far as TypeORM is concerned, the seed scripts are also migrations.
 
 ## Contribution Workflow
 
