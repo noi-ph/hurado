@@ -5,7 +5,7 @@ import { SeedDataSource } from 'orm/seed-data-source';
 import { Role } from '../entities/users/types';
 import { User } from '../entities/users/User';
 
-export class SeedUsers1590519635401 implements MigrationInterface {
+export class SeedUsers2000000000001 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
     let user = new User();
     const userRepository = SeedDataSource.getRepository(User);
