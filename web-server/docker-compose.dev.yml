@@ -16,7 +16,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    command: ./scripts/dev-backend.sh
+    command: sh ./scripts/dev-backend.sh
     stdin_open: true
     tty: true
     depends_on:

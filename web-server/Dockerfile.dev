@@ -5,5 +5,3 @@ ENV PATH="${PATH}:/app/node_modules/.bin/"
 ENV NODE_PATH="/app/src"
 
 EXPOSE 4000
-
-CMD [ "npm", "start" ]
