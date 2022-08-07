@@ -1,14 +1,71 @@
 import React, { ReactNode } from 'react';
+import axios from 'axios';
 
 import Link from 'next/link';
 
+import { useAsyncEffect } from 'use-async-effect';
+
 import { Navbar } from '../navigation/Navbar';
 import { AppConfig } from '../utils/AppConfig';
+import { UserConstants } from '../pages/session/types'
 
 type IMainProps = {
   meta: ReactNode;
   children: ReactNode;
 };
+
+const MainNavBarContents = () => {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  
+  const checkLoggedIn = async () => {
+    const userJson = localStorage.getItem(UserConstants.CURRENT);
+    const jwt = localStorage.getItem(UserConstants.JWT);
+    if (userJson == null || jwt == null) {
+      return;
+    }
+  
+    const user = JSON.parse(userJson);
+    try {
+      await axios.get(`http://localhost:4000/v1/users/${user.id}`, {
+        headers: {
+          Authorization: jwt,
+        },
+      });
+      setIsLoggedIn(true);
+      return;
+    } catch (err) {
+      localStorage.removeItem(UserConstants.CURRENT);
+      localStorage.removeItem(UserConstants.JWT);
+    }
+  }
+
+  useAsyncEffect(checkLoggedIn);
+
+  if (isLoggedIn) {
+    return (
+      <li className="mr-6">
+        <Link href="/session/logout">
+          <a>Log-out</a>
+        </Link>
+      </li>
+    )
+  } else {
+    return (
+      <>
+        <li className="mr-6">
+          <Link href="/session/signup">
+            <a>Sign up</a>
+          </Link>
+        </li>
+        <li className="mr-6">
+          <Link href="/session/login">
+            <a>Log-in</a>
+          </Link>
+        </li>
+      </>
+    )
+  }
+}
 
 const Main = (props: IMainProps) => (
   <div className="antialiased w-full text-gray-700 px-3 md:px-0">
@@ -29,16 +86,7 @@ const Main = (props: IMainProps) => (
                 <a>Home</a>
               </Link>
             </li>
-            <li className="mr-6">
-              <Link href="/session/login">
-                <a>Log-in</a>
-              </Link>
-            </li>
-            <li className="mr-6">
-              <Link href="/session/logout">
-                <a>Log-out</a>
-              </Link>
-            </li>
+            <MainNavBarContents/>
             <li className="mr-6">
               <Link href="/session/test">
                 <a>Test</a>

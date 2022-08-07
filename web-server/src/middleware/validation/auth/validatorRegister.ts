@@ -6,10 +6,11 @@ import { CustomError } from 'utils/response/custom-error/CustomError';
 import { ErrorValidation } from 'utils/response/custom-error/types';
 
 export const validatorRegister = (req: Request, res: Response, next: NextFunction) => {
-  let { email, password, passwordConfirm } = req.body;
+  let { email, username, password, passwordConfirm } = req.body;
   const errorsValidation: ErrorValidation[] = [];
 
   email = !email ? '' : email;
+  username = !username ? '' : username;
   password = !password ? '' : password;
   passwordConfirm = !passwordConfirm ? '' : passwordConfirm;
 
@@ -19,6 +20,10 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
 
   if (validator.isEmpty(email)) {
     errorsValidation.push({ email: 'Email is required' });
+  }
+
+  if (!validator.isEmpty(username)) {
+    errorsValidation.push({ username: 'Username is invalid' });
   }
 
   if (validator.isEmpty(password)) {
