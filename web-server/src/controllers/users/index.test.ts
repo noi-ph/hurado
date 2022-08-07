@@ -4,7 +4,7 @@ import { agent as request } from 'supertest';
 import { Repository } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import { Role } from 'orm/entities/users/types';
+import { Country } from 'orm/entities/users/types';
 import { User } from 'orm/entities/users/User';
 
 import { app } from '../../';
@@ -15,20 +15,22 @@ describe('Users', () => {
   let adminUserToken = null;
   const adminUser = new User();
   adminUser.username = 'Badger';
-  adminUser.name = 'Brandon Mayhew';
+  adminUser.firstName = 'Brandon';
+  adminUser.lastName = 'Mayhew';
   adminUser.email = 'brandon.mayhew@test.com';
-  adminUser.password = userPassword;
+  adminUser.hashedPassword = userPassword;
   adminUser.hashPassword();
-  adminUser.role = 'ADMINISTRATOR' as Role;
+  adminUser.isAdmin = true;
 
   let standardUserToken = null;
   const standardUser = new User();
   standardUser.username = 'Toddy';
-  standardUser.name = 'Todd Alquist';
+  standardUser.firstName = 'Todd';
+  standardUser.firstName = 'Alquist';
   standardUser.email = 'todd.alquist@test.com';
-  standardUser.password = userPassword;
+  standardUser.hashedPassword = userPassword;
   standardUser.hashPassword();
-  standardUser.role = 'STANDARD' as Role;
+  standardUser.isAdmin = false;
 
   before(async () => {
     await AppDataSource.initialize();

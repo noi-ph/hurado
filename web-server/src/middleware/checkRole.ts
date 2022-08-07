@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { Role } from '../orm/entities/users/types';
 import { CustomError } from '../utils/response/custom-error/CustomError';
 
-export const checkRole = (roles: Role[], isSelfAllowed = false) => {
+export const checkRole = (isSelfAllowed = false) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const { id, role } = req.jwtPayload;
+    const { id, isAdmin } = req.jwtPayload;
     const { id: requestId } = req.params;
 
     let errorSelfAllowed: string | null = null;
@@ -16,11 +15,8 @@ export const checkRole = (roles: Role[], isSelfAllowed = false) => {
       errorSelfAllowed = 'Self allowed action.';
     }
 
-    if (roles.indexOf(role) === -1) {
-      const errors = [
-        'Unauthorized - Insufficient user rights',
-        `Current role: ${role}. Required role: ${roles.toString()}`,
-      ];
+    if (!isAdmin) {
+      const errors = ['Unauthorized - Insufficient user rights', `Current role: Not Admin. Required role: Admin`];
       if (errorSelfAllowed) {
         errors.push(errorSelfAllowed);
       }
