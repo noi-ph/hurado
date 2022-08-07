@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
-import { Role } from 'orm/entities/users/types';
+import { Country } from 'orm/entities/users/types';
 import { User } from 'orm/entities/users/User';
 import { JwtPayload } from 'types/JwtPayload';
 import { createJwtToken } from 'utils/createJwtToken';
@@ -26,10 +26,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
     const jwtPayload: JwtPayload = {
       id: user.id,
-      name: user.name,
+      username: user.username,
       email: user.email,
-      role: user.role as Role,
-      created_at: user.created_at,
+      isAdmin: false,
+      country: user.country as Country,
+      createdAt: user.createdAt,
     };
 
     try {

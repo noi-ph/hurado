@@ -4,7 +4,7 @@ import { agent as request } from 'supertest';
 import { Repository } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import { Role } from 'orm/entities/users/types';
+import { Country } from 'orm/entities/users/types';
 import { User } from 'orm/entities/users/User';
 
 import { app } from '../../';
@@ -15,11 +15,12 @@ describe('Login', () => {
   const userPassword = 'pass1';
   const user = new User();
   user.username = 'Badger';
-  user.name = 'Brandon Mayhew';
+  user.firstName = 'Brandon';
+  user.lastName = 'Mayhew';
   user.email = 'brandon.mayhew@test.com';
-  user.password = userPassword;
+  user.hashedPassword = userPassword;
   user.hashPassword();
-  user.role = 'ADMINISTRATOR' as Role;
+  user.isAdmin = true;
 
   before(async () => {
     await AppDataSource.initialize();
