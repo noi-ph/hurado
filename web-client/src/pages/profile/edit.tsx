@@ -17,15 +17,14 @@ type EditPageProps = {
 const EditPage = (props: EditPageProps) => {
   const user = props.user;
 
-  const [password, enterPassword] = React.useState("");
-  const [newEmail, setEmail] = React.useState("");
-  const [newUsername, setUsername] = React.useState("");
-  const [newPassword, setPassword] = React.useState("");
-  const [newPasswordConfirm, setPasswordConfirm] = React.useState("");
-  const [newSchool, setSchool] = React.useState("");
-  const [newFirstName, setFirstName] = React.useState("");
-  const [newLastName, setLastName] = React.useState("");
-  const [newCountry, setCountry] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [passwordConfirm, setPasswordConfirm] = React.useState("");
+  const [school, setSchool] = React.useState("");
+  const [firstName, setFirstName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
+  const [country, setCountry] = React.useState("");
 
   const router = useRouter();
 
@@ -46,16 +45,14 @@ const EditPage = (props: EditPageProps) => {
     try {
       await axios.post(`http://localhost:4000/v1/auth/change`, {
         id: user.id,
-        username: user.username,
+        email,
+        username,
         password,
-        newEmail,
-        newUsername,
-        newPassword,
-        newPasswordConfirm,
-        newSchool,
-        newFirstName,
-        newLastName,
-        newCountry,
+        passwordConfirm,
+        school,
+        firstName,
+        lastName,
+        country,
       });
       alert("Changes have been executed!");
       redirectToViewPage();
@@ -75,65 +72,55 @@ const EditPage = (props: EditPageProps) => {
       }
     >
       <>New e-mail: </>
-      <input
-        value={newEmail}
-        onChange={(event) => setEmail(event.target.value)}
-      />
+      <input value={email} onChange={(event) => setEmail(event.target.value)} />
       <br />
 
       <>New username: </>
       <input
-        value={newUsername}
+        value={username}
         onChange={(event) => setUsername(event.target.value)}
       />
       <br />
 
       <>New password: </>
       <input
-        value={newPassword}
+        value={password}
         onChange={(event) => setPassword(event.target.value)}
       />
       <br />
 
       <>New password confirmation: </>
       <input
-        value={newPasswordConfirm}
+        value={passwordConfirm}
         onChange={(event) => setPasswordConfirm(event.target.value)}
       />
       <br />
 
       <>New school: </>
       <input
-        value={newSchool}
+        value={school}
         onChange={(event) => setSchool(event.target.value)}
       />
       <br />
 
       <>New first name: </>
       <input
-        value={newFirstName}
+        value={firstName}
         onChange={(event) => setFirstName(event.target.value)}
       />
       <br />
 
       <>New last name: </>
       <input
-        value={newLastName}
+        value={lastName}
         onChange={(event) => setLastName(event.target.value)}
       />
       <br />
 
       <>New country: </>
       <input
-        value={newCountry}
+        value={country}
         onChange={(event) => setCountry(event.target.value)}
-      />
-      <br />
-
-      <>Current password (required): </>
-      <input
-        value={password}
-        onChange={(event) => enterPassword(event.target.value)}
       />
       <br />
 

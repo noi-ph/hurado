@@ -7,20 +7,18 @@ import { CustomError } from 'utils/response/custom-error/CustomError';
 
 import { Countries } from '../../orm/entities/users/types';
 
-export const changeGeneral = async (req: Request, res: Response, next: NextFunction) => {
+export const update = async (req: Request, res: Response, next: NextFunction) => {
   const {
     id,
+    email,
     username,
     password,
-    newEmail,
-    newUsername,
-    newPassword,
-    newPasswordConfirm,
+    passwordConfirm,
     // newIsAdmin,
-    newSchool,
-    newFirstName,
-    newLastName,
-    newCountry,
+    school,
+    firstName,
+    lastName,
+    country,
   } = req.body;
 
   const userRepository = AppDataSource.getRepository(User);
@@ -28,59 +26,54 @@ export const changeGeneral = async (req: Request, res: Response, next: NextFunct
     const user = await userRepository.findOne({ where: { id } });
 
     if (!user) {
-      const customError = new CustomError(404, 'General', 'Not Found', [`User ${username} not found`]);
+      const customError = new CustomError(404, 'General', 'Not Found', [`User ${id} not found`]);
       return next(customError);
     }
 
-    if (!user.checkIfPasswordMatch(password)) {
-      const customError = new CustomError(400, 'General', 'Not Found', ['Incorrect password']);
-      return next(customError);
-    }
-
-    if (newEmail) {
-      if (!validator.isEmail(newEmail)) {
+    if (email) {
+      if (!validator.isEmail(email)) {
         const customError = new CustomError(400, 'Validation', 'Email is invalid');
         return next(customError);
       }
 
-      const otherUser = await userRepository.findOne({ where: { email: newEmail } });
+      const otherUser = await userRepository.findOne({ where: { email: email } });
       if (otherUser) {
         const customError = new CustomError(400, 'Validation', 'User already exists', [
-          `User with email ${newEmail} already exists`,
+          `User with email ${email} already exists`,
         ]);
         return next(customError);
       }
 
-      user.email = newEmail;
+      user.email = email;
     }
 
-    if (newUsername) {
-      if (!newUsername.match(/^([a-z0-9]|[-._](?![-._])){3,20}$/)) {
+    if (username) {
+      if (!username.match(/^([a-z0-9]|[-._](?![-._])){3,20}$/)) {
         const customError = new CustomError(400, 'Validation', 'Invalid username', [
-          `${newUsername} is an invalid username`,
+          `${username} is an invalid username`,
         ]);
         return next(customError);
       }
 
-      const otherUser = await userRepository.findOne({ where: { username: newUsername } });
+      const otherUser = await userRepository.findOne({ where: { username: username } });
 
       if (otherUser) {
         const customError = new CustomError(400, 'Validation', 'User already exists', [
-          `User with username ${newUsername} already exists`,
+          `User with username ${username} already exists`,
         ]);
         return next(customError);
       }
 
-      user.username = newUsername;
+      user.username = username;
     }
 
-    if (newPassword) {
-      if (newPassword != newPasswordConfirm) {
+    if (password) {
+      if (password != passwordConfirm) {
         const customError = new CustomError(400, 'Validation', 'Passwords do not match', ['Passwords do not match']);
         return next(customError);
       }
 
-      user.hashedPassword = newPassword;
+      user.hashedPassword = password;
       user.hashPassword();
     }
 
@@ -90,27 +83,27 @@ export const changeGeneral = async (req: Request, res: Response, next: NextFunct
     }
     */
 
-    if (newSchool) {
-      user.school = newSchool;
+    if (school) {
+      user.school = school;
     }
 
-    if (newFirstName) {
-      user.firstName = newFirstName;
+    if (firstName) {
+      user.firstName = firstName;
     }
 
-    if (newLastName) {
-      user.lastName = newLastName;
+    if (lastName) {
+      user.lastName = lastName;
     }
 
-    if (newCountry) {
-      if (!(newCountry in Countries)) {
+    if (country) {
+      if (!(country in Countries)) {
         const customError = new CustomError(400, 'Validation', 'Invalid country', [
-          `Country ${newCountry} is not recognised`,
+          `Country ${country} is not recognised`,
         ]);
         return next(customError);
       }
 
-      user.country = newCountry;
+      user.country = country;
     }
 
     userRepository.save(user);
