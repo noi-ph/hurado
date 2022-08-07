@@ -26,7 +26,9 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({
+    default: false,
+  })
   isAdmin: boolean;
 
   @Column({
@@ -35,12 +37,12 @@ export class User {
   school: string;
 
   @Column({
-    nullable: false,
+    default: 'Juan',
   })
   firstName: string;
 
   @Column({
-    nullable: false,
+    default: 'dela Cruz',
   })
   lastName: string;
 

@@ -43,7 +43,7 @@ const EditPage = (props: EditPageProps) => {
 
   async function onEditClick() {
     try {
-      await axios.post(`http://localhost:4000/v1/auth/change`, {
+      await axios.post(`http://localhost:4000/v1/users/change`, {
         id: user.id,
         email,
         username,
