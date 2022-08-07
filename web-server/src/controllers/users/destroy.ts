@@ -17,7 +17,7 @@ export const destroy = async (req: Request, res: Response, next: NextFunction) =
     }
     userRepository.delete(id);
 
-    res.customSuccess(200, 'User successfully deleted.', { id: user.id, name: user.name, email: user.email });
+    res.customSuccess(200, 'User successfully deleted.', { id: user.id, name: user.username, email: user.email });
   } catch (err) {
     const customError = new CustomError(400, 'Raw', 'Error', null, err);
     return next(customError);
