@@ -1,6 +1,5 @@
 import { AppDataSource } from 'orm/data-source';
 
-import { Role } from '../entities/users/types';
 import { User } from '../entities/users/User';
 
 async function runSeedData() {
@@ -10,84 +9,102 @@ async function runSeedData() {
   const userRepository = AppDataSource.getRepository(User);
 
   user.username = 'Heisenberg';
-  user.name = 'Walter White';
+  user.firstName = 'Walter';
+  user.lastName = 'White';
   user.email = 'admin@admin.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
-  user.role = 'ADMINISTRATOR' as Role;
+  user.isAdmin = true;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Jesse';
-  user.name = 'Jesse Pinkman';
+  user.firstName = 'Jesse';
+  user.lastName = 'Pinkman';
   user.email = 'standard@standard.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
-  user.role = 'STANDARD' as Role;
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Sky';
-  user.name = 'Skyler White';
+  user.firstName = 'Skyler';
+  user.lastName = 'White';
   user.email = 'skyler.white@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Hank';
-  user.name = 'Hank Schrader';
+  user.firstName = 'Hank';
+  user.lastName = 'Schrader';
   user.email = 'hank.schrader@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Marie';
-  user.name = 'Marie Schrader';
+  user.firstName = 'Marie';
+  user.lastName = 'Schrader';
   user.email = 'marie.schrader@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'The Lawyer';
-  user.name = 'Saul Goodman';
+  user.firstName = 'Saul';
+  user.lastName = 'Goodman';
   user.email = 'saul.goodman@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Gus';
-  user.name = 'Gustavo Fring';
+  user.firstName = 'Gustavo';
+  user.lastName = 'Fring';
   user.email = 'gustavo.fring@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Mike';
-  user.name = 'Michael Ehrmantraut';
+  user.firstName = 'Michael';
+  user.lastName = 'Ehrmantraut';
   user.email = 'michael.ehrmantraut@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Tio';
-  user.name = 'Hector Salamanca';
+  user.firstName = 'Hector';
+  user.lastName = 'Salamanca';
   user.email = 'hector.salamanca@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Tuco';
-  user.name = 'Alberto Salamanca';
+  user.firstName = 'Alberto';
+  user.lastName = 'Salamanca';
   user.email = 'alberto.salamanca@test.com';
-  user.password = 'pass1';
+  user.hashedPassword = 'pass1';
   user.hashPassword();
+  user.isAdmin = false;
   await userRepository.save(user);
 }
 

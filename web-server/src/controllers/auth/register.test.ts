@@ -14,7 +14,7 @@ describe('Register', () => {
   const userPassword = 'pass1';
   const user = new User();
   user.email = 'brandon.mayhew@test.com';
-  user.password = userPassword;
+  user.hashedPassword = userPassword;
   user.hashPassword();
 
   before(async () => {

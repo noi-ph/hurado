@@ -13,7 +13,6 @@ import './utils/response/customSuccess';
 import { AppDataSource } from 'orm/data-source';
 
 import { errorHandler } from './middleware/errorHandler';
-import { getLanguage } from './middleware/getLanguage';
 import routes from './routes';
 
 export const app = express();
@@ -21,7 +20,6 @@ app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(getLanguage);
 
 try {
   const accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), {
