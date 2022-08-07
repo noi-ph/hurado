@@ -7,7 +7,7 @@ import { useAsyncEffect } from 'use-async-effect';
 
 import { Navbar } from '../navigation/Navbar';
 import { AppConfig } from '../utils/AppConfig';
-import { UserConstants } from '../pages/session/types'
+import { User, UserConstants } from '../pages/session/types';
 
 type IMainProps = {
   meta: ReactNode;
@@ -16,22 +16,29 @@ type IMainProps = {
 
 const MainNavBarContents = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState<User | null>(null);
+  const [currentUserJson, setCurrentUserJson] = React.useState('');
   
   const checkLoggedIn = async () => {
-    const userJson = localStorage.getItem(UserConstants.CURRENT);
+    let userJson = localStorage.getItem(UserConstants.CURRENT);
     const jwt = localStorage.getItem(UserConstants.JWT);
     if (userJson == null || jwt == null) {
       return;
     }
   
-    const user = JSON.parse(userJson);
+    let user = JSON.parse(userJson);
     try {
-      await axios.get(`http://localhost:4000/v1/users/${user.id}`, {
+      const response = await axios.get(`http://localhost:4000/v1/users/${user.id}`, {
         headers: {
           Authorization: jwt,
         },
       });
+
+      user = response.data.data;
+      userJson = JSON.stringify(user);
       setIsLoggedIn(true);
+      setCurrentUser(user);
+      setCurrentUserJson(userJson);
       return;
     } catch (err) {
       localStorage.removeItem(UserConstants.CURRENT);
@@ -43,11 +50,33 @@ const MainNavBarContents = () => {
 
   if (isLoggedIn) {
     return (
-      <li className="mr-6">
-        <Link href="/session/logout">
-          <a>Log-out</a>
-        </Link>
-      </li>
+      <>
+        <li className="mr-6">
+          <Link href={{
+            pathname: "/profile/view",
+            query: {
+              userJson: currentUserJson,
+            },
+          }} as="profile/view">
+            <a>{currentUser?.username}</a>
+          </Link>
+        </li>
+        <li className="mr-6">
+          <Link href={{
+            pathname: "/profile/edit",
+            query: {
+              userJson: currentUserJson,
+            },
+          }} as="profile/edit">
+            <a>Edit profile</a>
+          </Link>
+        </li>
+        <li className="mr-6">
+          <Link href="/session/logout">
+            <a>Log-out</a>
+          </Link>
+        </li>
+        </>
     )
   } else {
     return (
