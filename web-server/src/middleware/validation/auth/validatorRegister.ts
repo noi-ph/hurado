@@ -22,7 +22,7 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
     errorsValidation.push({ email: 'Email is required' });
   }
 
-  if (!validator.isEmpty(username)) {
+  if (validator.isEmpty(username)) {
     errorsValidation.push({ username: 'Username is invalid' });
   }
 
