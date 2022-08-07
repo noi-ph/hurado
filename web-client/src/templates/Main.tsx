@@ -15,9 +15,9 @@ type IMainProps = {
 };
 
 const MainNavBarContents = () => {
-  let isLoggedIn = false;
-
-  async function checkLoggedIn() {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  
+  const checkLoggedIn = async () => {
     const userJson = localStorage.getItem(UserConstants.CURRENT);
     const jwt = localStorage.getItem(UserConstants.JWT);
     if (userJson == null || jwt == null) {
@@ -31,7 +31,7 @@ const MainNavBarContents = () => {
           Authorization: jwt,
         },
       });
-      isLoggedIn = true;
+      setIsLoggedIn(true);
       return;
     } catch (err) {
       localStorage.removeItem(UserConstants.CURRENT);
