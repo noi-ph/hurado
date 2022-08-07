@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { Meta } from "../../layout/Meta";
 import { Main } from "../../templates/Main";
 import { AppConfig } from "../../utils/AppConfig";
-import { User, UserConstants } from "../session/types";
+import { User } from "../session/types";
 
 type EditPageProps = {
   user: User;
