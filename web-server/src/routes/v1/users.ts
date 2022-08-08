@@ -9,12 +9,10 @@ const router = Router();
 
 router.get('/', [checkJwt, checkRole()], list);
 
-router.get('/:id([0-9]+)', [checkJwt, checkRole(true)], show);
+router.get('/:id([0-9]+)', [checkJwt], show);
 
-router.patch('/:id([0-9]+)', [checkJwt, checkRole(true), validatorEdit], edit);
+router.patch('/:id([0-9]+)', [checkJwt, validatorEdit], edit);
 
-router.delete('/:id([0-9]+)', [checkJwt, checkRole(true)], destroy);
-
-router.post('/change', edit);
+router.delete('/:id([0-9]+)', [checkJwt], destroy);
 
 export default router;

@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { Meta } from "../../layout/Meta";
 import { Main } from "../../templates/Main";
 import { AppConfig } from "../../utils/AppConfig";
-import { User } from "../session/types";
+import { User, UserConstants } from "../session/types";
 
 type EditPageProps = {
   user: User;
@@ -42,17 +42,28 @@ const EditPage = (props: EditPageProps) => {
   }
 
   async function onEditClick() {
+    const jwt = localStorage.getItem(UserConstants.JWT);
+
+    if (jwt == null) {
+      return;
+    }
+
+    const payload = {
+      email,
+      username,
+      password,
+      passwordConfirm,
+      school,
+      firstName,
+      lastName,
+      country,
+    };
+
     try {
-      await axios.post(`http://localhost:4000/v1/users/change`, {
-        id: user.id,
-        email,
-        username,
-        password,
-        passwordConfirm,
-        school,
-        firstName,
-        lastName,
-        country,
+      await axios.patch(`http://localhost:4000/v1/users/${user.id}`, payload, {
+        headers: {
+          Authorization: jwt,
+        },
       });
       alert("Changes have been executed!");
       redirectToViewPage();
