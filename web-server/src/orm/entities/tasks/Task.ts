@@ -83,11 +83,11 @@ export class Task {
 
   @Column()
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
 
   @Column()
   @UpdateDateColumn()
-  updated_at: Date;
+  updatedAt: Date;
 
   setLanguage(language: Language) {
     this.language = language;

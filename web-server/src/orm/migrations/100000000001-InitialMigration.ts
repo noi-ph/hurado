@@ -64,9 +64,24 @@ export class CreateUsers100000000001 implements MigrationInterface {
       `,
       undefined,
     );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "taskAttachments" (
+          "id" SERIAL NOT NULL, 
+          "taskID" int NOT NULL, 
+          "fileID" int NOT NULL,
+          PRIMARY KEY ("id"),
+          FOREIGN KEY("taskID") REFERENCES Tasks("id"),
+          FOREIGN KEY("fileID") REFERENCES Files("id")
+        )
+      `,
+      undefined,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "taskAttachments"`, undefined);
     await queryRunner.query(`DROP TABLE "tasks"`, undefined);
     await queryRunner.query(`DROP TABLE "files"`, undefined);
     await queryRunner.query(`DROP TABLE "users"`, undefined);
