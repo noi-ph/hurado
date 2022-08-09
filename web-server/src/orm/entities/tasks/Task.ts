@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 import { User } from '../users/User';
 
-import { Language, Languages, TaskType, TaskTypes } from './types';
+import { AllowedLanguages, Languages, TaskTypes } from './types';
 
 // IMPORTANT: TO-DO still lacking validation
 
@@ -34,14 +34,14 @@ export class Task {
   statement: string; //please check data type (for LaTeX)
 
   @Column({
-    default: Languages.All,
+    default: AllowedLanguages.All,
   })
-  allowedLanguages: Language;
+  allowedLanguages: string;
 
   @Column({
     default: TaskTypes.Batch,
   })
-  taskType: TaskType;
+  taskType: string;
 
   @Column()
   scoreMax: number;
@@ -83,7 +83,7 @@ export class Task {
   isPublicInArchive: boolean; // not sure how to only give admins access to edit
 
   @Column({
-    default: 'en-US' as Language,
+    default: Languages.English,
     length: 15,
   })
   language: string;
@@ -95,8 +95,4 @@ export class Task {
   @Column()
   @UpdateDateColumn()
   updatedAt: Date;
-
-  setLanguage(language: Language) {
-    this.language = language;
-  }
 }

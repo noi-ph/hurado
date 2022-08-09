@@ -55,7 +55,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "submissionSizeLimit" bigint NOT NULL DEFAULT 32768,
           "validator" text NOT NULL,
           "isPublicInArchive" boolean NOT NULL DEFAULT FALSE,
-          "language" text NOT NULL,
+          "language" text NOT NULL DEFAULT 'en-US',
           "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
           "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
       
