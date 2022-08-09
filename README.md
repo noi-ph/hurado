@@ -128,5 +128,7 @@ Note that as far as TypeORM is concerned, the seed scripts are also migrations.
 - [Franz Cesista](https://github.com/leloykun)
 - [Cisco Ortega](https://github.com/gfmortega)
 - [Neomi Mendoza](https://github.com/nimendoza)
+- [Kian Chua](https://github.com/Quantum-K9)
+- [Troy Serapio](https://github.com/tdserapio)
 - [Angelu Garcia](https://github.com/devByGelu)
 - [The Boy (alias)](https://github.com/RedBlazerFlame)
