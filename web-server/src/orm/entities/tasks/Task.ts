@@ -12,7 +12,7 @@ export class Task {
   id: number;
 
   @ManyToOne(() => User)
-  ownerID: User;
+  ownerId: User;
 
   @Column()
   title: string;
@@ -40,7 +40,7 @@ export class Task {
   scoreMax: number;
 
   @Column()
-  checker: string; // please check data type
+  checker: string; // Script
 
   @Column({
     default: 2,
@@ -68,7 +68,7 @@ export class Task {
   submissionSizeLimit: number;
 
   @Column()
-  validator: string; // please check data type
+  validator: string; // Script
 
   @Column({
     default: false,
@@ -83,11 +83,11 @@ export class Task {
 
   @Column()
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
 
   @Column()
   @UpdateDateColumn()
-  updated_at: Date;
+  updatedAt: Date;
 
   setLanguage(language: Language) {
     this.language = language;

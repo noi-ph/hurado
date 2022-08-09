@@ -39,7 +39,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
       `
         CREATE TABLE "tasks" (
           "id" SERIAL NOT NULL,
-          "ownerID" int NOT NULL, 
+          "ownerId" int NOT NULL, 
           "title" text NOT NULL,
           "slug" text NOT NULL UNIQUE,
           "description" text,
@@ -60,7 +60,80 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
       
           PRIMARY KEY("id"),
-          FOREIGN KEY("ownerID") REFERENCES Users("id")
+          FOREIGN KEY("ownerId") REFERENCES Users("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "taskAttachments" (
+          "id" SERIAL NOT NULL, 
+          "taskId" int NOT NULL, 
+          "fileId" int NOT NULL,
+          PRIMARY KEY ("id"),
+          FOREIGN KEY("taskId") REFERENCES Tasks("id"),
+          FOREIGN KEY("fileId") REFERENCES Files("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "subtasks" (
+          "id" SERIAL NOT NULL,
+          "name" text NOT NULL,
+          "taskId" int NOT NULL, 
+          "order" int NOT NULL,
+          "scoreMax" int NOT NULL,
+          "scorer" text NOT NULL,
+          "validator" text,
+          "testDataPattern" text NOT NULL,
+         
+          PRIMARY KEY("id"),
+          FOREIGN KEY("taskId") REFERENCES Tasks("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "testData" (
+          "id" SERIAL NOT NULL,
+          "taskId" int NOT NULL, 
+          "order" int NOT NULL,
+          "name" text NOT NULL,
+          "inputFileId" int NOT NULL,
+          "outputFileId" int NOT NULL,
+          "judgeFileId" int NOT NULL,
+          "isSample" boolean NOT NULL DEFAULT FALSE,
+         
+          PRIMARY KEY("id"),
+          FOREIGN KEY("taskId") REFERENCES Tasks("id"),
+          FOREIGN KEY("inputFileId") REFERENCES Files("id"),
+          FOREIGN KEY("outputFileId") REFERENCES Files("id"),
+          FOREIGN KEY("judgeFileId") REFERENCES Files("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TYPE developerRoles as ENUM ('Setter', 'Statement Author', 'Test Data Author', 'Tester', 'Editorialist', 'Other');
+        CREATE TABLE "taskDevelopers" (
+          "id" SERIAL NOT NULL,
+          "taskId" int NOT NULL, 
+          "userId" int NOT NULL,
+          "order" int NOT NULL,
+          "role" developerRoles NOT NULL,
+
+          PRIMARY KEY("id"),
+          FOREIGN KEY("taskId") REFERENCES Tasks("id"),
+          FOREIGN KEY("userId") REFERENCES Users("id")
         )
       `,
       undefined,
@@ -68,6 +141,10 @@ export class CreateUsers100000000001 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "taskDevelopers"`, undefined);
+    await queryRunner.query(`DROP TABLE "testData"`, undefined);
+    await queryRunner.query(`DROP TABLE "subtasks"`, undefined);
+    await queryRunner.query(`DROP TABLE "taskAttachments"`, undefined);
     await queryRunner.query(`DROP TABLE "tasks"`, undefined);
     await queryRunner.query(`DROP TABLE "files"`, undefined);
     await queryRunner.query(`DROP TABLE "users"`, undefined);
