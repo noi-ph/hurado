@@ -37,7 +37,7 @@ const LoginPage = () => {
       const second = data.split('.')[1]; // The first half is unimportant
       const userJson = atob(second);
 
-      localStorage.setItem(UserConstants.CURRENT, userJson); // key-value pair must be strings
+      localStorage.setItem(UserConstants.Current, userJson); // key-value pair must be strings
       localStorage.setItem(UserConstants.JWT, jwt);
       redirectToHomepage();
       alert('You have logged in');
