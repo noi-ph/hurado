@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
+import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
@@ -21,7 +22,9 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     compileTimeLimit,
     compileMemoryLimit,
     submissionSizeLimit,
+    validator,
     isPublicInArchive,
+    language,
   } = req.body;
 
   const taskRepository = AppDataSource.getRepository(Task);
@@ -47,10 +50,22 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         newTask.description = description;
       }
       if (allowedLanguages) {
+        if (!Object.values(AllowedLanguages).includes(allowedLanguages)) {
+          const customError = new CustomError(400, 'Validation', 'Invalid allowed language', [
+            `${allowedLanguages} is invalid`,
+          ]);
+          return next(customError);
+        }
+
         newTask.allowedLanguages = allowedLanguages;
       }
 
       if (taskType) {
+        if (!Object.values(TaskTypes).includes(taskType)) {
+          const customError = new CustomError(400, 'Validation', 'Invalid task type', [`${taskType} is invalid`]);
+          return next(customError);
+        }
+
         newTask.taskType = taskType;
       }
 
@@ -82,8 +97,21 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         newTask.submissionSizeLimit = submissionSizeLimit;
       }
 
+      if (validator) {
+        newTask.validator = validator;
+      }
+
       if (isPublicInArchive != null) {
         newTask.isPublicInArchive = isPublicInArchive;
+      }
+
+      if (language) {
+        if (!Object.values(Languages).includes(language)) {
+          const customError = new CustomError(400, 'Validation', 'Invalid language', [`${language} is invalid`]);
+          return next(customError);
+        }
+
+        newTask.language = language;
       }
 
       await taskRepository.save(newTask);
