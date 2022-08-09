@@ -27,7 +27,7 @@ const MainNavBarContents = () => {
   }
 
   const checkLoggedIn = async () => {
-    let userJson = localStorage.getItem(UserConstants.CURRENT);
+    let userJson = localStorage.getItem(UserConstants.Current);
     const jwt = localStorage.getItem(UserConstants.JWT);
     if (userJson == null || jwt == null) {
       return;
@@ -53,7 +53,7 @@ const MainNavBarContents = () => {
     } catch (err) {
       alert("JWT token expired. Logging out...");
       console.log("JWT token expired");
-      localStorage.removeItem(UserConstants.CURRENT);
+      localStorage.removeItem(UserConstants.Current);
       localStorage.removeItem(UserConstants.JWT);
       redirectToHomepage();
     }
@@ -65,6 +65,11 @@ const MainNavBarContents = () => {
     <>
       {isLoggedIn ? (
         <>
+          <li className="mr-6">
+            <Link href="/tasks/create">
+              <a>Create task</a>
+            </Link>
+          </li>
           <li className="mr-6">
             <Link
               href={{
