@@ -7,7 +7,7 @@ import { validatorAccess } from 'middleware/validation/tasks';
 const router = Router();
 
 router.post('/', [checkJwt], create);
-router.patch('/:id[0-9]+', [checkJwt, validatorAccess], edit);
-router.get('/:id[0-9]+/show', [checkJwt, validatorAccess], show);
+router.patch('/:id([0-9]+)', [checkJwt, validatorAccess], edit);
+router.get('/show/:id([0-9]+)', [checkJwt, validatorAccess], show);
 
 export default router;
