@@ -39,7 +39,6 @@ export class CreateUsers100000000001 implements MigrationInterface {
       `
         CREATE TABLE "tasks" (
           "id" SERIAL NOT NULL,
-          "owner" int NOT NULL,
           "ownerId" int NOT NULL, 
           "title" text NOT NULL,
           "slug" text NOT NULL UNIQUE,
@@ -61,7 +60,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
       
           PRIMARY KEY("id"),
-          FOREIGN KEY("owner") REFERENCES Users("id")
+          FOREIGN KEY("ownerId") REFERENCES Users("id")
         )
       `,
       undefined,
