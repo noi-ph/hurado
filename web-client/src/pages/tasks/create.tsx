@@ -23,7 +23,7 @@ const CreateTaskPage = () => {
   const [timeLimit, setTimeLimit] = React.useState(2);
   const [memoryLimit, setMemoryLimit] = React.useState(1099511627776);
   const [compileTimeLimit, setCompileTimeLimit] = React.useState(10);
-  const [compileMemoryLimit, setcompileMemoryLimit] = React.useState(1099511627776);
+  const [compileMemoryLimit, setCompileMemoryLimit] = React.useState(1099511627776);
   const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
   const [validator, setValidator] = React.useState('');
   const [isPublicInArchive, setIsPublicOnArchive] = React.useState(false);
@@ -144,7 +144,7 @@ const CreateTaskPage = () => {
       <br />
 
       <>Compile memory limit: </>
-      <input value={compileMemoryLimit} onChange={(event) => setcompileMemoryLimit(parseInt(event.target.value))} />
+      <input value={compileMemoryLimit} onChange={(event) => setCompileMemoryLimit(parseInt(event.target.value))} />
 
       <br />
 
