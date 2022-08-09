@@ -120,9 +120,28 @@ export class CreateUsers100000000001 implements MigrationInterface {
       `,
       undefined,
     );
+
+    await queryRunner.query(
+      `
+        CREATE TYPE developerRoles as ENUM ('Setter', 'Statement Author', 'Test Data Author', 'Tester', 'Editorialist', 'Other');
+        CREATE TABLE "taskDevelopers" (
+          "id" SERIAL NOT NULL,
+          "taskId" int NOT NULL, 
+          "userId" int NOT NULL,
+          "order" int NOT NULL,
+          "role" developerRoles NOT NULL,
+
+          PRIMARY KEY("id"),
+          FOREIGN KEY("taskId") REFERENCES Tasks("id"),
+          FOREIGN KEY("userId") REFERENCES Users("id")
+        )
+      `,
+      undefined,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "taskDevelopers"`, undefined);
     await queryRunner.query(`DROP TABLE "testData"`, undefined);
     await queryRunner.query(`DROP TABLE "subtasks"`, undefined);
     await queryRunner.query(`DROP TABLE "taskAttachments"`, undefined);

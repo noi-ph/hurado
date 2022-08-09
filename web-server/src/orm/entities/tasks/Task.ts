@@ -40,7 +40,7 @@ export class Task {
   scoreMax: number;
 
   @Column()
-  checker: string; // please check data type
+  checker: string; // Script
 
   @Column({
     default: 2,
@@ -68,7 +68,7 @@ export class Task {
   submissionSizeLimit: number;
 
   @Column()
-  validator: string; // please check data type
+  validator: string; // Script
 
   @Column({
     default: false,

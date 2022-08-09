@@ -12,8 +12,6 @@ import { File } from '../users/File';
 
 import { Task } from './Task';
 
-// IMPORTANT: TO-DO still lacking validation
-
 @Entity('testData') // already plural
 export class testData {
   @PrimaryGeneratedColumn()
