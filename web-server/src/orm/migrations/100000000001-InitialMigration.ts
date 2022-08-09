@@ -123,13 +123,12 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
     await queryRunner.query(
       `
-        CREATE TYPE developerRoles as ENUM ('Setter', 'Statement Author', 'Test Data Author', 'Tester', 'Editorialist', 'Other');
         CREATE TABLE "taskDevelopers" (
           "id" SERIAL NOT NULL,
           "taskId" int NOT NULL, 
           "userId" int NOT NULL,
           "order" int NOT NULL,
-          "role" developerRoles NOT NULL,
+          "role" text NOT NULL,
 
           PRIMARY KEY("id"),
           FOREIGN KEY("taskId") REFERENCES Tasks("id"),
