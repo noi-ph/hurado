@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
+import { Languages, TaskTypes } from 'orm/entities/tasks/types';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
@@ -47,10 +48,22 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         newTask.description = description;
       }
       if (allowedLanguages) {
+        if (!(allowedLanguages in Languages)) {
+          const customError = new CustomError(400, 'Validation', 'Invalid allowed language', [
+            `${allowedLanguages} is invalid`,
+          ]);
+          return next(customError);
+        }
+
         newTask.allowedLanguages = allowedLanguages;
       }
 
       if (taskType) {
+        if (!(taskType in TaskTypes)) {
+          const customError = new CustomError(400, 'Validation', 'Invalid task type', [`${taskType} is invalid`]);
+          return next(customError);
+        }
+
         newTask.taskType = taskType;
       }
 

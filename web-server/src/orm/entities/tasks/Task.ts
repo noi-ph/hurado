@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 import { User } from '../users/User';
 
-import { Language } from './types';
+import { Language, Languages, TaskType, TaskTypes } from './types';
 
 // IMPORTANT: TO-DO still lacking validation
 
@@ -33,11 +33,15 @@ export class Task {
   @Column()
   statement: string; //please check data type (for LaTeX)
 
-  @Column()
-  allowedLanguages: string; // PLACEHOLDER DATATYPE
+  @Column({
+    default: Languages.All,
+  })
+  allowedLanguages: Language;
 
-  @Column()
-  taskType: string; // PLACEHOLDER DATATYPE
+  @Column({
+    default: TaskTypes.Batch,
+  })
+  taskType: TaskType;
 
   @Column()
   scoreMax: number;
