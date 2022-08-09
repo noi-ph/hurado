@@ -10,8 +10,8 @@ export class taskAttachment {
   id: number;
 
   @ManyToOne(() => Task) // many attachments can be related to one Task
-  taskID: Task;
+  taskId: Task;
 
   @ManyToOne(() => File) // many attachment instances can all point back to one File
-  fileID: File;
+  fileId: File;
 }

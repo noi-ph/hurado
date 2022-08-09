@@ -39,7 +39,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
       `
         CREATE TABLE "tasks" (
           "id" SERIAL NOT NULL,
-          "ownerID" int NOT NULL, 
+          "ownerId" int NOT NULL, 
           "title" text NOT NULL,
           "slug" text NOT NULL UNIQUE,
           "description" text,
@@ -60,7 +60,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
       
           PRIMARY KEY("id"),
-          FOREIGN KEY("ownerID") REFERENCES Users("id")
+          FOREIGN KEY("ownerId") REFERENCES Users("id")
         )
       `,
       undefined,
@@ -70,11 +70,30 @@ export class CreateUsers100000000001 implements MigrationInterface {
       `
         CREATE TABLE "taskAttachments" (
           "id" SERIAL NOT NULL, 
-          "taskID" int NOT NULL, 
-          "fileID" int NOT NULL,
+          "taskId" int NOT NULL, 
+          "fileId" int NOT NULL,
           PRIMARY KEY ("id"),
-          FOREIGN KEY("taskID") REFERENCES Tasks("id"),
-          FOREIGN KEY("fileID") REFERENCES Files("id")
+          FOREIGN KEY("taskId") REFERENCES Tasks("id"),
+          FOREIGN KEY("fileId") REFERENCES Files("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "subtasks" (
+          "id" SERIAL NOT NULL,
+          "name" text NOT NULL,
+          "taskId" int NOT NULL, 
+          "order" int NOT NULL,
+          "scoreMax" int NOT NULL,
+          "scorer" text NOT NULL,
+          "validator" text,
+          "testDataPattern" text NOT NULL,
+         
+          PRIMARY KEY("id"),
+          FOREIGN KEY("taskId") REFERENCES Tasks("id")
         )
       `,
       undefined,
@@ -82,6 +101,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "subtasks"`, undefined);
     await queryRunner.query(`DROP TABLE "taskAttachments"`, undefined);
     await queryRunner.query(`DROP TABLE "tasks"`, undefined);
     await queryRunner.query(`DROP TABLE "files"`, undefined);

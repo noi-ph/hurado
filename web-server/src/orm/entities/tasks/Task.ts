@@ -12,7 +12,7 @@ export class Task {
   id: number;
 
   @ManyToOne(() => User)
-  ownerID: User;
+  ownerId: User;
 
   @Column()
   title: string;
