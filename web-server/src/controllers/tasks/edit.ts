@@ -31,7 +31,7 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     const task = await taskRepository.findOne({ where: { id } });
 
     try {
-      if (slug) {
+      if (slug && slug != task.slug) {
         const otherTask = await taskRepository.findOne({ where: { slug } });
 
         if (otherTask) {

@@ -26,7 +26,6 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     isPublicInArchive,
     language,
   } = req.body;
-  console.log(req.body);
 
   const taskRepository = AppDataSource.getRepository(Task);
   const userRepository = AppDataSource.getRepository(User);
