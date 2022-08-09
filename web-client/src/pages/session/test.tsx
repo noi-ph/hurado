@@ -10,7 +10,7 @@ import { User, UserConstants } from "./types";
 
 const LoginTestInner = () => {
   const getCurrentUser = async () => {
-    const userJson = localStorage.getItem(UserConstants.CURRENT);
+    const userJson = localStorage.getItem(UserConstants.Current);
     const jwt = localStorage.getItem(UserConstants.JWT);
 
     if (userJson == null || jwt == null) {

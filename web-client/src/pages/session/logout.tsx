@@ -16,7 +16,7 @@ const LogoutPage = () => {
 
   function runLogout() {
     try {
-      localStorage.removeItem(UserConstants.CURRENT);
+      localStorage.removeItem(UserConstants.Current);
       localStorage.removeItem(UserConstants.JWT);
       redirectToLoginPage();
     } catch (err) {
