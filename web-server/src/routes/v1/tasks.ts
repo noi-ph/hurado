@@ -9,3 +9,5 @@ const router = Router();
 router.post('/', [checkJwt], create);
 router.patch('/:id[0-9]+', [checkJwt, validatorAccess], edit);
 router.get('/:id[0-9]+/show', [checkJwt, validatorAccess], show);
+
+export default router;
