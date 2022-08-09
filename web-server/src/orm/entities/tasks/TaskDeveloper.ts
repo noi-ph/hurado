@@ -14,15 +14,15 @@ import { Task } from './Task';
 
 export enum Roles {
   Setter = 'Setter',
-  StatementAuthor = 'Statement Author',
-  TestDataAuthor = 'Test Data Author',
+  StatementAuthor = 'StatementAuthor',
+  TestDataAuthor = 'TestDataAuthor',
   Tester = 'Tester',
   Editorialist = 'Editorialist',
   Other = 'Other',
 }
 
 @Entity('taskDevelopers')
-export class taskDeveloper {
+export class TaskDeveloper {
   @PrimaryGeneratedColumn()
   id: number;
 

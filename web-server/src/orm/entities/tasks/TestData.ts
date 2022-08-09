@@ -13,7 +13,7 @@ import { File } from '../users/File';
 import { Task } from './Task';
 
 @Entity('testData') // already plural
-export class testData {
+export class TestData {
   @PrimaryGeneratedColumn()
   id: number;
 
