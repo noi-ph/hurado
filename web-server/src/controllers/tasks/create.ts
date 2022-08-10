@@ -18,13 +18,15 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     allowedLanguages,
     taskType,
     scoreMax,
-    checker,
+    checkerScript,
+    checkerScriptId,
     timeLimit,
     memoryLimit,
     compileTimeLimit,
     compileMemoryLimit,
     submissionSizeLimit,
-    validator,
+    validatorScript,
+    validatorScriptId,
     isPublicInArchive,
     language,
   } = req.body;
@@ -75,8 +77,12 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         newTask.scoreMax = scoreMax;
       }
 
-      if (checker) {
-        newTask.checker = checker;
+      if (checkerScript) {
+        task.checkerScript = checkerScript;
+      }
+
+      if (checkerScriptId) {
+        task.checkerScriptId = checkerScriptId;
       }
 
       if (timeLimit) {
@@ -99,8 +105,12 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         newTask.submissionSizeLimit = submissionSizeLimit;
       }
 
-      if (validator) {
-        newTask.validator = validator;
+      if (validatorScript) {
+        task.validatorScript = validatorScript;
+      }
+
+      if (validatorScriptId) {
+        task.validatorScriptId = validatorScriptId;
       }
 
       if (isPublicInArchive != null) {

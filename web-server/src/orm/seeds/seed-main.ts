@@ -1,7 +1,7 @@
 import { AppDataSource } from 'orm/data-source';
 
-import { User } from '../entities/users/User';
 import { Task } from '../entities/tasks/Task';
+import { User } from '../entities/users/User';
 
 async function runSeedData() {
   await AppDataSource.initialize();
@@ -112,13 +112,13 @@ async function runSeedData() {
   const taskRepository = AppDataSource.getRepository(Task);
 
   task.ownerId = 1;
-  task.title = "Who is the oldest?";
+  task.title = 'Who is the oldest?';
   task.statement = `Alvin, Berto, and Carlo are friends. Their ages are A, B and C, respectively. No two of them have the same age. Who is the oldest among them?
   
   The input contains three lines. The first line contains a single integer, A. The second line contains a single integer, B. The third line contains a single integer, C.
 
   Output the name of the oldest among the three, which should be either Alvin, Berto or Carlo.`;
-  task.slug = "whoistheoldest"; // these are randomly generated ryt?
+  task.slug = 'whoistheoldest'; // these are randomly generated ryt?
   task.scoreMax = 100;
   task.timeLimit = 2898;
   task.memoryLimit = 8982;
@@ -126,13 +126,13 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checker = "checker.js"; // placeholder 
-  task.validator = "validator.js"; // placeholder
+  task.checkerScriptId = 1; // placeholder
+  task.validatorScriptId = 2; // placeholder
   await taskRepository.save(task);
 
   task = new Task();
   task.ownerId = 1;
-  task.title = "This Problem Is So Fetch";
+  task.title = 'This Problem Is So Fetch';
   task.statement = `Rob has no opinion on everything. He finds abortion neither good or bad and he is indifferent about whether or not he likes the president's absence during funerals. And unlike many Filipinos, he is not even affected whether Dingdong should have married Marian. Overall, he is a pretty boring person.
 
   This attitude of Rob was really popular among his classmates and among the debating team. And so, they decided to convince Rob to be pro- or anti- important issues among their class. Today, they are going to give Rob reasons on why or why not their classmate Payton is fetch. No one exactly knows what fetch is, but his classmates seem to want fetch happen. Anyway, you don't really need to know what that word means. It's totally not gonna happen.
@@ -146,7 +146,7 @@ async function runSeedData() {
   The first line of input contains T, the number of test cases. The following lines describe the test cases. The first line of each test case contains a single integer N. The second line contains N integers separated by spaces, where the $P_i$ number is the ith student's convincing power.
   
   For each test case, print a single integer which is the answer for that test case.`;
-  task.slug = "thisproblemissofetch"; // these are randomly generated ryt?
+  task.slug = 'thisproblemissofetch'; // these are randomly generated ryt?
   task.scoreMax = 100;
   task.timeLimit = 2898;
   task.memoryLimit = 8982;
@@ -154,8 +154,8 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checker = "checker.js"; // placeholder 
-  task.validator = "validator.js"; // placeholder
+  task.checkerScriptId = 3; // placeholder
+  task.validatorScriptId = 4; // placeholder
   await taskRepository.save(task);
 }
 

@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-import { Country } from './types';
+import { Countries } from './types';
 
 @Entity('users')
 export class User {
@@ -47,16 +47,20 @@ export class User {
   lastName: string;
 
   @Column({
-    default: 'PH' as Country,
+    type: 'enum',
+    enum: Countries,
+    default: Countries.PH,
   })
-  country: string;
+  country: Countries;
 
   @Column()
   @UpdateDateColumn()
   updatedAt: Date;
 
-  setCountry(country: Country) {
-    this.country = country;
+  setCountry(country: Countries) {
+    if (Object.values(Countries).includes(country)) {
+      this.country = country;
+    }
   }
 
   hashPassword() {

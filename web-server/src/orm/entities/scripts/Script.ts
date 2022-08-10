@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 
-import { File } from '../users/File';
+import { File } from '../files/File';
 
 @Entity('scripts')
 export class Script {

@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
-import { File } from '../users/File';
+import { File } from '../files/File';
 
 import { Task } from './Task';
 
@@ -10,8 +10,14 @@ export class TaskAttachment {
   id: number;
 
   @ManyToOne(() => Task) // many attachments can be related to one Task
-  taskId: Task;
+  task: Task;
+
+  @Column()
+  taskId: number;
 
   @ManyToOne(() => File) // many attachment instances can all point back to one File
-  fileId: File;
+  file: File;
+
+  @Column()
+  fileId: number;
 }
