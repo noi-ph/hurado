@@ -40,11 +40,13 @@ const ShowTaskPage = (props: ShowTaskProps) => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:4000/v1/tasks/show/${props.taskId}`, {
-                headers: {
-                    Authorization: jwt,
-                },
-            });
+            const response = await axios.get(`http://localhost:4000/v1/tasks/show/${props.taskId}`
+                , {
+                    headers: {
+                        Authorization: jwt,
+                    },
+                }
+            );
 
             const currentTask = response.data;
             setTitle(currentTask.title);
