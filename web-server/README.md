@@ -43,9 +43,9 @@ Containers created:
 - [Docker](https://www.docker.com/) environment:
   - Easily start local development using [Docker Compose](https://docs.docker.com/compose/) with single command `npm run docker:dev`
   - Connect to different staging or production environments `npm run docker:[stage|prod]`
-  - Ready for **microservices** development and deployment.  
-    Once API changes are made, just build and push new docker image with your favourite CI/CD tool  
-    `docker build -t <username>/api-boilerplate:latest .`  
+  - Ready for **microservices** development and deployment.
+    Once API changes are made, just build and push new docker image with your favourite CI/CD tool
+    `docker build -t <username>/api-boilerplate:latest .`
     `docker push <username>/api-boilerplate:latest`
   - Run unit, integration (or setup with your frontend E2E) tests as `docker exec -ti be_boilerplate_test sh` and `npm run test`
 - Contract first REST API design:
@@ -59,7 +59,7 @@ Containers created:
 - [Prettier](https://prettier.io/) code formatter
 - Git hooks with [Husky](https://github.com/typicode/husky) and [lint-staged](https://github.com/okonet/lint-staged)
 - Automated npm & Docker dependency updates with [Renovate](https://github.com/renovatebot/renovate) (set to patch version only)
-- Commit messages must meet [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) format.  
+- Commit messages must meet [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) format.
   After staging changes just run `npm run commit` and get instant feedback on your commit message formatting and be prompted for required fields by [Commitizen](https://github.com/commitizen/cz-cli)
 
 ## Other awesome boilerplates:

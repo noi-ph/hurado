@@ -1,14 +1,13 @@
 import React from 'react';
+
 import axios from 'axios';
-
 import { useRouter } from 'next/router';
-
-import { UserConstants } from './types';
 
 import { Meta } from '../../layout/Meta';
 import { Main } from '../../templates/Main';
 import { AppConfig } from '../../utils/AppConfig';
 import { validEmail } from '../../utils/Email';
+import { UserConstants } from './types';
 
 const LoginPage = () => {
   const [email, setEmail] = React.useState('');

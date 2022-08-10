@@ -1,14 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import axios from "axios";
-import { AxiosError } from "axios";
+import axios from 'axios';
+import { AxiosError } from 'axios';
+import { useRouter } from 'next/router';
 
-import { useRouter } from "next/router";
-
-import { Meta } from "../../layout/Meta";
-import { Main } from "../../templates/Main";
-import { AppConfig } from "../../utils/AppConfig";
-import { User, UserConstants } from "../session/types";
+import { Meta } from '../../layout/Meta';
+import { Main } from '../../templates/Main';
+import { AppConfig } from '../../utils/AppConfig';
+import { User, UserConstants } from '../session/types';
 
 type EditPageProps = {
   user: User;
@@ -17,14 +16,14 @@ type EditPageProps = {
 const EditPage = (props: EditPageProps) => {
   const user = props.user;
 
-  const [email, setEmail] = React.useState("");
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [passwordConfirm, setPasswordConfirm] = React.useState("");
-  const [school, setSchool] = React.useState("");
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [country, setCountry] = React.useState("");
+  const [email, setEmail] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [passwordConfirm, setPasswordConfirm] = React.useState('');
+  const [school, setSchool] = React.useState('');
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
+  const [country, setCountry] = React.useState('');
 
   const router = useRouter();
 
@@ -32,12 +31,12 @@ const EditPage = (props: EditPageProps) => {
     const userJson = JSON.stringify(user);
     router.push(
       {
-        pathname: "/profile/view",
+        pathname: '/profile/view',
         query: {
           userJson,
         },
       },
-      "/profile/view"
+      '/profile/view'
     );
   }
 
@@ -65,7 +64,7 @@ const EditPage = (props: EditPageProps) => {
           Authorization: jwt,
         },
       });
-      alert("Changes have been executed!");
+      alert('Changes have been executed!');
       redirectToViewPage();
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
