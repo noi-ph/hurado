@@ -1,20 +1,49 @@
 {
-  // Configuration for JavaScript files
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
   "extends": [
-    "airbnb-base",
-    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
     "plugin:prettier/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "@typescript-eslint",
+    "prettier",
+    "unused-imports"
+  ],
   "rules": {
-    "prettier/prettier": [
+    "indent": [
       "error",
-      {
-        "singleQuote": true
-      }
+      4
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "semi": [
+      "error",
+      "never"
     ]
   },
   "overrides": [
-    // Configuration for TypeScript files
     {
       "files": ["**/*.ts", "**/*.tsx"],
       "plugins": ["@typescript-eslint", "unused-imports"],
@@ -24,7 +53,7 @@
         "plugin:prettier/recommended"
       ],
       "parserOptions": {
-        "project": "./tsconfig.json"
+        "project": "web-client/tsconfig.json"
       },
       "rules": {
         "prettier/prettier": [
