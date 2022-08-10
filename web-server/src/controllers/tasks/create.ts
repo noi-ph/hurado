@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
+import { Script } from 'orm/entities/scripts/Script';
 import { Task } from 'orm/entities/tasks/Task';
 import { AllowedLanguages } from 'orm/entities/tasks/types';
 import { Languages } from 'orm/entities/tasks/types';
@@ -18,21 +19,20 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     allowedLanguages,
     taskType,
     scoreMax,
-    checkerScript,
-    checkerScriptId,
+    checkerId,
     timeLimit,
     memoryLimit,
     compileTimeLimit,
     compileMemoryLimit,
     submissionSizeLimit,
-    validatorScript,
-    validatorScriptId,
+    validatorId,
     isPublicInArchive,
     language,
   } = req.body;
 
   const taskRepository = AppDataSource.getRepository(Task);
   const userRepository = AppDataSource.getRepository(User);
+  const scriptRepository = AppDataSource.getRepository(Script);
   try {
     const task = await taskRepository.findOne({ where: { slug } });
 
@@ -53,6 +53,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       if (description) {
         newTask.description = description;
       }
+
       if (allowedLanguages) {
         if (!Object.values(AllowedLanguages).includes(allowedLanguages)) {
           const customError = new CustomError(400, 'Validation', 'Invalid allowed language', [
@@ -77,12 +78,10 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         newTask.scoreMax = scoreMax;
       }
 
-      if (checkerScript) {
-        task.checkerScript = checkerScript;
-      }
-
-      if (checkerScriptId) {
-        task.checkerScriptId = checkerScriptId;
+      if (checkerId) {
+        const checker = await scriptRepository.findOne({ where: { id: checkerId } });
+        newTask.checkerScript = checker;
+        newTask.checkerScriptId = checker.id;
       }
 
       if (timeLimit) {
@@ -105,12 +104,10 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         newTask.submissionSizeLimit = submissionSizeLimit;
       }
 
-      if (validatorScript) {
-        task.validatorScript = validatorScript;
-      }
-
-      if (validatorScriptId) {
-        task.validatorScriptId = validatorScriptId;
+      if (validatorId) {
+        const validator = await scriptRepository.findOne({ where: { id: validatorId } });
+        newTask.validatorScript = validator;
+        newTask.validatorScriptId = validator.id;
       }
 
       if (isPublicInArchive != null) {
