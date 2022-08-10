@@ -72,7 +72,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "compileTimeLimit" float NOT NULL DEFAULT 10,
           "compileMemoryLimit" bigint NOT NULL DEFAULT 1099511627776,
           "submissionSizeLimit" bigint NOT NULL DEFAULT 32768,
-          "validatorScripId" int NOT NULL,
+          "validatorScriptId" int NOT NULL,
           "isPublicInArchive" boolean NOT NULL DEFAULT FALSE,
           "language" text NOT NULL DEFAULT 'en-US',
           "createdAt" TIMESTAMP NOT NULL DEFAULT now(),

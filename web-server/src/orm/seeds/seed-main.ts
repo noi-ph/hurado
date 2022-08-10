@@ -1,5 +1,7 @@
 import { AppDataSource } from 'orm/data-source';
 
+import { File } from '../entities/files/File';
+import { Script } from '../entities/scripts/Script';
 import { Task } from '../entities/tasks/Task';
 import { User } from '../entities/users/User';
 
@@ -108,6 +110,36 @@ async function runSeedData() {
   user.isAdmin = false;
   await userRepository.save(user);
 
+  let file = new File();
+  const fileRepository = AppDataSource.getRepository(File);
+  file.name = 'file1.py';
+  file.fileURL = 'https://thisisaurl.com/file1.py';
+  const file1 = file;
+  await fileRepository.save(file1);
+
+  file = new File();
+  file.name = 'file2.py';
+  file.fileURL = 'https://thisisaurl.com/file2.py';
+  const file2 = file;
+  await fileRepository.save(file2);
+
+  let script = new Script();
+  const scriptRepository = AppDataSource.getRepository(Script);
+  script.file = file1;
+  script.fileId = file1.id;
+  script.languageCode = 'python';
+  script.runtimeArgs = 'some_arg';
+  const script1 = script;
+  await scriptRepository.save(script1);
+
+  script = new Script();
+  script.file = file2;
+  script.fileId = file2.id;
+  script.languageCode = 'python';
+  script.runtimeArgs = 'some_arg';
+  const script2 = script;
+  await scriptRepository.save(script2);
+
   let task = new Task();
   const taskRepository = AppDataSource.getRepository(Task);
 
@@ -126,8 +158,8 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checkerScriptId = 1; // placeholder
-  task.validatorScriptId = 2; // placeholder
+  task.checkerScriptId = script1.id;
+  task.validatorScriptId = script2.id;
   await taskRepository.save(task);
 
   task = new Task();
@@ -154,8 +186,8 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checkerScriptId = 3; // placeholder
-  task.validatorScriptId = 4; // placeholder
+  task.checkerScriptId = script1.id;
+  task.validatorScriptId = script2.id;
   await taskRepository.save(task);
 }
 
