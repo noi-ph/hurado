@@ -2,6 +2,8 @@
 
 NOI.PH's Online Judge
 
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
 ## Development
 
 ### Recommended Specs
@@ -19,6 +21,23 @@ You can clone the repository by running the following commands:
 cd ~/
 git clone https://github.com/noiph/hurado.git
 ```
+
+#### Pre-commit hooks
+
+To setup git pre-commit hooks, first install [pre-commit](https://pre-commit.com/#install) then install our custom hooks:
+
+```shell
+pip3 install pre-commit
+pre-commit install
+```
+
+You can try if your installation is working by running the linters for all files in the repo:
+
+```shell
+pre-commit run --all-files
+```
+
+This will automatically fix trivial errors enforced by the linters and show information on the non-trivial ones as well.
 
 #### Setup Docker
 
