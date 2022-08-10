@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
-import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types';
+import { AllowedLanguages } from 'orm/entities/tasks/types';
+import { Languages } from 'orm/entities/tasks/types';
+import { TaskTypes } from 'orm/entities/tasks/types';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
