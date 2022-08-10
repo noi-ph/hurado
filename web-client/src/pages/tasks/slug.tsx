@@ -8,7 +8,6 @@ import { useAsyncEffect } from "use-async-effect";
 import { Main } from "../../templates/Main";
 import { Meta } from "../../layout/Meta";
 import { AppConfig } from "../../utils/AppConfig";
-import { Task } from './types';
 import { UserConstants } from '../session/types';
 
 type ShowTaskProps = {
