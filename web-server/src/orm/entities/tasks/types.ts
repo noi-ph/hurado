@@ -13,3 +13,11 @@ export enum TaskTypes {
   Communication = 'Communication',
   Custom = 'Custom',
 }
+export enum TaskDeveloperRoles {
+  Setter = 'Setter',
+  StatementAuthor = 'StatementAuthor',
+  TestDataAuthor = 'TestDataAuthor',
+  Tester = 'Tester',
+  Editorialist = 'Editorialist',
+  Other = 'Other',
+}

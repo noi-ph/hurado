@@ -5,21 +5,25 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "users" (
-        "id" SERIAL NOT NULL,
-        "email" text NOT NULL,
-        "username" text NOT NULL,
-        "hashedPassword" text NOT NULL,
-        "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-        "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), 
-        "school" text,
-        "isAdmin" BOOLEAN NOT NULL DEFAULT false,
-        "firstName" text NOT NULL DEFAULT 'Juan',
-        "lastName" text NOT NULL DEFAULT 'dela Cruz',
-        "country" text NOT NULL DEFAULT 'PH', 
-        CONSTRAINT "users_uq_username" UNIQUE ("username"), 
-        CONSTRAINT "users_uq_email" UNIQUE ("email"), 
-        CONSTRAINT "users_pk_id" PRIMARY KEY ("id"))`,
+      `
+        CREATE TABLE "users" (
+          "id" SERIAL NOT NULL,
+          "email" text NOT NULL,
+          "username" text NOT NULL,
+          "hashedPassword" text NOT NULL,
+          "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), 
+          "school" text,
+          "isAdmin" BOOLEAN NOT NULL DEFAULT false,
+          "firstName" text NOT NULL DEFAULT 'Juan',
+          "lastName" text NOT NULL DEFAULT 'dela Cruz',
+          "country" text NOT NULL DEFAULT 'PH', 
+
+          CONSTRAINT "users_uq_username" UNIQUE ("username"), 
+          CONSTRAINT "users_uq_email" UNIQUE ("email"), 
+          CONSTRAINT "users_pk_id" PRIMARY KEY ("id")
+        )
+      `,
       undefined,
     );
 
@@ -29,10 +33,25 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "id" SERIAL NOT NULL, 
           "name" text NOT NULL, 
           "fileURL" text NOT NULL,
+
           CONSTRAINT "files_pk_id" PRIMARY KEY ("id")
         )
       `,
       undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "scripts" (
+          "id" SERIAL NOT NULL,
+          "fileId" int NOT NULL,
+          "languageCode" text NOT NULL,
+          "runtimeArgs" text NOT NULL,
+
+          PRIMARY KEY("id"),
+          FOREIGN KEY("fileId") REFERENCES Files("id")
+        )
+      `,
     );
 
     await queryRunner.query(
@@ -47,20 +66,22 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "allowedLanguages" text NOT NULL DEFAULT 'All',
           "taskType" text NOT NULL DEFAULT 'Batch',
           "scoreMax" float NOT NULL,
-          "checker" text NOT NULL,
+          "checkerScriptId" int NOT NULL,
           "timeLimit" float NOT NULL DEFAULT 2,
           "memoryLimit" bigint NOT NULL DEFAULT 1099511627776,
           "compileTimeLimit" float NOT NULL DEFAULT 10,
           "compileMemoryLimit" bigint NOT NULL DEFAULT 1099511627776,
           "submissionSizeLimit" bigint NOT NULL DEFAULT 32768,
-          "validator" text NOT NULL,
+          "validatorScriptId" int NOT NULL,
           "isPublicInArchive" boolean NOT NULL DEFAULT FALSE,
           "language" text NOT NULL DEFAULT 'en-US',
           "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
           "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
       
           PRIMARY KEY("id"),
-          FOREIGN KEY("ownerId") REFERENCES Users("id")
+          FOREIGN KEY("ownerId") REFERENCES Users("id"),
+          FOREIGN KEY("checkerScriptId") REFERENCES Scripts("id"),
+          FOREIGN KEY ("validatorScriptId") REFERENCES Scripts("id")
         )
       `,
       undefined,
@@ -72,6 +93,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "id" SERIAL NOT NULL, 
           "taskId" int NOT NULL, 
           "fileId" int NOT NULL,
+
           PRIMARY KEY ("id"),
           FOREIGN KEY("taskId") REFERENCES Tasks("id"),
           FOREIGN KEY("fileId") REFERENCES Files("id")
@@ -88,12 +110,14 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "taskId" int NOT NULL, 
           "order" int NOT NULL,
           "scoreMax" int NOT NULL,
-          "scorer" text NOT NULL,
-          "validator" text,
+          "scorerScriptId" int NOT NULL,
+          "validatorScriptId" int,
           "testDataPattern" text NOT NULL,
          
           PRIMARY KEY("id"),
-          FOREIGN KEY("taskId") REFERENCES Tasks("id")
+          FOREIGN KEY("taskId") REFERENCES Tasks("id"),
+          FOREIGN KEY("scorerScriptId") REFERENCES Scripts("id"),
+          FOREIGN KEY ("validatorScriptId") REFERENCES Scripts("id")
         )
       `,
       undefined,
@@ -145,6 +169,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "subtasks"`, undefined);
     await queryRunner.query(`DROP TABLE "taskAttachments"`, undefined);
     await queryRunner.query(`DROP TABLE "tasks"`, undefined);
+    await queryRunner.query(`DROP TABLE "scripts"`, undefined);
     await queryRunner.query(`DROP TABLE "files"`, undefined);
     await queryRunner.query(`DROP TABLE "users"`, undefined);
   }

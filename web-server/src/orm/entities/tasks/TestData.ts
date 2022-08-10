@@ -1,14 +1,6 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  OneToOne,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToOne } from 'typeorm';
 
-import { File } from '../users/File';
+import { File } from '../files/File';
 
 import { Task } from './Task';
 
@@ -18,7 +10,10 @@ export class TestData {
   id: number;
 
   @ManyToOne(() => Task) // many data can belong to one task
-  taskId: Task;
+  task: Task;
+
+  @Column()
+  taskId: number;
 
   @Column()
   order: number;
@@ -27,13 +22,22 @@ export class TestData {
   name: string;
 
   @OneToOne(() => File) // a single i/o pair can only have one input file, and a input file can only belong to one i/o pair (for now)
-  inputFileId: File;
+  inputFile: File;
+
+  @Column()
+  inputFileId: number;
 
   @OneToOne(() => File) // ditto
-  outputFileId: File;
+  outputFile: File;
+
+  @Column()
+  outputFileId: number;
 
   @OneToOne(() => File) // ditto
-  judgeFileId: File;
+  judgeFile: File;
+
+  @Column()
+  judgeFileId: number;
 
   @Column({
     default: false,

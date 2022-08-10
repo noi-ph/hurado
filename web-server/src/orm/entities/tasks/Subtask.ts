@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+
+import { Script } from '../scripts/Script';
 
 import { Task } from './Task';
 
@@ -13,7 +15,10 @@ export class Subtask {
   name: string;
 
   @ManyToOne(() => Task) // many subtasks can belong to one task
-  taskId: Task;
+  task: Task;
+
+  @Column()
+  taskId: number;
 
   @Column()
   order: number;
@@ -21,13 +26,19 @@ export class Subtask {
   @Column()
   scoreMax: number;
 
+  @ManyToOne(() => Script)
+  scorerScript: Script;
+
   @Column()
-  scorer: string; //Script
+  scorerScriptId: number;
+
+  @ManyToOne(() => Script)
+  validatorScript: Script;
 
   @Column({
     nullable: true,
   })
-  validator: string; //Script
+  validatorScriptId: number;
 
   @Column()
   testDataPattern: string; // NOTE: would have done an Array but not supported on our postgres apparently

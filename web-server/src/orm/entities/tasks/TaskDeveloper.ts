@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { User } from '../users/User';
 
 import { Task } from './Task';
+import { TaskDeveloperRoles } from './types';
 
 // {userId} is the {role} ( with contribution rank {order} ) for problem {taskId}
 // ^^ following the instructions
@@ -12,33 +13,29 @@ import { Task } from './Task';
 // problem would be for the {order}, since it can be different per problem
 // and also Arrays aren't compatible with postgres (at least on my end), so not sure how to implement it
 
-export enum Roles {
-  Setter = 'Setter',
-  StatementAuthor = 'StatementAuthor',
-  TestDataAuthor = 'TestDataAuthor',
-  Tester = 'Tester',
-  Editorialist = 'Editorialist',
-  Other = 'Other',
-}
-
 @Entity('taskDevelopers')
 export class TaskDeveloper {
   @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => Task) // one task can have many developer attributions
-  taskId: Task;
+  task: Task;
+
+  @Column()
+  taskId: number;
 
   @ManyToOne(() => User) // one user can have many developer attributions (for different roles)
-  userId: User;
+  user: User;
+
+  @Column()
+  userId: number;
 
   @Column()
   order: number;
 
   @Column({
-    // enum
     type: 'enum',
-    enum: Roles,
+    enum: TaskDeveloperRoles,
   })
-  role: Roles;
+  role: TaskDeveloperRoles;
 }

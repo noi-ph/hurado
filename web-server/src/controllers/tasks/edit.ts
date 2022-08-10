@@ -15,13 +15,15 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     allowedLanguages,
     taskType,
     scoreMax,
-    checker,
+    checkerScript,
+    checkerScriptId,
     timeLimit,
     memoryLimit,
     compileTimeLimit,
     compileMemoryLimit,
     submissionSizeLimit,
-    validator,
+    validatorScript,
+    validatorScriptId,
     isPublicInArchive,
     language,
   } = req.body;
@@ -80,8 +82,12 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
         task.scoreMax = scoreMax;
       }
 
-      if (checker) {
-        task.checker = checker;
+      if (checkerScript) {
+        task.checkerScript = checkerScript;
+      }
+
+      if (checkerScriptId) {
+        task.checkerScriptId = checkerScriptId;
       }
 
       if (timeLimit) {
@@ -104,8 +110,12 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
         task.submissionSizeLimit = submissionSizeLimit;
       }
 
-      if (validator) {
-        task.validator = validator;
+      if (validatorScript) {
+        task.validatorScript = validatorScript;
+      }
+
+      if (validatorScriptId) {
+        task.validatorScriptId = validatorScriptId;
       }
 
       if (isPublicInArchive != null) {

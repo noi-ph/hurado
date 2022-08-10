@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 
+import { Script } from '../scripts/Script';
 import { User } from '../users/User';
 
 import { AllowedLanguages, Languages, TaskTypes } from './types';
@@ -34,20 +35,27 @@ export class Task {
   statement: string; //please check data type (for LaTeX)
 
   @Column({
+    type: 'enum',
+    enum: AllowedLanguages,
     default: AllowedLanguages.All,
   })
-  allowedLanguages: string;
+  allowedLanguages: AllowedLanguages;
 
   @Column({
+    type: 'enum',
+    enum: TaskTypes,
     default: TaskTypes.Batch,
   })
-  taskType: string;
+  taskType: TaskTypes;
 
   @Column()
   scoreMax: number;
 
+  @ManyToOne(() => Script)
+  checkerScript: Script;
+
   @Column()
-  checker: string; // Script
+  checkerScriptId: number;
 
   @Column({
     default: 2,
@@ -74,8 +82,11 @@ export class Task {
   })
   submissionSizeLimit: number;
 
+  @ManyToOne(() => Script)
+  validatorScript: Script;
+
   @Column()
-  validator: string; // Script
+  validatorScriptId: number;
 
   @Column({
     default: false,
@@ -83,10 +94,11 @@ export class Task {
   isPublicInArchive: boolean; // not sure how to only give admins access to edit
 
   @Column({
+    type: 'enum',
+    enum: Languages,
     default: Languages.English,
-    length: 15,
   })
-  language: string;
+  language: Languages;
 
   @Column()
   @CreateDateColumn()

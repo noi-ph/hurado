@@ -1,7 +1,9 @@
 import { AppDataSource } from 'orm/data-source';
 
-import { User } from '../entities/users/User';
+import { File } from '../entities/files/File';
+import { Script } from '../entities/scripts/Script';
 import { Task } from '../entities/tasks/Task';
+import { User } from '../entities/users/User';
 
 async function runSeedData() {
   await AppDataSource.initialize();
@@ -108,17 +110,47 @@ async function runSeedData() {
   user.isAdmin = false;
   await userRepository.save(user);
 
+  let file = new File();
+  const fileRepository = AppDataSource.getRepository(File);
+  file.name = 'file1.py';
+  file.fileURL = 'https://thisisaurl.com/file1.py';
+  const file1 = file;
+  await fileRepository.save(file1);
+
+  file = new File();
+  file.name = 'file2.py';
+  file.fileURL = 'https://thisisaurl.com/file2.py';
+  const file2 = file;
+  await fileRepository.save(file2);
+
+  let script = new Script();
+  const scriptRepository = AppDataSource.getRepository(Script);
+  script.file = file1;
+  script.fileId = file1.id;
+  script.languageCode = 'python';
+  script.runtimeArgs = 'some_arg';
+  const script1 = script;
+  await scriptRepository.save(script1);
+
+  script = new Script();
+  script.file = file2;
+  script.fileId = file2.id;
+  script.languageCode = 'python';
+  script.runtimeArgs = 'some_arg';
+  const script2 = script;
+  await scriptRepository.save(script2);
+
   let task = new Task();
   const taskRepository = AppDataSource.getRepository(Task);
 
   task.ownerId = 1;
-  task.title = "Who is the oldest?";
+  task.title = 'Who is the oldest?';
   task.statement = `Alvin, Berto, and Carlo are friends. Their ages are A, B and C, respectively. No two of them have the same age. Who is the oldest among them?
   
   The input contains three lines. The first line contains a single integer, A. The second line contains a single integer, B. The third line contains a single integer, C.
 
   Output the name of the oldest among the three, which should be either Alvin, Berto or Carlo.`;
-  task.slug = "whoistheoldest"; // these are randomly generated ryt?
+  task.slug = 'whoistheoldest'; // these are randomly generated ryt?
   task.scoreMax = 100;
   task.timeLimit = 2898;
   task.memoryLimit = 8982;
@@ -126,13 +158,13 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checker = "checker.js"; // placeholder 
-  task.validator = "validator.js"; // placeholder
+  task.checkerScriptId = script1.id;
+  task.validatorScriptId = script2.id;
   await taskRepository.save(task);
 
   task = new Task();
   task.ownerId = 1;
-  task.title = "This Problem Is So Fetch";
+  task.title = 'This Problem Is So Fetch';
   task.statement = `Rob has no opinion on everything. He finds abortion neither good or bad and he is indifferent about whether or not he likes the president's absence during funerals. And unlike many Filipinos, he is not even affected whether Dingdong should have married Marian. Overall, he is a pretty boring person.
 
   This attitude of Rob was really popular among his classmates and among the debating team. And so, they decided to convince Rob to be pro- or anti- important issues among their class. Today, they are going to give Rob reasons on why or why not their classmate Payton is fetch. No one exactly knows what fetch is, but his classmates seem to want fetch happen. Anyway, you don't really need to know what that word means. It's totally not gonna happen.
@@ -146,7 +178,7 @@ async function runSeedData() {
   The first line of input contains T, the number of test cases. The following lines describe the test cases. The first line of each test case contains a single integer N. The second line contains N integers separated by spaces, where the $P_i$ number is the ith student's convincing power.
   
   For each test case, print a single integer which is the answer for that test case.`;
-  task.slug = "thisproblemissofetch"; // these are randomly generated ryt?
+  task.slug = 'thisproblemissofetch'; // these are randomly generated ryt?
   task.scoreMax = 100;
   task.timeLimit = 2898;
   task.memoryLimit = 8982;
@@ -154,8 +186,8 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checker = "checker.js"; // placeholder 
-  task.validator = "validator.js"; // placeholder
+  task.checkerScriptId = script1.id;
+  task.validatorScriptId = script2.id;
   await taskRepository.save(task);
 }
 
