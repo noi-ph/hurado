@@ -1,7 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 
 import { Task } from '../tasks/Task';
 import { User } from '../users/User';
+
+import { Result } from './Result';
 
 @Entity('submissions')
 export class Submission {
@@ -29,5 +39,9 @@ export class Submission {
   @Column()
   languageCode: string; // could be enum?
 
-  // TO-DO: result / resultId foreign key
+  @OneToOne(() => Result)
+  result: Result;
+
+  @Column()
+  resultId: number;
 }
