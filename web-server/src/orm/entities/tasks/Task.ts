@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+
+import { CustomError } from 'utils/response/custom-error/CustomError';
 
 import { Script } from '../scripts/Script';
 import { User } from '../users/User';
@@ -100,11 +102,19 @@ export class Task {
   })
   language: Languages;
 
-  @Column()
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @Column()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  setSlug(slug: string) {
+    const allowedCharacters = /^[a-z0-9\.\-]*$/;
+    const hasDoubleSymbols = /((\.\-)|(\-\.)|(\.\.)|(\-\-))/;
+    const atLeastOneAlphanumericCharacter = /[a-z0-9]/;
+    if (!slug.match(allowedCharacters)) {
+      throw new CustomError(400, 'Validation', 'Invalid slug', ['Slug has invalid characters']);
+    }
+    if (slug.match(hasDoubleSymbols)) {
+      throw new CustomError(400, 'Validation', 'Invalid slug', ['Slug has double symbols']);
+    }
+    if (!slug.match(atLeastOneAlphanumericCharacter)) {
+      throw new CustomError(400, 'Validation', 'Invalid slug', ['Slug must have at least one alphanumeric character']);
+    }
+    this.slug = slug;
+  }
 }

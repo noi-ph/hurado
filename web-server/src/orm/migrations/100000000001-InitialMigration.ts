@@ -12,7 +12,6 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "username" text NOT NULL,
           "hashedPassword" text NOT NULL,
           "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-          "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), 
           "school" text,
           "isAdmin" BOOLEAN NOT NULL DEFAULT false,
           "firstName" text NOT NULL DEFAULT 'Juan',
@@ -21,7 +20,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
           CONSTRAINT "users_uq_username" UNIQUE ("username"), 
           CONSTRAINT "users_uq_email" UNIQUE ("email"), 
-          CONSTRAINT "users_pk_id" PRIMARY KEY ("id")
+          PRIMARY KEY ("id")
         )
       `,
       undefined,
@@ -75,8 +74,6 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "validatorScriptId" int NOT NULL,
           "isPublicInArchive" boolean NOT NULL DEFAULT FALSE,
           "language" text NOT NULL DEFAULT 'en-US',
-          "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-          "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
       
           PRIMARY KEY("id"),
           FOREIGN KEY("ownerId") REFERENCES Users("id"),

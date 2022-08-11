@@ -38,14 +38,6 @@ export const validatorEdit = async (req: Request, res: Response, next: NextFunct
     if (user) {
       errorsValidation.push({ username: `Username '${username}' already exists` });
     }
-
-    function validUsername(username: string) {
-      const regex = /^([a-z0-9]|[-._](?![-._])){3,20}$/;
-      return username.match(regex);
-    }
-    if (!validUsername(username)) {
-      errorsValidation.push({ username: `Username '${username}' is invalid` });
-    }
   }
 
   if (password) {

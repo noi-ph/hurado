@@ -2,12 +2,11 @@ import React from "react";
 
 import axios from "axios";
 import { AxiosError } from "axios";
-
 import { useAsyncEffect } from "use-async-effect";
 
+import { Meta } from "../../layout/Meta";
 import { Main } from "../../templates/Main";
 import { ScriptUploadArea } from "../../templates/Script";
-import { Meta } from "../../layout/Meta";
 import { AppConfig } from "../../utils/AppConfig";
 import { UserConstants } from "../session/types";
 
@@ -51,6 +50,7 @@ const EditTaskPage = (props: EditTaskProps) => {
 
     try {
       let checker = null;
+      let checkerId = null;
       if (checkerFile) {
         const blob = new Blob([checkerFile]);
 
@@ -80,9 +80,11 @@ const EditTaskPage = (props: EditTaskProps) => {
         );
 
         checker = response.data;
+        checkerId = checker.id;
       }
 
       let validator = null;
+      let validatorId = null;
       if (validatorFile) {
         const blob = new Blob([validatorFile]);
 
@@ -112,6 +114,7 @@ const EditTaskPage = (props: EditTaskProps) => {
         );
 
         validator = response.data;
+        validatorId = validator.id;
       }
 
       const taskPayload = {
@@ -122,22 +125,26 @@ const EditTaskPage = (props: EditTaskProps) => {
         allowedLanguages,
         taskType,
         scoreMax,
-        checkerId: checker.id,
+        checkerId,
         timeLimit,
         memoryLimit,
         compileTimeLimit,
         compileMemoryLimit,
         submissionSizeLimit,
-        validatorId: validator.id,
+        validatorId,
         isPublicInArchive,
         language,
       };
 
-      await axios.post(`http://localhost:4000/v1/tasks`, taskPayload, {
-        headers: {
-          Authorization: jwt,
-        },
-      });
+      await axios.patch(
+        `http://localhost:4000/v1/tasks/${props.taskId}`,
+        taskPayload,
+        {
+          headers: {
+            Authorization: jwt,
+          },
+        }
+      );
 
       alert("Task edited successfully");
     } catch (err: unknown) {

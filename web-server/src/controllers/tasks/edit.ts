@@ -3,9 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
 import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types';
+import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
 export const edit = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.jwtPayload.id;
   const id = parseInt(req.params.id);
   const {
     title,
@@ -29,8 +31,11 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
   } = req.body;
 
   const taskRepository = AppDataSource.getRepository(Task);
+  const userRepository = AppDataSource.getRepository(User);
   try {
     const task = await taskRepository.findOne({ where: { id } });
+
+    const user = await userRepository.findOne({ where: { id: userId } });
 
     try {
       if (slug && slug != task.slug) {
@@ -43,7 +48,16 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
           return next(customError);
         }
 
-        task.slug = slug;
+        try {
+          task.setSlug(slug);
+        } catch (err: unknown) {
+          if (err instanceof CustomError) {
+            return next(err);
+          } else {
+            const customError = new CustomError(400, 'Raw', 'Error', null, err);
+            return next(customError);
+          }
+        }
       }
 
       if (title) {
@@ -119,6 +133,15 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
       }
 
       if (isPublicInArchive != null) {
+        if (isPublicInArchive != task.isPublicInArchive && !user.isAdmin) {
+          const customError = new CustomError(
+            400,
+            'Unauthorized',
+            'Only administrators can set whether a problem can be viewed publicly',
+            null,
+          );
+          return next(customError);
+        }
         task.isPublicInArchive = isPublicInArchive;
       }
 

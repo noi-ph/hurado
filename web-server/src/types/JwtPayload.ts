@@ -1,10 +1,10 @@
-import { Country } from '../orm/entities/users/types';
+import { Countries } from '../orm/entities/users/types';
 
 export type JwtPayload = {
   id: number;
   username: string;
   email: string;
   isAdmin: boolean;
-  country: Country;
+  country: Countries;
   createdAt: Date;
 };
