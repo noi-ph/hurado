@@ -4,7 +4,6 @@
   "description": "Hurado backend server",
   "scripts": {
     "servers": "docker-compose --file docker-compose.dev.yml up",
-    "swagger-autogen": "ts-node ./src/swagger/swagger.ts",
     "backend:bash": "docker exec -it backend bash",
     "backend:seed": "docker exec backend sh -c 'ts-node src/orm/seeds/seed-main.ts'",
     "sql": "docker exec -it postgres sh -c 'PGPASSWORD=$POSTGRES_PASSWORD psql $POSTGRES_DB -U $POSTGRES_USER'",
