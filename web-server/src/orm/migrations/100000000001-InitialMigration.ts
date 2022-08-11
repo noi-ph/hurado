@@ -161,9 +161,109 @@ export class CreateUsers100000000001 implements MigrationInterface {
       `,
       undefined,
     );
+
+    await queryRunner.query(
+      // still lacking Contest since we don't have model for that yet ^-^
+      `
+        CREATE TABLE "submissions" (
+          "id" SERIAL NOT NULL,
+          "ownerId" int NOT NULL,
+          "taskId" int NOT NULL,
+          "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+          "languageCode" text NOT NULL,
+         
+          PRIMARY KEY("id"),
+          FOREIGN KEY("ownerId") REFERENCES Users("id"),
+          FOREIGN KEY("taskId") REFERENCES Tasks("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "submissionFiles" (
+          "id" SERIAL NOT NULL,
+          "submissionId" int NOT NULL,
+          "fileId" int NOT NULL,
+  
+          PRIMARY KEY("id"),
+          FOREIGN KEY("submissionId") REFERENCES Submissions("id"),
+          FOREIGN KEY("fileId") REFERENCES Files("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "results" (
+          "id" SERIAL NOT NULL,
+          "submissionId" int NOT NULL,
+          "verdict" text NOT NULL,
+          "runningTime" float NOT NULL,
+          "runningMemory" bigint NOT NULL,
+          "rawScore" float NOT NULL,
+          "isOfficial" boolean NOT NULL,
+          "compileTime" float NOT NULL,
+          "compileMemory" bigint NOT NULL,
+          "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+          "verdictGottenAt" TIMESTAMP NOT NULL,
+         
+          PRIMARY KEY("id"),
+          FOREIGN KEY("submissionId") REFERENCES Submissions("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "subtaskResults" (
+          "id" SERIAL NOT NULL,
+          "resultId" int NOT NULL,
+          "subtaskId" int NOT NULL,
+          "verdict" text NOT NULL,
+          "runningTime" float NOT NULL,
+          "runningMemory" bigint NOT NULL,
+          "rawScore" float NOT NULL,
+          "verdictGottenAt" TIMESTAMP NOT NULL,
+         
+          PRIMARY KEY("id"),
+          FOREIGN KEY("resultId") REFERENCES Results("id"),
+          FOREIGN KEY("subtaskId") REFERENCES Subtasks("id")
+        )
+      `,
+      undefined,
+    );
+
+    await queryRunner.query(
+      `
+        CREATE TABLE "testDataResults" (
+          "id" SERIAL NOT NULL,
+          "resultId" int NOT NULL,
+          "testDataId" int NOT NULL,
+          "verdict" text NOT NULL,
+          "runningTime" float NOT NULL,
+          "runningMemory" bigint NOT NULL,
+          "rawScore" float NOT NULL,
+          "verdictGottenAt" TIMESTAMP NOT NULL,
+         
+          PRIMARY KEY("id"),
+          FOREIGN KEY("resultId") REFERENCES Results("id"),
+          FOREIGN KEY("testDataId") REFERENCES "testData"("id")
+        )
+      `,
+      undefined,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "testDataResults"`, undefined);
+    await queryRunner.query(`DROP TABLE "subtaskResults"`, undefined);
+    await queryRunner.query(`DROP TABLE "results"`, undefined);
+    await queryRunner.query(`DROP TABLE "submissionFiles"`, undefined);
+    await queryRunner.query(`DROP TABLE "submissions"`, undefined);
     await queryRunner.query(`DROP TABLE "taskDevelopers"`, undefined);
     await queryRunner.query(`DROP TABLE "testData"`, undefined);
     await queryRunner.query(`DROP TABLE "subtasks"`, undefined);

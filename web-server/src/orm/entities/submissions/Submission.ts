@@ -11,8 +11,6 @@ import {
 import { Task } from '../tasks/Task';
 import { User } from '../users/User';
 
-import { Result } from './Result';
-
 @Entity('submissions')
 export class Submission {
   @PrimaryGeneratedColumn()
@@ -38,10 +36,4 @@ export class Submission {
 
   @Column()
   languageCode: string; // could be enum?
-
-  @OneToOne(() => Result)
-  result: Result;
-
-  @Column()
-  resultId: number;
 }
