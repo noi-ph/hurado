@@ -4,7 +4,6 @@ import { agent as request } from 'supertest';
 import { Repository } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import { Country } from 'orm/entities/users/types';
 import { User } from 'orm/entities/users/User';
 
 import { app } from '../../';
