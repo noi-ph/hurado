@@ -30,7 +30,18 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     try {
       const newUser = new User();
       newUser.email = email;
-      newUser.username = username;
+
+      try {
+        newUser.setUsername(username);
+      } catch (err: unknown) {
+        if (err instanceof CustomError) {
+          return next(err);
+        } else {
+          const customError = new CustomError(400, 'Raw', 'Error', null, err);
+          return next(customError);
+        }
+      }
+
       newUser.hashedPassword = password;
       newUser.hashPassword();
       await userRepository.save(newUser);
