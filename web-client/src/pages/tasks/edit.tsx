@@ -1,43 +1,44 @@
-import React from 'react';
+import React from "react";
 
-import axios from 'axios';
-import { AxiosError } from 'axios';
-import { useAsyncEffect } from 'use-async-effect';
+import axios from "axios";
+import { AxiosError } from "axios";
 
-import { Meta } from '../../layout/Meta';
-import { Main } from '../../templates/Main';
-import { ScriptUploadArea } from '../../templates/Script';
-import { AppConfig } from '../../utils/AppConfig';
-import { UserConstants } from '../session/types';
+import { useAsyncEffect } from "use-async-effect";
+
+import { Main } from "../../templates/Main";
+import { ScriptUploadArea } from "../../templates/Script";
+import { Meta } from "../../layout/Meta";
+import { AppConfig } from "../../utils/AppConfig";
+import { UserConstants } from "../session/types";
 
 type EditTaskProps = {
   taskId: number;
 };
 
 const EditTaskPage = (props: EditTaskProps) => {
-  const [title, setTitle] = React.useState('');
-  const [slug, setSlug] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [statement, setStatement] = React.useState('');
-  const [allowedLanguages, setAllowedLanguages] = React.useState('All');
-  const [taskType, setTaskType] = React.useState('Batch');
+  const [title, setTitle] = React.useState("");
+  const [slug, setSlug] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [statement, setStatement] = React.useState("");
+  const [allowedLanguages, setAllowedLanguages] = React.useState("All");
+  const [taskType, setTaskType] = React.useState("Batch");
   const [scoreMax, setScoreMax] = React.useState(100);
-  const [checkerName, setCheckerName] = React.useState('');
+  const [checkerName, setCheckerName] = React.useState("");
   const [checkerFile, setCheckerFile] = React.useState(null);
-  const [checkerLanguageCode, setCheckerLanguageCode] = React.useState('');
-  const [checkerRuntimeArgs, setCheckerRuntimeArgs] = React.useState('');
+  const [checkerLanguageCode, setCheckerLanguageCode] = React.useState("");
+  const [checkerRuntimeArgs, setCheckerRuntimeArgs] = React.useState("");
   const [timeLimit, setTimeLimit] = React.useState(2);
   const [memoryLimit, setMemoryLimit] = React.useState(1099511627776);
   const [compileTimeLimit, setCompileTimeLimit] = React.useState(10);
   const [compileMemoryLimit, setCompileMemoryLimit] =
     React.useState(1099511627776);
   const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
-  const [validatorName, setValidatorName] = React.useState('');
+  const [validatorName, setValidatorName] = React.useState("");
   const [validatorFile, setValidatorFile] = React.useState(null);
-  const [validatorLanguageCode, setValidatorLanguageCode] = React.useState('');
-  const [validatorRuntimeArgs, setValidatorRuntimeArgs] = React.useState('');
+  const [validatorLanguageCode, setValidatorLanguageCode] = React.useState("");
+  const [validatorRuntimeArgs, setValidatorRuntimeArgs] = React.useState("");
   const [isPublicInArchive, setIsPublicInArchive] = React.useState(false);
-  const [language, setLanguage] = React.useState('en-US');
+  const [language, setLanguage] = React.useState("en-US");
 
   const editTask = async (event: any) => {
     event.preventDefault();
@@ -61,7 +62,7 @@ const EditTaskPage = (props: EditTaskProps) => {
           checkerFileData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              "Content-Type": "multipart/form-data",
             },
           }
         );
@@ -93,7 +94,7 @@ const EditTaskPage = (props: EditTaskProps) => {
           validatorFileData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              "Content-Type": "multipart/form-data",
             },
           }
         );
@@ -138,7 +139,7 @@ const EditTaskPage = (props: EditTaskProps) => {
         },
       });
 
-      alert('Task edited successfully');
+      alert("Task edited successfully");
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         alert(err.response?.data.errorMessage);
@@ -374,7 +375,7 @@ const EditTaskPage = (props: EditTaskProps) => {
           <input
             type="text"
             value={isPublicInArchive.toString()}
-            onChange={(e) => setIsPublicInArchive(e.target.value === 'true')}
+            onChange={(e) => setIsPublicInArchive(e.target.value === "true")}
           />
         </label>
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import { FileUploadArea } from './File';
+import { FileUploadArea } from "./File";
 
 type ScriptUploadAreaProps = {
   forName: {

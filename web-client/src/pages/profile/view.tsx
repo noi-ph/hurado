@@ -7,7 +7,7 @@ import { User } from '../session/types';
 
 type ViewPageProps = {
   user: User;
-};
+}
 
 const ViewPage = (props: ViewPageProps) => {
   const user = props.user;
@@ -17,25 +17,20 @@ const ViewPage = (props: ViewPageProps) => {
         <Meta title={AppConfig.title} description={AppConfig.description} />
       }
     >
-      <>Username: {user?.username}</>
-      <br />
-      <>School: {user?.school}</>
-      <br />
-      <>
-        Name: {user?.firstName} {user?.lastName}
-      </>
-      <br />
+      <>Username: {user?.username}</><br/>
+      <>School: {user?.school}</><br/>
+      <>Name: {user?.firstName} {user?.lastName}</><br/>
     </Main>
-  );
-};
+  )
+}
 
 export const getServerSideProps = async (context: any) => {
   const user = JSON.parse(context.query.userJson);
   return {
     props: {
       user: user,
-    },
-  };
-};
+    }
+  }
+}
 
 export default ViewPage;

@@ -1,44 +1,45 @@
-import React from 'react';
+import React from "react";
 
-import axios from 'axios';
-import { AxiosError } from 'axios';
-import { useRouter } from 'next/router';
+import axios from "axios";
+import { AxiosError } from "axios";
 
-import { Meta } from '../../layout/Meta';
-import { Main } from '../../templates/Main';
-import { ScriptUploadArea } from '../../templates/Script';
-import { AppConfig } from '../../utils/AppConfig';
-import { UserConstants } from '../session/types';
+import { useRouter } from "next/router";
+
+import { Main } from "../../templates/Main";
+import { ScriptUploadArea } from "../../templates/Script";
+import { Meta } from "../../layout/Meta";
+import { AppConfig } from "../../utils/AppConfig";
+import { UserConstants } from "../session/types";
 
 const CreateTaskPage = () => {
-  const [title, setTitle] = React.useState('');
-  const [slug, setSlug] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [statement, setStatement] = React.useState('');
-  const [allowedLanguages, setAllowedLanguages] = React.useState('All');
-  const [taskType, setTaskType] = React.useState('Batch');
+  const [title, setTitle] = React.useState("");
+  const [slug, setSlug] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [statement, setStatement] = React.useState("");
+  const [allowedLanguages, setAllowedLanguages] = React.useState("All");
+  const [taskType, setTaskType] = React.useState("Batch");
   const [scoreMax, setScoreMax] = React.useState(100);
-  const [checkerName, setCheckerName] = React.useState('');
+  const [checkerName, setCheckerName] = React.useState("");
   const [checkerFile, setCheckerFile] = React.useState(null);
-  const [checkerLanguageCode, setCheckerLanguageCode] = React.useState('');
-  const [checkerRuntimeArgs, setCheckerRuntimeArgs] = React.useState('');
+  const [checkerLanguageCode, setCheckerLanguageCode] = React.useState("");
+  const [checkerRuntimeArgs, setCheckerRuntimeArgs] = React.useState("");
   const [timeLimit, setTimeLimit] = React.useState(2);
   const [memoryLimit, setMemoryLimit] = React.useState(1099511627776);
   const [compileTimeLimit, setCompileTimeLimit] = React.useState(10);
   const [compileMemoryLimit, setCompileMemoryLimit] =
     React.useState(1099511627776);
   const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
-  const [validatorName, setValidatorName] = React.useState('');
+  const [validatorName, setValidatorName] = React.useState("");
   const [validatorFile, setValidatorFile] = React.useState(null);
-  const [validatorLanguageCode, setValidatorLanguageCode] = React.useState('');
-  const [validatorRuntimeArgs, setValidatorRuntimeArgs] = React.useState('');
+  const [validatorLanguageCode, setValidatorLanguageCode] = React.useState("");
+  const [validatorRuntimeArgs, setValidatorRuntimeArgs] = React.useState("");
   const [isPublicInArchive, setIsPublicInArchive] = React.useState(false);
-  const [language, setLanguage] = React.useState('en-US');
+  const [language, setLanguage] = React.useState("en-US");
 
   const router = useRouter();
 
   const redirectToEditPage = (taskId: number) => {
-    router.push({ pathname: '/tasks/edit', query: { id: taskId } });
+    router.push({ pathname: "/tasks/edit", query: { id: taskId } });
   };
 
   const createTask = async (event: any) => {
@@ -51,7 +52,7 @@ const CreateTaskPage = () => {
     }
 
     if (!checkerFile || !validatorFile) {
-      alert('Please select a file');
+      alert("Please select a file");
       return;
     }
 
@@ -66,7 +67,7 @@ const CreateTaskPage = () => {
         checkerFileData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -95,7 +96,7 @@ const CreateTaskPage = () => {
         validatorFileData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -144,7 +145,7 @@ const CreateTaskPage = () => {
       );
 
       const task = response.data;
-      alert('Task created successfully');
+      alert("Task created successfully");
       redirectToEditPage(task.id);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
@@ -337,7 +338,7 @@ const CreateTaskPage = () => {
           <input
             type="text"
             value={isPublicInArchive.toString()}
-            onChange={(e) => setIsPublicInArchive(e.target.value === 'true')}
+            onChange={(e) => setIsPublicInArchive(e.target.value === "true")}
           />
         </label>
 

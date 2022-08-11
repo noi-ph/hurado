@@ -1,25 +1,26 @@
-import React from 'react';
+import React from "react";
 
-import axios from 'axios';
-import { AxiosError } from 'axios';
-import { useAsyncEffect } from 'use-async-effect';
+import axios from "axios";
+import { AxiosError } from "axios";
 
-import { Meta } from '../../layout/Meta';
-import { Main } from '../../templates/Main';
-import { AppConfig } from '../../utils/AppConfig';
-import { UserConstants } from '../session/types';
+import { useAsyncEffect } from "use-async-effect";
+
+import { Main } from "../../templates/Main";
+import { Meta } from "../../layout/Meta";
+import { AppConfig } from "../../utils/AppConfig";
+import { UserConstants } from "../session/types";
 
 type ShowTaskProps = {
   taskId: number;
 };
 
 const ShowTaskPage = (props: ShowTaskProps) => {
-  const [title, setTitle] = React.useState('');
-  const [slug, setSlug] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [statement, setStatement] = React.useState('');
-  const [allowedLanguages, setAllowedLanguages] = React.useState('All');
-  const [taskType, setTaskType] = React.useState('Batch');
+  const [title, setTitle] = React.useState("");
+  const [slug, setSlug] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [statement, setStatement] = React.useState("");
+  const [allowedLanguages, setAllowedLanguages] = React.useState("All");
+  const [taskType, setTaskType] = React.useState("Batch");
   const [scoreMax, setScoreMax] = React.useState(100);
   const [timeLimit, setTimeLimit] = React.useState(2);
   const [memoryLimit, setMemoryLimit] = React.useState(1099511627776);
@@ -27,7 +28,7 @@ const ShowTaskPage = (props: ShowTaskProps) => {
   const [compileMemoryLimit, setCompileMemoryLimit] =
     React.useState(1099511627776);
   const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
-  const [language, setLanguage] = React.useState('en-US');
+  const [language, setLanguage] = React.useState("en-US");
 
   async function getCurrentTask() {
     const jwt = localStorage.getItem(UserConstants.JWT);
