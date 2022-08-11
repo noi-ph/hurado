@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import axios from 'axios';
-import { useAsyncEffect } from 'use-async-effect';
+import axios from "axios";
+import { useAsyncEffect } from "use-async-effect";
 
-import { Meta } from '../../layout/Meta';
-import { Main } from '../../templates/Main';
-import { AppConfig } from '../../utils/AppConfig';
-import { User, UserConstants } from './types';
+import { Meta } from "../../layout/Meta";
+import { Main } from "../../templates/Main";
+import { AppConfig } from "../../utils/AppConfig";
+import { User, UserConstants } from "./types";
 
 const LoginTestInner = () => {
   const getCurrentUser = async () => {
@@ -30,25 +30,25 @@ const LoginTestInner = () => {
     }
   };
 
-  const [status, setStatus] = React.useState('loading');
+  const [status, setStatus] = React.useState("loading");
   const [user, setUser] = React.useState<User | null>(null);
 
   const checkIfLoggedInAndUpdateStatus = async () => {
     const userTemp = await getCurrentUser();
     if (userTemp != null) {
-      setStatus('logged-in');
+      setStatus("logged-in");
       setUser(userTemp);
     } else {
-      setStatus('logged-out');
+      setStatus("logged-out");
     }
   };
 
   useAsyncEffect(() => checkIfLoggedInAndUpdateStatus(), []);
 
-  if (status === 'logged-in') {
+  if (status === "logged-in") {
     return <div>You are logged in as {user?.email}</div>;
   }
-  if (status === 'logged-out') {
+  if (status === "logged-out") {
     return <div>You are logged out</div>;
   }
   return <div>Loading</div>;

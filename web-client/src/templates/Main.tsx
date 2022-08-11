@@ -1,13 +1,14 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from "react";
+import axios from "axios";
 
-import axios from 'axios';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useAsyncEffect } from 'use-async-effect';
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-import { Navbar } from '../navigation/Navbar';
-import { User, UserConstants } from '../pages/session/types';
-import { AppConfig } from '../utils/AppConfig';
+import { useAsyncEffect } from "use-async-effect";
+
+import { Navbar } from "../navigation/Navbar";
+import { AppConfig } from "../utils/AppConfig";
+import { User, UserConstants } from "../pages/session/types";
 
 type IMainProps = {
   meta: ReactNode;
@@ -17,12 +18,12 @@ type IMainProps = {
 const MainNavBarContents = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState<User | null>(null);
-  const [currentUserJson, setCurrentUserJson] = React.useState('');
+  const [currentUserJson, setCurrentUserJson] = React.useState("");
 
   const router = useRouter();
 
   function redirectToHomepage() {
-    router.push('/');
+    router.push("/");
   }
 
   const checkLoggedIn = async () => {
@@ -50,8 +51,8 @@ const MainNavBarContents = () => {
       setCurrentUserJson(userJson);
       return;
     } catch (err) {
-      alert('JWT token expired. Logging out...');
-      console.log('JWT token expired');
+      alert("JWT token expired. Logging out...");
+      console.log("JWT token expired");
       localStorage.removeItem(UserConstants.Current);
       localStorage.removeItem(UserConstants.JWT);
       redirectToHomepage();
@@ -72,7 +73,7 @@ const MainNavBarContents = () => {
           <li className="mr-6">
             <Link
               href={{
-                pathname: '/profile/view',
+                pathname: "/profile/view",
                 query: {
                   userJson: currentUserJson,
                 },
@@ -85,7 +86,7 @@ const MainNavBarContents = () => {
           <li className="mr-6">
             <Link
               href={{
-                pathname: '/profile/edit',
+                pathname: "/profile/edit",
                 query: {
                   userJson: currentUserJson,
                 },
@@ -151,10 +152,10 @@ const Main = (props: IMainProps) => (
       <div className="text-xl py-5">{props.children}</div>
 
       <div className="border-t border-gray-300 text-center py-8 text-sm">
-        © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{' '}
+        © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{" "}
         <span role="img" aria-label="Love">
           ♥
-        </span>{' '}
+        </span>{" "}
         by <a href="https://creativedesignsguru.com">CreativeDesignsGuru</a>
         {/*
          * PLEASE READ THIS SECTION

@@ -9,10 +9,10 @@ tmp/
 temp/
 
 database/*
-!database/.gitkeep
+!database/.gitkeep 
 
 log/*
-!log/.gitkeep
+!log/.gitkeep 
 *.log
 
 uploads
