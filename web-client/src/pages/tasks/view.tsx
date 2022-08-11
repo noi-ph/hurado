@@ -31,18 +31,17 @@ const ShowTaskPage = (props: ShowTaskProps) => {
 
   async function getCurrentTask() {
     try {
-      let userId = null;
-      const currentUserJson = localStorage.getItem(UserConstants.Current);
+      let jwt = "";
+      const currentUserJson = localStorage.getItem(UserConstants.JWT);
       if (currentUserJson) {
-        const currentUser = JSON.parse(currentUserJson);
-        userId = currentUser.id;
+        jwt = currentUserJson;
       }
 
       const response = await axios.get(
         `http://localhost:4000/v1/tasks/view/${props.taskId}`,
         {
           headers: {
-            "User-ID": userId,
+            Authorization: jwt,
           },
         }
       );

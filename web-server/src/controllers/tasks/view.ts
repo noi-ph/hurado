@@ -5,11 +5,12 @@ import { Task } from 'orm/entities/tasks/Task';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 
-const isAllowedAccess = async (userId: any) => {
-  if (userId) {
+const isAllowedAccess = async (req: Request) => {
+  if (req.jwtPayload) {
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({ where: { id: parseInt(userId) } });
+    const user = await userRepository.findOne({ where: { id: req.jwtPayload.id } });
     if (user) {
+      // TODO add more validation if needed
       return true;
     }
   }
@@ -39,7 +40,7 @@ export const view = async (req: Request, res: Response, next: NextFunction) => {
       res.send(task);
       res.customSuccess(200, 'Task successfully sent.');
     } else {
-      const allowed = await isAllowedAccess(req.get('User-ID'));
+      const allowed = await isAllowedAccess(req);
       if (allowed) {
         res.send(task);
         res.customSuccess(200, 'Task successfully sent.');
