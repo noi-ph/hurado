@@ -47,7 +47,18 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       newTask.owner = user;
       newTask.ownerId = id;
       newTask.title = title;
-      newTask.slug = slug;
+
+      try {
+        newTask.setSlug(slug);
+      } catch (err: unknown) {
+        if (err instanceof CustomError) {
+          return next(err);
+        } else {
+          const customError = new CustomError(400, 'Raw', 'Error', null, err);
+          return next(customError);
+        }
+      }
+
       newTask.statement = statement;
 
       if (description) {
@@ -111,6 +122,15 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       }
 
       if (isPublicInArchive != null) {
+        if (isPublicInArchive && !user.isAdmin) {
+          const customError = new CustomError(
+            400,
+            'Unauthorized',
+            'Only administrators can set whether a problem can be viewed publicly',
+            null,
+          );
+          return next(customError);
+        }
         newTask.isPublicInArchive = isPublicInArchive;
       }
 

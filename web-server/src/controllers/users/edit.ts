@@ -22,7 +22,16 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (username) {
-      user.username = username;
+      try {
+        user.setUsername(username);
+      } catch (err: unknown) {
+        if (err instanceof CustomError) {
+          return next(err);
+        } else {
+          const customError = new CustomError(400, 'Raw', 'Error', null, err);
+          return next(customError);
+        }
+      }
     }
 
     if (password) {
@@ -54,7 +63,7 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
 
     userRepository.save(user);
 
-    res.customSuccess(200, 'Password successfully changed.');
+    res.customSuccess(200, 'User profile successfully edited.');
   } catch (err) {
     const customError = new CustomError(400, 'Raw', 'Error', null, err);
     return next(customError);

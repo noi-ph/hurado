@@ -2,13 +2,12 @@ import React from "react";
 
 import axios from "axios";
 import { AxiosError } from "axios";
-
 import { useAsyncEffect } from "use-async-effect";
 
-import { Main } from "../../templates/Main";
 import { Meta } from "../../layout/Meta";
+import { UserConstants } from "../../pages/session/types";
+import { Main } from "../../templates/Main";
 import { AppConfig } from "../../utils/AppConfig";
-import { UserConstants } from "../session/types";
 
 type ShowTaskProps = {
   taskId: number;
@@ -31,18 +30,19 @@ const ShowTaskPage = (props: ShowTaskProps) => {
   const [language, setLanguage] = React.useState("en-US");
 
   async function getCurrentTask() {
-    const jwt = localStorage.getItem(UserConstants.JWT);
-
-    if (!jwt) {
-      return;
-    }
-
     try {
+      let userId = null;
+      const currentUserJson = localStorage.getItem(UserConstants.Current);
+      if (currentUserJson) {
+        const currentUser = JSON.parse(currentUserJson);
+        userId = currentUser.id;
+      }
+
       const response = await axios.get(
         `http://localhost:4000/v1/tasks/view/${props.taskId}`,
         {
           headers: {
-            Authorization: jwt,
+            "User-ID": userId,
           },
         }
       );
