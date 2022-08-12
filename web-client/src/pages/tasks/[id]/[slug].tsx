@@ -4,18 +4,20 @@ import axios from "axios";
 import { AxiosError } from "axios";
 import { useAsyncEffect } from "use-async-effect";
 
-import { Meta } from "../../layout/Meta";
-import { UserConstants } from "../../pages/session/types";
-import { Main } from "../../templates/Main";
-import { AppConfig } from "../../utils/AppConfig";
+import { useRouter } from "next/router";
 
-type ShowTaskProps = {
-  taskId: number;
-};
+import { Meta } from "../../../layout/Meta";
+import { UserConstants } from "../../session/types";
+import { Main } from "../../../templates/Main";
+import { AppConfig } from "../../../utils/AppConfig";
 
-const ShowTaskPage = (props: ShowTaskProps) => {
-  const [title, setTitle] = React.useState("");
+// TODO: make it so that admins get more details
+
+const ShowTaskPage = () => {
+  const router = useRouter();
+
   const [slug, setSlug] = React.useState("");
+  const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [statement, setStatement] = React.useState("");
   const [allowedLanguages, setAllowedLanguages] = React.useState("All");
@@ -29,16 +31,13 @@ const ShowTaskPage = (props: ShowTaskProps) => {
   const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
   const [language, setLanguage] = React.useState("en-US");
 
-  async function getCurrentTask() {
-    try {
-      let jwt = "";
-      const currentUserJson = localStorage.getItem(UserConstants.JWT);
-      if (currentUserJson) {
-        jwt = currentUserJson;
-      }
+  const getTask = async (idOrSlug: string) => {
+    let jwt = localStorage.getItem(UserConstants.JWT);
+    jwt = jwt ? jwt : "";
 
+    try {
       const response = await axios.get(
-        `http://localhost:4000/v1/tasks/view/${props.taskId}`,
+        `http://localhost:4000/v1/tasks/view/${idOrSlug}`,
         {
           headers: {
             Authorization: jwt,
@@ -46,30 +45,39 @@ const ShowTaskPage = (props: ShowTaskProps) => {
         }
       );
 
-      const currentTask = response.data;
-      setTitle(currentTask.title);
-      setSlug(currentTask.slug);
-      setDescription(currentTask.description);
-      setStatement(currentTask.statement);
-      setAllowedLanguages(currentTask.allowedLanguages);
-      setTaskType(currentTask.taskType);
-      setScoreMax(currentTask.scoreMax);
-      setTimeLimit(currentTask.timeLimit);
-      setMemoryLimit(currentTask.memoryLimit);
-      setCompileTimeLimit(currentTask.compileTimeLimit);
-      setCompileMemoryLimit(currentTask.compileMemoryLimit);
-      setSubmissionSizeLimit(currentTask.submissionSizeLimit);
-      setLanguage(currentTask.language);
-    } catch (err: unknown) {
+      const task = response.data;
+      return task;
+    } catch (err) {
       if (err instanceof AxiosError) {
         alert(err.response?.data.errorMessage);
       } else {
         alert(err);
       }
     }
-  }
+  };
 
-  useAsyncEffect(getCurrentTask, []);
+  useAsyncEffect(async () => {
+    if (!router.isReady) {
+      return;
+    }
+    const { id, slug } = router.query;
+    if (id && slug) {
+      const task = await getTask(id.toString());
+      setTitle(task.title);
+      setSlug(task.slug);
+      setDescription(task.description);
+      setStatement(task.statement);
+      setAllowedLanguages(task.allowedLanguages);
+      setTaskType(task.taskType);
+      setScoreMax(task.scoreMax);
+      setTimeLimit(task.timeLimit);
+      setMemoryLimit(task.memoryLimit);
+      setCompileTimeLimit(task.compileTimeLimit);
+      setCompileMemoryLimit(task.compileMemoryLimit);
+      setSubmissionSizeLimit(task.submissionSizeLimit);
+      setLanguage(task.language);
+    }
+  }, [router.isReady]);
 
   return (
     <Main
@@ -145,15 +153,6 @@ const ShowTaskPage = (props: ShowTaskProps) => {
       <br />
     </Main>
   );
-};
-
-export const getServerSideProps = async (context: any) => {
-  const taskId = context.query.idOrSlug;
-  return {
-    props: {
-      taskId,
-    },
-  };
 };
 
 export default ShowTaskPage;
