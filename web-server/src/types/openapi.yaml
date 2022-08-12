@@ -1,0 +1,367 @@
+openapi: 3.0.3
+info:
+  title: Hurado Online Judge
+  description: ''
+  version: 0.0.1
+tags:
+  - name: Account
+  - name: Tasks
+  - name: Problem Setter
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth_Login'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+  /auth/register:
+    post:
+      tags:
+        - Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth_Register'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+    get:
+      tags:
+        - Account
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+    patch:
+      tags:
+        - Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User_Patch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User_Read'
+        400:
+          description: Bad request
+  /tasks:
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task_List'
+  /tasks/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task_Read'
+  /tasks/find/{idOrSlug}:
+    parameters:
+      - in: path
+        name: idOrSlug
+        schema:
+          type: string
+        required: true
+        description: A task id or taks slug
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task_Read'
+  /judge/tasks:
+    post:
+      tags:
+        - Problem Setter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task_Setter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task_List'
+  /judge/tasks/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+    get:
+      tags:
+        - Problem Setter
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task_Setter'
+    patch:
+      tags:
+        - Problem Setter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task_Setter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task_Setter'
+        400:
+          description: Bad request
+  /files/upload:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/File_Create'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File_Read'
+        400:
+          description: Bad request
+  /scripts/create:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Script'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+
+components:
+  schemas:
+    Auth_Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Auth_Register:
+      type: object
+      required:
+        - email
+        - username
+        - password
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    User_Patch:
+      type: object
+      required:
+        - id
+        - email
+        - username
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        school:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        country:
+          type: string
+    User_Read:
+      type: object
+      required:
+        - id
+        - email
+        - username
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+    File_Read:
+      type: object
+      required:
+        - id
+        - fileURL
+        - name
+      properties:
+        id:
+          type: string
+        fileURL:
+          type: string
+        name:
+          type: string
+    File_Create:
+      type: object
+      required:
+        - fileURL
+        - name
+      properties:
+        fileURL:
+          type: string
+        name:
+          type: string
+    Script:
+      type: object
+      required:
+        - file
+        - languageCode
+        - runtimeArgs
+      properties:
+        file:
+          $ref: '#/components/schemas/File_Read'
+        languageCode:
+          type: string
+        runtimeArgs:
+          type: string
+    Task_List:
+      type: object
+      required:
+        - id
+        - title
+        - slug
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+    Task_Read:
+      type: object
+      required:
+        - id
+        - title
+        - slug
+        - statement
+        - allowedLanguages
+        - taskType
+        - scoreMax
+        - timeLimit
+        - memoryLimit
+        - compileTimeLimit
+        - submissionSizeLimit
+        - isPublicInArchive
+        - language
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        allowedLanguages:
+          type: string
+        taskType:
+          type: string
+        scoreMax:
+          type: integer
+        timeLimit:
+          type: number
+        memoryLimit:
+          type: integer
+        compileTimeLimit:
+          type: number
+        compileMemoryLimit:
+          type: integer
+        submissionSizeLimit:
+          type: integer
+        validatorId:
+          type: integer
+        isPublicInArchive:
+          type: boolean
+        language:
+          type: string
+    Task_Setter:
+      allOf:
+        - $ref: '#/components/schemas/Task_Read'
+        - type: object
+          required:
+            - checkerId
+          properties:
+            checkerId:
+              type: integer
+            validatorId:
+              type: integer
