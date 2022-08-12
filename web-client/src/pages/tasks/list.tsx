@@ -12,8 +12,8 @@ import { UserConstants } from "../../pages/session/types";
 import { Main } from "../../templates/Main";
 import { AppConfig } from "../../utils/AppConfig";
 
-const TasksViewPageInner = () => {
-  const [tasks, setTasks] = React.useState<Task[] | null>(null);
+const TasksPageViewer = () => {
+  const [tasks, setTasks] = React.useState<Task[]>([]);
 
   const getTasks = async () => {
     const jwt = localStorage.getItem(UserConstants.JWT);
@@ -41,25 +41,17 @@ const TasksViewPageInner = () => {
 
   useAsyncEffect(getTasks, []);
 
-  if (tasks) {
-    const taskComponents = tasks.map((i) => (
-      <TaskViewer id={i.id} title={i.title} slug={i.slug} />
-    ));
+  const taskComponents = tasks.map((i) => (
+    <TaskViewer id={i.id} title={i.title} slug={i.slug} />
+  ));
 
-    return <>{taskComponents}</>;
-  } else {
-    return <>You must be logged in to view this.</>;
-  }
-};
-
-const TasksPageViewer = () => {
   return (
     <Main
       meta={
         <Meta title={AppConfig.title} description={AppConfig.description} />
       }
     >
-      <TasksViewPageInner />
+      {taskComponents}
     </Main>
   );
 };

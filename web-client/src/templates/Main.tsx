@@ -66,11 +66,6 @@ const MainNavBarContents = () => {
       {isLoggedIn ? (
         <>
           <li className="mr-6">
-            <Link href="/tasks/list">
-              <a>All tasks</a>
-            </Link>
-          </li>
-          <li className="mr-6">
             <Link href="/tasks/create">
               <a>Create task</a>
             </Link>
@@ -142,6 +137,11 @@ const Main = (props: IMainProps) => (
             <li className="mr-6">
               <Link href="/">
                 <a>Home</a>
+              </Link>
+            </li>
+            <li className="mr-6">
+              <Link href="/tasks/list">
+                <a>All tasks</a>
               </Link>
             </li>
             <MainNavBarContents />
