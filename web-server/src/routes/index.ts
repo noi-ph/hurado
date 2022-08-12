@@ -8,7 +8,7 @@ import page404 from './pages/404';
 import pageRoot from './pages/root';
 import v1 from './v1/';
 
-const spec = fs.readFileSync('src/swagger/swagger.yaml', 'utf8');
+const spec = fs.readFileSync('src/types/openapi.yaml', 'utf8');
 const swaggerDocument = jsyaml.load(spec);
 
 const router = Router();
