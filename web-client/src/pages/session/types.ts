@@ -10,6 +10,7 @@ export type User = {
   country: string;
   updatedAt: Date;
 };
+
 export enum UserConstants {
   Current = 'currentUserJson',
   JWT = 'currentUserJwt',
