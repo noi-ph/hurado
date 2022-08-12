@@ -1,14 +1,14 @@
 swagger: '2.0'
 info:
-  version: 1.0
-  title: REST_API
+  version: 1.0.0
+  title: REST API
   description: ''
 host: localhost:3000
 basePath: '/'
 schemes:
   - http
 paths:
-  '/auth/login':
+  /auth/login:
     post:
       parameters:
         - in: body
@@ -78,7 +78,14 @@ paths:
           description: Bad request
         404:
           description: Not found
-  /tasks/:
+  /tasks:
+    get:
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+  /tasks/create:
     post:
       parameters:
         - in: body
