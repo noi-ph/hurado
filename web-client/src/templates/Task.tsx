@@ -11,7 +11,7 @@ type TaskViewerProps = {
 const TaskViewer = (props: TaskViewerProps) => {
   return (
     <div>
-      <Link href={`/tasks/view/?id=${props.id}`}>
+      <Link href={`/tasks/view/?idOrSlug=${props.id}`}>
         <a>
           {props.id}: {props.title} ({props.slug})
         </a>

@@ -135,7 +135,7 @@ const CreateTaskPage = () => {
       };
 
       response = await axios.post(
-        `http://localhost:4000/v1/tasks/create`,
+        `http://localhost:4000/v1/tasks`,
         taskPayload,
         {
           headers: {
