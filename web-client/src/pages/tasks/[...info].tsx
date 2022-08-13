@@ -16,8 +16,6 @@ const ShowTaskPageInterceptor = () => {
   const [state, setState] = React.useState("Loading...");
 
   const redirectToTaskPage = (id: number, slug: string) => {
-    console.log("mlem");
-    console.log(id);
     router.push(`/tasks/${id}/${slug}`);
   };
 
@@ -27,7 +25,7 @@ const ShowTaskPageInterceptor = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:4000/v1/tasks/view/${idOrSlug}`,
+        `http://localhost:4000/v1/tasks/${idOrSlug}`,
         {
           headers: {
             Authorization: jwt,
@@ -39,9 +37,13 @@ const ShowTaskPageInterceptor = () => {
       return task;
     } catch (err) {
       if (err instanceof AxiosError) {
-        alert(err.response?.data.errorMessage);
+        const errors = err.response?.data.errors;
+        if (errors) {
+          console.log(errors);
+        }
       } else {
-        alert(err);
+        alert("Something unexpected happened");
+        console.log(err);
       }
     }
   };

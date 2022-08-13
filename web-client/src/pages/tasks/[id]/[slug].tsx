@@ -2,42 +2,30 @@ import React from "react";
 
 import axios from "axios";
 import { AxiosError } from "axios";
-import { useAsyncEffect } from "use-async-effect";
 
 import { useRouter } from "next/router";
 
 import { Meta } from "../../../layout/Meta";
-import { UserConstants } from "../../session/types";
 import { Main } from "../../../templates/Main";
 import { AppConfig } from "../../../utils/AppConfig";
 
-// TODO: make it so that admins get more details
+import { Task } from "../../tasks/types";
+import { UserConstants } from "../../session/types";
 
-const ShowTaskPage = () => {
+const ShowTaskPageInner = () => {
   const router = useRouter();
 
-  const [slug, setSlug] = React.useState("");
-  const [title, setTitle] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [statement, setStatement] = React.useState("");
-  const [allowedLanguages, setAllowedLanguages] = React.useState("All");
-  const [taskType, setTaskType] = React.useState("Batch");
-  const [scoreMax, setScoreMax] = React.useState(100);
-  const [timeLimit, setTimeLimit] = React.useState(2);
-  const [memoryLimit, setMemoryLimit] = React.useState(1099511627776);
-  const [compileTimeLimit, setCompileTimeLimit] = React.useState(10);
-  const [compileMemoryLimit, setCompileMemoryLimit] =
-    React.useState(1099511627776);
-  const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
-  const [language, setLanguage] = React.useState("en-US");
+  const [state, setState] = React.useState("Loading...");
 
-  const getTask = async (idOrSlug: string) => {
+  const [task, setTask] = React.useState<Task | null>(null);
+
+  const getTask = async (idOrSlug: string | number) => {
     let jwt = localStorage.getItem(UserConstants.JWT);
     jwt = jwt ? jwt : "";
 
     try {
       const response = await axios.get(
-        `http://localhost:4000/v1/tasks/view/${idOrSlug}`,
+        `http://localhost:4000/v1/tasks/${idOrSlug}`,
         {
           headers: {
             Authorization: jwt,
@@ -45,114 +33,81 @@ const ShowTaskPage = () => {
         }
       );
 
-      const task = response.data;
-      return task;
-    } catch (err) {
+      return response.data.data;
+    } catch (err: unknown) {
       if (err instanceof AxiosError) {
-        alert(err.response?.data.errorMessage);
+        const errors = err.response?.data.errors;
+        if (errors) {
+          console.log(errors);
+        }
       } else {
-        alert(err);
+        alert("Something unexpected happened");
+        console.log(err);
       }
     }
   };
 
-  useAsyncEffect(async () => {
-    if (!router.isReady) {
-      return;
-    }
-    const { id, slug } = router.query;
-    if (id && slug) {
-      const task = await getTask(id.toString());
-      setTitle(task.title);
-      setSlug(task.slug);
-      setDescription(task.description);
-      setStatement(task.statement);
-      setAllowedLanguages(task.allowedLanguages);
-      setTaskType(task.taskType);
-      setScoreMax(task.scoreMax);
-      setTimeLimit(task.timeLimit);
-      setMemoryLimit(task.memoryLimit);
-      setCompileTimeLimit(task.compileTimeLimit);
-      setCompileMemoryLimit(task.compileMemoryLimit);
-      setSubmissionSizeLimit(task.submissionSizeLimit);
-      setLanguage(task.language);
+  React.useEffect(() => {
+    const runEffect = async () => {
+      const { id, slug } = router.query;
+      if (id && slug) {
+        const taskId = await getTask(parseInt(id.toString()));
+        const taskSlug = await getTask(slug.toString());
+        if (taskId?.id === taskSlug?.id) {
+          setTask(taskId);
+        } else {
+          setState(
+            `Either id '${id}' or slug '${slug}' does not correspond to a task`
+          );
+        }
+      }
+    };
+    if (router.isReady) {
+      runEffect();
     }
   }, [router.isReady]);
 
-  return (
-    <Main
-      meta={
-        <Meta title={AppConfig.title} description={AppConfig.description} />
-      }
-    >
-      <>Title: </>
-      <p>{title}</p>
-
-      <br />
-
-      <>Slug: </>
-      <p>{slug}</p>
-
-      <br />
-
-      <>Description: </>
-      <br />
-      <p>{description}</p>
-
-      <br />
-
-      <>Statement: </>
-      <br />
-      <p>{statement}</p>
-
-      <br />
-
-      <>Allowed languages: </>
-      <p>{allowedLanguages}</p>
-
-      <br />
-
-      <>Task type: </>
-      <p>{taskType}</p>
-
-      <br />
-
-      <>Maximum score: </>
-      <p>{scoreMax}</p>
-
-      <br />
-
-      <>Time limit: </>
-      <p>{timeLimit}</p>
-
-      <br />
-
-      <>Memory limit: </>
-      <p>{memoryLimit}</p>
-
-      <br />
-
-      <>Compile time limit: </>
-      <p>{compileTimeLimit}</p>
-
-      <br />
-
-      <>Compile memory limit: </>
-      <p>{compileMemoryLimit}</p>
-
-      <br />
-
-      <>Submission size limit: </>
-      <p>{submissionSizeLimit}</p>
-
-      <br />
-
-      <>Language: </>
-      <p>{language}</p>
-
-      <br />
-    </Main>
-  );
+  if (task) {
+    return (
+      <>
+        {task.id}: {task.title} ({task.slug})
+        <br />
+        {task.language}
+        <br />
+        {task.description}
+        <br />
+        {task.statement}
+        <br />
+        Accepts: {task.allowedLanguages}
+        <br />
+        Task type: {task.taskType}
+        <br />
+        Maximum score: {task.scoreMax}
+        <br />
+        Time limit: {task.timeLimit}s
+        <br />
+        Memory limit: {task.memoryLimit}
+        <br />
+        Compile time limit: {task.compileTimeLimit}s
+        <br />
+        Compile memory limit: {task.compileMemoryLimit}
+        <br />
+        Submission size limit: {task.submissionSizeLimit}
+        <br />
+        Is public | In archive? {task.isPublicInArchive.toString()}
+      </>
+    );
+  } else {
+    return <>{state}</>;
+  }
 };
+
+const ShowTaskPage = () => (
+  <Main
+    meta={<Meta title={AppConfig.title} description={AppConfig.description} />}
+  >
+    <ShowTaskPageInner />
+  </Main>
+);
 
 export default ShowTaskPage;

@@ -4,8 +4,11 @@ import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/types';
 
 export const validatorAccess = async (req: Request, res: Response, next: NextFunction) => {
+  const errors = new ErrorArray();
+
   const taskId = parseInt(req.params.id);
   const userId = req.jwtPayload.id;
 
@@ -17,15 +20,17 @@ export const validatorAccess = async (req: Request, res: Response, next: NextFun
     const user = await userRepository.findOne({ where: { id: userId } });
 
     if (task.ownerId != userId && !user.isAdmin) {
-      const customError = new CustomError(400, 'Unauthorized', 'User has no access to this problem', [
-        `User is neither an admin nor the owner of ${taskId}`,
-      ]);
-      return next(customError);
+      errors.put('user', `User is neither an admin nor the owner of ${taskId}`);
     }
 
-    return next();
+    if (errors.isEmpty) {
+      return next();
+    } else {
+      const customError = new CustomError(400, 'Unauthorized', 'Task not accessed', null, errors);
+      return next(customError);
+    }
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', null, err);
+    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
     return next(customError);
   }
 };

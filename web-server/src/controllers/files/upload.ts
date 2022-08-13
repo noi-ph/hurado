@@ -9,20 +9,15 @@ export const upload = async (req: Request, res: Response, next: NextFunction) =>
     const rawFile = req.files[0];
 
     const fileRepository = AppDataSource.getRepository(File);
-    try {
-      const file = new File();
-      file.fileURL = rawFile.path;
-      file.name = rawFile.originalname;
-      await fileRepository.save(file);
+    const file = new File();
+    file.fileURL = rawFile.path;
+    file.name = rawFile.originalname;
+    await fileRepository.save(file);
 
-      res.send(file);
-      res.customSuccess(200, 'File successfully uploaded');
-    } catch (err) {
-      const customError = new CustomError(400, 'General', 'Unable to create file', ['Unable to create file']);
-      return next(customError);
-    }
+    res.send(file);
+    res.customSuccess(200, 'File successfully uploaded');
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', null, err);
+    const customError = new CustomError(400, 'Raw', 'Error', err);
     return next(customError);
   }
 };

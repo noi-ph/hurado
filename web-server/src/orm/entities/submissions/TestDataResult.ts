@@ -1,7 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
 
 import { TestData } from '../tasks/TestData';
-import { User } from '../users/User';
 
 import { Result } from './Result';
 import { Verdicts } from './types';

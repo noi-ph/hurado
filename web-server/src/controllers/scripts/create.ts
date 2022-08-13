@@ -9,22 +9,17 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     const { file, languageCode, runtimeArgs } = req.body;
 
     const scriptRepository = AppDataSource.getRepository(Script);
-    try {
-      const script = new Script();
-      script.file = file;
-      script.fileId = file.id;
-      script.languageCode = languageCode;
-      script.runtimeArgs = runtimeArgs;
-      await scriptRepository.save(script);
 
-      res.send(script);
-      res.customSuccess(200, 'Script successfully screated');
-    } catch (err) {
-      const customError = new CustomError(400, 'General', 'Unable to create script', ['Unable to create script']);
-      return next(customError);
-    }
+    const script = new Script();
+    script.file = file;
+    script.fileId = file.id;
+    script.languageCode = languageCode;
+    script.runtimeArgs = runtimeArgs;
+    await scriptRepository.save(script);
+
+    res.customSuccess(200, 'Script successfully screated', script);
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', null, err);
+    const customError = new CustomError(400, 'Raw', 'Error', err);
     return next(customError);
   }
 };

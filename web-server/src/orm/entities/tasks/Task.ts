@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/types';
 
 import { Script } from '../scripts/Script';
 import { User } from '../users/User';
@@ -105,16 +106,25 @@ export class Task {
   setSlug(slug: string) {
     const allowedCharacters = /^[a-z0-9\.\-]*$/;
     const hasDoubleSymbols = /((\.\-)|(\-\.)|(\.\.)|(\-\-))/;
-    const atLeastOneAlphanumericCharacter = /[a-z0-9]/;
+    const hasAlphanumeric = /[a-z0-9]/;
+    const errors = new ErrorArray();
+
     if (!slug.match(allowedCharacters)) {
-      throw new CustomError(400, 'Validation', 'Invalid slug', ['Slug has invalid characters']);
+      errors.put('slug', 'Slug has invalid characters');
     }
+
     if (slug.match(hasDoubleSymbols)) {
-      throw new CustomError(400, 'Validation', 'Invalid slug', ['Slug has double symbols']);
+      errors.put('slug', 'Slug has double symbols');
     }
-    if (!slug.match(atLeastOneAlphanumericCharacter)) {
-      throw new CustomError(400, 'Validation', 'Invalid slug', ['Slug must have at least one alphanumeric character']);
+
+    if (!slug.match(hasAlphanumeric)) {
+      errors.put('slug', 'Slug must have at least one alphanumeric character');
     }
-    this.slug = slug;
+
+    if (errors.isEmpty) {
+      this.slug = slug;
+    } else {
+      throw new CustomError(400, 'Validation', 'Slug is invalid', null, errors);
+    }
   }
 }

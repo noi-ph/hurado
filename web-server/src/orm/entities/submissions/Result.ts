@@ -1,7 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
-
-import { Task } from '../tasks/Task';
-import { User } from '../users/User';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne } from 'typeorm';
 
 import { Submission } from './Submission';
 import { Verdicts } from './types';

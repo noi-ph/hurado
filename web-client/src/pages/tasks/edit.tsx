@@ -149,9 +149,13 @@ const EditTaskPage = (props: EditTaskProps) => {
       alert("Task edited successfully");
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
-        alert(err.response?.data.errorMessage);
+        const errors = err.response?.data.errors;
+        if (errors) {
+          console.log(errors);
+        }
       } else {
-        alert(err);
+        alert("Something unexpected happened");
+        console.log(err);
       }
     }
   };
@@ -191,9 +195,13 @@ const EditTaskPage = (props: EditTaskProps) => {
       setLanguage(currentTask.language);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
-        alert(err.response?.data.errorMessage);
+        const errors = err.response?.data.errors;
+        if (errors) {
+          console.log(errors);
+        }
       } else {
-        alert(err);
+        alert("Something unexpected happened");
+        console.log(err);
       }
     }
   };

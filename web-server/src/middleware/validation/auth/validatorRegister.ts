@@ -3,11 +3,11 @@ import validator from 'validator';
 
 import { ConstsUser } from 'consts/ConstsUser';
 import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorValidation } from 'utils/response/custom-error/types';
+import { ErrorArray } from 'utils/response/custom-error/types';
 
 export const validatorRegister = (req: Request, res: Response, next: NextFunction) => {
   let { email, username, password, passwordConfirm } = req.body;
-  const errorsValidation: ErrorValidation[] = [];
+  const errors = new ErrorArray();
 
   email = !email ? '' : email;
   username = !username ? '' : username;
@@ -15,38 +15,37 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
   passwordConfirm = !passwordConfirm ? '' : passwordConfirm;
 
   if (!validator.isEmail(email)) {
-    errorsValidation.push({ email: 'Email is invalid' });
+    errors.put('email', `Email '${email}' is invalid`);
   }
 
   if (validator.isEmpty(email)) {
-    errorsValidation.push({ email: 'Email is required' });
+    errors.put('email', `Email field is required`);
   }
 
   if (!validator.isEmpty(username)) {
-    errorsValidation.push({ username: 'Username is invalid' });
+    errors.put('username', `Username '${email}' is invalid`);
   }
 
   if (validator.isEmpty(password)) {
-    errorsValidation.push({ password: 'Password is required' });
+    errors.put('password', `Passwords is required`);
   }
 
   if (!validator.isLength(password, { min: ConstsUser.PASSWORD_MIN_CHAR })) {
-    errorsValidation.push({
-      password: `Password must be at least ${ConstsUser.PASSWORD_MIN_CHAR} characters`,
-    });
+    errors.put('password', `Password must be at least ${ConstsUser.PASSWORD_MIN_CHAR} characters`);
   }
 
   if (validator.isEmpty(passwordConfirm)) {
-    errorsValidation.push({ passwordConfirm: 'Confirm password is required' });
+    errors.put('password', `Passwords confirmation is required`);
   }
 
   if (!validator.equals(password, passwordConfirm)) {
-    errorsValidation.push({ passwordConfirm: 'Passwords must match' });
+    errors.put('password', `Passwords do not match`);
   }
 
-  if (errorsValidation.length !== 0) {
-    const customError = new CustomError(400, 'Validation', 'Register validation error', null, null, errorsValidation);
+  if (errors.isEmpty) {
+    return next();
+  } else {
+    const customError = new CustomError(400, 'Validation', 'Register validation error', null, errors);
     return next(customError);
   }
-  return next();
 };

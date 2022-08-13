@@ -3,13 +3,14 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from 'orm/data-source';
 import { Script } from 'orm/entities/scripts/Script';
 import { Task } from 'orm/entities/tasks/Task';
-import { AllowedLanguages } from 'orm/entities/tasks/types';
-import { Languages } from 'orm/entities/tasks/types';
-import { TaskTypes } from 'orm/entities/tasks/types';
+import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/types';
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
+  const errors = new ErrorArray();
+
   const id = req.jwtPayload.id;
   const {
     title,
@@ -33,126 +34,113 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
   const taskRepository = AppDataSource.getRepository(Task);
   const userRepository = AppDataSource.getRepository(User);
   const scriptRepository = AppDataSource.getRepository(Script);
+
   try {
-    const task = await taskRepository.findOne({ where: { slug } });
+    let task = await taskRepository.findOne({ where: { slug } });
+
+    const user = await userRepository.findOne({ where: { id } });
 
     if (task) {
-      const customError = new CustomError(400, 'General', 'Task already exists', [`Task ${slug} already exists`]);
-      return next(customError);
-    }
-
-    try {
-      const user = await userRepository.findOne({ where: { id } });
-      const newTask = new Task();
-      newTask.owner = user;
-      newTask.ownerId = id;
-      newTask.title = title;
+      errors.put('task', `Task wth id ${id} already exists`);
+    } else {
+      task = new Task();
+      task.owner = user;
+      task.ownerId = id;
+      task.title = title;
+      task.statement = statement;
 
       try {
-        newTask.setSlug(slug);
+        task.setSlug(slug);
       } catch (err: unknown) {
         if (err instanceof CustomError) {
-          return next(err);
+          errors.extend(err.JSON.errors);
         } else {
-          const customError = new CustomError(400, 'Raw', 'Error', null, err);
+          const customError = new CustomError(400, 'Raw', 'Error', err, errors);
           return next(customError);
         }
       }
 
-      newTask.statement = statement;
-
       if (description) {
-        newTask.description = description;
+        task.description = description;
       }
 
       if (allowedLanguages) {
         if (!Object.values(AllowedLanguages).includes(allowedLanguages)) {
-          const customError = new CustomError(400, 'Validation', 'Invalid allowed language', [
-            `${allowedLanguages} is invalid`,
-          ]);
-          return next(customError);
+          errors.put('task', `${allowedLanguages} is invalid`);
+        } else {
+          task.allowedLanguages = allowedLanguages;
         }
-
-        newTask.allowedLanguages = allowedLanguages;
       }
-
       if (taskType) {
         if (!Object.values(TaskTypes).includes(taskType)) {
-          const customError = new CustomError(400, 'Validation', 'Invalid task type', [`${taskType} is invalid`]);
-          return next(customError);
+          errors.put('task', `${taskType} is invalid`);
+        } else {
+          task.taskType = taskType;
         }
-
-        newTask.taskType = taskType;
       }
 
       if (scoreMax) {
-        newTask.scoreMax = scoreMax;
+        task.scoreMax = scoreMax;
       }
 
       if (checkerId) {
         const checker = await scriptRepository.findOne({ where: { id: checkerId } });
-        newTask.checkerScript = checker;
-        newTask.checkerScriptId = checker.id;
+        task.checkerScript = checker;
+        task.checkerScriptId = checker.id;
       }
 
       if (timeLimit) {
-        newTask.timeLimit = timeLimit;
+        task.timeLimit = timeLimit;
       }
 
       if (memoryLimit) {
-        newTask.memoryLimit = memoryLimit;
+        task.memoryLimit = memoryLimit;
       }
 
       if (compileTimeLimit) {
-        newTask.compileTimeLimit = compileTimeLimit;
+        task.compileTimeLimit = compileTimeLimit;
       }
 
       if (compileMemoryLimit) {
-        newTask.compileMemoryLimit = compileMemoryLimit;
+        task.compileMemoryLimit = compileMemoryLimit;
       }
 
       if (submissionSizeLimit) {
-        newTask.submissionSizeLimit = submissionSizeLimit;
+        task.submissionSizeLimit = submissionSizeLimit;
       }
 
       if (validatorId) {
         const validator = await scriptRepository.findOne({ where: { id: validatorId } });
-        newTask.validatorScript = validator;
-        newTask.validatorScriptId = validator.id;
+        task.validatorScript = validator;
+        task.validatorScriptId = validator.id;
       }
 
       if (isPublicInArchive != null) {
         if (isPublicInArchive && !user.isAdmin) {
-          const customError = new CustomError(
-            400,
-            'Unauthorized',
-            'Only administrators can set whether a problem can be viewed publicly',
-            null,
-          );
-          return next(customError);
+          errors.put('isPublicInArchive', 'Only administrators can access this setting');
+        } else {
+          task.isPublicInArchive = isPublicInArchive;
         }
-        newTask.isPublicInArchive = isPublicInArchive;
       }
 
       if (language) {
         if (!Object.values(Languages).includes(language)) {
-          const customError = new CustomError(400, 'Validation', 'Invalid language', [`${language} is invalid`]);
-          return next(customError);
+          errors.put('language', `${language} is invalid`);
+        } else {
+          task.language = language;
         }
-
-        newTask.language = language;
       }
+    }
 
-      await taskRepository.save(newTask);
-
-      res.send(newTask);
-      res.customSuccess(200, 'Task succesfully created.');
-    } catch (err) {
-      const customError = new CustomError(400, 'Raw', `Task ${slug} cannot be created`, null, err);
+    if (errors.isEmpty) {
+      await taskRepository.save(task);
+      res.customSuccess(200, 'Task succesfully created', task);
+    } else {
+      const customError = new CustomError(400, 'Validation', 'Task cannot be created', null, errors);
       return next(customError);
     }
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', null, err);
+    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
     return next(customError);
   }
 };
