@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/types';
 
 import { Countries } from './types';
 
@@ -62,22 +63,27 @@ export class User {
   }
 
   setUsername(username: string) {
-    const regexAllowedCharacters = /^[A-Za-z0-9\.\-\_]*$/;
-    const regexHasAlphanumeric = /[A-Za-z0-9]/;
-    if (!username.match(regexAllowedCharacters)) {
-      throw new CustomError(400, 'Validation', 'Username is invalid', [
-        'Username must contain only A-Z, a-z, 0-9, ., -, _',
-      ]);
+    const allowedCharacters = /^[A-Za-z0-9\.\-\_]*$/;
+    const hasAlphanumeric = /[A-Za-z0-9]/;
+    const errors = new ErrorArray();
+
+    if (!username.match(allowedCharacters)) {
+      errors.put('username', 'Username has invalid characters');
     }
-    if (!username.match(regexHasAlphanumeric)) {
-      throw new CustomError(400, 'Validation', 'Username is invalid', [
-        'Username must have at least one alphanumeric character',
-      ]);
+
+    if (!username.match(hasAlphanumeric)) {
+      errors.put('username', 'Username must have at least one alphanumeric character');
     }
+
     if (username.length < 3) {
-      throw new CustomError(400, 'Validation', 'Username is invalid', ['Username is too short']);
+      errors.put('username', 'Username is too short');
     }
-    this.username = username;
+
+    if (errors.isEmpty) {
+      this.username = username;
+    } else {
+      throw new CustomError(400, 'Validation', 'Username is invalid', null, errors);
+    }
   }
 
   hashPassword() {

@@ -4,6 +4,7 @@ import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/types';
 
 const isAllowedAccess = async (req: Request) => {
   if (req.jwtPayload) {
@@ -18,39 +19,41 @@ const isAllowedAccess = async (req: Request) => {
 };
 
 export const view = async (req: Request, res: Response, next: NextFunction) => {
+  const errors = new ErrorArray();
+
   const taskSlug = req.params.idOrSlug;
 
   const taskRepository = AppDataSource.getRepository(Task);
-  const customError = new CustomError(404, 'General', 'Task cannot be found', [`Task ${taskSlug} does not exist`]);
   try {
     let task = await taskRepository.findOne({ where: { slug: taskSlug } });
 
     if (!task) {
-      if (parseInt(taskSlug) != NaN) {
-        task = await taskRepository.findOne({ where: { id: parseInt(taskSlug) } });
+      const taskId = parseInt(taskSlug);
+      if (taskId != NaN) {
+        task = await taskRepository.findOne({ where: { id: taskId } });
         if (!task) {
-          return next(customError);
+          errors.put('task', `Task with id ${taskId} not found`);
         }
       } else {
-        return next(customError);
+        errors.put('task', `Task with slug ${taskSlug} not found`);
       }
     }
 
-    if (task.isPublicInArchive) {
-      res.send(task);
-      res.customSuccess(200, 'Task successfully sent.');
-    } else {
+    if (errors.isEmpty) {
       const allowed = await isAllowedAccess(req);
-      if (allowed) {
-        res.send(task);
-        res.customSuccess(200, 'Task successfully sent.');
+      if (task.isPublicInArchive || allowed) {
+        res.customSuccess(200, 'Task successfully sent', task);
       } else {
-        const customError = new CustomError(404, 'General', 'Not found', null);
-        return next(customError);
+        errors.put('user', `User has no authorization to access task ${task.id}`);
       }
     }
+
+    if (!errors.isEmpty) {
+      const customError = new CustomError(400, 'Validation', 'Task cannot be shown', null, errors);
+      return next(customError);
+    }
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', null, err);
+    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
     return next(customError);
   }
 };

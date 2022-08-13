@@ -149,9 +149,13 @@ const CreateTaskPage = () => {
       redirectToEditPage(task.id);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
-        alert(err.response?.data.errorMessage);
+        const errors = err.response?.data.errors;
+        if (errors) {
+          console.log(errors);
+        }
       } else {
-        alert(err);
+        alert("Something unexpected happened");
+        console.log(err);
       }
     }
   };

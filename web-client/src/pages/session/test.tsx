@@ -35,7 +35,7 @@ const LoginTestInner = () => {
     const userTemp = await getCurrentUser();
     if (userTemp != null) {
       setStatus("logged-in");
-      setUser(userTemp as unknown as User);
+      setUser(userTemp);
     } else {
       setStatus("logged-out");
     }

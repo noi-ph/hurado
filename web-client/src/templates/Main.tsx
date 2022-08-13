@@ -1,5 +1,7 @@
 import React, { ReactNode } from "react";
+
 import axios from "axios";
+import { AxiosError } from "axios";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -50,9 +52,16 @@ const MainNavBarContents = () => {
       setCurrentUser(user);
       setCurrentUserJson(userJson);
       return;
-    } catch (err) {
-      alert("JWT token expired. Logging out...");
-      console.log("JWT token expired");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        const errors = err.response?.data.errors;
+        if (errors) {
+          console.log(errors);
+        }
+      } else {
+        alert("Something unexpected happened");
+        console.log(err);
+      }
       localStorage.removeItem(UserConstants.Current);
       localStorage.removeItem(UserConstants.JWT);
       redirectToHomepage();
@@ -137,6 +146,11 @@ const Main = (props: IMainProps) => (
             <li className="mr-6">
               <Link href="/">
                 <a>Home</a>
+              </Link>
+            </li>
+            <li className="mr-6">
+              <Link href="/tasks/list">
+                <a>All tasks</a>
               </Link>
             </li>
             <MainNavBarContents />

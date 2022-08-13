@@ -5,8 +5,11 @@ import { Task } from 'orm/entities/tasks/Task';
 import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/types';
 
 export const edit = async (req: Request, res: Response, next: NextFunction) => {
+  const errors = new ErrorArray();
+
   const userId = req.jwtPayload.id;
   const id = parseInt(req.params.id);
   const {
@@ -42,20 +45,17 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
         const otherTask = await taskRepository.findOne({ where: { slug } });
 
         if (otherTask) {
-          const customError = new CustomError(400, 'Validation', 'Task already exists', [
-            `Task ${slug} already exists`,
-          ]);
-          return next(customError);
-        }
-
-        try {
-          task.setSlug(slug);
-        } catch (err: unknown) {
-          if (err instanceof CustomError) {
-            return next(err);
-          } else {
-            const customError = new CustomError(400, 'Raw', 'Error', null, err);
-            return next(customError);
+          errors.put('slug', `Task ${slug} already exists`);
+        } else {
+          try {
+            task.setSlug(slug);
+          } catch (err: unknown) {
+            if (err instanceof CustomError) {
+              errors.extend(err.JSON.errors);
+            } else {
+              const customError = new CustomError(400, 'Raw', 'Error', err, errors);
+              return next(customError);
+            }
           }
         }
       }
@@ -74,22 +74,18 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
 
       if (allowedLanguages) {
         if (!Object.values(AllowedLanguages).includes(allowedLanguages)) {
-          const customError = new CustomError(400, 'Validation', 'Invalid allowed language', [
-            `${allowedLanguages} is invalid`,
-          ]);
-          return next(customError);
+          errors.put('allowedLanguages', `${allowedLanguages} is invalid`);
+        } else {
+          task.allowedLanguages = allowedLanguages;
         }
-
-        task.allowedLanguages = allowedLanguages;
       }
 
       if (taskType) {
         if (!Object.values(TaskTypes).includes(taskType)) {
-          const customError = new CustomError(400, 'Validation', 'Invalid task type', [`${taskType} is invalid`]);
-          return next(customError);
+          errors.put('taskType', `${taskType} is invalid`);
+        } else {
+          task.taskType = taskType;
         }
-
-        task.taskType = taskType;
       }
 
       if (scoreMax) {
@@ -134,36 +130,33 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
 
       if (isPublicInArchive != null) {
         if (isPublicInArchive != task.isPublicInArchive && !user.isAdmin) {
-          const customError = new CustomError(
-            400,
-            'Unauthorized',
-            'Only administrators can set whether a problem can be viewed publicly',
-            null,
-          );
-          return next(customError);
+          errors.put('isPublicInArchive', 'Only administrators can access this setting');
+        } else {
+          task.isPublicInArchive = isPublicInArchive;
         }
-        task.isPublicInArchive = isPublicInArchive;
       }
 
       if (language) {
         if (!Object.values(Languages).includes(language)) {
-          const customError = new CustomError(400, 'Validation', 'Invalid language', [`${language} is invalid`]);
-          return next(customError);
+          errors.put('language', `${language} is invalid`);
+        } else {
+          task.language = language;
         }
-
-        task.language = language;
       }
 
-      await taskRepository.save(task);
-
-      res.send(task);
-      res.customSuccess(200, 'Task succesfully edited.');
+      if (errors.isEmpty) {
+        await taskRepository.save(task);
+        res.customSuccess(200, 'Task succesfully edited', task);
+      } else {
+        const customError = new CustomError(400, 'Validation', 'Cannot edit task', null, errors);
+        return next(customError);
+      }
     } catch (err) {
-      const customError = new CustomError(400, 'Raw', `Task ${slug} cannot be edited`, null, err);
+      const customError = new CustomError(400, 'Raw', `Task ${slug} cannot be edited`, err, errors);
       return next(customError);
     }
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', null, err);
+    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
     return next(customError);
   }
 };
