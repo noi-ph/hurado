@@ -1,12 +1,14 @@
 import React from "react";
 
-import axios from "axios";
 import { useAsyncEffect } from "use-async-effect";
 
 import { Meta } from "../../layout/Meta";
 import { Main } from "../../templates/Main";
 import { AppConfig } from "../../utils/AppConfig";
 import { User, UserConstants } from "./types";
+import { http } from "../../utils/http";
+import { AxiosResponse } from "axios";
+import { ServerAPI } from "../../types/openapi";
 
 const LoginTestInner = () => {
   const getCurrentUser = async () => {
@@ -19,12 +21,8 @@ const LoginTestInner = () => {
 
     const user = JSON.parse(userJson);
     try {
-      await axios.get(`http://localhost:4000/v1/users/${user.id}`, {
-        headers: {
-          Authorization: jwt,
-        },
-      });
-      return user;
+      const response: AxiosResponse<ServerAPI['User_Read']> = await http.get(`http://localhost:4000/v1/users/${user.id}`);
+      return response.data;
     } catch (err) {
       return null;
     }
@@ -37,7 +35,7 @@ const LoginTestInner = () => {
     const userTemp = await getCurrentUser();
     if (userTemp != null) {
       setStatus("logged-in");
-      setUser(userTemp);
+      setUser(userTemp as unknown as User);
     } else {
       setStatus("logged-out");
     }
