@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 type FileUploadAreaProps = {
   forName: {
@@ -16,29 +16,18 @@ const FileUploadArea = (props: FileUploadAreaProps) => {
   const { file, setFile } = props.forFile;
 
   return (
-    <>
+    <React.Fragment>
       <label>
         File name:
-        <input
-          type="text"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
       </label>
-
       <br />
 
       <label>
         File:
-        <input
-          type="file"
-          value={file}
-          onChange={(event) => setFile(event.target.value)}
-        />
+        <input type="file" value={file} onChange={(e) => setFile(e.target.value)} />
       </label>
-
-      <br />
-    </>
+    </React.Fragment>
   );
 };
 

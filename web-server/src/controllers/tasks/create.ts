@@ -20,13 +20,13 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     allowedLanguages,
     taskType,
     scoreMax,
-    checkerId,
+    checkerScriptId,
     timeLimit,
     memoryLimit,
     compileTimeLimit,
     compileMemoryLimit,
     submissionSizeLimit,
-    validatorId,
+    validatorScriptId,
     isPublicInArchive,
     language,
   } = req.body;
@@ -83,8 +83,8 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         task.scoreMax = scoreMax;
       }
 
-      if (checkerId) {
-        const checker = await scriptRepository.findOne({ where: { id: checkerId } });
+      if (checkerScriptId) {
+        const checker = await scriptRepository.findOne({ where: { id: checkerScriptId } });
         task.checkerScript = checker;
         task.checkerScriptId = checker.id;
       }
@@ -109,8 +109,8 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         task.submissionSizeLimit = submissionSizeLimit;
       }
 
-      if (validatorId) {
-        const validator = await scriptRepository.findOne({ where: { id: validatorId } });
+      if (validatorScriptId) {
+        const validator = await scriptRepository.findOne({ where: { id: validatorScriptId } });
         task.validatorScript = validator;
         task.validatorScriptId = validator.id;
       }

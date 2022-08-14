@@ -7,6 +7,6 @@ const router = Router();
 
 const uploadTo = multer({ dest: 'uploads' });
 
-router.post('/upload', [uploadTo.any()], upload);
+router.post('/', [uploadTo.any()], upload);
 
 export default router;

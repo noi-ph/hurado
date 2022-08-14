@@ -22,7 +22,8 @@ export const maybeCheckJwt = (req: Request, res: Response, next: NextFunction) =
       ['iat', 'exp'].forEach((keyToRemove) => delete jwtPayload[keyToRemove]);
       req.jwtPayload = jwtPayload as JwtPayload;
     } catch (err) {
-      errors.put('jwt', 'JWT error');
+      req.jwtPayload = null;
+      return next();
     }
 
     try {

@@ -22,8 +22,8 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
     errors.put('email', `Email field is required`);
   }
 
-  if (!validator.isEmpty(username)) {
-    errors.put('username', `Username '${email}' is invalid`);
+  if (validator.isEmpty(username)) {
+    errors.put('username', `Username field is required`);
   }
 
   if (validator.isEmpty(password)) {
