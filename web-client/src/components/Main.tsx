@@ -18,8 +18,6 @@ const MainNavBarContents = () => {
   // Make the component rerender every time the user global variable changes
   React.useEffect(() => {
     if (!user.id) {
-      alert('JWT token has expoired. Logging out...');
-      
       router.push('/session/logout');
     }
   }, [user.id]);

@@ -24,10 +24,12 @@ export class UserStateLoader {
 
   initializeState() {
     return {
-      id: 0,
-      username: '',
-      email: '',
-      isAdmin: false,
+      user: {
+        id: 0,
+        username: '',
+        email: '',
+        isAdmin: false,
+      }
     };
   }
 };
