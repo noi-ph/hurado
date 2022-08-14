@@ -86,7 +86,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
     await queryRunner.query(
       `
-        CREATE TABLE "taskAttachments" (
+        CREATE TABLE "task_attachments" (
           "id" SERIAL NOT NULL, 
           "taskId" int NOT NULL, 
           "fileId" int NOT NULL,
@@ -122,7 +122,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
     await queryRunner.query(
       `
-        CREATE TABLE "testData" (
+        CREATE TABLE "task_data" (
           "id" SERIAL NOT NULL,
           "taskId" int NOT NULL, 
           "order" int NOT NULL,
@@ -144,7 +144,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
     await queryRunner.query(
       `
-        CREATE TABLE "taskDevelopers" (
+        CREATE TABLE "task_developers" (
           "id" SERIAL NOT NULL,
           "taskId" int NOT NULL, 
           "userId" int NOT NULL,
@@ -179,7 +179,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
     await queryRunner.query(
       `
-        CREATE TABLE "submissionFiles" (
+        CREATE TABLE "submission_files" (
           "id" SERIAL NOT NULL,
           "submissionId" int NOT NULL,
           "fileId" int NOT NULL,
@@ -216,7 +216,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
     await queryRunner.query(
       `
-        CREATE TABLE "subtaskResults" (
+        CREATE TABLE "subtask_results" (
           "id" SERIAL NOT NULL,
           "resultId" int NOT NULL,
           "subtaskId" int NOT NULL,
@@ -236,7 +236,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
 
     await queryRunner.query(
       `
-        CREATE TABLE "testDataResults" (
+        CREATE TABLE "test_data_results" (
           "id" SERIAL NOT NULL,
           "resultId" int NOT NULL,
           "testDataId" int NOT NULL,
@@ -248,7 +248,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
          
           PRIMARY KEY("id"),
           FOREIGN KEY("resultId") REFERENCES Results("id"),
-          FOREIGN KEY("testDataId") REFERENCES "testData"("id")
+          FOREIGN KEY("testDataId") REFERENCES "task_data"("id")
         )
       `,
       undefined,
@@ -256,15 +256,15 @@ export class CreateUsers100000000001 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "testDataResults"`, undefined);
-    await queryRunner.query(`DROP TABLE "subtaskResults"`, undefined);
+    await queryRunner.query(`DROP TABLE "test_data_results"`, undefined);
+    await queryRunner.query(`DROP TABLE "subtask_results"`, undefined);
     await queryRunner.query(`DROP TABLE "results"`, undefined);
-    await queryRunner.query(`DROP TABLE "submissionFiles"`, undefined);
+    await queryRunner.query(`DROP TABLE "submission_files"`, undefined);
     await queryRunner.query(`DROP TABLE "submissions"`, undefined);
-    await queryRunner.query(`DROP TABLE "taskDevelopers"`, undefined);
-    await queryRunner.query(`DROP TABLE "testData"`, undefined);
+    await queryRunner.query(`DROP TABLE "task_developers"`, undefined);
+    await queryRunner.query(`DROP TABLE "task_data"`, undefined);
     await queryRunner.query(`DROP TABLE "subtasks"`, undefined);
-    await queryRunner.query(`DROP TABLE "taskAttachments"`, undefined);
+    await queryRunner.query(`DROP TABLE "task_attachments"`, undefined);
     await queryRunner.query(`DROP TABLE "tasks"`, undefined);
     await queryRunner.query(`DROP TABLE "scripts"`, undefined);
     await queryRunner.query(`DROP TABLE "files"`, undefined);

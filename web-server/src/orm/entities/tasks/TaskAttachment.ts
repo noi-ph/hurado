@@ -4,7 +4,7 @@ import { File } from '../files/File';
 
 import { Task } from './Task';
 
-@Entity('taskAttachments')
+@Entity('task_attachments')
 export class TaskAttachment {
   @PrimaryGeneratedColumn()
   id: number;

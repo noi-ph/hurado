@@ -92,6 +92,9 @@ const ShowTaskPage = () => {
         <br />
         
         Is public | In archive? {task.isPublicInArchive.toString()}
+        <br />
+
+        <button onClick={() => router.push(`/tasks/submit/${task.id}`)}>Submit to task</button>
       </React.Fragment>
     );
   } else {

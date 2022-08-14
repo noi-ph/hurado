@@ -13,7 +13,7 @@ import { TaskDeveloperRoles } from './types';
 // problem would be for the {order}, since it can be different per problem
 // and also Arrays aren't compatible with postgres (at least on my end), so not sure how to implement it
 
-@Entity('taskDevelopers')
+@Entity('task_developers')
 export class TaskDeveloper {
   @PrimaryGeneratedColumn()
   id: number;

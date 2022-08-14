@@ -7,12 +7,14 @@ import { Submission } from './Submission';
 // Files included in a submission.
 // Usually just one file, but can be multiple (e.g. output only tasks)
 
-@Entity('submissionFile')
+@Entity('submission_files')
 export class SubmissionFile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Submission) // many SubmissionFile for one Submission (for multiple files) - not sure about this tbh
+  @ManyToOne(() => Submission, submission => submission.id, {
+    cascade: true,
+  }) // many SubmissionFile for one Submission (for multiple files) - not sure about this tbh
   submission: Submission;
 
   @Column()

@@ -16,7 +16,7 @@ export class Submission {
 
   // TO-DO: contest  / contestId (nullable)
 
-  @Column(() => Task)
+  @ManyToOne(() => Task)
   task: Task;
 
   @Column()

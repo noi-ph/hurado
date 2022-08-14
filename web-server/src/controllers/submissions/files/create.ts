@@ -31,17 +31,18 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       submissionFile.file = file;
       submissionFile.fileId = file.id;
     } catch (err) {
-      errors.put('submissionFile', `SubmissionFile ${fileId} not found`);
+      errors.put('file', `File ${fileId} not found`);
     }
 
     if (errors.isEmpty) {
-      await submissionFileRepository.save(submissionFile);
+      await submissionFileRepository.create(submissionFile);
       res.customSuccess(200, 'file successfully created', submissionFile);
     } else {
       const customError = new CustomError(400, 'Validation', 'file cannot be created', null, errors);
       return next(customError);
     }
   } catch (err) {
+    console.log('error', err);
     const customError = new CustomError(400, 'Raw', 'Error', err, errors);
     return next(customError);
   }

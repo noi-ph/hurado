@@ -5,7 +5,7 @@ import { TestData } from '../tasks/TestData';
 import { Result } from './Result';
 import { Verdicts } from './types';
 
-@Entity('testDataResults')
+@Entity('test_data_results')
 export class TestDataResult {
   @PrimaryGeneratedColumn()
   id: number;

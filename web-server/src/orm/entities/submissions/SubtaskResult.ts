@@ -5,7 +5,7 @@ import { Subtask } from '../tasks/Subtask';
 import { Result } from './Result';
 import { Verdicts } from './types';
 
-@Entity('subtaskResults')
+@Entity('subtask_results')
 export class SubtaskResult {
   @PrimaryGeneratedColumn()
   id: number;

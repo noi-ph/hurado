@@ -4,7 +4,7 @@ import { File } from '../files/File';
 
 import { Task } from './Task';
 
-@Entity('testData') // already plural
+@Entity('test_data') // already plural
 export class TestData {
   @PrimaryGeneratedColumn()
   id: number;
