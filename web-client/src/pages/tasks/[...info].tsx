@@ -1,56 +1,43 @@
-import React from "react";
+import React from 'react';
+import { useRouter } from 'next/router';
+import { AxiosError } from 'axios';
 
-import axios from "axios";
-import { AxiosError } from "axios";
-
-import { useRouter } from "next/router";
-
-import { Meta } from "../../layout/Meta";
-import { UserConstants } from "../session/types";
-import { Main } from "../../templates/Main";
-import { AppConfig } from "../../utils/AppConfig";
+import { http } from '../../utils/http';
 
 const ShowTaskPageInterceptor = () => {
-  const router = useRouter();
+  const [state, setState] = React.useState('Loading...');
 
-  const [state, setState] = React.useState("Loading...");
+  const router = useRouter();
 
   const redirectToTaskPage = (id: number, slug: string) => {
     router.push(`/tasks/${id}/${slug}`);
   };
 
-  const getTask = async (idOrSlug: string) => {
-    let jwt = localStorage.getItem(UserConstants.JWT);
-    jwt = jwt ? jwt : "";
-
+  const getTask = async (idOrSlug: string | number) => {
     try {
-      const response = await axios.get(
-        `http://localhost:4000/v1/tasks/${idOrSlug}`,
-        {
-          headers: {
-            Authorization: jwt,
-          },
-        }
-      );
-
-      const task = response.data;
-      return task;
-    } catch (err) {
+      const response = await http.get(`http://localhost:4000/v1/tasks/${idOrSlug}`);
+      
+      return response.data.data;
+    } catch (err: unknown) {  
       if (err instanceof AxiosError) {
-        const errors = err.response?.data.errors;
-        if (errors) {
-          console.log(errors);
-        }
+        const status = err.response?.status;
+        const errorData = err.response?.data;
+
+        // The console.log stays while the error isn't properly annotated
+        console.log(errorData);
+
+        alert(`${status}: ${errorData.errorMessage}`);
       } else {
-        alert("Something unexpected happened");
         console.log(err);
+
+        alert('Something unexpected happened');
       }
     }
   };
 
   React.useEffect(() => {
     const runEffect = async () => {
-      const info = router.query["info"];
+      const info = router.query['info'];
       if (info?.length == 1) {
         const idOrSlug = info[0];
         const task = await getTask(idOrSlug);
@@ -74,13 +61,9 @@ const ShowTaskPageInterceptor = () => {
   }, [router.isReady]);
 
   return (
-    <Main
-      meta={
-        <Meta title={AppConfig.title} description={AppConfig.description} />
-      }
-    >
+    <React.Fragment>
       {state}
-    </Main>
+    </React.Fragment>
   );
 };
 

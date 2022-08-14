@@ -1,68 +1,76 @@
 import React from 'react';
-import axios from 'axios';
-
+import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { UserConstants } from './types';
+import { set, UserState } from '../redux/userSlice';
+import { userStateLoader } from '../redux/store';
 
-import { Meta } from '../../layout/Meta';
-import { Main } from '../../templates/Main';
-import { AppConfig } from '../../utils/AppConfig';
-import { validEmail } from '../../utils/Email';
+import { http } from '../../utils/http';
+import { UserConstants } from '../../utils/types';
 
 const LoginPage = () => {
+  const [loaded, setLoaded] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  function redirectToHomepage() {
-    router.push('/');
-  }
+  const user = useSelector((state: UserState) => state.user);
 
-  async function onLoginClick() {
-    if (!validEmail(email)) {
-      alert('Invalid email!');
-      return;
-    }
+  const onLoginClick = async () => {
     try {
       const payload = { email, password };
-      const response = await axios.post(
-        `http://localhost:4000/v1/auth/login`,
-        payload
-      );
+      const response = await http.post(`http://localhost:4000/v1/auth/login`, payload);
 
-      const jwt = response.data.data;
-      const data = jwt.split(' ')[1]; // The first half is just 'Bearer'
-      const second = data.split('.')[1]; // The first half is unimportant
-      const userJson = atob(second);
+      const data = response.data.data;
+      let { jwt, user } = data;
 
-      localStorage.setItem(UserConstants.Current, userJson); // key-value pair must be strings
+      dispatch(set({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      }));
+
+      setLoaded(true);
+
       localStorage.setItem(UserConstants.JWT, jwt);
-      redirectToHomepage();
+      router.push('/');
+      
       alert('You have logged in');
     } catch (err: unknown) {
-      alert('Invalid email or password!');
+      if (err instanceof AxiosError) {
+        const status = err.response?.status;
+        const errorData = err.response?.data;
+
+        // The console.log stays while the error isn't properly annotated
+        console.log(errorData);
+
+        alert(`${status}: ${errorData.errorMessage}`);
+      } else {
+        console.log(err);
+
+        alert('Something unexpected happened');
+      }
     }
-  }
+  };
+
+  React.useEffect(() => {
+    userStateLoader.saveState({ user });
+  }, [loaded]);
 
   return (
-    <Main
-      meta={
-        <Meta title={AppConfig.title} description={AppConfig.description} />
-      }
-    >
-      <>E-mail: </>
-      <input value={email} onChange={(event) => setEmail(event.target.value)} />
+    <React.Fragment>
+      Email:
+      <input value={email} onChange={(e) => setEmail(e.target.value)} />
 
-      <>Password: </>
-      <input
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-      />
+      Password:
+      <input value={password} onChange={(e) => setPassword(e.target.value)} />
 
       <button onClick={onLoginClick}>Log-in</button>
-    </Main>
+    </React.Fragment>
   );
 };
 

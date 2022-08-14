@@ -16,7 +16,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Auth_Login'
+              $ref: '#/components/schemas/AuthLogin'
       responses:
         200:
           description: OK
@@ -30,7 +30,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Auth_Register'
+              $ref: '#/components/schemas/AuthRegister'
       responses:
         200:
           description: OK
@@ -58,14 +58,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User_Patch'
+              $ref: '#/components/schemas/UserPatch'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User_Read'
+                $ref: '#/components/schemas/User'
         400:
           description: Bad request
   /tasks:
@@ -80,7 +80,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Task_List'
+                  $ref: '#/components/schemas/TaskList'
   /tasks/{id}:
     parameters:
       - in: path
@@ -97,7 +97,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task_Read'
+                $ref: '#/components/schemas/TaskRead'
   /tasks/find/{idOrSlug}:
     parameters:
       - in: path
@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task_Read'
+                $ref: '#/components/schemas/TaskRead'
   /judge/tasks:
     post:
       tags:
@@ -124,7 +124,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task_Setter'
+              $ref: '#/components/schemas/TaskSetter'
       responses:
         200:
           description: OK
@@ -133,7 +133,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Task_List'
+                  $ref: '#/components/schemas/TaskList'
   /judge/tasks/{id}:
     parameters:
       - in: path
@@ -150,7 +150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task_Setter'
+                $ref: '#/components/schemas/TaskSetter'
     patch:
       tags:
         - Problem Setter
@@ -158,34 +158,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task_Setter'
+              $ref: '#/components/schemas/TaskSetter'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task_Setter'
+                $ref: '#/components/schemas/TaskSetter'
         400:
           description: Bad request
   /files/upload:
     post:
+      tags:
+        - Files
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/File_Create'
+              $ref: '#/components/schemas/FileCreate'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/File_Read'
+                $ref: '#/components/schemas/FileRead'
         400:
           description: Bad request
   /scripts/create:
     post:
+      tags:
+        - Scripts
       requestBody:
         content:
           application/json:
@@ -199,7 +203,7 @@ paths:
 
 components:
   schemas:
-    Auth_Login:
+    AuthLogin:
       type: object
       required:
         - email
@@ -209,7 +213,7 @@ components:
           type: string
         password:
           type: string
-    Auth_Register:
+    AuthRegister:
       type: object
       required:
         - email
@@ -222,7 +226,31 @@ components:
           type: string
         password:
           type: string
-    User_Patch:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - username
+        - isAdmin
+      properties:
+        id:
+          type: number
+        email:
+          type: string
+        username: 
+          type: string
+        school:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        country:
+          type: string
+        isAdmin:
+          type: boolean
+    UserPatch:
       type: object
       required:
         - id
@@ -230,7 +258,7 @@ components:
         - username
       properties:
         id:
-          type: string
+          type: number
         email:
           type: string
         username:
@@ -245,20 +273,7 @@ components:
           type: string
         country:
           type: string
-    User_Read:
-      type: object
-      required:
-        - id
-        - email
-        - username
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-        username:
-          type: string
-    File_Read:
+    FileRead:
       type: object
       required:
         - id
@@ -266,12 +281,12 @@ components:
         - name
       properties:
         id:
-          type: string
+          type: number
         fileURL:
           type: string
         name:
           type: string
-    File_Create:
+    FileCreate:
       type: object
       required:
         - fileURL
@@ -284,30 +299,20 @@ components:
     Script:
       type: object
       required:
+        - id
         - file
         - languageCode
         - runtimeArgs
       properties:
+        id:
+          type: number
         file:
-          $ref: '#/components/schemas/File_Read'
+          $ref: '#/components/schemas/FileRead'
         languageCode:
           type: string
         runtimeArgs:
           type: string
-    Task_List:
-      type: object
-      required:
-        - id
-        - title
-        - slug
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        slug:
-          type: string
-    Task_Read:
+    TaskRead:
       type: object
       required:
         - id
@@ -325,7 +330,7 @@ components:
         - language
       properties:
         id:
-          type: string
+          type: number
         title:
           type: string
         slug:
@@ -354,9 +359,18 @@ components:
           type: boolean
         language:
           type: string
-    Task_Setter:
+    TaskList:
+      type: object
+      required:
+        - tasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskRead'
+    TaskSetter:
       allOf:
-        - $ref: '#/components/schemas/Task_Read'
+        - $ref: '#/components/schemas/TaskRead'
         - type: object
           required:
             - checkerId

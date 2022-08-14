@@ -14,7 +14,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Auth_Login"];
+          "application/json": components["schemas"]["AuthLogin"];
         };
       };
     };
@@ -29,7 +29,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Auth_Register"];
+          "application/json": components["schemas"]["AuthRegister"];
         };
       };
     };
@@ -58,7 +58,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["User_Read"];
+            "application/json": components["schemas"]["User"];
           };
         };
         /** Bad request */
@@ -66,7 +66,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["User_Patch"];
+          "application/json": components["schemas"]["UserPatch"];
         };
       };
     };
@@ -82,7 +82,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task_List"][];
+            "application/json": components["schemas"]["TaskList"][];
           };
         };
       };
@@ -99,7 +99,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task_Read"];
+            "application/json": components["schemas"]["TaskRead"];
           };
         };
       };
@@ -122,7 +122,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task_Read"];
+            "application/json": components["schemas"]["TaskRead"];
           };
         };
       };
@@ -140,13 +140,13 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task_List"][];
+            "application/json": components["schemas"]["TaskList"][];
           };
         };
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Task_Setter"];
+          "application/json": components["schemas"]["TaskSetter"];
         };
       };
     };
@@ -162,7 +162,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task_Setter"];
+            "application/json": components["schemas"]["TaskSetter"];
           };
         };
       };
@@ -177,7 +177,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task_Setter"];
+            "application/json": components["schemas"]["TaskSetter"];
           };
         };
         /** Bad request */
@@ -185,7 +185,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Task_Setter"];
+          "application/json": components["schemas"]["TaskSetter"];
         };
       };
     };
@@ -201,7 +201,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["File_Read"];
+            "application/json": components["schemas"]["FileRead"];
           };
         };
         /** Bad request */
@@ -209,7 +209,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["File_Create"];
+          "application/json": components["schemas"]["FileCreate"];
         };
       };
     };
@@ -233,17 +233,27 @@ export interface paths {
 
 export interface components {
   schemas: {
-    Auth_Login: {
+    AuthLogin: {
       email: string;
       password: string;
     };
-    Auth_Register: {
+    AuthRegister: {
       email: string;
       username: string;
       password: string;
     };
-    User_Patch: {
-      id: string;
+    User: {
+      id: number;
+      email: string;
+      username: string;
+      school?: string;
+      firstName?: string;
+      lastName?: string;
+      country?: string;
+      isAdmin: boolean;
+    };
+    UserPatch: {
+      id: number;
       email: string;
       username: string;
       password?: string;
@@ -252,32 +262,23 @@ export interface components {
       lastName?: string;
       country?: string;
     };
-    User_Read: {
-      id: string;
-      email: string;
-      username: string;
-    };
-    File_Read: {
-      id: string;
+    FileRead: {
+      id: number;
       fileURL: string;
       name: string;
     };
-    File_Create: {
+    FileCreate: {
       fileURL: string;
       name: string;
     };
     Script: {
-      file: components["schemas"]["File_Read"];
+      id: number;
+      file: components["schemas"]["FileRead"];
       languageCode: string;
       runtimeArgs: string;
     };
-    Task_List: {
-      id: string;
-      title: string;
-      slug: string;
-    };
-    Task_Read: {
-      id: string;
+    TaskRead: {
+      id: number;
       title: string;
       slug: string;
       description?: string;
@@ -295,7 +296,10 @@ export interface components {
     } & {
       statement: unknown;
     };
-    Task_Setter: components["schemas"]["Task_Read"] & {
+    TaskList: {
+      tasks: components["schemas"]["TaskRead"][];
+    };
+    TaskSetter: components["schemas"]["TaskRead"] & {
       checkerId: number;
       validatorId?: number;
     };

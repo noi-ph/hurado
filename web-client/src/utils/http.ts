@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { UserConstants } from '../pages/session/types';
+import { UserConstants } from './types';
 
 export const http = axios.create();
 

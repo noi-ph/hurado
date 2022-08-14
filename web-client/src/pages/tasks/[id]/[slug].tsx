@@ -1,48 +1,34 @@
-import React from "react";
+import React from 'react';
+import { useRouter } from 'next/router';
+import { AxiosError } from 'axios';
 
-import axios from "axios";
-import { AxiosError } from "axios";
+import { ServerAPI } from '../../../types/openapi';
+import { http } from '../../../utils/http';
 
-import { useRouter } from "next/router";
+const ShowTaskPage = () => {
+  const [state, setState] = React.useState('Loading...');
+  const [task, setTask] = React.useState<ServerAPI['TaskRead'] | null>(null);
 
-import { Meta } from "../../../layout/Meta";
-import { Main } from "../../../templates/Main";
-import { AppConfig } from "../../../utils/AppConfig";
-
-import { Task } from "../../tasks/types";
-import { UserConstants } from "../../session/types";
-
-const ShowTaskPageInner = () => {
   const router = useRouter();
 
-  const [state, setState] = React.useState("Loading...");
-
-  const [task, setTask] = React.useState<Task | null>(null);
-
   const getTask = async (idOrSlug: string | number) => {
-    let jwt = localStorage.getItem(UserConstants.JWT);
-    jwt = jwt ? jwt : "";
-
     try {
-      const response = await axios.get(
-        `http://localhost:4000/v1/tasks/${idOrSlug}`,
-        {
-          headers: {
-            Authorization: jwt,
-          },
-        }
-      );
-
+      const response = await http.get(`http://localhost:4000/v1/tasks/${idOrSlug}`);
+      
       return response.data.data;
-    } catch (err: unknown) {
+    } catch (err: unknown) {  
       if (err instanceof AxiosError) {
-        const errors = err.response?.data.errors;
-        if (errors) {
-          console.log(errors);
-        }
+        const status = err.response?.status;
+        const errorData = err.response?.data;
+
+        // The console.log stays while the error isn't properly annotated
+        console.log(errorData);
+
+        alert(`${status}: ${errorData.errorMessage}`);
       } else {
-        alert("Something unexpected happened");
         console.log(err);
+
+        alert('Something unexpected happened');
       }
     }
   };
@@ -51,17 +37,16 @@ const ShowTaskPageInner = () => {
     const runEffect = async () => {
       const { id, slug } = router.query;
       if (id && slug) {
-        const taskId = await getTask(parseInt(id.toString()));
-        const taskSlug = await getTask(slug.toString());
-        if (taskId?.id === taskSlug?.id) {
-          setTask(taskId);
+        const task1 = await getTask(parseInt(id.toString()));
+        const task2 = await getTask(slug.toString());
+        if (task1?.id === task2?.id) {
+          setTask(task1);
         } else {
-          setState(
-            `Either id '${id}' or slug '${slug}' does not correspond to a task`
-          );
+          setState(`Either '${id}' or '${slug}' does not corresponse to a task`);
         }
-      }
+      } 
     };
+
     if (router.isReady) {
       runEffect();
     }
@@ -69,45 +54,53 @@ const ShowTaskPageInner = () => {
 
   if (task) {
     return (
-      <>
+      <React.Fragment>
         {task.id}: {task.title} ({task.slug})
         <br />
+
         {task.language}
         <br />
+        
         {task.description}
         <br />
+        
         {task.statement}
         <br />
+        
         Accepts: {task.allowedLanguages}
         <br />
+        
         Task type: {task.taskType}
         <br />
+        
         Maximum score: {task.scoreMax}
         <br />
+        
         Time limit: {task.timeLimit}s
         <br />
+        
         Memory limit: {task.memoryLimit}
         <br />
+        
         Compile time limit: {task.compileTimeLimit}s
         <br />
+        
         Compile memory limit: {task.compileMemoryLimit}
         <br />
+        
         Submission size limit: {task.submissionSizeLimit}
         <br />
+        
         Is public | In archive? {task.isPublicInArchive.toString()}
-      </>
+      </React.Fragment>
     );
   } else {
-    return <>{state}</>;
+    return (
+      <React.Fragment>
+        {state}
+      </React.Fragment>
+    );
   }
 };
-
-const ShowTaskPage = () => (
-  <Main
-    meta={<Meta title={AppConfig.title} description={AppConfig.description} />}
-  >
-    <ShowTaskPageInner />
-  </Main>
-);
 
 export default ShowTaskPage;
