@@ -14,8 +14,7 @@ export const upload = async (req: Request, res: Response, next: NextFunction) =>
     file.name = rawFile.originalname;
     await fileRepository.save(file);
 
-    res.send(file);
-    res.customSuccess(200, 'File successfully uploaded');
+    res.customSuccess(200, 'File successfully uploaded', file);
   } catch (err) {
     const customError = new CustomError(400, 'Raw', 'Error', err);
     return next(customError);
