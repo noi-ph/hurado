@@ -5,13 +5,14 @@ import { useRouter } from 'next/router';
 import { NavBar, NavBarCard } from './NavBar';
 
 import { AppConfig } from '../utils/AppConfig';
+import { UserState } from '../pages/redux/userSlice';
 
 type MainProps = {
   children: ReactNode;
 };
 
 const MainNavBarContents = () => {
-  const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: UserState) => state.user);
 
   const router = useRouter();
 

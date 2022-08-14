@@ -2,6 +2,15 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { UserConstants } from '../../utils/types';
 
+export type UserState = {
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    isAdmin: boolean;
+  };
+};
+
 export class UserStateLoader {
   loadState() {
     try {
@@ -17,7 +26,7 @@ export class UserStateLoader {
     }
   }
 
-  saveState(state: any) {
+  saveState(state: UserState) {
     let userJson = JSON.stringify(state);
     localStorage.setItem(UserConstants.Current, userJson);
   }

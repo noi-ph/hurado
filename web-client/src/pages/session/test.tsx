@@ -1,8 +1,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { UserState } from '../redux/userSlice';
+
 const LoginTest = () => {
-  const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: UserState) => state.user);
 
   if (user.id) {
     return (

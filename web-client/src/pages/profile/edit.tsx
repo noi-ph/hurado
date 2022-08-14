@@ -2,12 +2,15 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AxiosError } from 'axios';
 
-import { set } from '../redux/userSlice';
+import { set, UserState } from '../redux/userSlice';
+import { userStateLoader } from '../redux/store';
 
 import { http } from '../../utils/http';
 
 const EditPage = () => {
-  const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: UserState) => state.user);
+
+  const [edited, setEdited] = React.useState(false);
 
   const [email, setEmail] = React.useState('');
   const [username, setUsername] = React.useState('');
@@ -22,6 +25,8 @@ const EditPage = () => {
 
   const onEditClick = async () => {
     try {
+      setEdited(false);
+
       const response = await http.patch(`http://localhost:4000/v1/users/${user.id}`, {
         email,
         username,
@@ -34,6 +39,7 @@ const EditPage = () => {
       });
 
       dispatch(set(response.data.data));
+      setEdited(true);
 
       alert('Profile has been edited');
     } catch (err: unknown) {
@@ -52,6 +58,12 @@ const EditPage = () => {
       }
     }
   };
+
+  React.useEffect(() => {
+    if (edited) {
+      userStateLoader.saveState({ user });
+    }
+  }, [edited])
 
   return (
     <React.Fragment>

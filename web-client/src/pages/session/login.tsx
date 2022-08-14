@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { set } from '../redux/userSlice';
+import { set, UserState } from '../redux/userSlice';
 import { userStateLoader } from '../redux/store';
 
 import { http } from '../../utils/http';
@@ -17,7 +17,7 @@ const LoginPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: UserState) => state.user);
 
   const onLoginClick = async () => {
     try {
@@ -37,7 +37,6 @@ const LoginPage = () => {
       setLoaded(true);
 
       localStorage.setItem(UserConstants.JWT, jwt);
-      localStorage.setItem(UserConstants.Current, JSON.stringify(user));
       router.push('/');
       
       alert('You have logged in');
@@ -59,7 +58,7 @@ const LoginPage = () => {
   };
 
   React.useEffect(() => {
-    userStateLoader.saveState(user);
+    userStateLoader.saveState({ user });
   }, [loaded]);
 
   return (
