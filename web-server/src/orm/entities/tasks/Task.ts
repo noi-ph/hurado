@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 import { Script } from '../scripts/Script';
 import { User } from '../users/User';

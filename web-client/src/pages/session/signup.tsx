@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
-
 import { http } from '../../utils/http';
 
 const SignUpPage = () => {
@@ -25,9 +24,23 @@ const SignUpPage = () => {
         const errorData = err.response?.data;
 
         // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
+        if (status===200) console.log("Success");
+        else {
+          console.log(errorData);
+          alert(Object.entries(errorData));
+        }
+       
+        //console.log(errorData.errors);
 
-        alert(`${status}: ${errorData.errorMessage}`);
+        // alert(Object.entries(errorData.errors));
+
+        // let alertMessage: string = '';
+        // for (const [key, object] of Object.entries(errorData.errors)) {          
+        //   alertMessage.concat(`${key} : ${errorData.errors.get(key)}`);
+        // }
+
+        // alert(`${alertMessage}`);
+        //alert(`${status}: ${errorData.errorMessage}`);
       } else {
         console.log(err);
 
@@ -54,7 +67,7 @@ const SignUpPage = () => {
       <input value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
       <br />
 
-      <button onClick={onSignUpClick}>Sign up</button>
+      <button onClick={onSignUpClick}>Sign Up</button>
     </React.Fragment>
   );
 };

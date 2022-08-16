@@ -3,7 +3,9 @@ import validator from 'validator';
 
 import { ConstsUser } from 'consts/ConstsUser';
 import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { RegisterError, ErrorArray } from 'utils/response/custom-error/errorTypes';
+import { Error } from 'middleware/errorHandler';
+
 
 export const validatorRegister = (req: Request, res: Response, next: NextFunction) => {
   let { email, username, password, passwordConfirm } = req.body;
@@ -45,6 +47,7 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
   if (errors.isEmpty) {
     return next();
   } else {
+    
     const customError = new CustomError(400, 'Validation', 'Register validation error', null, errors);
     return next(customError);
   }

@@ -5,7 +5,7 @@ import { User } from 'orm/entities/users/User';
 import { JwtPayload } from 'types/JwtPayload';
 import { createJwtToken } from 'utils/createJwtToken';
 import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   const errors = new ErrorArray();

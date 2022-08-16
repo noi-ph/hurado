@@ -2,26 +2,38 @@ import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { RegisterError } from 'utils/response/custom-error/errorTypes';
+import { Error } from 'middleware/errorHandler';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
-  const errors = new ErrorArray();
 
-  const { email, username, password } = req.body;
+  const error: Error<RegisterError> = {status: null, data: {}};
+
+  const { email, username, password, passwordConfirm } = req.body;
 
   const userRepository = AppDataSource.getRepository(User);
+  
   try {
     let user = await userRepository.findOne({ where: { email } });
 
-    if (user) {
-      errors.put('email', `User with email ${email} already exists`);
+    if (user) { //Error 1: "email is already used" 
+      error.status = 400;
+      error.data.email = `User with email ${email} already exists.`;
+      return next(error);
     }
 
     user = await userRepository.findOne({ where: { username } });
 
-    if (user) {
-      errors.put('username', `User with username ${username} already exists`);
+    if (user) { //Error 2: "username is already used" 
+      error.status = 400;
+      error.data.username = `User with username ${username} already exists.`;
+      return next(error);
+    }
+
+    if (password!=passwordConfirm) { //Error 3: "password confirmation does not match password"
+      error.status = 400;
+      error.data.password = `Password confirmation does not match password.`;
+      return next(error);
     }
 
     try {
@@ -31,30 +43,39 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       try {
         user.setUsername(username);
       } catch (err: unknown) {
-        if (err instanceof CustomError) {
-          errors.extend(err.JSON.errors);
-        } else {
-          const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-          return next(customError);
-        }
+        res.status(400);
+        error.status = 400;
+        error.data.username = `Username ${username} cannot be used.`; //Error 4: 
+        return next(error);
       }
 
       user.hashedPassword = password;
       user.hashPassword();
 
-      if (errors.isEmpty) {
+      if (error.status == null) { //Success: New USER is successfully created
         await userRepository.save(user);
         res.customSuccess(200, 'User successfully created.');
+        res.status(200);
+        error.status = 200;
       } else {
-        const customError = new CustomError(400, 'Validation', 'User vannot be created', null, errors);
-        return next(customError);
+        res.status(400);
+        error.status = 400;
+        error.data.misc = `User cannot be created.`;
+        return next(error);
       }
+
     } catch (err) {
-      const customError = new CustomError(400, 'Raw', `User cannot be created`, err, errors);
-      return next(customError);
+      res.status(400);
+      error.status = 400;
+      error.data.misc = `User cannot be created.`;
+      return next(error);
     }
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-    return next(customError);
+    res.status(400);
+    error.status = 400;
+    error.data.misc = `User cannot be created.`;
+    return next(error);
   }
+
+  // console.log(error.data);
 };
