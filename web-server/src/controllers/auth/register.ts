@@ -2,59 +2,53 @@ import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { UserError } from 'utils/Errors';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
-  const errors = new ErrorArray();
-
   const { email, username, password } = req.body;
 
   const userRepository = AppDataSource.getRepository(User);
+  
+  const err: UserError = {};
+
   try {
     let user = await userRepository.findOne({ where: { email } });
 
     if (user) {
-      errors.put('email', `User with email ${email} already exists`);
+      err.email = `User with email ${email} already exists`;
+      return next(err);
     }
 
     user = await userRepository.findOne({ where: { username } });
 
     if (user) {
-      errors.put('username', `User with username ${username} already exists`);
+      err.username = `User with username ${username} already exists`;
+      return next(err);
     }
+
+    user = new User();
+    user.email = email;
 
     try {
-      user = new User();
-      user.email = email;
-
-      try {
-        user.setUsername(username);
-      } catch (err: unknown) {
-        if (err instanceof CustomError) {
-          errors.extend(err.JSON.errors);
-        } else {
-          const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-          return next(customError);
-        }
-      }
-
-      user.hashedPassword = password;
-      user.hashPassword();
-
-      if (errors.isEmpty) {
-        await userRepository.save(user);
-        res.customSuccess(200, 'User successfully created.');
+      user.setUsername(username);
+    } catch (e) {
+      if ('username' in e) {
+        err.username = e.username;
       } else {
-        const customError = new CustomError(400, 'Validation', 'User vannot be created', null, errors);
-        return next(customError);
+        err.raw = e;
       }
-    } catch (err) {
-      const customError = new CustomError(400, 'Raw', `User cannot be created`, err, errors);
-      return next(customError);
+
+      return next(err);
     }
-  } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-    return next(customError);
+
+    user.hashedPassword = password;
+    user.hashPassword();
+
+    await userRepository.create(user);
+    res.status(200);
+    res.send(user);
+  } catch (e) {
+    err.raw = e;
+    return next(err);
   }
 };

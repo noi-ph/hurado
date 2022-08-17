@@ -2,7 +2,8 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
 
-import { http } from '../../utils/http';
+import { ServerAPI } from '../../types/openapi';
+import { http, HttpResponse } from '../../utils/http';
 
 const SignUpPage = () => {
   const [email, setEmail] = React.useState('');
@@ -19,17 +20,33 @@ const SignUpPage = () => {
       router.push('/session/login');
 
       alert('Sign up successful');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError<ServerAPI['UserError']>) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
+        // TODO: make it so that these alerts appear in specific areas
+        if (err.data.email) {
+          alert(`${err.status}: ${err.data.email}`);
+        }
 
-        alert(`${status}: ${errorData.errorMessage}`);
+        if (err.data.username) {
+          alert(`${err.status}: ${err.data.username}`);
+        }
+
+        if (err.data.password) {
+          alert(`${err.status}: ${err.data.password}`);
+        }
+
+        if (err.data.passwordConfirm) {
+          alert(`${err.status}: ${err.data.passwordConfirm}`);
+        }
+
+        if (err.data.raw) {
+          alert(`${err.status}: Something unexpected happened`);
+          console.log(err.data.raw);
+        }
       } else {
-        console.log(err);
+        console.log(e);
 
         alert('Something unexpected happened');
       }
