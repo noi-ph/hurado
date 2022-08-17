@@ -21,7 +21,7 @@ const SignUpPage = () => {
 
       alert('Sign up successful');
     } catch (e: unknown) {
-      if ((e instanceof AxiosError<ServerAPI['UserError']>) && e.response) {
+      if ((e instanceof AxiosError) && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
         // TODO: make it so that these alerts appear in specific areas

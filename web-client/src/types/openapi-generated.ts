@@ -8,9 +8,17 @@ export interface paths {
     post: {
       responses: {
         /** OK */
-        200: unknown;
+        200: {
+          content: {
+            "application/json": components["schemas"]["User"];
+          };
+        };
         /** Bad request */
-        400: unknown;
+        400: {
+          content: {
+            "application/json": components["schemas"]["UserError"];
+          };
+        };
       };
       requestBody: {
         content: {

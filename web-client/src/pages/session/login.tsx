@@ -6,7 +6,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { set, UserState } from '../redux/userSlice';
 import { userStateLoader } from '../redux/store';
 
-import { http } from '../../utils/http';
+import { ServerAPI } from '../../types/openapi';
+import { http, HttpResponse } from '../../utils/http';
 import { UserConstants } from '../../utils/types';
 
 const LoginPage = () => {
@@ -24,7 +25,7 @@ const LoginPage = () => {
       const payload = { email, password };
       const response = await http.post(`http://localhost:4000/v1/auth/login`, payload);
 
-      const data = response.data.data;
+      const data = response.data;
       let { jwt, user } = data;
 
       dispatch(set({
@@ -40,17 +41,25 @@ const LoginPage = () => {
       router.push('/');
       
       alert('You have logged in');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
+        // TODO: make it so that these alerts appear in specific areas
+        if (err.data.email) {
+          alert(`${err.status}: ${err.data.email}`);
+        }
 
-        alert(`${status}: ${errorData.errorMessage}`);
+        if (err.data.password) {
+          alert(`${err.status}: ${err.data.password}`);
+        }
+
+        if (err.data.raw) {
+          alert(`${err.status}: Something unexpected happened`);
+          console.log(err.data.raw);
+        }
       } else {
-        console.log(err);
+        console.log(e);
 
         alert('Something unexpected happened');
       }

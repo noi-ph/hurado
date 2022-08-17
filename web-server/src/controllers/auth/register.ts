@@ -15,15 +15,13 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     let user = await userRepository.findOne({ where: { email } });
 
     if (user) {
-      err.email = `User with email ${email} already exists`;
-      return next(err);
+      err.email = `User with email ${email} already exists`
     }
 
     user = await userRepository.findOne({ where: { username } });
 
     if (user) {
       err.username = `User with username ${username} already exists`;
-      return next(err);
     }
 
     user = new User();
@@ -37,16 +35,18 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       } else {
         err.raw = e;
       }
-
-      return next(err);
     }
 
     user.hashedPassword = password;
     user.hashPassword();
 
-    await userRepository.create(user);
-    res.status(200);
-    res.send(user);
+    if (Object.keys(err).length) {
+      return next(err);
+    } else {
+      userRepository.create(user);
+      res.status(200);
+      res.send(user);
+    }
   } catch (e) {
     err.raw = e;
     return next(err);
