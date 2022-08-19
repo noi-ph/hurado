@@ -7,6 +7,7 @@ export type UserError = Error & {
   username?: string;
   password?: string;
   passwordConfirm?: string;
+  show?: string;
 };
 
 export type TaskError = Error & {

@@ -15,6 +15,9 @@ const LoginPage = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
+  const [emailError, setEmailError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
+
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -40,24 +43,26 @@ const LoginPage = () => {
       localStorage.setItem(UserConstants.JWT, jwt);
       router.push('/');
       
+      console.log('Log-in is successful');
       alert('You have logged in');
     } catch (e: unknown) {
       if ((e instanceof AxiosError) && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // TODO: make it so that these alerts appear in specific areas
         if (err.data.email) {
-          alert(`${err.status}: ${err.data.email}`);
-        }
+          setEmailError(`Error: ${err.data.email}`);
+        } else setEmailError(``);
 
         if (err.data.password) {
-          alert(`${err.status}: ${err.data.password}`);
-        }
+          setPasswordError(`Error: ${err.data.password}`);
+        } else setPasswordError(``);
 
         if (err.data.raw) {
           alert(`${err.status}: Something unexpected happened`);
           console.log(err.data.raw);
         }
+
+        console.log(err.data);
       } else {
         console.log(e);
 
@@ -74,9 +79,13 @@ const LoginPage = () => {
     <React.Fragment>
       Email:
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <p>{emailError}</p>
+      <br />
 
       Password:
       <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      <p>{passwordError}</p>
+      <br />
 
       <button onClick={onLoginClick}>Log-in</button>
     </React.Fragment>

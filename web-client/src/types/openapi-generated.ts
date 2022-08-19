@@ -321,6 +321,7 @@ export interface components {
       username?: string;
       password?: string;
       passwordConfirm?: string;
+      show?: string;
     };
   };
 }

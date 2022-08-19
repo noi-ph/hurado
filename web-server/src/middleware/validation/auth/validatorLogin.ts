@@ -16,8 +16,8 @@ export const validatorLogin = (req: Request, res: Response, next: NextFunction) 
     err.email = 'Email field is required';
   }
 
-  if (!validator.isEmail(email)) {
-    err.email = `Email ${email} is invalid`;
+  if (!validator.isEmpty(email) && !validator.isEmail(email)) {
+    err.email = `Email "${email}" is invalid`;
   }
 
   if (validator.isEmpty(password)) {

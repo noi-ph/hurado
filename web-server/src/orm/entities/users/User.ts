@@ -1,8 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 import { UserError } from 'utils/Errors';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 import { Countries } from './types';
 
@@ -40,12 +38,12 @@ export class User {
   school: string;
 
   @Column({
-    default: 'Juan',
+    default: '',
   })
   firstName: string;
 
   @Column({
-    default: 'dela Cruz',
+    default: '',
   })
   lastName: string;
 
@@ -69,17 +67,17 @@ export class User {
     const err: UserError = {};
 
     if (!username.match(allowedCharacters)) {
-      err.username = `Username ${username} has invalid characters`;
+      err.username = `Username "${username}" has invalid characters`;
       throw err;
     }
 
     if (!username.match(hasAlphanumeric)) {
-      err.username = `Username ${username} must have an alphanumeric character`;
+      err.username = `Username "${username}" must have an alphanumeric character`;
       throw err;
     }
 
     if (username.length < 3) {
-      err.username = `Username ${username} is too short`;
+      err.username = `Username "${username}" is too short`;
       throw err;
     }
 

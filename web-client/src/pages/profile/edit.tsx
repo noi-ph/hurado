@@ -1,11 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AxiosError } from 'axios';
-
 import { set, UserState } from '../redux/userSlice';
 import { userStateLoader } from '../redux/store';
-
-import { http } from '../../utils/http';
+import { ServerAPI } from '../../types/openapi';
+import { http, HttpResponse } from '../../utils/http';
 
 const EditPage = () => {
   const user = useSelector((state: UserState) => state.user);
@@ -42,17 +41,17 @@ const EditPage = () => {
       setEdited(true);
 
       alert('Profile has been edited');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
+
 
         // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
+        console.log(e.response.data);
 
-        alert(`${status}: ${errorData.errorMessage}`);
+        // alert(`${status}: ${errorData.errorMessage}`);
       } else {
-        console.log(err);
+        console.log(e);
 
         alert('Something unexpected happened');
       }

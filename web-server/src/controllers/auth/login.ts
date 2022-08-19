@@ -1,12 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { JwtPayload } from 'types/JwtPayload';
 import { createJwtToken } from 'utils/createJwtToken';
 import { UserError } from 'utils/Errors';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
@@ -19,7 +16,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const user = await userRepository.findOne({ where: { email } });
 
     if (!user) {
-      err.email = `User with email ${email} not found`;
+      err.email = `User with email "${email}" not found`;
     } else if (!user.checkIfPasswordMatch(password)) {
       err.password = 'Password is incorrect';
     }

@@ -3,13 +3,17 @@ import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
 import { ServerAPI } from '../../types/openapi';
 import { http, HttpResponse } from '../../utils/http';
-import { http } from '../../utils/http';
 
 const SignUpPage = () => {
   const [email, setEmail] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [passwordConfirm, setPasswordConfirm] = React.useState('');
+
+  const [emailError, setEmailError] = React.useState('');
+  const [usernameError, setUsernameError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
+  const [passwordConfirmError, setPasswordConfirmError] = React.useState('');
 
   const router = useRouter();
 
@@ -19,32 +23,33 @@ const SignUpPage = () => {
 
       router.push('/session/login');
 
-      alert('Sign up successful');
+      console.log('Sign-up is successful');
+      alert('Sign-up successful');
     } catch (e: unknown) {
       if ((e instanceof AxiosError) && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // TODO: make it so that these alerts appear in specific areas
         if (err.data.email) {
-          alert(`${err.status}: ${err.data.email}`);
-        }
+          setEmailError(`Error: ${err.data.email}`);
+        } else setEmailError(``);
 
         if (err.data.username) {
-          alert(`${err.status}: ${err.data.username}`);
-        }
+          setUsernameError(`Error: ${err.data.username}`);
+        } else setUsernameError(``);
 
         if (err.data.password) {
-          alert(`${err.status}: ${err.data.password}`);
-        }
+          setPasswordError(`Error: ${err.data.password}`);
+        } else setPasswordError(``);
 
         if (err.data.passwordConfirm) {
-          alert(`${err.status}: ${err.data.passwordConfirm}`);
-        }
+          setPasswordConfirmError(`Error: ${err.data.passwordConfirm}`);
+        } else setPasswordConfirmError(``);
 
         if (err.data.raw) {
           alert(`${err.status}: Something unexpected happened`);
-          console.log(err.data.raw);
         }
+
+        console.log(err.data);
       }
     }
   };
@@ -53,18 +58,22 @@ const SignUpPage = () => {
     <React.Fragment>
       E-mail: 
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <p>{emailError}</p>
       <br />
 
       Username:
       <input value={username} onChange={(e) => setUsername(e.target.value)} />
+      <p>{usernameError}</p>
       <br />
 
       Password:
       <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      <p>{passwordError}</p>
       <br />
 
       Password confirmation:
       <input value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+      <p>{passwordConfirmError}</p>
       <br />
 
       <button onClick={onSignUpClick}>Sign Up</button>

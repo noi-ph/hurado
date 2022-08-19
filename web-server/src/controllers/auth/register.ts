@@ -1,27 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
-
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { UserError } from 'utils/Errors';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, username, password } = req.body;
+  const { email, username, password, passwordConfirm } = req.body;
 
   const userRepository = AppDataSource.getRepository(User);
   
   const err: UserError = {};
 
   try {
+
     let user = await userRepository.findOne({ where: { email } });
 
     if (user) {
-      err.email = `User with email ${email} already exists`
+      err.email = `User with email "${email}" already exists`
     }
 
     user = await userRepository.findOne({ where: { username } });
 
     if (user) {
-      err.username = `User with username ${username} already exists`;
+      err.username = `User with username "${username}" already exists`;
     }
 
     user = new User();
@@ -43,7 +43,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     if (Object.keys(err).length) {
       return next(err);
     } else {
-      userRepository.create(user);
+      await userRepository.save(user);
       res.status(200);
       res.send(user);
     }

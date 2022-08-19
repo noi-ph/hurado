@@ -1,9 +1,7 @@
 import React from 'react';
-
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
-
-import { http } from '../../utils/http';
+import { http, HttpResponse } from '../../utils/http';
 import { ServerAPI } from '../../types/openapi';
 
 const ViewPage = () => {
@@ -16,17 +14,16 @@ const ViewPage = () => {
       const response = await http.get(`http://localhost:4000/v1/users/${id}`);
 
       setUser(response.data.data);
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
-
-        alert(`${status}: ${errorData.errorMessage}`);
+        if (err.data.show) {
+          alert(`User not found.`);
+        }
+        
       } else {
-        console.log(err);
+        console.log(e);
 
         alert('Something unexpected happened');
       }
