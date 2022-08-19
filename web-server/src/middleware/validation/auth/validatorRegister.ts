@@ -2,53 +2,54 @@ import { Request, Response, NextFunction } from 'express';
 import validator from 'validator';
 
 import { ConstsUser } from 'consts/ConstsUser';
+import { UserError } from 'utils/Errors';
 import { CustomError } from 'utils/response/custom-error/CustomError';
 import { RegisterError, ErrorArray } from 'utils/response/custom-error/errorTypes';
 import { Error } from 'middleware/errorHandler';
 
-
 export const validatorRegister = (req: Request, res: Response, next: NextFunction) => {
   let { email, username, password, passwordConfirm } = req.body;
-  const errors = new ErrorArray();
 
   email = !email ? '' : email;
   username = !username ? '' : username;
   password = !password ? '' : password;
   passwordConfirm = !passwordConfirm ? '' : passwordConfirm;
 
-  if (!validator.isEmail(email)) {
-    errors.put('email', `Email '${email}' is invalid`);
-  }
+  const err: UserError = {};
 
   if (validator.isEmpty(email)) {
-    errors.put('email', `Email field is required`);
+    err.email = 'Email field is required';
+  }
+
+  if (!validator.isEmail(email)) {
+    err.email = `Email ${email} is invalid`;
   }
 
   if (validator.isEmpty(username)) {
-    errors.put('username', `Username field is required`);
+    err.username = 'Username field is required';
   }
 
   if (validator.isEmpty(password)) {
-    errors.put('password', `Passwords is required`);
+    err.password = 'Pasword field is required';
   }
 
   if (!validator.isLength(password, { min: ConstsUser.PASSWORD_MIN_CHAR })) {
-    errors.put('password', `Password must be at least ${ConstsUser.PASSWORD_MIN_CHAR} characters`);
+    err.password = `Password must be at least ${ConstsUser.PASSWORD_MIN_CHAR} characters`;
   }
 
   if (validator.isEmpty(passwordConfirm)) {
-    errors.put('password', `Passwords confirmation is required`);
+    err.passwordConfirm = 'Password confirmation field is required';
   }
 
   if (!validator.equals(password, passwordConfirm)) {
-    errors.put('password', `Passwords do not match`);
+    err.password = 'Password does not match password confimation';
+    err.passwordConfirm = 'Password confirmation does not match password';
   }
 
-  if (errors.isEmpty) {
-    return next();
+  if (Object.keys(err).length) {
+    return next(err);
   } else {
-    
-    const customError = new CustomError(400, 'Validation', 'Register validation error', null, errors);
-    return next(customError);
+
+    return next();
   }
 };

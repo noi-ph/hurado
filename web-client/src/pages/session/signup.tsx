@@ -1,6 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
+import { ServerAPI } from '../../types/openapi';
+import { http, HttpResponse } from '../../utils/http';
 import { http } from '../../utils/http';
 
 const SignUpPage = () => {
@@ -18,33 +20,31 @@ const SignUpPage = () => {
       router.push('/session/login');
 
       alert('Sign up successful');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // The console.log stays while the error isn't properly annotated
-        if (status===200) console.log("Success");
-        else {
-          console.log(errorData);
-          alert(Object.entries(errorData));
+        // TODO: make it so that these alerts appear in specific areas
+        if (err.data.email) {
+          alert(`${err.status}: ${err.data.email}`);
         }
-       
-        //console.log(errorData.errors);
 
-        // alert(Object.entries(errorData.errors));
+        if (err.data.username) {
+          alert(`${err.status}: ${err.data.username}`);
+        }
 
-        // let alertMessage: string = '';
-        // for (const [key, object] of Object.entries(errorData.errors)) {          
-        //   alertMessage.concat(`${key} : ${errorData.errors.get(key)}`);
-        // }
+        if (err.data.password) {
+          alert(`${err.status}: ${err.data.password}`);
+        }
 
-        // alert(`${alertMessage}`);
-        //alert(`${status}: ${errorData.errorMessage}`);
-      } else {
-        console.log(err);
+        if (err.data.passwordConfirm) {
+          alert(`${err.status}: ${err.data.passwordConfirm}`);
+        }
 
-        alert('Something unexpected happened');
+        if (err.data.raw) {
+          alert(`${err.status}: Something unexpected happened`);
+          console.log(err.data.raw);
+        }
       }
     }
   };

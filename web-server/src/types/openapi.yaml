@@ -20,8 +20,16 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserError'
   /auth/register:
     post:
       tags:
@@ -36,6 +44,10 @@ paths:
           description: OK
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserError'
   /users/{id}:
     parameters:
       - in: path
@@ -379,3 +391,16 @@ components:
               type: integer
             validatorId:
               type: integer
+    UserError:
+      type: object
+      properties:
+        raw:
+          type: object
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        passwordConfirm:
+          type: string
