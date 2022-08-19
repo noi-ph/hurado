@@ -1,9 +1,9 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
-
 import { ServerAPI } from '../../types/openapi';
 import { http, HttpResponse } from '../../utils/http';
+import { http } from '../../utils/http';
 
 const SignUpPage = () => {
   const [email, setEmail] = React.useState('');
@@ -45,10 +45,6 @@ const SignUpPage = () => {
           alert(`${err.status}: Something unexpected happened`);
           console.log(err.data.raw);
         }
-      } else {
-        console.log(e);
-
-        alert('Something unexpected happened');
       }
     }
   };
@@ -71,7 +67,7 @@ const SignUpPage = () => {
       <input value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
       <br />
 
-      <button onClick={onSignUpClick}>Sign up</button>
+      <button onClick={onSignUpClick}>Sign Up</button>
     </React.Fragment>
   );
 };

@@ -51,4 +51,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     err.raw = e;
     return next(err);
   }
+
+  // console.log(error.data);
 };

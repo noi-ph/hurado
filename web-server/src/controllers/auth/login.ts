@@ -5,6 +5,8 @@ import { User } from 'orm/entities/users/User';
 import { JwtPayload } from 'types/JwtPayload';
 import { createJwtToken } from 'utils/createJwtToken';
 import { UserError } from 'utils/Errors';
+import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;

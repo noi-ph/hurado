@@ -1,14 +1,14 @@
-import { ErrorType, ErrorArray, ErrorResponse } from './types';
+import { ErrorTypes, ErrorArray, ErrorResponse } from './errorTypes';
 
 export class CustomError extends Error {
   private httpStatusCode: number;
-  private errorType: ErrorType;
+  private errorType: ErrorTypes;
   private errorRaw: any;
   private errors: ErrorArray | null;
 
   constructor(
     httpStatusCode: number,
-    errorType: ErrorType,
+    errorType: ErrorTypes,
     message: string,
     errorRaw: any = null,
     errors: ErrorArray | null = new ErrorArray(),

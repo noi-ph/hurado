@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-
 import { UserError } from 'utils/Errors';
+import { CustomError } from 'utils/response/custom-error/CustomError';
+import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 import { Countries } from './types';
 

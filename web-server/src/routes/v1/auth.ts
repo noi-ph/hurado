@@ -6,6 +6,6 @@ import { validatorLogin, validatorRegister } from 'middleware/validation/auth';
 const router = Router();
 
 router.post('/login', [validatorLogin], login);
-router.post('/register', [validatorRegister], register);
+router.post('/register', [], register);
 
 export default router;

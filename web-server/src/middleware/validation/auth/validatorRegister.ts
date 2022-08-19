@@ -3,6 +3,9 @@ import validator from 'validator';
 
 import { ConstsUser } from 'consts/ConstsUser';
 import { UserError } from 'utils/Errors';
+import { CustomError } from 'utils/response/custom-error/CustomError';
+import { RegisterError, ErrorArray } from 'utils/response/custom-error/errorTypes';
+import { Error } from 'middleware/errorHandler';
 
 export const validatorRegister = (req: Request, res: Response, next: NextFunction) => {
   let { email, username, password, passwordConfirm } = req.body;
@@ -46,6 +49,7 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
   if (Object.keys(err).length) {
     return next(err);
   } else {
+
     return next();
   }
 };

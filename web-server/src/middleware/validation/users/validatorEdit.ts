@@ -4,7 +4,7 @@ import validator from 'validator';
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 import { Countries } from '../../../orm/entities/users/types';
 
