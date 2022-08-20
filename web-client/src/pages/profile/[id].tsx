@@ -45,10 +45,18 @@ const ViewPage = () => {
         Username: {user.username}
         <br />
 
+        Name: {user.name}
+        <br />
+
+        Email: {user.email}
+        <br />
+
         School: {user.school}
         <br />
 
-        Name: {user.firstName} {user.lastName}
+        Country: {user.country}
+        <br />
+
       </React.Fragment>
     );
   } else {

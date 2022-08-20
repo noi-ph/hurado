@@ -16,9 +16,14 @@ const EditPage = () => {
   const [password, setPassword] = React.useState('');
   const [passwordConfirm, setPasswordConfirm] = React.useState('');
   const [school, setSchool] = React.useState('');
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
+  const [name, setName] = React.useState('');
   const [country, setCountry] = React.useState('');
+
+  const [emailError, setEmailError] = React.useState('');
+  const [usernameError, setUsernameError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
+  const [passwordConfirmError, setPasswordConfirmError] = React.useState('');
+  const [countryError, setCountryError] = React.useState('');
 
   const dispatch = useDispatch();
 
@@ -32,8 +37,7 @@ const EditPage = () => {
         password,
         passwordConfirm,
         school,
-        firstName,
-        lastName,
+        name,
         country
       });
 
@@ -45,11 +49,27 @@ const EditPage = () => {
       if ((e instanceof AxiosError) && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
+        if(err.data.email) {
+          setEmailError(err.data.email);
+        } else setEmailError('');
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(e.response.data);
+        if(err.data.username) {
+          setUsernameError(err.data.username);
+        } else setUsernameError('');
 
-        // alert(`${status}: ${errorData.errorMessage}`);
+        if(err.data.password) {
+          setPasswordError(err.data.password);
+        } else setPasswordError('');
+
+        if(err.data.passwordConfirm) {
+          setPasswordConfirmError(err.data.passwordConfirm);
+        } else setPasswordConfirmError('');
+
+        if(err.data.country) {
+          setCountryError(err.data.country);
+        } else setCountryError('');
+
+        console.log(err.data);
       } else {
         console.log(e);
 
@@ -71,35 +91,36 @@ const EditPage = () => {
 
       E-mail:
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <p>{emailError}</p>
       <br />
 
       Username:
       <input value={username} onChange={(e) => setUsername(e.target.value)} />
+      <p>{usernameError}</p>
       <br />
 
       Password:
       <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      <p>{passwordError}</p>
       <br />
 
       Password confirmation:
       <input value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+      <p>{passwordConfirmError}</p>
       <br />
 
       School:
       <input value={school} onChange={(e) => setSchool(e.target.value)} />
       <br />
 
-      First name:
-      <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-      <br />
-
-      Last name:
-      <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
+      Name:
+      <input value={name} onChange={(e) => setName(e.target.value)} />
       <br />
 
       Country:
       <input value={country} onChange={(e) => setCountry(e.target.value)} />
       <br />
+      <p>{countryError}</p>
 
       <button onClick={onEditClick}>Edit profile</button>
     </React.Fragment>

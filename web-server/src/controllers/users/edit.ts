@@ -2,22 +2,23 @@ import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/errorTypes';
+import { UserError } from 'utils/Errors';
 
 export const edit = async (req: Request, res: Response, next: NextFunction) => {
-  const errors = new ErrorArray();
 
   const id = parseInt(req.params.id);
-  const { email, username, password, school, firstName, lastName, country } = req.body;
+
+  const { email, username, password, school, name, country } = req.body;
 
   const userRepository = AppDataSource.getRepository(User);
+
+  const err: UserError = {};
 
   try {
     const user = await userRepository.findOne({ where: { id } });
 
     if (!user) {
-      errors.put('user', `User with id ${id} not found`);
+      err.id = `User with ID#${id} is not found`
     }
 
     if (email) {
@@ -27,12 +28,11 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     if (username) {
       try {
         user.setUsername(username);
-      } catch (err: unknown) {
-        if (err instanceof CustomError) {
-          errors.extend(err.JSON.errors);
+      } catch (e) {
+        if ('username' in e) {
+          err.username = e.username;
         } else {
-          const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-          return next(customError);
+          err.raw = e;
         }
       }
     }
@@ -46,27 +46,22 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
       user.school = school;
     }
 
-    if (firstName) {
-      user.firstName = firstName;
-    }
-
-    if (lastName) {
-      user.lastName = lastName;
+    if (name) {
+      user.name = name;
     }
 
     if (country) {
       user.country = country;
     }
 
-    if (errors.isEmpty) {
+    if (!Object.keys(err).length) {
       await userRepository.save(user);
       res.customSuccess(200, 'User profile successfully edited', user);
     } else {
-      const customError = new CustomError(400, 'Validation', 'Unable to edit user data', null, errors);
-      return next(customError);
+      return next(err);
     }
-  } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-    return next(customError);
+  } catch (e) {
+    err.raw = e;
+    return next(err);
   }
 };

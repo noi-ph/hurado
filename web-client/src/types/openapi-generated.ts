@@ -259,8 +259,7 @@ export interface components {
       email: string;
       username: string;
       school?: string;
-      firstName?: string;
-      lastName?: string;
+      name?: string;
       country?: string;
       isAdmin: boolean;
     };
@@ -270,8 +269,7 @@ export interface components {
       username: string;
       password?: string;
       school?: string;
-      firstName?: string;
-      lastName?: string;
+      name?: string;
       country?: string;
     };
     FileRead: {
@@ -316,11 +314,13 @@ export interface components {
       validatorId?: number;
     };
     UserError: {
+      id?: string;
       raw?: { [key: string]: unknown };
       email?: string;
       username?: string;
       password?: string;
       passwordConfirm?: string;
+      country?: string;
       show?: string;
     };
   };

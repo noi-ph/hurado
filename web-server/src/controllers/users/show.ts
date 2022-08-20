@@ -13,7 +13,7 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await userRepository.findOne({
       where: { id: parseInt(id) },
-      select: ['id', 'username', 'email', 'isAdmin', 'country', 'createdAt', 'firstName', 'lastName', 'school'],
+      select: ['id', 'username', 'email', 'isAdmin', 'country', 'createdAt', 'name', 'school'],
     });
 
     if (!user) {

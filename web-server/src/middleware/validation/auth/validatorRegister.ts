@@ -44,8 +44,6 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
 
   if (Object.keys(err).length) {
     return next(err);
-  } else {
+  } else return next();
 
-    return next();
-  }
 };
