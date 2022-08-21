@@ -255,7 +255,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "testDataResults"`, undefined);
+    await queryRunner.query(`DROP TABLE "test_data_results"`, undefined);
     await queryRunner.query(`DROP TABLE "subtask_results"`, undefined);
     await queryRunner.query(`DROP TABLE "results"`, undefined);
     await queryRunner.query(`DROP TABLE "submission_files"`, undefined);

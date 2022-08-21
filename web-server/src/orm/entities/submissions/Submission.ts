@@ -22,8 +22,7 @@ export class Submission {
   @Column({ name: 'task_id' })
   taskId: number;
 
-  @Column({ name: 'created_at' })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @Column({ name: 'language_code' })

@@ -35,7 +35,6 @@ export class SubtaskResult {
   @Column({ name: 'raw_score' })
   rawScore: number;
 
-  @Column({ name: 'verdict_gotten_at' })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'verdict_gotten_at' })
   verdictGottenAt: Date;
 }

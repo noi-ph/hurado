@@ -36,11 +36,9 @@ export class Result {
   @Column({ name: 'compile_memory' })
   compileMemory: number;
 
-  @Column({ name: 'created_at' })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({ name: 'verdict_gotten_at' })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'verdict_gotten_at' })
   verdictGottenAt: Date;
 }

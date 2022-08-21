@@ -17,8 +17,7 @@ export class User {
   @Column({ name: 'hashed_password' })
   hashedPassword: string;
 
-  @Column({ name: 'created_at' })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @Column({ default: false, name: 'is_admin' })
