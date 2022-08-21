@@ -14,8 +14,7 @@ describe('Register', () => {
   const userPassword = 'pass1';
   const user = new User();
   user.email = 'brandon.mayhew@test.com';
-  user.hashedPassword = userPassword;
-  user.hashPassword();
+  user.setPassword(userPassword);
 
   before(async () => {
     await AppDataSource.initialize();

@@ -12,7 +12,7 @@ import morgan from 'morgan';
 import './utils/response/customSuccess';
 import { AppDataSource } from 'orm/data-source';
 
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler, errorInterceptor } from './middleware/errorHandler';
 import routes from './routes';
 
 export const app = express();
@@ -33,6 +33,7 @@ app.use(morgan('combined'));
 
 app.use('/', routes);
 
+app.use(errorInterceptor);
 app.use(errorHandler);
 
 const port = process.env.PORT || 4000;

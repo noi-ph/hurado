@@ -1,49 +1,47 @@
 import { Request, Response, NextFunction } from 'express';
-
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { JwtPayload } from 'types/JwtPayload';
 import { createJwtToken } from 'utils/createJwtToken';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { UserError } from 'utils/Errors';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
-  const errors = new ErrorArray();
-
   const { email, password } = req.body;
 
   const userRepository = AppDataSource.getRepository(User);
+
+  const err: UserError = {};
+
   try {
     const user = await userRepository.findOne({ where: { email } });
 
     if (!user) {
-      errors.put('email', `User with email ${email} does not exist`);
-    } else {
-      if (!user.checkIfPasswordMatch(password)) {
-        errors.put('password', `Password is incorrect`);
-      }
+      err.status = 400;
+      err.email = `User with email "${email}" not found`;
+    } else if (!user.checkIfPasswordMatch(password)) {
+      err.status = 400;
+      err.password = 'Password is incorrect';
     }
-    const jwtPayload: JwtPayload = {
-      id: user.id,
-      isAdmin: user.isAdmin,
-    };
 
-    if (errors.isEmpty) {
+    if (Object.keys(err).length) {
+      return next(err);
+    } else {
+      const jwtPayload: JwtPayload = {
+        id: user.id,
+        isAdmin: user.isAdmin,
+      };
+  
       try {
         const token = createJwtToken(jwtPayload);
-        res.customSuccess(200, 'Token successfully created.', {
-          jwt: `Bearer ${token}`,
-          user: user,
-        });
-      } catch (err) {
-        const customError = new CustomError(400, 'Raw', "Token can't be created", err, errors);
-        return next(customError);
+        res.status(200);
+        res.send({ jwt: `Bearer ${token}`, user });
+      } catch (e) {
+        err.status = 500;
+        return next(err);
       }
-    } else {
-      const customError = new CustomError(400, 'Validation', 'Cannot log in', null, errors);
     }
-  } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-    return next(customError);
+  } catch (e) {
+    err.status = 500;
+    return next(err);
   }
 };

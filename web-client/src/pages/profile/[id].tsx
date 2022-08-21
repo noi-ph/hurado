@@ -1,9 +1,7 @@
 import React from 'react';
-
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
-
-import { http } from '../../utils/http';
+import { http, HttpResponse } from '../../utils/http';
 import { ServerAPI } from '../../types/openapi';
 
 const ViewPage = () => {
@@ -16,17 +14,20 @@ const ViewPage = () => {
       const response = await http.get(`http://localhost:4000/v1/users/${id}`);
 
       setUser(response.data.data);
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
+        if (err.status == 404) {
+          alert(`User not found`);
+        }
 
-        alert(`${status}: ${errorData.errorMessage}`);
+        if (err.status == 500) {
+          alert(`${err.status}: Internal server error`);
+        }
+        
       } else {
-        console.log(err);
+        console.log(e);
 
         alert('Something unexpected happened');
       }
@@ -48,10 +49,18 @@ const ViewPage = () => {
         Username: {user.username}
         <br />
 
+        Name: {user.name}
+        <br />
+
+        Email: {user.email}
+        <br />
+
         School: {user.school}
         <br />
 
-        Name: {user.firstName} {user.lastName}
+        Country: {user.country}
+        <br />
+
       </React.Fragment>
     );
   } else {

@@ -6,13 +6,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { set, UserState } from '../redux/userSlice';
 import { userStateLoader } from '../redux/store';
 
-import { http } from '../../utils/http';
+import { ServerAPI } from '../../types/openapi';
+import { http, HttpResponse } from '../../utils/http';
 import { UserConstants } from '../../utils/types';
 
 const LoginPage = () => {
   const [loaded, setLoaded] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+
+  const [emailError, setEmailError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -24,7 +28,7 @@ const LoginPage = () => {
       const payload = { email, password };
       const response = await http.post(`http://localhost:4000/v1/auth/login`, payload);
 
-      const data = response.data.data;
+      const data = response.data;
       let { jwt, user } = data;
 
       dispatch(set({
@@ -39,18 +43,27 @@ const LoginPage = () => {
       localStorage.setItem(UserConstants.JWT, jwt);
       router.push('/');
       
+      console.log('Log-in is successful');
       alert('You have logged in');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
+        if (err.data.email) {
+          setEmailError(`Error: ${err.data.email}`);
+        } else setEmailError(``);
 
-        alert(`${status}: ${errorData.errorMessage}`);
+        if (err.data.password) {
+          setPasswordError(`Error: ${err.data.password}`);
+        } else setPasswordError(``);
+
+        if (err.status == 500) {
+          alert(`${err.status}: Internal server error`);
+        }
+
+        console.log(err.data);
       } else {
-        console.log(err);
+        console.log(e);
 
         alert('Something unexpected happened');
       }
@@ -65,9 +78,13 @@ const LoginPage = () => {
     <React.Fragment>
       Email:
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <p>{emailError}</p>
+      <br />
 
       Password:
       <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      <p>{passwordError}</p>
+      <br />
 
       <button onClick={onLoginClick}>Log-in</button>
     </React.Fragment>

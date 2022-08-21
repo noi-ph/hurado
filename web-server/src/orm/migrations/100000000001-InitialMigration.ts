@@ -14,8 +14,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
           "school" text,
           "isAdmin" BOOLEAN NOT NULL DEFAULT false,
-          "firstName" text NOT NULL DEFAULT 'Juan',
-          "lastName" text NOT NULL DEFAULT 'dela Cruz',
+          "name" text NOT NULL DEFAULT '',
           "country" text NOT NULL DEFAULT 'PH', 
 
           CONSTRAINT "users_uq_username" UNIQUE ("username"), 

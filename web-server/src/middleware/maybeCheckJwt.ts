@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
+import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 import { JwtPayload } from '../types/JwtPayload';
 import { createJwtToken } from '../utils/createJwtToken';

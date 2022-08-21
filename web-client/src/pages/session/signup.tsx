@@ -1,14 +1,19 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
-
-import { http } from '../../utils/http';
+import { ServerAPI } from '../../types/openapi';
+import { http, HttpResponse } from '../../utils/http';
 
 const SignUpPage = () => {
   const [email, setEmail] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [passwordConfirm, setPasswordConfirm] = React.useState('');
+
+  const [emailError, setEmailError] = React.useState('');
+  const [usernameError, setUsernameError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
+  const [passwordConfirmError, setPasswordConfirmError] = React.useState('');
 
   const router = useRouter();
 
@@ -18,20 +23,33 @@ const SignUpPage = () => {
 
       router.push('/session/login');
 
-      alert('Sign up successful');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+      console.log('Sign-up is successful');
+      alert('Sign-up successful');
+    } catch (e: unknown) {
+      if ((e instanceof AxiosError) && e.response) {
+        const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
+        if (err.data.email) {
+          setEmailError(`Error: ${err.data.email}`);
+        } else setEmailError(``);
 
-        alert(`${status}: ${errorData.errorMessage}`);
-      } else {
-        console.log(err);
+        if (err.data.username) {
+          setUsernameError(`Error: ${err.data.username}`);
+        } else setUsernameError(``);
 
-        alert('Something unexpected happened');
+        if (err.data.password) {
+          setPasswordError(`Error: ${err.data.password}`);
+        } else setPasswordError(``);
+
+        if (err.data.passwordConfirm) {
+          setPasswordConfirmError(`Error: ${err.data.passwordConfirm}`);
+        } else setPasswordConfirmError(``);
+
+        if (err.status == 500) {
+          alert(`${err.status}: Internal server error`);
+        }
+
+        console.log(err.data);
       }
     }
   };
@@ -40,21 +58,25 @@ const SignUpPage = () => {
     <React.Fragment>
       E-mail: 
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <p>{emailError}</p>
       <br />
 
       Username:
       <input value={username} onChange={(e) => setUsername(e.target.value)} />
+      <p>{usernameError}</p>
       <br />
 
       Password:
       <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      <p>{passwordError}</p>
       <br />
 
       Password confirmation:
       <input value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+      <p>{passwordConfirmError}</p>
       <br />
 
-      <button onClick={onSignUpClick}>Sign up</button>
+      <button onClick={onSignUpClick}>Sign Up</button>
     </React.Fragment>
   );
 };
