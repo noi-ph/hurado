@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 import { CustomError } from 'utils/response/custom-error/CustomError';
 import { ErrorArray } from 'utils/response/custom-error/errorTypes';
@@ -16,6 +16,7 @@ export class Task {
   id: number;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'owner_id' })
   owner: User;
 
   @Column({ name: 'owner_id' })
@@ -43,6 +44,7 @@ export class Task {
   scoreMax: number;
 
   @ManyToOne(() => Script)
+  @JoinColumn({ name: 'checker_script_id' })
   checkerScript: Script;
 
   @Column({ name: 'checker_script_id' })
@@ -73,6 +75,7 @@ export class Task {
   submissionSizeLimit: number;
 
   @ManyToOne(() => Script)
+  @JoinColumn({ name: 'validator_script_id' })
   validatorScript: Script;
 
   @Column({ name: 'validator_script_id' })

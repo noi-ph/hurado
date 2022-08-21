@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 import { TestData } from '../tasks/TestData';
 
@@ -11,12 +11,14 @@ export class TestDataResult {
   id: number;
 
   @ManyToOne(() => Result)
+  @JoinColumn({ name: 'result_id' })
   result: Result;
 
   @Column({ name: 'result_id' })
   resultId: number;
 
   @ManyToOne(() => TestData)
+  @JoinColumn({ name: 'test_data_id' })
   testData: TestData;
 
   @Column({ name: 'test_data_id' })

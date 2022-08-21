@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 import { Subtask } from '../tasks/Subtask';
 
@@ -11,12 +11,14 @@ export class SubtaskResult {
   id: number;
 
   @ManyToOne(() => Result)
+  @JoinColumn({ name: 'result_id' })
   result: Result;
 
   @Column({ name: 'result_id' })
   resultId: number;
 
   @ManyToOne(() => Subtask)
+  @JoinColumn({ name: 'subtask_id' })
   subtask: Subtask;
 
   @Column({ name: 'subtask_id' })

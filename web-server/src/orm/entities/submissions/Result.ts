@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 
 import { Submission } from './Submission';
 import { Verdicts } from './types';
@@ -9,6 +9,7 @@ export class Result {
   id: number;
 
   @OneToOne(() => Submission)
+  @JoinColumn({ name: 'submission_id' })
   submission: Submission;
 
   @Column({ name: 'submission_id' })

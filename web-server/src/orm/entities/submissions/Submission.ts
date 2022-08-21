@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 import { Task } from '../tasks/Task';
 import { User } from '../users/User';
@@ -9,6 +9,7 @@ export class Submission {
   id: number;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'owner_id' })
   owner: User;
 
   @Column({ name: 'owner_id' })
@@ -17,6 +18,7 @@ export class Submission {
   // TO-DO: contest  / contestId (nullable)
 
   @ManyToOne(() => Task)
+  @JoinColumn({ name: 'task_id' })
   task: Task;
 
   @Column({ name: 'task_id' })
