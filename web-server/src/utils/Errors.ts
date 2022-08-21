@@ -1,6 +1,5 @@
 type Error = {
   status?: any;
-  raw?: any;
 }
 
 export type UserError = Error & {
@@ -10,7 +9,6 @@ export type UserError = Error & {
   password?: string;
   passwordConfirm?: string;
   country?: string;
-  show?: string;
 };
 
 export type TaskError = Error & {

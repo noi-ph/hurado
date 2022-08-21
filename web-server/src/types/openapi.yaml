@@ -394,8 +394,6 @@ components:
     UserError:
       type: object
       properties:
-        raw:
-          type: object
         email:
           type: string
         username:

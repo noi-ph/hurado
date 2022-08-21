@@ -12,5 +12,5 @@ export const errorHandler = (err: Error<any>, req: Request, res: Response, next:
 
 export const errorInterceptor = (err: PossibleErrors, req: Request, res: Response, next: NextFunction) => {
   if (err.status) return res.status(err.status).json(err);
-  else return res.status(400).json(err);
+  else return res.status(200).json(err);
 }

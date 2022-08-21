@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { UserError } from 'utils/Errors';
+import { validatorUsername } from 'middleware/validation/users/validatorUsername';
+
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   const { email, username, password, passwordConfirm } = req.body;
@@ -29,15 +31,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     user = new User();
     user.email = email;
 
-    try {
-      user.setUsername(username);
-    } catch (e) {
-      if ('username' in e) {
-        err.status = 400;
-        err.username = e.username;
+    if (username) {
+      if (Object.keys(validatorUsername(username)).length) { 
+        err.username = validatorUsername(username).username;
       } else {
-        err.status = 500;
-        err.raw = 'Internal server error';
+        user.setUsername(username);
       }
     }
 
@@ -52,9 +50,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     }
   } catch (e) {
     err.status = 500;
-    err.raw = 'Internal server error';
     return next(err);
   }
 
-  // console.log(error.data);
 };

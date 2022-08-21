@@ -18,7 +18,7 @@ const ViewPage = () => {
       if ((e instanceof AxiosError) && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        if (err.data.show) {
+        if (err.status == 404) {
           alert(`User not found`);
         }
         

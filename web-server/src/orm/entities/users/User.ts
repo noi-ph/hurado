@@ -56,26 +56,6 @@ export class User {
   }
 
   setUsername(username: string) {
-    const allowedCharacters = /^[A-Za-z0-9\.\-\_]*$/;
-    const hasAlphanumeric = /[A-Za-z0-9]/;
-    
-    const err: UserError = {};
-
-    if (!username.match(allowedCharacters)) {
-      err.username = `Username "${username}" has invalid characters`;
-      throw err;
-    }
-
-    if (!username.match(hasAlphanumeric)) {
-      err.username = `Username "${username}" must have an alphanumeric character`;
-      throw err;
-    }
-
-    if (username.length < 3) {
-      err.username = `Username "${username}" is too short`;
-      throw err;
-    }
-
     this.username = username;
   }
 

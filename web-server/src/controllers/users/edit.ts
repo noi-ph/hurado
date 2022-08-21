@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
 import { UserError } from 'utils/Errors';
+import { validatorUsername } from 'middleware/validation/users/validatorUsername';
 
 export const edit = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -26,14 +27,10 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (username) {
-      try {
+      if (Object.keys(validatorUsername(username)).length) { 
+        err.username = validatorUsername(username).username;
+      } else {
         user.setUsername(username);
-      } catch (e) {
-        if ('username' in e) {
-          err.username = e.username;
-        } else {
-          err.raw = e;
-        }
       }
     }
 
@@ -62,7 +59,6 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     }
   } catch (e) {
     err.status = 500;
-    err.raw = 'Internal server error';
     return next(err);
   }
 };

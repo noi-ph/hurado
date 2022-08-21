@@ -37,13 +37,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         res.send({ jwt: `Bearer ${token}`, user });
       } catch (e) {
         err.status = 500;
-        err.raw = 'Internal server error';
         return next(err);
       }
     }
   } catch (e) {
     err.status = 500;
-    err.raw = 'Internal server error';
     return next(err);
   }
 };

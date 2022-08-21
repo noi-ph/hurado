@@ -18,7 +18,6 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
 
     if (!user) {
       err.status = 404;
-      err.show = `User with id ${id} not found`;
     }
 
     if (Object.keys(err).length) {
@@ -28,7 +27,6 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
     }
   } catch (e) {
     err.status = 500;
-    err.raw = 'Internal server error';
     return next(err);
   }
 };
