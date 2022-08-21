@@ -45,8 +45,8 @@ const SignUpPage = () => {
           setPasswordConfirmError(`Error: ${err.data.passwordConfirm}`);
         } else setPasswordConfirmError(``);
 
-        if (err.data.raw) {
-          alert(`${err.status}: Something unexpected happened`);
+        if (err.status == 500) {
+          alert(`${err.status}: Internal server error`);
         }
 
         console.log(err.data);

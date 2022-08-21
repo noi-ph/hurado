@@ -34,6 +34,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     if (username) {
       const usernameErrors = validatorUsername(username);
       if (Object.keys(usernameErrors).length) { 
+        err.status = 400;
         err.username = usernameErrors.username;
       } else {
         user.username = username;

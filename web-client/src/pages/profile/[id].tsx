@@ -21,6 +21,10 @@ const ViewPage = () => {
         if (err.status == 404) {
           alert(`User not found`);
         }
+
+        if (err.status == 500) {
+          alert(`${err.status}: Internal server error`);
+        }
         
       } else {
         console.log(e);

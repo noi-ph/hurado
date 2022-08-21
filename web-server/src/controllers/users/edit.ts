@@ -19,6 +19,7 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     const user = await userRepository.findOne({ where: { id } });
 
     if (!user) {
+      err.status = 404;
       err.id = `User with ID#${id} is not found`
     }
 
@@ -29,6 +30,7 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     if (username) {
       const usernameErrors = validatorUsername(username);
       if (Object.keys(usernameErrors).length) { 
+        err.status = 400;
         err.username = usernameErrors.username;
       } else {
         user.username = username;
@@ -55,7 +57,6 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
       await userRepository.save(user);
       res.customSuccess(200, 'User profile successfully edited', user);
     } else {
-      err.status = 400;
       return next(err);
     }
   } catch (e) {

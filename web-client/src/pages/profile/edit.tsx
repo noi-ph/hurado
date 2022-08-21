@@ -69,6 +69,10 @@ const EditPage = () => {
           setCountryError(err.data.country);
         } else setCountryError('');
 
+        if (err.status == 500) {
+          alert(`${err.status}: Internal server error`);
+        }
+
         console.log(err.data);
       } else {
         console.log(e);

@@ -57,9 +57,8 @@ const LoginPage = () => {
           setPasswordError(`Error: ${err.data.password}`);
         } else setPasswordError(``);
 
-        if (err.data.raw) {
-          alert(`${err.status}: Something unexpected happened`);
-          console.log(err.data.raw);
+        if (err.status == 500) {
+          alert(`${err.status}: Internal server error`);
         }
 
         console.log(err.data);
