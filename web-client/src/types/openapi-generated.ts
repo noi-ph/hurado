@@ -8,9 +8,17 @@ export interface paths {
     post: {
       responses: {
         /** OK */
-        200: unknown;
+        200: {
+          content: {
+            "application/json": components["schemas"]["User"];
+          };
+        };
         /** Bad request */
-        400: unknown;
+        400: {
+          content: {
+            "application/json": components["schemas"]["UserError"];
+          };
+        };
       };
       requestBody: {
         content: {
@@ -25,7 +33,11 @@ export interface paths {
         /** OK */
         200: unknown;
         /** Bad request */
-        400: unknown;
+        400: {
+          content: {
+            "application/json": components["schemas"]["UserError"];
+          };
+        };
       };
       requestBody: {
         content: {
@@ -247,8 +259,7 @@ export interface components {
       email: string;
       username: string;
       school?: string;
-      firstName?: string;
-      lastName?: string;
+      name?: string;
       country?: string;
       isAdmin: boolean;
     };
@@ -302,6 +313,14 @@ export interface components {
     TaskSetter: components["schemas"]["TaskRead"] & {
       checkerId: number;
       validatorId?: number;
+    };
+    UserError: {
+      id?: string;
+      email?: string;
+      username?: string;
+      password?: string;
+      passwordConfirm?: string;
+      country?: string;
     };
   };
 }

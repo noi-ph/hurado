@@ -3,14 +3,12 @@ import validator from 'validator';
 
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/types';
-
 import { Countries } from '../../../orm/entities/users/types';
+import { UserError } from 'utils/Errors';
 
 export const validatorEdit = async (req: Request, res: Response, next: NextFunction) => {
-  let { email, username, password, passwordConfirm, school, firstName, lastName, country } = req.body;
-  const errors = new ErrorArray();
+  let { email, username, password, passwordConfirm, school, name, country } = req.body;
+
   const userRepository = AppDataSource.getRepository(User);
 
   email = !email ? '' : email;
@@ -18,43 +16,44 @@ export const validatorEdit = async (req: Request, res: Response, next: NextFunct
   password = !password ? '' : password;
   passwordConfirm = !passwordConfirm ? '' : passwordConfirm;
   school = !school ? '' : school;
-  firstName = !firstName ? '' : firstName;
-  lastName = !lastName ? '' : lastName;
+  name = !name ? '' : name;
   country = !country ? '' : country;
+
+  const err: UserError = {};
 
   if (email) {
     const user = await userRepository.findOne({ where: { email } });
     if (user) {
-      errors.put('email', `Email '${email}' already exists`);
+      err.email = `Email "${email}" already exists`;
     }
 
     if (!validator.isEmail(email)) {
-      errors.put('email', `Email '${email}' is invalid`);
+      err.email = `Email "${email}" is invalid`;
     }
   }
 
   if (username) {
     const user = await userRepository.findOne({ where: { username } });
     if (user) {
-      errors.put('username', `Username '${username}' already exists`);
+      err.username = `Username "${username} already exists"`;
     }
   }
 
   if (password) {
     if (password != passwordConfirm) {
-      errors.put('password', `Passwords do not match`);
+      err.password = `Password does not match password confirmation`;
+      err.passwordConfirm = `Password confirmation does not match password`;
     }
   }
 
   if (country) {
     if (!(country in Countries)) {
-      errors.put('country', `Country '${country}' is not recognized`);
+      err.country = `Country "${country}" is not recognized`;
     }
   }
 
-  if (!errors.isEmpty) {
-    const customError = new CustomError(400, 'Validation', 'Edit user validation error', null, errors);
-    return next(customError);
-  }
-  return next();
+  if (Object.keys(err).length) {
+    err.status = 400;
+    return next(err);
+  } else return next();
 };

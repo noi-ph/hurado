@@ -12,101 +12,82 @@ async function runSeedData() {
   const userRepository = AppDataSource.getRepository(User);
 
   user.username = 'Heisenberg';
-  user.firstName = 'Walter';
-  user.lastName = 'White';
+  user.name = 'Walter White';
   user.email = 'admin@admin.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = true;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Jesse';
-  user.firstName = 'Jesse';
-  user.lastName = 'Pinkman';
+  user.name = 'Jesse Pinkman';
   user.email = 'standard@standard.com';
   user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Sky';
-  user.firstName = 'Skyler';
-  user.lastName = 'White';
+  user.name = 'Skyler White';
   user.email = 'skyler.white@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Hank';
-  user.firstName = 'Hank';
-  user.lastName = 'Schrader';
+  user.name = 'Hank Schrader';
   user.email = 'hank.schrader@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Marie';
-  user.firstName = 'Marie';
-  user.lastName = 'Schrader';
+  user.name = 'Marie Schrader';
   user.email = 'marie.schrader@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'The Lawyer';
-  user.firstName = 'Saul';
-  user.lastName = 'Goodman';
+  user.name = 'Saul Goodman';
   user.email = 'saul.goodman@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Gus';
-  user.firstName = 'Gustavo';
-  user.lastName = 'Fring';
+  user.name = 'Gustavo Fring';
   user.email = 'gustavo.fring@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Mike';
-  user.firstName = 'Michael';
-  user.lastName = 'Ehrmantraut';
+  user.name = 'Michael Ehrmantraut';
   user.email = 'michael.ehrmantraut@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Tio';
-  user.firstName = 'Hector';
-  user.lastName = 'Salamanca';
+  user.name = 'Hector Salamanca';
   user.email = 'hector.salamanca@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
   user = new User();
   user.username = 'Tuco';
-  user.firstName = 'Alberto';
-  user.lastName = 'Salamanca';
+  user.name = 'Alberto Salamanca';
   user.email = 'alberto.salamanca@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 

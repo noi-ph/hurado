@@ -132,3 +132,4 @@ Note that as far as TypeORM is concerned, the seed scripts are also migrations.
 - [Troy Serapio](https://github.com/tdserapio)
 - [Angelu Garcia](https://github.com/devByGelu)
 - [The Boy (alias)](https://github.com/RedBlazerFlame)
+- [Davis Magpantay](https://github.com/dexva)

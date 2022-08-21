@@ -14,21 +14,17 @@ describe('Users', () => {
   let adminUserToken = null;
   const adminUser = new User();
   adminUser.username = 'Badger';
-  adminUser.firstName = 'Brandon';
-  adminUser.lastName = 'Mayhew';
+  adminUser.name = 'Brandon Mayhew';
   adminUser.email = 'brandon.mayhew@test.com';
-  adminUser.hashedPassword = userPassword;
-  adminUser.hashPassword();
+  adminUser.setPassword(userPassword);
   adminUser.isAdmin = true;
 
   let standardUserToken = null;
   const standardUser = new User();
   standardUser.username = 'Toddy';
-  standardUser.firstName = 'Todd';
-  standardUser.firstName = 'Alquist';
+  standardUser.name = 'Todd Alquist';
   standardUser.email = 'todd.alquist@test.com';
-  standardUser.hashedPassword = userPassword;
-  standardUser.hashPassword();
+  standardUser.setPassword(userPassword);
   standardUser.isAdmin = false;
 
   before(async () => {
