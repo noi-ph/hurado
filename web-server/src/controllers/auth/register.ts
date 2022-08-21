@@ -32,10 +32,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     user.email = email;
 
     if (username) {
-      if (Object.keys(validatorUsername(username)).length) { 
-        err.username = validatorUsername(username).username;
+      const usernameErrors = validatorUsername(username);
+      if (Object.keys(usernameErrors).length) { 
+        err.username = usernameErrors.username;
       } else {
-        user.setUsername(username);
+        user.username = username;
       }
     }
 

@@ -54,11 +54,7 @@ export class User {
       this.country = country;
     }
   }
-
-  setUsername(username: string) {
-    this.username = username;
-  }
-
+  
   setPassword(password: string) {
     this.hashedPassword = bcrypt.hashSync(password, 8);
   }

@@ -57,7 +57,7 @@ export interface paths {
         /** OK */
         200: unknown;
         /** Bad request */
-        404: unknown;
+        400: unknown;
       };
     };
     patch: {
@@ -269,7 +269,8 @@ export interface components {
       username: string;
       password?: string;
       school?: string;
-      name?: string;
+      firstName?: string;
+      lastName?: string;
       country?: string;
     };
     FileRead: {
@@ -315,13 +316,11 @@ export interface components {
     };
     UserError: {
       id?: string;
-      raw?: { [key: string]: unknown };
       email?: string;
       username?: string;
       password?: string;
       passwordConfirm?: string;
       country?: string;
-      show?: string;
     };
   };
 }

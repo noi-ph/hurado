@@ -316,7 +316,6 @@ export interface components {
       validatorId?: number;
     };
     UserError: {
-      raw?: { [key: string]: unknown };
       email?: string;
       username?: string;
       password?: string;

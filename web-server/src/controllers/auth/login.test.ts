@@ -14,11 +14,9 @@ describe('Login', () => {
   const userPassword = 'pass1';
   const user = new User();
   user.username = 'Badger';
-  user.firstName = 'Brandon';
-  user.lastName = 'Mayhew';
+  user.name = 'Brandon Mayhew';
   user.email = 'brandon.mayhew@test.com';
-  user.hashedPassword = userPassword;
-  user.hashPassword();
+  user.setPassword(userPassword);
   user.isAdmin = true;
 
   before(async () => {

@@ -14,8 +14,7 @@ async function runSeedData() {
   user.username = 'Heisenberg';
   user.name = 'Walter White';
   user.email = 'admin@admin.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = true;
   await userRepository.save(user);
 
@@ -24,7 +23,7 @@ async function runSeedData() {
   user.name = 'Jesse Pinkman';
   user.email = 'standard@standard.com';
   user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -32,8 +31,7 @@ async function runSeedData() {
   user.username = 'Sky';
   user.name = 'Skyler White';
   user.email = 'skyler.white@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -41,8 +39,7 @@ async function runSeedData() {
   user.username = 'Hank';
   user.name = 'Hank Schrader';
   user.email = 'hank.schrader@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -50,8 +47,7 @@ async function runSeedData() {
   user.username = 'Marie';
   user.name = 'Marie Schrader';
   user.email = 'marie.schrader@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -59,8 +55,7 @@ async function runSeedData() {
   user.username = 'The Lawyer';
   user.name = 'Saul Goodman';
   user.email = 'saul.goodman@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -68,8 +63,7 @@ async function runSeedData() {
   user.username = 'Gus';
   user.name = 'Gustavo Fring';
   user.email = 'gustavo.fring@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -77,8 +71,7 @@ async function runSeedData() {
   user.username = 'Mike';
   user.name = 'Michael Ehrmantraut';
   user.email = 'michael.ehrmantraut@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -86,8 +79,7 @@ async function runSeedData() {
   user.username = 'Tio';
   user.name = 'Hector Salamanca';
   user.email = 'hector.salamanca@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
@@ -95,8 +87,7 @@ async function runSeedData() {
   user.username = 'Tuco';
   user.name = 'Alberto Salamanca';
   user.email = 'alberto.salamanca@test.com';
-  user.hashedPassword = 'pass1';
-  user.hashPassword();
+  user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
 
