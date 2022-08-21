@@ -13,7 +13,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
           "hashed_password" TEXT      NOT NULL,
           "created_at"      TIMESTAMP NOT NULL DEFAULT NOW(),
           "school"          TEXT,
-          "is_admin"        BOOLEAN   NOT NULL DEFAULT false,
+          "is_admin"        BOOLEAN   NOT NULL DEFAULT FALSE,
           "name"            TEXT      NOT NULL DEFAULT '',
           "country"         TEXT      NOT NULL DEFAULT 'PH', 
 
