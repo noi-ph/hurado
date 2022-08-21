@@ -53,6 +53,7 @@ export const validatorEdit = async (req: Request, res: Response, next: NextFunct
   }
 
   if (Object.keys(err).length) {
+    err.status = 400;
     return next(err);
   } else return next();
 };

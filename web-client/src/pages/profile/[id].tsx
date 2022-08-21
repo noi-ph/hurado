@@ -19,7 +19,7 @@ const ViewPage = () => {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
         if (err.data.show) {
-          alert(`User not found.`);
+          alert(`User not found`);
         }
         
       } else {

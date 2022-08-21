@@ -57,7 +57,7 @@ export interface paths {
         /** OK */
         200: unknown;
         /** Bad request */
-        400: unknown;
+        404: unknown;
       };
     };
     patch: {

@@ -1,4 +1,5 @@
 type Error = {
+  status?: any;
   raw?: any;
 }
 

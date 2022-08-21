@@ -15,12 +15,14 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     let user = await userRepository.findOne({ where: { email } });
 
     if (user) {
+      err.status = 400;
       err.email = `User with email "${email}" already exists`
     }
 
     user = await userRepository.findOne({ where: { username } });
 
     if (user) {
+      err.status = 400;
       err.username = `User with username "${username}" already exists`;
     }
 
@@ -31,14 +33,15 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       user.setUsername(username);
     } catch (e) {
       if ('username' in e) {
+        err.status = 400;
         err.username = e.username;
       } else {
-        err.raw = e;
+        err.status = 500;
+        err.raw = 'Internal server error';
       }
     }
 
-    user.hashedPassword = password;
-    user.hashPassword();
+    user.setPassword(password);
 
     if (Object.keys(err).length) {
       return next(err);
@@ -48,7 +51,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       res.send(user);
     }
   } catch (e) {
-    err.raw = e;
+    err.status = 500;
+    err.raw = 'Internal server error';
     return next(err);
   }
 

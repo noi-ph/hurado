@@ -79,8 +79,8 @@ export class User {
     this.username = username;
   }
 
-  hashPassword() {
-    this.hashedPassword = bcrypt.hashSync(this.hashedPassword, 8);
+  setPassword(password: string) {
+    this.hashedPassword = bcrypt.hashSync(password, 8);
   }
 
   checkIfPasswordMatch(unencryptedPassword: string) {

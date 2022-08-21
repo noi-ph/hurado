@@ -38,8 +38,7 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (password) {
-      user.hashedPassword = password;
-      user.hashPassword();
+      user.setPassword(password);
     }
 
     if (school) {
@@ -58,10 +57,12 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
       await userRepository.save(user);
       res.customSuccess(200, 'User profile successfully edited', user);
     } else {
+      err.status = 400;
       return next(err);
     }
   } catch (e) {
-    err.raw = e;
+    err.status = 500;
+    err.raw = 'Internal server error';
     return next(err);
   }
 };

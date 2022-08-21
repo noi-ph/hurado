@@ -43,6 +43,7 @@ export const validatorRegister = (req: Request, res: Response, next: NextFunctio
   }
 
   if (Object.keys(err).length) {
+    err.status = 400;
     return next(err);
   } else return next();
 

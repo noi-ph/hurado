@@ -16,8 +16,10 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const user = await userRepository.findOne({ where: { email } });
 
     if (!user) {
+      err.status = 400;
       err.email = `User with email "${email}" not found`;
     } else if (!user.checkIfPasswordMatch(password)) {
+      err.status = 400;
       err.password = 'Password is incorrect';
     }
 
@@ -34,12 +36,14 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         res.status(200);
         res.send({ jwt: `Bearer ${token}`, user });
       } catch (e) {
-        err.raw = e;
+        err.status = 500;
+        err.raw = 'Internal server error';
         return next(err);
       }
     }
   } catch (e) {
-    err.raw = e;
+    err.status = 500;
+    err.raw = 'Internal server error';
     return next(err);
   }
 };

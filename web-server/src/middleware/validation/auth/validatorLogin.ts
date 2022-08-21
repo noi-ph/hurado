@@ -25,6 +25,7 @@ export const validatorLogin = (req: Request, res: Response, next: NextFunction) 
   }
 
   if (Object.keys(err).length) {
+    err.status = 400;
     return next(err);
   } else {
     return next();
