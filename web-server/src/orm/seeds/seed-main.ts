@@ -94,13 +94,13 @@ async function runSeedData() {
   let file = new File();
   const fileRepository = AppDataSource.getRepository(File);
   file.name = 'file1.py';
-  file.fileURL = 'https://thisisaurl.com/file1.py';
+  file.fileUrl = 'https://thisisaurl.com/file1.py';
   const file1 = file;
   await fileRepository.save(file1);
 
   file = new File();
   file.name = 'file2.py';
-  file.fileURL = 'https://thisisaurl.com/file2.py';
+  file.fileUrl = 'https://thisisaurl.com/file2.py';
   const file2 = file;
   await fileRepository.save(file2);
 

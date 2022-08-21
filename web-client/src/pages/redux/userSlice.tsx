@@ -20,7 +20,7 @@ export class UserStateLoader {
         return this.initializeState();
       }
 
-      return JSON.parse(userJson);
+      return { user: JSON.parse(userJson) };
     } catch (err) {
       return this.initializeState();
     }

@@ -10,11 +10,12 @@ export const upload = async (req: Request, res: Response, next: NextFunction) =>
 
     const fileRepository = AppDataSource.getRepository(File);
     const file = new File();
-    file.fileURL = rawFile.path;
+    file.fileUrl = rawFile.path;
     file.name = rawFile.originalname;
     await fileRepository.save(file);
 
-    res.customSuccess(200, 'File successfully uploaded', file);
+    res.send(file);
+    res.customSuccess(200, 'File successfully uploaded');
   } catch (err) {
     const customError = new CustomError(400, 'Raw', 'Error', err);
     return next(customError);

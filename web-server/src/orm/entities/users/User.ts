@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-import { UserError } from 'utils/Errors';
 
 import { Countries } from './types';
 
@@ -9,44 +8,29 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    unique: true,
-  })
+  @Column({ unique: true })
   email: string;
 
-  @Column({
-    nullable: false,
-    unique: true,
-  })
+  @Column({ unique: true })
   username: string;
 
-  @Column()
+  @Column({ name: 'hashed_password' })
   hashedPassword: string;
 
-  @Column()
+  @Column({ name: 'created_at' })
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({
-    default: false,
-  })
+  @Column({ default: false, name: 'is_admin' })
   isAdmin: boolean;
 
-  @Column({
-    nullable: true,
-  })
+  @Column({ nullable: true })
   school: string;
 
-  @Column({
-    default: '',
-  })
+  @Column({ default: '' })
   name: string;
 
-  @Column({
-    type: 'enum',
-    enum: Countries,
-    default: Countries.PH,
-  })
+  @Column({ type: 'enum', enum: Countries, default: Countries.PH })
   country: Countries;
 
   setCountry(country: Countries) {

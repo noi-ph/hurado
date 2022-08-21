@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
 
@@ -93,9 +92,6 @@ const ShowTaskPage = () => {
         <br />
         
         Is public | In archive? {task.isPublicInArchive.toString()}
-        <br />
-
-        <Link href={`/tasks/submit/${task.id}`}>Submit to this task</Link>
       </React.Fragment>
     );
   } else {

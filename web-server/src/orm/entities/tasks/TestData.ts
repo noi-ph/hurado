@@ -12,7 +12,7 @@ export class TestData {
   @ManyToOne(() => Task) // many data can belong to one task
   task: Task;
 
-  @Column()
+  @Column({ name: 'task_id' })
   taskId: number;
 
   @Column()
@@ -24,23 +24,21 @@ export class TestData {
   @OneToOne(() => File) // a single i/o pair can only have one input file, and a input file can only belong to one i/o pair (for now)
   inputFile: File;
 
-  @Column()
+  @Column({ name: 'input_file_id' })
   inputFileId: number;
 
   @OneToOne(() => File) // ditto
   outputFile: File;
 
-  @Column()
+  @Column({ name: 'output_file_id' })
   outputFileId: number;
 
   @OneToOne(() => File) // ditto
   judgeFile: File;
 
-  @Column()
+  @Column({ name: 'judge_file_id' })
   judgeFileId: number;
 
-  @Column({
-    default: false,
-  })
+  @Column({ default: false, name: 'is_sample' })
   isSample: boolean;
 }

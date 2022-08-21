@@ -13,32 +13,29 @@ export class TestDataResult {
   @ManyToOne(() => Result)
   result: Result;
 
-  @Column()
+  @Column({ name: 'result_id' })
   resultId: number;
 
   @ManyToOne(() => TestData)
   testData: TestData;
 
-  @Column()
+  @Column({ name: 'test_data_id' })
   testDataId: number;
 
-  @Column({
-    type: 'enum',
-    enum: Verdicts,
-  })
+  @Column({ type: 'enum', enum: Verdicts })
   verdict: Verdicts;
 
-  @Column()
+  @Column({ name: 'running_time' })
   runningTime: number;
 
-  @Column()
+  @Column({ name: 'running_memory' })
   runningMemory: number;
 
   // Must satisfy 0 <= raw_score <= 1
-  @Column()
+  @Column({ name: 'raw_score' })
   rawScore: number;
 
-  @Column()
+  @Column({ name: 'verdict_gotten_at' })
   @CreateDateColumn()
   verdictGottenAt: Date;
 }

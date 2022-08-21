@@ -71,7 +71,7 @@ const CreateTaskPage = () => {
         },
       });
 
-      const checkerUploadedFile = checkerFileResponse.data.data;
+      const checkerUploadedFile = checkerFileResponse.data;
       const checkerPayload = {
         file: checkerUploadedFile,
         languageCode: checkerLanguageCode,
@@ -92,7 +92,7 @@ const CreateTaskPage = () => {
         },
       });
 
-      const validatorUploadedFile = validatorFileResponse.data.data;
+      const validatorUploadedFile = validatorFileResponse.data;
       const validatorPayload = {
         file: validatorUploadedFile,
         languageCode: validatorLanguageCode,
@@ -124,7 +124,7 @@ const CreateTaskPage = () => {
 
       const taskResponse = await http.post(`http://localhost:4000/v1/tasks`, taskPayload);
 
-      const task = taskResponse.data.data;
+      const task = taskResponse.data;
 
       alert('Task created successfully');
 

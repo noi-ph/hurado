@@ -11,39 +11,36 @@ export class Result {
   @OneToOne(() => Submission)
   submission: Submission;
 
-  @Column()
+  @Column({ name: 'submission_id' })
   submissionId: number;
 
-  @Column({
-    type: 'enum',
-    enum: Verdicts,
-  })
+  @Column({ type: 'enum', enum: Verdicts })
   verdict: Verdicts;
 
-  @Column()
+  @Column({ name: 'running_time' })
   runningTime: number;
 
-  @Column()
+  @Column({ name: 'running_memory' })
   runningMemory: number;
 
   // from instructions: computed as sum of SubtaskResult scaled_scores divided by Task.score_max-- Must satisfy 0 <= raw_score <= 1
-  @Column()
+  @Column({ name: 'raw_score' })
   rawScore: number;
 
-  @Column()
+  @Column({ name: 'is_official' })
   isOfficial: boolean;
 
-  @Column()
+  @Column({ name: 'compile_time' })
   compileTime: number;
 
-  @Column()
+  @Column({ name: 'compile_memory' })
   compileMemory: number;
 
-  @Column()
+  @Column({ name: 'created_at' })
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({ name: 'verdict_gotten_at' })
   @CreateDateColumn()
   verdictGottenAt: Date;
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 import { User } from '../users/User';
 
@@ -21,21 +21,18 @@ export class TaskDeveloper {
   @ManyToOne(() => Task) // one task can have many developer attributions
   task: Task;
 
-  @Column()
+  @Column({ name: 'task_id' })
   taskId: number;
 
   @ManyToOne(() => User) // one user can have many developer attributions (for different roles)
   user: User;
 
-  @Column()
+  @Column({ name: 'user_id' })
   userId: number;
 
   @Column()
   order: number;
 
-  @Column({
-    type: 'enum',
-    enum: TaskDeveloperRoles,
-  })
+  @Column({ type: 'enum', enum: TaskDeveloperRoles })
   role: TaskDeveloperRoles;
 }

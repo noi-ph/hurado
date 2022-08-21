@@ -12,12 +12,12 @@ export class TaskAttachment {
   @ManyToOne(() => Task) // many attachments can be related to one Task
   task: Task;
 
-  @Column()
+  @Column({ name: 'task_id' })
   taskId: number;
 
   @ManyToOne(() => File) // many attachment instances can all point back to one File
   file: File;
 
-  @Column()
+  @Column({ name: 'file_id' })
   fileId: number;
 }

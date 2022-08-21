@@ -12,17 +12,15 @@ export class SubmissionFile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Submission, submission => submission.id, {
-    cascade: true,
-  }) // many SubmissionFile for one Submission (for multiple files) - not sure about this tbh
+  @ManyToOne(() => Submission) // many SubmissionFile for one Submission (for multiple files) - not sure about this tbh
   submission: Submission;
 
-  @Column()
+  @Column({ name: 'submission_id' })
   submissionId: number;
 
   @OneToOne(() => File) // a File can only belong to one SubmissionFile and vice versa
   file: File;
 
-  @Column()
+  @Column({ name: 'file_id' })
   fileId: number;
 }

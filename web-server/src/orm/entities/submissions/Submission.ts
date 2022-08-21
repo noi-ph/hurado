@@ -11,7 +11,7 @@ export class Submission {
   @ManyToOne(() => User)
   owner: User;
 
-  @Column()
+  @Column({ name: 'owner_id' })
   ownerId: number;
 
   // TO-DO: contest  / contestId (nullable)
@@ -19,13 +19,13 @@ export class Submission {
   @ManyToOne(() => Task)
   task: Task;
 
-  @Column()
+  @Column({ name: 'task_id' })
   taskId: number;
 
-  @Column()
+  @Column({ name: 'created_at' })
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({ name: 'language_code' })
   languageCode: string; // could be enum?
 }

@@ -13,32 +13,29 @@ export class SubtaskResult {
   @ManyToOne(() => Result)
   result: Result;
 
-  @Column()
+  @Column({ name: 'result_id' })
   resultId: number;
 
   @ManyToOne(() => Subtask)
   subtask: Subtask;
 
-  @Column()
+  @Column({ name: 'subtask_id' })
   subtaskId: number;
 
-  @Column({
-    type: 'enum',
-    enum: Verdicts,
-  })
+  @Column({ type: 'enum', enum: Verdicts })
   verdict: Verdicts;
 
-  @Column()
+  @Column({ name: 'running_time' })
   runningTime: number;
 
-  @Column()
+  @Column({ name: 'running_memory' })
   runningMemory: number;
 
   // Must satisfy 0 <= raw_score <= 1
-  @Column()
+  @Column({ name: 'raw_score' })
   rawScore: number;
 
-  @Column()
+  @Column({ name: 'verdict_gotten_at' })
   @CreateDateColumn()
   verdictGottenAt: Date;
 }

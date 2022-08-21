@@ -10,12 +10,12 @@ export class Script {
   @ManyToOne(() => File)
   file: File;
 
-  @Column()
+  @Column({ name: 'file_id' })
   fileId: number;
 
-  @Column()
+  @Column({ name: 'language_code' })
   languageCode: string;
 
-  @Column()
+  @Column({ name: 'runtime_args' })
   runtimeArgs: string;
 }

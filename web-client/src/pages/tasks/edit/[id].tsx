@@ -71,7 +71,7 @@ const EditTaskPage = () => {
           },
         });
   
-        const checkerUploadedFile = checkerFileResponse.data.data;
+        const checkerUploadedFile = checkerFileResponse.data;
         const checkerPayload = {
           file: checkerUploadedFile,
           languageCode: checkerLanguageCode,
@@ -80,7 +80,7 @@ const EditTaskPage = () => {
   
         const checkerResponse = await http.post(`http://localhost:4000/v1/scripts`, checkerPayload);
   
-        checker = checkerResponse.data.data;
+        checker = checkerResponse.data;
         checkerScriptId = checker.id;
       }
 
@@ -98,7 +98,7 @@ const EditTaskPage = () => {
           },
         });
   
-        const validatorUploadedFile = validatorFileResponse.data.data;
+        const validatorUploadedFile = validatorFileResponse.data;
         const validatorPayload = {
           file: validatorUploadedFile,
           languageCode: validatorLanguageCode,
@@ -107,7 +107,7 @@ const EditTaskPage = () => {
   
         const validatorResponse = await http.post(`http://localhost:4000/v1/scripts`, validatorPayload);
   
-        validator = validatorResponse.data.data;
+        validator = validatorResponse.data;
         validatorScriptId = validator.id;
       }
 

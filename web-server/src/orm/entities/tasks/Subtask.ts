@@ -17,29 +17,27 @@ export class Subtask {
   @ManyToOne(() => Task) // many subtasks can belong to one task
   task: Task;
 
-  @Column()
+  @Column({ name: 'task_id' })
   taskId: number;
 
   @Column()
   order: number;
 
-  @Column()
+  @Column({ name: 'score_max' })
   scoreMax: number;
 
   @ManyToOne(() => Script)
   scorerScript: Script;
 
-  @Column()
+  @Column({ name: 'scorer_script_id' })
   scorerScriptId: number;
 
   @ManyToOne(() => Script)
   validatorScript: Script;
 
-  @Column({
-    nullable: true,
-  })
+  @Column({ nullable: true, name: 'validator_script_id' })
   validatorScriptId: number;
 
-  @Column()
+  @Column({ name: 'test_data_pattern' })
   testDataPattern: string; // NOTE: would have done an Array but not supported on our postgres apparently
 }
