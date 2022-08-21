@@ -1,17 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('files')
 export class File {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    nullable: false,
-  })
+  @Column()
   name: string;
 
-  @Column({
-    nullable: false,
-  })
-  fileURL: string;
+  @Column({ name: 'file_url' })
+  fileUrl: string;
 }

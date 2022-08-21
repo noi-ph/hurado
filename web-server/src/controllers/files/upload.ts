@@ -10,7 +10,7 @@ export const upload = async (req: Request, res: Response, next: NextFunction) =>
 
     const fileRepository = AppDataSource.getRepository(File);
     const file = new File();
-    file.fileURL = rawFile.path;
+    file.fileUrl = rawFile.path;
     file.name = rawFile.originalname;
     await fileRepository.save(file);
 

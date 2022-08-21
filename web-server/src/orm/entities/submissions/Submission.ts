@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 import { Task } from '../tasks/Task';
 import { User } from '../users/User';
@@ -9,23 +9,24 @@ export class Submission {
   id: number;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'owner_id' })
   owner: User;
 
-  @Column()
+  @Column({ name: 'owner_id' })
   ownerId: number;
 
   // TO-DO: contest  / contestId (nullable)
 
-  @Column(() => Task)
+  @ManyToOne(() => Task)
+  @JoinColumn({ name: 'task_id' })
   task: Task;
 
-  @Column()
+  @Column({ name: 'task_id' })
   taskId: number;
 
-  @Column()
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column()
+  @Column({ name: 'language_code' })
   languageCode: string; // could be enum?
 }

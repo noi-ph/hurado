@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 import { User } from '../users/User';
 
@@ -13,29 +13,28 @@ import { TaskDeveloperRoles } from './types';
 // problem would be for the {order}, since it can be different per problem
 // and also Arrays aren't compatible with postgres (at least on my end), so not sure how to implement it
 
-@Entity('taskDevelopers')
+@Entity('task_developers')
 export class TaskDeveloper {
   @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => Task) // one task can have many developer attributions
+  @JoinColumn({ name: 'task_id' })
   task: Task;
 
-  @Column()
+  @Column({ name: 'task_id' })
   taskId: number;
 
   @ManyToOne(() => User) // one user can have many developer attributions (for different roles)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column()
+  @Column({ name: 'user_id' })
   userId: number;
 
   @Column()
   order: number;
 
-  @Column({
-    type: 'enum',
-    enum: TaskDeveloperRoles,
-  })
+  @Column({ type: 'enum', enum: TaskDeveloperRoles })
   role: TaskDeveloperRoles;
 }
