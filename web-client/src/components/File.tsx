@@ -7,13 +7,13 @@ type FileUploadAreaProps = {
   };
   forFile: {
     file: null;
-    setFile: React.Dispatch<React.SetStateAction<null>>;
+    setFile: React.Dispatch<React.SetStateAction<File | null>>;
   };
 };
 
 const FileUploadArea = (props: FileUploadAreaProps) => {
   const { name, setName } = props.forName;
-  const { file, setFile } = props.forFile;
+  const { setFile } = props.forFile;
 
   return (
     <React.Fragment>
@@ -25,7 +25,7 @@ const FileUploadArea = (props: FileUploadAreaProps) => {
 
       <label>
         File:
-        <input type="file" value={file} onChange={(e) => setFile(e.target.value)} />
+        <input type="file" onChange={(e) => {if (e.target.files) setFile(e.target.files[0])}} />
       </label>
     </React.Fragment>
   );

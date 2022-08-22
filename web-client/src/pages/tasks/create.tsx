@@ -23,7 +23,7 @@ const CreateTaskPage = () => {
   const [compileMemoryLimit, setCompileMemoryLimit] = React.useState(1099511627776);
   const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
   const [validatorName, setValidatorName] = React.useState("");
-  const [validatorFile, setValidatorFile] = React.useState(null);
+  const [validatorFile, setValidatorFile] = React.useState<File | null>(null);
   const [validatorLanguageCode, setValidatorLanguageCode] = React.useState("");
   const [validatorRuntimeArgs, setValidatorRuntimeArgs] = React.useState("");
   const [isPublicInArchive, setIsPublicInArchive] = React.useState(false);
@@ -61,15 +61,10 @@ const CreateTaskPage = () => {
     }
 
     try {
-      const checkerBlob = new Blob([checkerFile]);
       const checkerFileData = new FormData();
-      checkerFileData.append(checkerName, checkerBlob, checkerName);
+      checkerFileData.append(checkerName, checkerFile);
 
-      const checkerFileResponse = await http.post(`http://localhost:4000/v1/files/`, checkerFileData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const checkerFileResponse = await http.post(`http://localhost:4000/v1/files/`, checkerFileData);
 
       const checkerUploadedFile = checkerFileResponse.data;
       const checkerPayload = {
@@ -82,15 +77,10 @@ const CreateTaskPage = () => {
 
       const checker = checkerResponse.data.data;
 
-      const validatorBlob = new Blob([validatorFile]);
       const validatorFileData = new FormData();
-      validatorFileData.append(validatorName, validatorBlob, validatorName);
+      validatorFileData.append(validatorName, validatorFile);
 
-      const validatorFileResponse = await http.post(`http://localhost:4000/v1/files/`, validatorFileData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const validatorFileResponse = await http.post(`http://localhost:4000/v1/files/`, validatorFileData);
 
       const validatorUploadedFile = validatorFileResponse.data;
       const validatorPayload = {
