@@ -18,6 +18,6 @@ var storage = multer.diskStorage({
 var uploadTo = multer({ storage: storage });
 
 router.put('/', [], create)
-router.post('/', [uploadTo.any(), (req, res, next) => {console.log('i am middleware!'); console.log(req.body); return next()}], upload);
+router.post('/', [uploadTo.any()], upload);
 
 export default router;
