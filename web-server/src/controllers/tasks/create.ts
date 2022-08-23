@@ -40,7 +40,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   [checker, validator].forEach((object, index) => {
     const rawFile: Express.Multer.File = req.files[index];
     const file = new File(rawFile.originalname, rawFile.path);
-    const script = new Script(file, checker.languageCode, checker.runtimeArgs);
+    const script = new Script(file, object.languageCode, object.runtimeArgs);
 
     files.push(file);
     scripts.push(script);
