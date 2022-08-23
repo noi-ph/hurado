@@ -45,10 +45,6 @@ export type TaskError = Error & {
 export type SubmissionError = Error & {
   task?: string;
   languageCode?: string;
-}
-
-export type SubmissionFileError = Error & {
-  submission?: SubmissionError;
   file?: FileError;
 };
 

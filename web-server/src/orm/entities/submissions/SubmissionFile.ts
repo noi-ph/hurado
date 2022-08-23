@@ -25,4 +25,9 @@ export class SubmissionFile {
 
   @Column({ name: 'file_id' })
   fileId: number;
+
+  constructor(file: File, submission: Submission) {
+    this.file = file;
+    this.submission = submission;
+  }
 }

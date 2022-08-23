@@ -24,8 +24,7 @@ const SubmitToTaskPage = () => {
         submission: {
           taskId,
           languageCode
-        },
-        file: { name: fileName }
+        }
       }));
 
       await http.put(`http://localhost:4000/v1/submissions`, formData, { headers: {

@@ -29,4 +29,10 @@ export class Submission {
 
   @Column({ name: 'language_code' })
   languageCode: string; // could be enum?
+
+  constructor(ownerId: number, taskId: number, languageCode: string) {
+    this.ownerId = ownerId;
+    this.taskId = taskId;
+    this.languageCode = languageCode;
+  }
 }
