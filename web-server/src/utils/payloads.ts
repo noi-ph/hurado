@@ -27,3 +27,15 @@ export type TaskPayload = {
   isPublicInArchive: boolean;
   language: string;
 }
+
+export type SubmissionPayload = {
+  taskId: number;
+  languageCode: string;
+}
+
+export type SubmissionFilePayload = {
+  submission: SubmissionPayload;
+  file: FilePayload;
+  submissionId: number;
+  fileId: number;
+}

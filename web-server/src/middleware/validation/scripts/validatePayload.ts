@@ -1,6 +1,6 @@
 import validator from 'validator';
 
-import { ScriptPayload } from "controllers/tasks/helpers/payloads";
+import { ScriptPayload } from "utils/payloads";
 import { ScriptError } from "utils/Errors";
 
 import { validateFilePayload } from '../files/validatePayload';

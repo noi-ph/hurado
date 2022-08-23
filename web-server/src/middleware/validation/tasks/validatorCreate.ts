@@ -2,7 +2,7 @@ import validator from 'validator';
 import { Request, Response, NextFunction } from 'express';
 
 import { TaskError } from 'utils/Errors';
-import { TaskPayload } from 'controllers/tasks/helpers/payloads';
+import { TaskPayload } from 'utils/payloads';
 import { validateScriptPayload } from '../scripts/validatePayload';
 import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';

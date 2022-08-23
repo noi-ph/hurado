@@ -6,7 +6,7 @@ import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types
 import { User } from 'orm/entities/users/User';
 import { create as createScript } from 'controllers/scripts';
 
-import { TaskPayload } from './helpers/payloads';
+import { TaskPayload } from '../../utils/payloads';
 
 export const createTask = async (req: Request, res: Response, next: NextFunction) => {
   const {

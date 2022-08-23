@@ -1,4 +1,4 @@
-import { ScriptPayload } from 'controllers/tasks/helpers/payloads';
+import { ScriptPayload } from 'utils/payloads';
 import { AppDataSource } from 'orm/data-source';
 import { Script } from 'orm/entities/scripts/Script';
 import { create as createFile } from '../files';

@@ -1,7 +1,5 @@
 import multer from 'multer';
 import path from 'path';
-
-
 import { Router } from 'express';
 
 import { edit, list, view } from 'controllers/tasks';

@@ -1,6 +1,6 @@
 import validator from "validator";
 
-import { FilePayload } from "controllers/tasks/helpers/payloads";
+import { FilePayload } from "utils/payloads";
 import { FileError } from "utils/Errors";
 
 export const validateFilePayload = (data: FilePayload) => {
