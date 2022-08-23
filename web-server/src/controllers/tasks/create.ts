@@ -4,9 +4,9 @@ import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
 import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types';
 import { User } from 'orm/entities/users/User';
+import { create as createScript } from 'controllers/scripts';
 
 import { TaskPayload } from './helpers/payloads';
-import { createScript } from './helpers/createScript';
 
 export const createTask = async (req: Request, res: Response, next: NextFunction) => {
   const {

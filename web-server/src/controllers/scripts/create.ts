@@ -1,25 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
-
+import { ScriptPayload } from 'controllers/tasks/helpers/payloads';
 import { AppDataSource } from 'orm/data-source';
 import { Script } from 'orm/entities/scripts/Script';
-import { CustomError } from 'utils/response/custom-error/CustomError';
+import { create as createFile } from '../files';
 
-export const create = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { file, languageCode, runtimeArgs } = req.body;
+export const create = async (data: ScriptPayload) => {
+  const { file: fileData, languageCode, runtimeArgs } = data;
+  const file = await createFile(fileData.file);
 
-    const scriptRepository = AppDataSource.getRepository(Script);
+  const scriptRepository = AppDataSource.getRepository(Script);
 
-    const script = new Script();
-    script.file = file;
-    script.fileId = file.id;
-    script.languageCode = languageCode;
-    script.runtimeArgs = runtimeArgs;
-    await scriptRepository.save(script);
+  const script = new Script();
+  script.file = file;
+  script.fileId = file.id;
+  script.languageCode = languageCode;
+  script.runtimeArgs = runtimeArgs;
+  await scriptRepository.save(script);
 
-    res.status(200).send(script);
-  } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', err);
-    return next(customError);
-  }
+  return script;
 };
