@@ -42,4 +42,10 @@ export type TaskError = Error & {
   language?: string;
 }
 
+export type SubmissionError = Error & {
+  task?: string;
+  languageCode?: string;
+  file?: FileError;
+};
+
 export type PossibleErrors = UserError | TaskError | FileError | ScriptError;

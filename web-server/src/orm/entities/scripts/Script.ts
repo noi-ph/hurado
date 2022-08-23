@@ -19,4 +19,10 @@ export class Script {
 
   @Column({ name: 'runtime_args' })
   runtimeArgs: string;
+
+  constructor(file: File, languageCode: string, runtimeArgs: string) {
+    this.file = file;
+    this.languageCode = languageCode;
+    this.runtimeArgs = runtimeArgs;
+  }
 }

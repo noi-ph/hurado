@@ -91,33 +91,21 @@ async function runSeedData() {
   user.isAdmin = false;
   await userRepository.save(user);
 
-  let file = new File();
   const fileRepository = AppDataSource.getRepository(File);
-  file.name = 'file1.py';
-  file.fileUrl = 'https://thisisaurl.com/file1.py';
+  let file = new File('file1.py', 'https://thisisaurl.com/file1.py');
   const file1 = file;
   await fileRepository.save(file1);
 
-  file = new File();
-  file.name = 'file2.py';
-  file.fileUrl = 'https://thisisaurl.com/file2.py';
+  file = new File('file2.py', 'https://thisisaurl.com/file2.py');
   const file2 = file;
   await fileRepository.save(file2);
 
-  let script = new Script();
+  let script = new Script(file1, 'python', 'some_arg');
   const scriptRepository = AppDataSource.getRepository(Script);
-  script.file = file1;
-  script.fileId = file1.id;
-  script.languageCode = 'python';
-  script.runtimeArgs = 'some_arg';
   const script1 = script;
   await scriptRepository.save(script1);
 
-  script = new Script();
-  script.file = file2;
-  script.fileId = file2.id;
-  script.languageCode = 'python';
-  script.runtimeArgs = 'some_arg';
+  script = new Script(file2, 'python', 'some_arg');
   const script2 = script;
   await scriptRepository.save(script2);
 
