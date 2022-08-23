@@ -15,7 +15,7 @@ log/*
 !log/.gitkeep 
 *.log
 
-uploads
+uploads/*
 
 # keep config folder with env files ONLY for demo purposes
 # config/
