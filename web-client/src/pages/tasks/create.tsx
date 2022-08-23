@@ -55,45 +55,15 @@ const CreateTaskPage = () => {
   const createTask = async (e: any) => {
     e.preventDefault();  // Prevents automatic page reloading
 
-    if (!checkerFile || !validatorFile) {
-      alert('Please select a file');
+    if (!validatorFile || !checkerFile) {
       return;
     }
-
+    
     try {
-      const checkerFileData = new FormData();
-      checkerFileData.append(checkerName, checkerFile);
-
-      const checkerFileResponse = await http.post(`http://localhost:4000/v1/files/`, checkerFileData);
-
-      const checkerUploadedFile = checkerFileResponse.data;
-      const checkerPayload = {
-        file: checkerUploadedFile,
-        languageCode: checkerLanguageCode,
-        runtimeArgs: checkerRuntimeArgs,
-      };
-
-      const checkerResponse = await http.post(`http://localhost:4000/v1/scripts`, checkerPayload);
-
-      const checker = checkerResponse.data.data;
-
-      const validatorFileData = new FormData();
-      validatorFileData.append(validatorName, validatorFile);
-
-      const validatorFileResponse = await http.post(`http://localhost:4000/v1/files/`, validatorFileData);
-
-      const validatorUploadedFile = validatorFileResponse.data;
-      const validatorPayload = {
-        file: validatorUploadedFile,
-        languageCode: validatorLanguageCode,
-        runtimeArgs: validatorRuntimeArgs,
-      };
-
-      const validatorResponse = await http.post(`http://localhost:4000/v1/scripts`, validatorPayload);
-
-      const validator = validatorResponse.data.data;
-
-      const taskPayload = {
+      const formData = new FormData();
+      formData.append(checkerName, checkerFile);
+      formData.append(validatorName, validatorFile);
+      formData.append('data', JSON.stringify({
         title,
         slug,
         description,
@@ -101,24 +71,36 @@ const CreateTaskPage = () => {
         allowedLanguages,
         taskType,
         scoreMax,
-        checkerScriptId: checker.id,
+        checker: {
+          file: {
+            name: checkerName,
+          },
+          languageCode: checkerLanguageCode,
+          runtimeArgs: checkerRuntimeArgs
+        },
         timeLimit,
         memoryLimit,
         compileTimeLimit,
         compileMemoryLimit,
         submissionSizeLimit,
-        validatorScriptId: validator.id,
+        validator: {
+          file: {
+            name: validatorName,
+          },
+          languageCode: validatorLanguageCode,
+          runtimeArgs: validatorRuntimeArgs
+        },
         isPublicInArchive,
         language,
-      };
+      }));
 
-      const taskResponse = await http.post(`http://localhost:4000/v1/tasks`, taskPayload);
-
-      const task = taskResponse.data;
+      const taskResponse = await http.post(`http://localhost:4000/v1/tasks`, formData, { headers: {
+        'Content-Type': 'multipart/form-data'
+      } });
 
       alert('Task created successfully');
-
-      router.push(`/tasks/edit/${task.id}`);
+      
+      router.push(`/tasks/edit/${taskResponse.data.id}`);
     } catch (err: unknown) {  
       if (err instanceof AxiosError) {
         const status = err.response?.status;

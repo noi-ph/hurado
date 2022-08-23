@@ -11,8 +11,35 @@ export type UserError = Error & {
   country?: string;
 };
 
-export type TaskError = Error & {
-  slug?: string;
-};
 
-export type PossibleErrors = UserError | TaskError;
+export type FileError = Error & {
+  id?: string;
+  name?: string;
+  file?: string;
+}
+
+export type ScriptError = Error & {
+  file?: FileError;
+  languageCode?: string;
+  runtimeArgs?: string;
+}
+
+export type TaskError = Error & {
+  title?: string;
+  slug?: string;
+  statement?: string;
+  allowedLanguages?: string;
+  taskType?: string;
+  scoreMax?: string;
+  checker?: ScriptError;
+  timeLimit?: string;
+  memoryLimit?: string;
+  compileTimeLimit?: string;
+  compileMemoryLimit?: string;
+  submissionSizeLimit?: string;
+  validator?: ScriptError;
+  isPublicInArchive?: string;
+  language?: string;
+}
+
+export type PossibleErrors = UserError | TaskError | FileError | ScriptError;

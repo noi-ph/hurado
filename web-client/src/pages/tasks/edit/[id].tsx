@@ -179,6 +179,23 @@ const EditTaskPage = () => {
         setSubmissionSizeLimit(task.submissionSizeLimit);
         setIsPublicInArchive(task.isPublicInArchive);
         setLanguage(task.language);
+
+        // TODO add validation for ownership so that the below could be included
+        // TODO add GET endpoints to script and file
+
+        // const checker = (await http.get(`http://localhost:4000/v1/scripts/${task.checkerScriptId}`)).data;
+        // const thisCheckerFile = (await http.get(`http://localhost:4000/v1/files/${checker.fileId}`)).data;
+        // setCheckerFile(thisCheckerFile.file);
+        // setCheckerLanguageCode(checker.languageCode);
+        // setCheckerName(thisCheckerFile.name);
+        // setCheckerRuntimeArgs(checker.runtimeArgs);
+        
+        // const validator = (await http.get(`http://localhost:4000/v1/scripts/${task.validatorScriptId}`)).data;
+        // const thisValidatorFile = (await http.get(`http://localhost:4000/v1/files/${validator.fileId}`)).data;
+        // setValidatorFile(thisValidatorFile.file);
+        // setValidatorLanguageCode(validator.languageCode);
+        // setValidatorName(thisValidatorFile.name);
+        // setValidatorRuntimeArgs(validator.runtimeArgs);
       } catch (err: unknown) {  
         if (err instanceof AxiosError) {
           const status = err.response?.status;

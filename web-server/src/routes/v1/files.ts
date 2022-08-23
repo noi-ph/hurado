@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 
-import { upload } from 'controllers/files';
+import { upload, create } from 'controllers/files';
 
 const router = Router();
 
@@ -17,6 +17,7 @@ var storage = multer.diskStorage({
 
 var uploadTo = multer({ storage: storage });
 
-router.post('/', [uploadTo.any()], upload);
+router.put('/', [], create)
+router.post('/', [uploadTo.any(), (req, res, next) => {console.log('i am middleware!'); console.log(req.body); return next()}], upload);
 
 export default router;

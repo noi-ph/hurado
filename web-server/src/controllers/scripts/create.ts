@@ -17,7 +17,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     script.runtimeArgs = runtimeArgs;
     await scriptRepository.save(script);
 
-    res.customSuccess(200, 'Script successfully screated', script);
+    res.status(200).send(script);
   } catch (err) {
     const customError = new CustomError(400, 'Raw', 'Error', err);
     return next(customError);

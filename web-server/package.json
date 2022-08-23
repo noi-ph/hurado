@@ -11,7 +11,7 @@
     "migration:revert": "./scripts/dev-run.sh ts-node ./node_modules/typeorm/cli.js migration:revert --dataSource ./src/orm/data-source.ts",
     "migration:generate": "./scripts/dev-run.sh ts-node ./node_modules/.bin/typeorm migration:generate --pretty --dataSource ./src/orm/data-source.ts -n ",
     "migration:create": "./scripts/dev-run.sh ts-node ./node_modules/.bin/typeorm migration:create --dataSource ./src/orm/data-source.ts -n ",
-    "openapi:generate":  "./scripts/generate-openapi.sh",
+    "openapi:generate": "./scripts/generate-openapi.sh",
     "build": "rimraf dist && tsc",
     "prepare": "cd .. && husky install web-server/.husky",
     "lint": "./scripts/dev-run.sh eslint --max-warnings 0 && ./scripts/dev-run.sh tsc --noEmit",
