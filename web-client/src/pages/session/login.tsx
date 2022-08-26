@@ -3,8 +3,8 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { UserState, set } from '../redux/userSlice';
-import { userStateLoader } from '../redux/store';
+import { set } from '../redux/userSlice';
+import { ReduxState, userStateLoader } from '../redux/store';
 
 import { ServerAPI } from '../../types/openapi';
 import { HttpResponse, http } from '../../utils/http';
@@ -21,7 +21,7 @@ const LoginPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const user = useSelector((state: UserState) => state.user);
+  const user = useSelector((state: ReduxState) => state.user);
 
   const onLoginClick = async() => {
     try {
