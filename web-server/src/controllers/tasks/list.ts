@@ -1,26 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
-import { Task } from 'orm/entities/tasks/Task';
+import { Task } from 'orm/entities';
 
-export const list = async (req: Request, res: Response, next: NextFunction) => {
-  const userId = req.jwtPayload;
-
+export const listTasks = async (req: Request, res: Response, next: NextFunction) => {
+  const isLoggedIn = req.jwtPayload !== null;
   const taskRepository = AppDataSource.getRepository(Task);
-  let tasks = await taskRepository.find({
-    select: ['id', 'title', 'slug', 'isPublicInArchive'],
-  });
 
-  if (!userId) {
-    const publicTasks: Task[] = [];
-    for (let i = 0; i < tasks.length; i++) {
-      if (tasks[i].isPublicInArchive) {
-        publicTasks.push(tasks[i]);
-      }
-    }
-    tasks = publicTasks;
+  try {
+    const tasks = await taskRepository.find({
+      select: ['id', 'title', 'slug', 'description', 'isPublicInArchive'],
+      where: { isPublicInArchive: true },
+    });
+
+    res.status(200).send(tasks);
+  } catch (e) {
+    res.status(500).end();
   }
-
-  res.statusCode = 200;
-  res.send(tasks);
 };

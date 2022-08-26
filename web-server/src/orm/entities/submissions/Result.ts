@@ -1,21 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn } from "typeorm";
 
-import { Submission } from './Submission';
-import { Verdicts } from './types';
+import { Verdicts } from 'orm/entities/enums';
+import type { Submission } from 'orm/entities';
 
 @Entity('results')
-export class Result {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Result extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @OneToOne(() => Submission)
+  @OneToOne('Submission')
   @JoinColumn({ name: 'submission_id' })
-  submission: Submission;
+  submission: Promise<Submission>;
 
-  @Column({ name: 'submission_id' })
-  submissionId: number;
-
-  @Column({ type: 'enum', enum: Verdicts })
+  @Column('enum', { enum: Verdicts })
   verdict: Verdicts;
 
   @Column({ name: 'running_time' })
@@ -40,6 +37,6 @@ export class Result {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @CreateDateColumn({ name: 'verdict_gotten_at' })
+  @Column({ name: 'verdict_gotten_at' })
   verdictGottenAt: Date;
-}
+};

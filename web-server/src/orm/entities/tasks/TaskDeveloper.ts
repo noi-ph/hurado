@@ -1,40 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 
-import { User } from '../users/User';
-
-import { Task } from './Task';
-import { TaskDeveloperRoles } from './types';
-
-// {userId} is the {role} ( with contribution rank {order} ) for problem {taskId}
-// ^^ following the instructions
-
-// maybe one user/role pair could list all tasks where the person has such a contribution?
-// to reduce database size
-// problem would be for the {order}, since it can be different per problem
-// and also Arrays aren't compatible with postgres (at least on my end), so not sure how to implement it
+import { TaskDeveloperRoles } from "orm/entities/enums";
+import type { Task, User } from 'orm/entities';
 
 @Entity('task_developers')
-export class TaskDeveloper {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class TaskDeveloper extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @ManyToOne(() => Task) // one task can have many developer attributions
+  @ManyToOne('Task', (task: Task) => task.developers)
   @JoinColumn({ name: 'task_id' })
-  task: Task;
+  task: Promise<Task>;
 
-  @Column({ name: 'task_id' })
-  taskId: number;
-
-  @ManyToOne(() => User) // one user can have many developer attributions (for different roles)
+  @ManyToOne('User', (user: User) => user.develops)
   @JoinColumn({ name: 'user_id' })
-  user: User;
-
-  @Column({ name: 'user_id' })
-  userId: number;
+  user: Promise<User>;
 
   @Column()
   order: number;
 
-  @Column({ type: 'enum', enum: TaskDeveloperRoles })
+  @Column('enum', { enum: TaskDeveloperRoles })
   role: TaskDeveloperRoles;
-}
+};

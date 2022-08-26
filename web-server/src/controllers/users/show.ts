@@ -1,32 +1,42 @@
 import { Request, Response, NextFunction } from 'express';
+
 import { AppDataSource } from 'orm/data-source';
-import { User } from 'orm/entities/users/User';
-import { UserError } from 'utils/Errors';
+import { User } from 'orm/entities';
 
-export const show = async (req: Request, res: Response, next: NextFunction) => {
+const allDetails = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
-
   const userRepository = AppDataSource.getRepository(User);
+  const user = await userRepository.findOne({ where: { id }, relations: {
+    tasks: true,
+    develops: true,
+    submissions: true,
+    contests: true,
+    participations: true
+  } });
 
-  const err: UserError = {};
+  if (!user) {
+    res.status(404).end();
+  } else {
+    res.status(200).send(user);
+  }
+};
 
-  try {
-    const user = await userRepository.findOne({
-      where: { id: parseInt(id) },
-      select: ['id', 'username', 'email', 'isAdmin', 'country', 'createdAt', 'name', 'school'],
-    });
+const notAllDetails = async (req: Request, res: Response, next: NextFunction) => {
+  const id = req.params.id;
+  const userRepository = AppDataSource.getRepository(User);
+  const user = await userRepository.findOne({ where: { id } });
+  
+  if (!user) {
+    res.status(404).end();
+  } else {
+    res.status(200).send(user);
+  }
+};
 
-    if (!user) {
-      err.status = 404;
-    }
-
-    if (Object.keys(err).length) {
-      return next(err);
-    } else {
-      res.customSuccess(200, 'User found', user);
-    }
-  } catch (e) {
-    err.status = 500;
-    return next(err);
+export const show = (showAllDetails: boolean) => {
+  if (showAllDetails) {
+    return allDetails;
+  } else {
+    return notAllDetails;
   }
 };

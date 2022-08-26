@@ -1,44 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
-import { User } from 'orm/entities/users/User';
-import { UserError } from 'utils/Errors';
-import { validatorUsername } from 'middleware/validation/users/validatorUsername';
+import { User } from 'orm/entities';
+import { Countries } from 'orm/entities/enums';
+import { ServerAPI } from 'types';
 
 export const edit = async (req: Request, res: Response, next: NextFunction) => {
-
-  const id = parseInt(req.params.id);
-
-  const { email, username, password, school, name, country } = req.body;
-
+  const id = req.jwtPayload.id;
+  let { email, username, school, name, country, password } = req.body as ServerAPI['UserEditPayload'];
   const userRepository = AppDataSource.getRepository(User);
-
-  const err: UserError = {};
-
+  const user = await userRepository.findOne({ where: { id } });
+  
   try {
-    const user = await userRepository.findOne({ where: { id } });
-
-    if (!user) {
-      err.status = 404;
-      err.id = `User with ID#${id} is not found`
-    }
-
     if (email) {
       user.email = email;
     }
 
     if (username) {
-      const usernameErrors = validatorUsername(username);
-      if (Object.keys(usernameErrors).length) { 
-        err.status = 400;
-        err.username = usernameErrors.username;
-      } else {
-        user.username = username;
-      }
-    }
-
-    if (password) {
-      user.setPassword(password);
+      user.username = username;
     }
 
     if (school) {
@@ -50,17 +29,16 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (country) {
-      user.country = country;
+      user.country = country as Countries;
     }
 
-    if (!Object.keys(err).length) {
-      await userRepository.save(user);
-      res.customSuccess(200, 'User profile successfully edited', user);
-    } else {
-      return next(err);
+    if (password) {
+      user.setPassword(password);
     }
+
+    await userRepository.save(user);
+    res.status(200).send(user);
   } catch (e) {
-    err.status = 500;
-    return next(err);
+    res.status(500).end();
   }
 };

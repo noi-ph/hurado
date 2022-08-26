@@ -1,10 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AxiosError } from 'axios';
-import { set, UserState } from '../redux/userSlice';
-import { userStateLoader } from '../redux/store';
-import { ServerAPI } from '../../types/openapi';
-import { http, HttpResponse } from '../../utils/http';
+
+import { set, UserState } from 'pages/redux/userSlice';
+import { userStateLoader } from 'pages/redux/userSlice';
+import { ServerAPI } from 'types/openapi';
+import { http, HttpResponse } from 'utils/http';
 
 const EditPage = () => {
   const user = useSelector((state: UserState) => state.user);

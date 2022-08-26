@@ -1,160 +1,286 @@
 import { Request, Response, NextFunction } from 'express';
+import { BaseEntity } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import { Task } from 'orm/entities/tasks/Task';
-import { AllowedLanguages, Languages, TaskTypes } from 'orm/entities/tasks/types';
-import { User } from 'orm/entities/users/User';
+import { File, Script, Task, TaskAttachment, TestData, Subtask, TaskDeveloper, User } from 'orm/entities';
+import { AllowedLanguages, TaskDeveloperRoles, TaskTypes } from 'orm/entities/enums';
+import { ServerAPI } from 'types';
 
-export const edit = async (req: Request, res: Response, next: NextFunction) => {
-  const errors = new ErrorArray();
+export const editTask = async (req: Request, res: Response, next: NextFunction) => {
+  const rbody = req.body as ServerAPI['TaskPayload'];
+  const files: File[] = [];
+  const data: TestData[] = [];
+  const scripts: Script[] = [];
+  const subtasks: Subtask[] = [];
+  const developers: TaskDeveloper[] = [];
+  const attachments: TaskAttachment[] = [];
+  const toDelete: BaseEntity[] = [];
 
-  const userId = req.jwtPayload.id;
-  const id = parseInt(req.params.id);
-  const {
-    title,
-    slug,
-    description,
-    statement,
-    allowedLanguages,
-    taskType,
-    scoreMax,
-    checkerScript,
-    checkerScriptId,
-    timeLimit,
-    memoryLimit,
-    compileTimeLimit,
-    compileMemoryLimit,
-    submissionSizeLimit,
-    validatorScript,
-    validatorScriptId,
-    isPublicInArchive,
-    language,
-  } = req.body;
-
-  const taskRepository = AppDataSource.getRepository(Task);
+  const task = await AppDataSource.getRepository(Task).findOne({
+    where: { id: req.params.id },
+    relations: {
+      testData: true,
+      subtasks: true,
+      developers: true,
+      attachments: true,
+    },
+  });
+  const fileRepository = AppDataSource.getRepository(File);
+  const scriptRepository = AppDataSource.getRepository(Script);
   const userRepository = AppDataSource.getRepository(User);
-  try {
-    const task = await taskRepository.findOne({ where: { id } });
 
-    const user = await userRepository.findOne({ where: { id: userId } });
-
-    try {
-      if (slug && slug != task.slug) {
-        const otherTask = await taskRepository.findOne({ where: { slug } });
-
-        if (otherTask) {
-          errors.put('slug', `Task ${slug} already exists`);
-        } else {
-          try {
-            task.setSlug(slug);
-          } catch (err: unknown) {
-            if (err instanceof CustomError) {
-              errors.extend(err.JSON.errors);
-            } else {
-              const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-              return next(customError);
-            }
-          }
-        }
-      }
-
-      if (title) {
-        task.title = title;
-      }
-
-      if (statement) {
-        task.statement = statement;
-      }
-
-      if (description) {
-        task.description = description;
-      }
-
-      if (allowedLanguages) {
-        if (!Object.values(AllowedLanguages).includes(allowedLanguages)) {
-          errors.put('allowedLanguages', `${allowedLanguages} is invalid`);
-        } else {
-          task.allowedLanguages = allowedLanguages;
-        }
-      }
-
-      if (taskType) {
-        if (!Object.values(TaskTypes).includes(taskType)) {
-          errors.put('taskType', `${taskType} is invalid`);
-        } else {
-          task.taskType = taskType;
-        }
-      }
-
-      if (scoreMax) {
-        task.scoreMax = scoreMax;
-      }
-
-      if (checkerScript) {
-        task.checkerScript = checkerScript;
-      }
-
-      if (checkerScriptId) {
-        task.checkerScriptId = checkerScriptId;
-      }
-
-      if (timeLimit) {
-        task.timeLimit = timeLimit;
-      }
-
-      if (memoryLimit) {
-        task.memoryLimit = memoryLimit;
-      }
-
-      if (compileTimeLimit) {
-        task.compileTimeLimit = compileTimeLimit;
-      }
-
-      if (compileMemoryLimit) {
-        task.compileMemoryLimit = compileMemoryLimit;
-      }
-
-      if (submissionSizeLimit) {
-        task.submissionSizeLimit = submissionSizeLimit;
-      }
-
-      if (validatorScript) {
-        task.validatorScript = validatorScript;
-      }
-
-      if (validatorScriptId) {
-        task.validatorScriptId = validatorScriptId;
-      }
-
-      if (isPublicInArchive != null) {
-        if (isPublicInArchive != task.isPublicInArchive && !user.isAdmin) {
-          errors.put('isPublicInArchive', 'Only administrators can access this setting');
-        } else {
-          task.isPublicInArchive = isPublicInArchive;
-        }
-      }
-
-      if (language) {
-        if (!Object.values(Languages).includes(language)) {
-          errors.put('language', `${language} is invalid`);
-        } else {
-          task.language = language;
-        }
-      }
-
-      if (errors.isEmpty) {
-        await taskRepository.save(task);
-        res.customSuccess(200, 'Task succesfully edited', task);
+  for (const s of [rbody.checkerScript, rbody.validatorScript]) {
+    if (Object.keys(s).length) {
+      let newFile = false;
+      let file: File | null = null;
+      if (s.file.id) {
+        file = await fileRepository.findOne({ where: { id: s.file.id } });
+        file.name = s.file.name;
+        file.size = s.file.size;
+        file.contents = req.files[s.file.name][0].buffer;
       } else {
-        const customError = new CustomError(400, 'Validation', 'Cannot edit task', null, errors);
-        return next(customError);
+        file = new File(s.file.name, s.file.size, req.files[s.file.name][0].buffer);
+        newFile = true;
       }
-    } catch (err) {
-      const customError = new CustomError(400, 'Raw', `Task ${slug} cannot be edited`, err, errors);
-      return next(customError);
+      files.push(file);
+
+      let script: Script | null = null;
+      if (s.id) {
+        script = await scriptRepository.findOne({ where: { id: s.id } });
+
+        if (newFile) {
+          toDelete.push(await script.file);
+        }
+
+        script.file = Promise.resolve(file);
+        script.languageCode = s.languageCode;
+        script.runtimeArgs = s.runtimeArgs;
+      } else {
+        script = new Script(file, s.languageCode, s.runtimeArgs);
+      }
+      scripts.push(script);
     }
-  } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error', err, errors);
-    return next(customError);
   }
+
+  // resolve checkerScript
+  if (!scripts[0].id) {
+    // a new checkerScript was made
+    toDelete.push(await task.checkerScript);
+  }
+  task.checkerScript = Promise.resolve(scripts[0]);
+
+  // resolve validatorScript
+  const oldValidatorScipt = await task.validatorScript;
+  if (scripts[1]) {
+    if (!scripts[1].id && oldValidatorScipt) {
+      // a new validatorScript was made
+      toDelete.push(oldValidatorScipt);
+    }
+    task.validatorScript = Promise.resolve(scripts[1]);
+  }
+
+  task.title = rbody.title;
+  task.slug = rbody.slug;
+
+  if (rbody.description) {
+    task.description = rbody.description;
+  }
+
+  task.statement = rbody.statement;
+  task.allowedLanguages = rbody.allowedLanguages as AllowedLanguages;
+  task.taskType = rbody.taskType as TaskTypes;
+  task.scoreMax = rbody.scoreMax;
+  task.timeLimit = rbody.timeLimit;
+  task.memoryLimit = rbody.memoryLimit;
+  task.compileTimeLimit = rbody.compileMemoryLimit;
+  task.compileMemoryLimit = rbody.compileMemoryLimit;
+  task.submissionSizeLimit = rbody.submissionSizeLimit;
+
+  if (rbody.isPublicInArchive) {
+    task.isPublicInArchive = true;
+  }
+
+  for (const d of rbody.data) {
+    let testData: TestData | null = null;
+    if (d.id) {
+      testData = await AppDataSource.getRepository(TestData).findOne({ where: { id: d.id } });
+    } else {
+      testData = new TestData();
+    }
+    testData.task = Promise.resolve(task);
+    testData.order = d.order;
+    testData.name = d.name;
+    testData.isSample = d.isSample;
+
+    let inputFile: File | null = null;
+    if (d.inputFile.id) {
+      inputFile = await fileRepository.findOne({ where: { id: d.inputFile.id } });
+      inputFile.name = d.inputFile.name;
+      inputFile.size = d.inputFile.size;
+      inputFile.contents = req.files[d.inputFile.name][0].buffer;
+    } else {
+      const oldInputFile = await testData.inputFile;
+      if (oldInputFile) {
+        toDelete.push(oldInputFile);
+      }
+
+      inputFile = new File(d.inputFile.name, d.inputFile.size, req.files[d.inputFile.name][0].buffer);
+    }
+    files.push(inputFile);
+    testData.inputFile = Promise.resolve(inputFile);
+
+    let outputFile: File | null = null;
+    if (d.outputFile.id) {
+      outputFile = await fileRepository.findOne({ where: { id: d.outputFile.id } });
+      outputFile.name = d.outputFile.name;
+      outputFile.size = d.outputFile.size;
+      outputFile.contents = req.files[d.outputFile.name][0].buffer;
+    } else {
+      const oldOutputFile = await testData.outputFile;
+      if (oldOutputFile) {
+        toDelete.push(oldOutputFile);
+      }
+
+      outputFile = new File(d.outputFile.name, d.outputFile.size, req.files[d.outputFile.name][0].buffer);
+    }
+    files.push(outputFile);
+    testData.outputFile = Promise.resolve(outputFile);
+
+    if (Object.keys(d.judgeFile).length) {
+      let judgeFile: File | null = null;
+      if (d.judgeFile.id) {
+        judgeFile = await fileRepository.findOne({ where: { id: d.judgeFile.id } });
+        judgeFile.name = d.judgeFile.name;
+        judgeFile.size = d.judgeFile.size;
+        judgeFile.contents = req.files[d.judgeFile.name][0].buffer;
+      } else {
+        const oldJudgeFile = await testData.judgeFile;
+        if (oldJudgeFile) {
+          toDelete.push(oldJudgeFile);
+        }
+
+        judgeFile = new File(d.judgeFile.name, d.judgeFile.size, req.files[d.judgeFile.name][0].buffer);
+      }
+      files.push(judgeFile);
+      testData.judgeFile = Promise.resolve(judgeFile);
+    }
+
+    data.push(testData);
+  }
+
+  for (const s of rbody.subtasks) {
+    for (const sc of [s.scorerScript, s.validatorScript]) {
+      let newFile = false;
+      let file: File | null = null;
+      if (sc.file.id) {
+        file = await fileRepository.findOne({ where: { id: sc.file.id } });
+        file.name = sc.file.name;
+        file.size = sc.file.size;
+        file.contents = req.files[sc.file.name][0].buffer;
+      } else {
+        file = new File(sc.file.name, sc.file.size, req.files[sc.file.name][0].buffer);
+        newFile = true;
+      }
+      files.push(file);
+
+      let script: Script | null = null;
+      if (sc.id) {
+        script = await scriptRepository.findOne({ where: { id: sc.id } });
+
+        if (newFile) {
+          toDelete.push(await script.file);
+        }
+
+        script.file = Promise.resolve(file);
+        script.languageCode = sc.languageCode;
+        script.runtimeArgs = sc.runtimeArgs;
+      } else {
+        script = new Script(file, sc.languageCode, sc.runtimeArgs);
+      }
+      scripts.push(script);
+    }
+
+    let subtask: Subtask | null = null;
+    if (s.id) {
+      subtask = await AppDataSource.getRepository(Subtask).findOne({ where: { id: s.id } });
+    } else {
+      subtask = new Subtask();
+    }
+
+    // resolve scorerScript
+    if (!scripts[scripts.length - 2].id && (await subtask.scorerScript).id) {
+      // a new scorerScript was made
+      toDelete.push(await subtask.scorerScript);
+    }
+    subtask.scorerScript = Promise.resolve(scripts[scripts.length - 2]);
+
+    // resolve validatorScript
+    if (!scripts[scripts.length - 1].id && (await subtask.validatorScript).id) {
+      // a new validatorScript was made
+      toDelete.push(await subtask.validatorScript);
+    }
+    subtask.validatorScript = Promise.resolve(scripts[scripts.length - 1]);
+
+    subtask.name = s.name;
+    subtask.task = Promise.resolve(task);
+    subtask.order = s.order;
+    subtask.testDataPattern = s.testDataPattern;
+    subtasks.push(subtask);
+  }
+
+  for (const a of rbody.attachments) {
+    let attachment: TaskAttachment | null = null;
+    if (a.id) {
+      attachment = await AppDataSource.getRepository(TaskAttachment).findOne({ where: { id: a.id } });
+    } else {
+      attachment = new TaskAttachment();
+    }
+    attachment.task = Promise.resolve(task);
+
+    let file: File | null = null;
+    if (a.file.id) {
+      file = await fileRepository.findOne({ where: { id: a.file.id } });
+      file.name = a.file.name;
+      file.size = a.file.size;
+      file.contents = req.files[a.file.name][0].buffer;
+    } else {
+      const oldFile = await attachment.file;
+      if (oldFile) {
+        toDelete.push(oldFile);
+      }
+
+      file = new File(a.file.name, a.file.size, req.files[a.file.name][0].buffer);
+    }
+    files.push(file);
+    attachment.file = Promise.resolve(file);
+    attachments.push(attachment);
+  }
+
+  for (const d of rbody.developers) {
+    let dev: TaskDeveloper | null = null;
+    if (d.id) {
+      dev = await AppDataSource.getRepository(TaskDeveloper).findOne({ where: { id: d.id } });
+    } else {
+      dev = new TaskDeveloper();
+    }
+    dev.task = Promise.resolve(task);
+    dev.user = Promise.resolve(await userRepository.findOne({ where: { username: d.username } }));
+    dev.order = d.order;
+    dev.role = d.role as TaskDeveloperRoles;
+    developers.push(dev);
+  }
+
+  await AppDataSource.manager.transaction(async (transaction) => {
+    await transaction.save(files);
+    await transaction.save(data);
+    await transaction.save(scripts);
+    await transaction.save(subtasks);
+    await transaction.save(developers);
+    await transaction.save(attachments);
+    for (const d of toDelete) {
+      await d.remove();
+    }
+  });
+
+  res.status(200).send(task);
 };

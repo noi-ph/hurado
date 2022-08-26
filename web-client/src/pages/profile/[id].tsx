@@ -1,8 +1,9 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
-import { http, HttpResponse } from '../../utils/http';
-import { ServerAPI } from '../../types/openapi';
+
+import { http, HttpResponse } from 'utils/http';
+import { ServerAPI } from 'types/openapi';
 
 const ViewPage = () => {
   const [user, setUser] = React.useState<ServerAPI['User'] | null>(null);

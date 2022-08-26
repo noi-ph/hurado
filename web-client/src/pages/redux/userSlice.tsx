@@ -29,6 +29,11 @@ export class UserStateLoader {
     localStorage.setItem(UserConstants.Current, userJson);
   }
 
+  clearState() {
+    localStorage.removeItem(UserConstants.Current);
+    localStorage.removeItem(UserConstants.JWT);
+  }
+
   initializeState(): UserState {
     return {
       id: 0,
@@ -38,6 +43,8 @@ export class UserStateLoader {
     };
   }
 }
+
+export const userStateLoader = new UserStateLoader();
 
 export const userSlice = createSlice({
   name: 'user',
@@ -55,13 +62,15 @@ export const userSlice = createSlice({
       state.email = email;
       state.isAdmin = isAdmin;
 
-      localStorage.setItem(UserConstants.Current, JSON.stringify(state));
+      userStateLoader.saveState(state);
     },
     clear: (state) => {
       state.id = 0;
       state.username = '';
       state.email = '';
       state.isAdmin = false;
+
+      userStateLoader.clearState();
     },
   },
 });

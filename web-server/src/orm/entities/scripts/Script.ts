@@ -1,18 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn } from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
 
-import { File } from '../files/File';
+import type { File } from 'orm/entities/files';
 
 @Entity('scripts')
-export class Script {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Script extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @ManyToOne(() => File)
+  @OneToOne('File')
   @JoinColumn({ name: 'file_id' })
-  file: File;
-
-  @Column({ name: 'file_id' })
-  fileId: number;
+  file: Promise<File>;
 
   @Column({ name: 'language_code' })
   languageCode: string;
@@ -21,8 +18,10 @@ export class Script {
   runtimeArgs: string;
 
   constructor(file: File, languageCode: string, runtimeArgs: string) {
-    this.file = file;
+    super();
+
+    this.file = Promise.resolve(file);
     this.languageCode = languageCode;
     this.runtimeArgs = runtimeArgs;
   }
-}
+};

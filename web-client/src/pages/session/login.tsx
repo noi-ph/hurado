@@ -26,7 +26,7 @@ const LoginPage = () => {
   const onLoginClick = async() => {
     try {
       const payload = { email, password };
-      const response = await http.post('http://localhost:4000/v1/auth/login', payload);
+      const response = await http.put('http://localhost:4000/v1/users/login', payload);
 
       const data = response.data;
       const jwt = data.jwt as string;

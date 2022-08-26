@@ -8,7 +8,7 @@ import { http } from '../../../utils/http';
 
 const ShowTaskPage = () => {
   const [state, setState] = React.useState('Loading...');
-  const [task, setTask] = React.useState<ServerAPI['TaskRead'] | null>(null);
+  const [task, setTask] = React.useState<ServerAPI['Task'] | null>(null);
 
   const router = useRouter();
 
