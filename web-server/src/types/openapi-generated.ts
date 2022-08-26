@@ -204,6 +204,18 @@ export interface paths {
     };
   };
   "/v1/tasks": {
+    get: {
+      responses: {
+        /** OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["TaskSummary"][];
+          };
+        };
+        /** Internal server error */
+        500: unknown;
+      };
+    };
     post: {
       responses: {
         /** OK */
@@ -418,8 +430,39 @@ export interface components {
       compileMemoryLimit: number;
       submissionSizeLimit: number;
       isPublicInArchive: boolean;
+    };
+    TaskDetailed: {
+      owner: components["schemas"]["User"];
+      checkerScript: components["schemas"]["ScriptPayload"];
+      validatorScript?: components["schemas"]["ScriptPayload"];
+      attachments?: components["schemas"]["TaskAttachmentPayload"][];
+      developers?: components["schemas"]["TaskDeveloperPayload"][];
+      testData?: components["schemas"]["TestDataPayload"][];
+      appearsIn?: { [key: string]: unknown }[];
+      submissions?: components["schemas"]["SubmissionPayload"][];
+      subtasks?: components["schemas"]["SubtaskPayload"][];
+      title: string;
+      slug: string;
+      description?: string;
+      statement: string;
+      allowedLanguages: string;
+      taskType: string;
+      scoreMax: number;
+      timeLimit: number;
+      memoryLimit: number;
+      compileTimeLimit: number;
+      compileMemoryLimit: number;
+      submissionSizeLimit: number;
+      isPublicInArchive: boolean;
     } & {
-      checkerScript: unknown;
+      id: unknown;
+    };
+    TaskSummary: {
+      id: string;
+      title: string;
+      slug: string;
+      description?: string;
+      isPublicInArchive: boolean;
     };
   };
 }

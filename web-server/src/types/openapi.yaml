@@ -179,6 +179,47 @@ paths:
           description: Not found
         500:
           description: Internal server error
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        401:
+          description: Not logged in
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+  /v1/tasks/{id}/all-details:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetailed'
+        401:
+          description: Not logged in
+        403:
+          description: Unauthorized
+        404:
+          description: Not found
+        500:
+          description: Internal server error
   /v1/tasks:
     post:
       tags:
@@ -205,6 +246,20 @@ paths:
           description: Not logged in
         403:
           description: Unauthorized
+        500:
+          description: Internal server error
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskSummary'
         500:
           description: Internal server error
 components:
@@ -621,7 +676,6 @@ components:
         - allowedLanguages
         - taskType
         - scoreMax
-        - checkerScript
         - timeLimit
         - memoryLimit
         - compileTimeLimit
@@ -653,5 +707,99 @@ components:
           type: number
         submissionSizeLimit:
           type: number
+        isPublicInArchive:
+          type: boolean
+    TaskDetailed:
+      type: object
+      required:
+        - id
+        - owner
+        - title
+        - slug
+        - statement
+        - allowedLanguages
+        - taskType
+        - scoreMax
+        - checkerScript
+        - timeLimit
+        - memoryLimit
+        - compileTimeLimit
+        - compileMemoryLimit
+        - submissionSizeLimit
+        - isPublicInArchive
+      properties:
+        owner:
+          $ref: '#/components/schemas/User'
+        checkerScript:
+          $ref: '#/components/schemas/ScriptPayload'
+        validatorScript:
+          $ref: '#/components/schemas/ScriptPayload'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskAttachmentPayload'
+        developers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDeveloperPayload'
+        testData:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestDataPayload'
+        # TODO annotate Contest
+        appearsIn:
+          type: array
+          items:
+            type: object
+        submissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmissionPayload'
+        subtasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubtaskPayload'
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        statement:
+          type: string
+        allowedLanguages:
+          type: string
+        taskType:
+          type: string
+        scoreMax:
+          type: number
+        timeLimit:
+          type: number
+        memoryLimit:
+          type: number
+        compileTimeLimit:
+          type: number
+        compileMemoryLimit:
+          type: number
+        submissionSizeLimit:
+          type: number
+        isPublicInArchive:
+          type: boolean
+    TaskSummary:
+      type: object
+      required:
+        - id
+        - title
+        - slug
+        - isPublicInArchive
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
         isPublicInArchive:
           type: boolean
