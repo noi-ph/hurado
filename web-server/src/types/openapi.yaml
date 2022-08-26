@@ -118,10 +118,10 @@ paths:
           description: Not found
         500:
           description: Internal server error
-  /v1/tasks/{id}:
+  /v1/tasks/{idOrSlug}:
     parameters:
       - in: path
-        name: id
+        name: idOrSlug
         schema:
           type: string
         required: true
@@ -195,10 +195,10 @@ paths:
           description: Not found
         500:
           description: Internal server error
-  /v1/tasks/{id}/all-details:
+  /v1/tasks/{idOrSlug}/all-details:
     parameters:
       - in: path
-        name: id
+        name: idOrSlug
         schema:
           type: string
         required: true

@@ -132,11 +132,11 @@ export interface paths {
       };
     };
   };
-  "/v1/tasks/{id}": {
+  "/v1/tasks/{idOrSlug}": {
     get: {
       parameters: {
         path: {
-          id: string;
+          idOrSlug: string;
         };
       };
       responses: {
@@ -157,7 +157,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: string;
+          idOrSlug: string;
         };
       };
       responses: {
@@ -191,7 +191,7 @@ export interface paths {
     post: {
       parameters: {
         path: {
-          id: string;
+          idOrSlug: string;
         };
       };
       responses: {
@@ -220,15 +220,15 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        idOrSlug: string;
       };
     };
   };
-  "/v1/tasks/{id}/all-details": {
+  "/v1/tasks/{idOrSlug}/all-details": {
     get: {
       parameters: {
         path: {
-          id: string;
+          idOrSlug: string;
         };
       };
       responses: {
@@ -250,7 +250,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        idOrSlug: string;
       };
     };
   };

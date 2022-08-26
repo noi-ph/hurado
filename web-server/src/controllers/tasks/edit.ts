@@ -34,9 +34,9 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         file = await fileRepository.findOne({ where: { id: s.file.id } });
         file.name = s.file.name;
         file.size = s.file.size;
-        file.contents = s.file.contents as Buffer;
+        file.contents = req.files[s.file.name][0].buffer;
       } else {
-        file = new File(s.file.name, s.file.size, s.file.contents as Buffer);
+        file = new File(s.file.name, s.file.size, req.files[s.file.name][0].buffer);
         newFile = true;
       }
       files.push(file);
@@ -112,14 +112,14 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
       inputFile = await fileRepository.findOne({ where: { id: d.inputFile.id } });
       inputFile.name = d.inputFile.name;
       inputFile.size = d.inputFile.size;
-      inputFile.contents = d.inputFile.contents as Buffer;
+      inputFile.contents = req.files[d.inputFile.name][0].buffer;
     } else {
       const oldInputFile = await testData.inputFile;
       if (oldInputFile) {
         toDelete.push(oldInputFile);
       }
 
-      inputFile = new File(d.inputFile.name, d.inputFile.size, d.inputFile.contents as Buffer);
+      inputFile = new File(d.inputFile.name, d.inputFile.size, req.files[d.inputFile.name][0].buffer);
     }
     files.push(inputFile);
     testData.inputFile = Promise.resolve(inputFile);
@@ -129,14 +129,14 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
       outputFile = await fileRepository.findOne({ where: { id: d.outputFile.id } });
       outputFile.name = d.outputFile.name;
       outputFile.size = d.outputFile.size;
-      outputFile.contents = d.outputFile.contents as Buffer;
+      outputFile.contents = req.files[d.outputFile.name][0].buffer;
     } else {
       const oldOutputFile = await testData.outputFile;
       if (oldOutputFile) {
         toDelete.push(oldOutputFile);
       }
 
-      outputFile = new File(d.outputFile.name, d.outputFile.size, d.outputFile.contents as Buffer);
+      outputFile = new File(d.outputFile.name, d.outputFile.size, req.files[d.outputFile.name][0].buffer);
     }
     files.push(outputFile);
     testData.outputFile = Promise.resolve(outputFile);
@@ -147,14 +147,14 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         judgeFile = await fileRepository.findOne({ where: { id: d.judgeFile.id } });
         judgeFile.name = d.judgeFile.name;
         judgeFile.size = d.judgeFile.size;
-        judgeFile.contents = d.judgeFile.contents as Buffer;
+        judgeFile.contents = req.files[d.judgeFile.name][0].buffer;
       } else {
         const oldJudgeFile = await testData.judgeFile;
         if (oldJudgeFile) {
           toDelete.push(oldJudgeFile);
         }
 
-        judgeFile = new File(d.judgeFile.name, d.judgeFile.size, d.judgeFile.contents as Buffer);
+        judgeFile = new File(d.judgeFile.name, d.judgeFile.size, req.files[d.judgeFile.name][0].buffer);
       }
       files.push(judgeFile);
       testData.judgeFile = Promise.resolve(judgeFile);
@@ -171,9 +171,9 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         file = await fileRepository.findOne({ where: { id: sc.file.id } });
         file.name = sc.file.name;
         file.size = sc.file.size;
-        file.contents = sc.file.contents as Buffer;
+        file.contents = req.files[sc.file.name][0].buffer;
       } else {
-        file = new File(sc.file.name, sc.file.size, sc.file.contents as Buffer);
+        file = new File(sc.file.name, sc.file.size, req.files[sc.file.name][0].buffer);
         newFile = true;
       }
       files.push(file);
@@ -235,14 +235,14 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
       file = await fileRepository.findOne({ where: { id: a.file.id } });
       file.name = a.file.name;
       file.size = a.file.size;
-      file.contents = a.file.contents as Buffer;
+      file.contents = req.files[a.file.name][0].buffer;
     } else {
       const oldFile = await attachment.file;
       if (oldFile) {
         toDelete.push(oldFile);
       }
 
-      file = new File(a.file.name, a.file.size, a.file.contents as Buffer);
+      file = new File(a.file.name, a.file.size, req.files[a.file.name][0].buffer);
     }
     files.push(file);
     attachment.file = Promise.resolve(file);
