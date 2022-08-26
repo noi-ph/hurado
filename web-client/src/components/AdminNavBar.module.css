@@ -1,0 +1,24 @@
+.navbar {
+  background-color: #003D5B;
+  color: #fff;
+  padding: 8px;
+}
+
+.welcome {
+  cursor: default;
+}
+
+.logout {
+  display: inline-block;
+  border: 1px solid #999;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  opacity: 0.8;
+  color: #fff;
+}
+
+.logout:hover {
+  text-decoration: none;
+  opacity: 1;
+}

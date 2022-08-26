@@ -1,11 +1,10 @@
 import React, { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
 
-import { NavBar, NavBarCard } from './NavBar';
 
 import { AppConfig } from '../utils/AppConfig';
 import { UserState } from '../pages/redux/userSlice';
+import { NavBar, NavBarCard } from './NavBar';
 
 type MainProps = {
   children: ReactNode;
@@ -14,14 +13,15 @@ type MainProps = {
 const MainNavBarContents = () => {
   const user = useSelector((state: UserState) => state.user);
 
-  const router = useRouter();
+  // Why are you logging me out when I first load the page??
+  // const router = useRouter();
 
   // Make the component rerender every time the user global variable changes
-  React.useEffect(() => {
-    if (!user.id) {
-      router.push('/session/logout');
-    }
-  }, [user.id]);
+  // React.useEffect(() => {
+  //   if (!user.id) {
+  //     router.push('/session/logout');
+  //   }
+  // }, [user.id]);
 
   if (user.id) {
     return (
@@ -65,11 +65,11 @@ export const Main = (props: MainProps) => (
         {props.children}
       </div>
       <div className='border-t border-gray-300 text-center py-8 text-sm'>
-        © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{" "}
-        <span role="img" aria-label="Love">
+        © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{' '}
+        <span role='img' aria-label='Love'>
           ♥
-        </span>{" "}
-        by <a href="https://creativedesignsguru.com">CreativeDesignsGuru</a>
+        </span>{' '}
+        by <a href='https://creativedesignsguru.com'>CreativeDesignsGuru</a>
         {/*
           * PLEASE READ THIS SECTION
           * We'll really appreciate if you could have a link to our website

@@ -1,13 +1,13 @@
 import React from 'react';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { set, UserState } from '../redux/userSlice';
+import { UserState, set } from '../redux/userSlice';
 import { userStateLoader } from '../redux/store';
 
 import { ServerAPI } from '../../types/openapi';
-import { http, HttpResponse } from '../../utils/http';
+import { HttpResponse, http } from '../../utils/http';
 import { UserConstants } from '../../utils/types';
 
 const LoginPage = () => {
@@ -23,39 +23,43 @@ const LoginPage = () => {
 
   const user = useSelector((state: UserState) => state.user);
 
-  const onLoginClick = async () => {
+  const onLoginClick = async() => {
     try {
       const payload = { email, password };
-      const response = await http.post(`http://localhost:4000/v1/auth/login`, payload);
+      const response = await http.post('http://localhost:4000/v1/auth/login', payload);
 
       const data = response.data;
-      let { jwt, user } = data;
+      const jwt = data.jwt as string;
+      const responseUser: ServerAPI['User'] = data.user;
 
       dispatch(set({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        isAdmin: user.isAdmin,
+        id: responseUser.id,
+        username: responseUser.username,
+        email: responseUser.email,
+        isAdmin: responseUser.isAdmin,
       }));
 
       setLoaded(true);
 
       localStorage.setItem(UserConstants.JWT, jwt);
       router.push('/');
-      
+
       console.log('Log-in is successful');
-      alert('You have logged in');
     } catch (e: unknown) {
       if ((e instanceof AxiosError) && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
         if (err.data.email) {
           setEmailError(`Error: ${err.data.email}`);
-        } else setEmailError(``);
+        } else {
+          setEmailError('');
+        }
 
         if (err.data.password) {
           setPasswordError(`Error: ${err.data.password}`);
-        } else setPasswordError(``);
+        } else {
+          setPasswordError('');
+        }
 
         if (err.status == 500) {
           alert(`${err.status}: Internal server error`);
@@ -71,7 +75,7 @@ const LoginPage = () => {
   };
 
   React.useEffect(() => {
-    userStateLoader.saveState({ user });
+    userStateLoader.saveState(user);
   }, [loaded]);
 
   return (
@@ -86,7 +90,7 @@ const LoginPage = () => {
       <p>{passwordError}</p>
       <br />
 
-      <button onClick={onLoginClick}>Log-in</button>
+      <button type='button' onClick={onLoginClick}>Log-in</button>
     </React.Fragment>
   );
 };

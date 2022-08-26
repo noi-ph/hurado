@@ -1,0 +1,30 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true,
+		"typescript.tsdk": "web-client/node_modules/typescript/lib",
+		"typescript.preferences.quoteStyle": "single",
+		"js/ts.implicitProjectConfig.experimentalDecorators": true,
+		"editor.tabSize": 4,
+		"[css]": {
+			"editor.tabSize": 2,
+			"editor.suggest.insertMode": "insert"
+		},
+		"[typescript]": {
+			"editor.tabSize": 2,
+			"editor.suggest.insertMode": "insert",
+		},
+		"[typescriptreact]": {
+			"editor.tabSize": 2,
+			"editor.suggest.insertMode": "insert"
+		},
+		"editor.insertSpaces": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": true,
+		}
+	}
+}
