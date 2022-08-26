@@ -11,3 +11,8 @@ a:hover {
 @tailwind components;
 
 @tailwind utilities;
+
+
+html {
+  font-family: Montserrat;
+}
