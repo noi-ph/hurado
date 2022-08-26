@@ -21,7 +21,7 @@ export const createSubmission = async (req: Request, res: Response, next: NextFu
 
   for (let i = 0; i < req.files.length; i++) {
     const rawFile: Express.Multer.File = req.files[i];
-    const file = new File(rawFile.originalname, rawFile.size, rawFile.path);
+    const file = new File(rawFile.originalname, rawFile.size, rawFile.buffer);
     const submissionFile = new SubmissionFile(file, submission)
 
     submissionFiles.push(submissionFile);

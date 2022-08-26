@@ -312,6 +312,8 @@ components:
       required:
         - languageCode
       properties:
+        id:
+          type: string
         languageCode:
           type: string
         contestId:
@@ -321,14 +323,16 @@ components:
       required:
         - name
         - size
-        - fileUrl
+        - contents
       properties:
+        id:
+          type: string
         name:
           type: string
         size:
           type: number
-        fileUrl:
-          type: string
+        contents:
+          type: any
     ScriptPayload:
       type: object
       required:
@@ -336,6 +340,8 @@ components:
         - languageCode
         - runtimeArgs
       properties:
+        id:
+          type: string
         file:
           $ref: '#/components/schemas/FilePayload'
         languageCode:
@@ -352,6 +358,8 @@ components:
         - validatorScript
         - testDataPattern
       properties:
+        id:
+          type: string
         name:
           type: string
         order:
@@ -371,6 +379,8 @@ components:
       required:
         - file
       properties:
+        id:
+          type: string
         file:
           $ref: '#/components/schemas/FilePayload'
     TestDataPayload:
@@ -382,6 +392,8 @@ components:
         - outputFile
         - isSample
       properties:
+        id:
+          type: string
         order:
           type: number
         name:
@@ -401,6 +413,8 @@ components:
         - order
         - role
       properties:
+        id:
+          type: string
         username:
           type: string
         order:
@@ -495,7 +509,7 @@ components:
           type: string
         size:
           type: string
-        fileUrl:
+        contents:
           type: string
     ScriptError:
       type: object

@@ -133,6 +133,27 @@ export interface paths {
     };
   };
   "/v1/tasks/{id}": {
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Task"];
+          };
+        };
+        /** Not logged in */
+        401: unknown;
+        /** Not found */
+        404: unknown;
+        /** Internal server error */
+        500: unknown;
+      };
+    };
     put: {
       parameters: {
         path: {
@@ -195,6 +216,36 @@ export interface paths {
         content: {
           "application/json": components["schemas"]["SubmissionPayload"];
         };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/v1/tasks/{id}/all-details": {
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["TaskDetailed"];
+          };
+        };
+        /** Not logged in */
+        401: unknown;
+        /** Unauthorized */
+        403: unknown;
+        /** Not found */
+        404: unknown;
+        /** Internal server error */
+        500: unknown;
       };
     };
     parameters: {
@@ -268,20 +319,24 @@ export interface components {
       passwordConfirm?: string;
     };
     SubmissionPayload: {
+      id?: string;
       languageCode: string;
       contestId?: string;
     };
     FilePayload: {
+      id?: string;
       name: string;
       size: number;
-      fileUrl: string;
+      contents: unknown;
     };
     ScriptPayload: {
+      id?: string;
       file: components["schemas"]["FilePayload"];
       languageCode: string;
       runtimeArgs: string;
     };
     SubtaskPayload: {
+      id?: string;
       name: string;
       order: number;
       scoreMax: number;
@@ -290,9 +345,11 @@ export interface components {
       testDataPattern: string[];
     };
     TaskAttachmentPayload: {
+      id?: string;
       file: components["schemas"]["FilePayload"];
     };
     TestDataPayload: {
+      id?: string;
       order: number;
       name: string;
       inputFile: components["schemas"]["FilePayload"];
@@ -301,6 +358,7 @@ export interface components {
       isSample: boolean;
     };
     TaskDeveloperPayload: {
+      id?: string;
       username: string;
       order: number;
       role: string;
@@ -339,7 +397,7 @@ export interface components {
     FileError: {
       name?: string;
       size?: string;
-      fileUrl?: string;
+      contents?: string;
     };
     ScriptError: {
       file?: components["schemas"]["FileError"];

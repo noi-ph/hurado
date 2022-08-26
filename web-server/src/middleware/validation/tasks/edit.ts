@@ -7,7 +7,14 @@ import { AppDataSource } from 'orm/data-source';
 import { Task, User } from 'orm/entities';
 import { AllowedLanguages, TaskDeveloperRoles, TaskTypes } from 'orm/entities/enums';
 
-export const validationCreate = async (req: Request, res: Response, next: NextFunction) => {
+export const validationEdit = async (req: Request, res: Response, next: NextFunction) => {
+  const task = await AppDataSource.getRepository(Task).findOne({ where: { id: req.params.id } });
+
+  if (!task) {
+    res.status(404).end();
+    return;
+  }
+
   let rbody = req.body as ServerAPI['TaskPayload'];
 
   rbody.title = rbody.title ? rbody.title : '';
@@ -56,7 +63,7 @@ export const validationCreate = async (req: Request, res: Response, next: NextFu
     const slugError = validateSlug(rbody.slug);
     if (Object.keys(slugError).length) {
       err.slug = slugError.slug;
-    } else { 
+    } else if (rbody.slug !== task.slug) { 
       const task = await AppDataSource.getRepository(Task).findOne({ where: { slug: rbody.slug } });
       if (task) {
         err.slug = 'That slug is already taken';

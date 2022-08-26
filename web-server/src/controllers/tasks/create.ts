@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { ServerAPI } from 'types';
-import { File, Script, Subtask, TaskAttachment, TestData, Task, User } from 'orm/entities';
+import { File, Script, Subtask, TaskAttachment, TestData, Task, User, TaskDeveloper } from 'orm/entities';
 import { AppDataSource } from 'orm/data-source';
-import { AllowedLanguages, TaskTypes } from 'orm/entities/enums';
+import { AllowedLanguages, TaskDeveloperRoles, TaskTypes } from 'orm/entities/enums';
 
 export const createTask = async (req: Request, res: Response, next: NextFunction) => {
   const rbody = req.body as ServerAPI['TaskPayload'];
@@ -11,11 +11,12 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   const data: TestData[] = [];
   const scripts: Script[] = [];
   const subtasks: Subtask[] = [];
+  const developers: TaskDeveloper[] = [];
   const attachments: TaskAttachment[] = [];
 
   [rbody.checkerScript, rbody.validatorScript].forEach((s) => {
     if (Object.keys(s).length) {
-      const file = new File(s.file.name, s.file.size, s .file.fileUrl);
+      const file = new File(s.file.name, s.file.size, s.file.contents as Buffer);
       files.push(file);
 
       const script = new Script(file, s.languageCode, s.runtimeArgs);
@@ -52,10 +53,10 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   }
 
   rbody.data.forEach((d) => {
-    const inputFile = new File(d.inputFile.name, d.inputFile.size, d.inputFile.fileUrl);
+    const inputFile = new File(d.inputFile.name, d.inputFile.size, d.inputFile.contents as Buffer);
     files.push(inputFile);
     
-    const outputFile = new File(d.outputFile.name, d.outputFile.size, d.outputFile.fileUrl);
+    const outputFile = new File(d.outputFile.name, d.outputFile.size, d.outputFile.contents as Buffer);
     files.push(outputFile);
 
     const testData = new TestData();
@@ -66,7 +67,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
     testData.outputFile = Promise.resolve(outputFile);
     
     if (Object.keys(d.judgeFile).length) {
-      const judgeFile = new File(d.judgeFile.name, d.judgeFile.size, d.judgeFile.fileUrl);
+      const judgeFile = new File(d.judgeFile.name, d.judgeFile.size, d.judgeFile.contents as Buffer);
       files.push(judgeFile);
 
       testData.judgeFile = Promise.resolve(judgeFile);
@@ -77,13 +78,13 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   });
 
   rbody.subtasks.forEach((s) => {
-    const scorerFile = new File(s.scorerScript.file.name, s.scorerScript.file.size, s.scorerScript.file.fileUrl);
+    const scorerFile = new File(s.scorerScript.file.name, s.scorerScript.file.size, s.scorerScript.file.contents as Buffer);
     files.push(scorerFile);
 
     const scorerScript = new Script(scorerFile, s.scorerScript.languageCode, s.scorerScript.runtimeArgs);
     scripts.push(scorerScript);
 
-    const validatorFile = new File(s.validatorScript.file.name, s.validatorScript.file.size, s.validatorScript.file.fileUrl);
+    const validatorFile = new File(s.validatorScript.file.name, s.validatorScript.file.size, s.validatorScript.file.contents as Buffer);
     files.push(validatorFile);
 
     const validatorScript = new Script(validatorFile, s.validatorScript.languageCode, s.validatorScript.runtimeArgs);
@@ -100,7 +101,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   });
 
   rbody.attachments.forEach((a) => {
-    const file = new File(a.file.name, a.file.size, a.file.fileUrl);
+    const file = new File(a.file.name, a.file.size, a.file.contents as Buffer);
     files.push(file);
 
     const attachment = new TaskAttachment();
@@ -109,11 +110,22 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
     attachments.push(attachment);
   });
 
+  const userRepository = AppDataSource.getRepository(User);
+  for (const d of rbody.developers) {
+    const dev = new TaskDeveloper();
+    dev.task = Promise.resolve(task);
+    dev.user = Promise.resolve(await userRepository.findOne({ where: { username: d.username } }));
+    dev.order = d.order;
+    dev.role = d.role as TaskDeveloperRoles;
+    developers.push(dev);
+  }
+
   await AppDataSource.manager.transaction(async (transaction) => {
     await transaction.save(files);
     await transaction.save(data);
     await transaction.save(scripts);
     await transaction.save(subtasks);
+    await transaction.save(developers);
     await transaction.save(attachments);
   });
 

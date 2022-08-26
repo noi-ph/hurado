@@ -13,14 +13,14 @@ export class CreateUsers100000000001 implements MigrationInterface {
         id       uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
         name     TEXT   NOT NULL,
         size     INT    NOT NULL,
-        file_url TEXT   NOT NULL
+        contents BYTEA  NOT NULL
       )
     `);
 
     await queryRunner.query(`
       CREATE TABLE scripts (
         id            uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        file_id       INT    NOT NULL,
+        file_id       uuid    NOT NULL,
         language_code TEXT   NOT NULL,
         runtime_args  TEXT   NOT NULL,
 
@@ -53,13 +53,13 @@ export class CreateUsers100000000001 implements MigrationInterface {
         allowed_languages     TEXT    NOT NULL DEFAULT 'All',
         task_type             TEXT    NOT NULL,
         score_max             INT     NOT NULL,
-        checker_script_id     INT     NOT NULL,
+        checker_script_id     uuid    NOT NULL,
         time_limit            INT     NOT NULL DEFAULT 2,
         memory_limit          INT     NOT NULL DEFAULT 1099511627776,
         compile_time_limit    INT     NOT NULL DEFAULT 10,
         compile_memory_limit  INT     NOT NULL DEFAULT 1099511627776,
         submission_size_limit INT     NOT NULL DEFAULT 32768,
-        validator_script_id   INT     NOT NULL,
+        validator_script_id   uuid    NOT NULL,
         is_public_in_archive  BOOLEAN NOT NULL DEFAULT FALSE,
 
         FOREIGN KEY (checker_script_id)   REFERENCES scripts (id),
@@ -70,8 +70,8 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE task_attachments (
         id      uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        task_id INT    NOT NULL,
-        file_id INT    NOT NULL,
+        task_id uuid   NOT NULL,
+        file_id uuid   NOT NULL,
 
         FOREIGN KEY (task_id) REFERENCES tasks (id)
         FOREIGN KEY (file_id) REFERENCES files (id)
@@ -82,11 +82,11 @@ export class CreateUsers100000000001 implements MigrationInterface {
       CREATE TABLE subtasks (
         id                  uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
         name                TEXT   NOT NULL,
-        task_id             INT    NOT NULL,
+        task_id             uuid   NOT NULL,
         order               INT    NOT NULL,
         score_max           INT    NOT NULL,
-        scorer_script_id    INT    NOT NULL,
-        validator_script_id INT    NOT NULL,
+        scorer_script_id    uuid   NOT NULL,
+        validator_script_id uuid   NOT NULL,
         test_data_pattern   TEXT[] NOT NULL DEFAULT '{}',
 
         FOREIGN KEY (task_id)             REFERENCES tasks   (id),
@@ -98,12 +98,12 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE test_data (
         id             uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        task_id        INT     NOT NULL,
+        task_id        uuid    NOT NULL,
         order          INT     NOT NULL,
         name           TEXT    NOT NULL,
-        input_file_id  INT     NOT NULL,
-        output_file_id INT     NOT NULL,
-        judge_file_id  INT,
+        input_file_id  uuid    NOT NULL,
+        output_file_id uuid    NOT NULL,
+        judge_file_id  uuid,
         is_sample      BOOLEAN NOT NULL DEFAULT FALSE,
 
         FOREIGN KEY (task_id)        REFERENCES tasks (id),
@@ -116,8 +116,8 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE task_developers (
         id      uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        task_id INT    NOT NULL,
-        user_id INT    NOT NULL,
+        task_id uuid   NOT NULL,
+        user_id uuid   NOT NULL,
         ORDER   INT    NOT NULL,
         ROLE    TEXT   NOT NULL,
 
@@ -129,7 +129,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE contests (
         id          uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        owner_id    INT       NOT NULL,
+        owner_id    uuid      NOT NULL,
         title       TEXT      NOT NULL,
         slug        TEXT      NOT NULL UNIQUE,
         description TEXT,
@@ -143,8 +143,8 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE ATBLE contest_tasks (
         id         uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        contest_id INT    NOT NULL,
-        task_id    INT    NOT NULL,
+        contest_id uuid   NOT NULL,
+        task_id    uuid   NOT NULL,
         letter     TEXT   NOT NULL,
         order      INT    NOT NULL,
 
@@ -156,8 +156,8 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE participations (
         id              uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        user_id         INT       NOT NULL,
-        contest_id      INT       NOT NULL,
+        user_id         uuid      NOT NULL,
+        contest_id      uuid      NOT NULL,
         is_hidden       BOOLEAN   NOT NULL,
         is_unrestricted BOOLEAN   NOT NULL,
         hashed_password TEXT,
@@ -171,12 +171,12 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE submissions (
         id            uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        owner_id      INT       NOT NULL,
-        contest_id    INT       NOT NULL,
-        task_id       INT       NOT NULL,
+        owner_id      uuid      NOT NULL,
+        contest_id    uuid      NOT NULL,
+        task_id       uuid      NOT NULL,
         created_at    TIMESTAMP NOT NULL DEFAULT now(),
         language_code TEXT      NOT NULL,
-        result_id     INT       NOT NULL,
+        result_id     uuid      NOT NULL,
 
         FOREIGN KEY (owner_id)   REFERENCES users    (id),
         FOREIGN KEY (contest_id) REFERENCES contests (id),
@@ -188,8 +188,8 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE submission_files (
         id            uuid DEFAULT uuid_generate_v4() PRIMATY KEY,
-        submission_id INT    NOT NULL,
-        file_id       INT    NOT NULL,
+        submission_id uuid   NOT NULL,
+        file_id       uuid   NOT NULL,
 
         FOREIGN KEY (submission_id) REFERENCES submissions (id),
         FOREIGN KEY (file_id)       REFERENCES files       (id)
@@ -199,7 +199,7 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE results (
         id                uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        submission_id     INT       NOT NULL,
+        submission_id     uuid      NOT NULL,
         verdict           TEXT      NOT NULL,
         running_time      INT       NOT NULL,
         running_memory    INT       NOT NULL,
@@ -217,10 +217,10 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE subtask_results (
         id                uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        result_id         INT       NOT NULL,
-        subtask_id        INT       NOT NULL,
+        result_id         uuid      NOT NULL,
+        subtask_id        uuid      NOT NULL,
         verdict           TEXT      NOT NULL,
-        running)time      INT       NOT NULL,
+        running_time      INT       NOT NULL,
         running_memory    INT       NOT NULL,
         raw_score         INT       NOT NULL,
         verdict_gotten_at TIMESTAMP NOT NULL,
@@ -233,12 +233,12 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE test_data_results (
         id                uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-        result_id         INT NOT NULL,
-        test_data_id      INT NOT NULL,
+        result_id         uuid NOT NULL,
+        test_data_id      uuid NOT NULL,
         verdict           TEXT NOT NULL,
-        running_time      INT NOT NUL,
-        running_memory    INT NOT NULL,
-        raw_score         INT NOT NULL,
+        running_time      INT  NOT NULL,
+        running_memory    INT  NOT NULL,
+        raw_score         INT  NOT NULL,
         verdict_gotten_at TIMESTAMP NOT NULL,
 
         FOREIGN KEY (result_id)    REFERENCES results   (id),

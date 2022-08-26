@@ -11,14 +11,14 @@ export class File extends BaseEntity {
   @Column()
   size: number;
 
-  @Column({ name: 'file_url' })
-  fileUrl: string;
+  @Column('bytea')
+  contents: Buffer;
 
-  constructor(name: string, size: number, fileUrl: string) {
+  constructor(name: string, size: number, contents: Buffer) {
     super();
 
     this.name = name;
     this.size = size,
-    this.fileUrl = fileUrl;
+    this.contents = contents;
   }
 };

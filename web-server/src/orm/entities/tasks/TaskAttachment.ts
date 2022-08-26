@@ -16,7 +16,7 @@ export class TaskAttachment extends BaseEntity {
    * see whether a File instance can be safely deleted due to the possibility of 
    * it being depended upon by many TaskAttachment instances. 
    * 
-   * Plus, many File instances could just point at the same fileUrl
+   * Plus, many File instances could just point at the same contents
    */
   @OneToOne('File')
   @JoinColumn({ name: 'file_id' })

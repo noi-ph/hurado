@@ -6,7 +6,7 @@ export const validateScriptPayload = (script: ServerAPI['ScriptPayload'], file: 
   const err: ServerAPI['ScriptError'] = {};
 
   if (!file) {
-    err.file.fileUrl = 'This field is required';
+    err.file.contents = 'This field is required';
   }
 
   if (validator.isEmpty(script.languageCode)) {
