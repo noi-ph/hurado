@@ -3,8 +3,8 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { set } from '../redux/userSlice';
-import { ReduxState, userStateLoader } from '../redux/store';
+import { set, userStateLoader } from '../redux/userSlice';
+import { ReduxState } from '../redux/store';
 
 import { ServerAPI } from '../../types/openapi';
 import { HttpResponse, http } from '../../utils/http';

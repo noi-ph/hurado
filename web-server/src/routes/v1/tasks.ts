@@ -1,14 +1,14 @@
-import multer from "multer";
-import { Router } from "express";
+import { Router } from 'express';
+import multer from 'multer';
 
-import { checkJwt } from "middleware/checkJwt";
-import { validationSubmission } from "middleware/validation/submissions";
-import { validationCreate, validateAccess, validationEdit, idOrSlug } from "middleware/validation/tasks";
-import { createSubmission } from "controllers/submissions";
-import { createTask, editTask, listTasks, viewTask } from "controllers/tasks";
+import { createSubmission } from 'controllers/submissions';
+import { createTask, editTask, listTasks, viewTask } from 'controllers/tasks';
+import { checkJwt } from 'middleware/checkJwt';
+import { validationSubmission } from 'middleware/validation/submissions';
+import { validationCreate, validateAccess, validationEdit, idOrSlug } from 'middleware/validation/tasks';
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 
 const router = Router();
 router.post('/:idOrSlug([0-9]+)', [checkJwt(false), upload.any(), idOrSlug, validationSubmission], createSubmission);

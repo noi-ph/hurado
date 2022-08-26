@@ -45,7 +45,6 @@ export class UserStateLoader {
 }
 
 export const userStateLoader = new UserStateLoader();
-
 export const userSlice = createSlice({
   name: 'user',
   initialState: {
