@@ -20,7 +20,7 @@ export class UserStateLoader {
         return this.initializeState();
       }
 
-      return { user: JSON.parse(userJson) };
+      return JSON.parse(userJson);
     } catch (err) {
       return this.initializeState();
     }
@@ -29,6 +29,11 @@ export class UserStateLoader {
   saveState(state: UserState) {
     let userJson = JSON.stringify(state);
     localStorage.setItem(UserConstants.Current, userJson);
+  }
+
+  clearState() {
+    localStorage.removeItem(UserConstants.Current);
+    localStorage.removeItem(UserConstants.JWT);
   }
 
   initializeState() {
@@ -42,6 +47,8 @@ export class UserStateLoader {
     };
   }
 };
+
+export const userStateLoader = new UserStateLoader;
 
 export const userSlice = createSlice({
   name: 'user',
@@ -59,13 +66,15 @@ export const userSlice = createSlice({
       state.email = email;
       state.isAdmin = isAdmin;
       
-      localStorage.setItem(UserConstants.Current, JSON.stringify(state));
+      userStateLoader.saveState({ user: state });
     },
     clear: (state) => {
       state.id = 0;
       state.username = '';
       state.email = '';
       state.isAdmin = false;
+
+      userStateLoader.clearState();
     },
   },
 });

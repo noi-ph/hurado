@@ -1,9 +1,6 @@
 import { AppDataSource } from 'orm/data-source';
 
-import { File } from '../entities/files/File';
-import { Script } from '../entities/scripts/Script';
-import { Task } from '../entities/tasks/Task';
-import { User } from '../entities/users/User';
+import { File, Script, Task, User } from 'orm/entities';
 
 async function runSeedData() {
   await AppDataSource.initialize();
@@ -22,7 +19,6 @@ async function runSeedData() {
   user.username = 'Jesse';
   user.name = 'Jesse Pinkman';
   user.email = 'standard@standard.com';
-  user.hashedPassword = 'pass1';
   user.setPassword('pass1');
   user.isAdmin = false;
   await userRepository.save(user);
@@ -92,11 +88,11 @@ async function runSeedData() {
   await userRepository.save(user);
 
   const fileRepository = AppDataSource.getRepository(File);
-  let file = new File('file1.py', 'https://thisisaurl.com/file1.py');
+  let file = new File('file1.py', 32, 'https://thisisaurl.com/file1.py');
   const file1 = file;
   await fileRepository.save(file1);
 
-  file = new File('file2.py', 'https://thisisaurl.com/file2.py');
+  file = new File('file2.py', 32, 'https://thisisaurl.com/file2.py');
   const file2 = file;
   await fileRepository.save(file2);
 
@@ -112,7 +108,7 @@ async function runSeedData() {
   let task = new Task();
   const taskRepository = AppDataSource.getRepository(Task);
 
-  task.ownerId = 1;
+  task.owner = Promise.resolve(user);
   task.title = 'Who is the oldest?';
   task.statement = `Alvin, Berto, and Carlo are friends. Their ages are A, B and C, respectively. No two of them have the same age. Who is the oldest among them?
   
@@ -127,12 +123,12 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checkerScriptId = script1.id;
-  task.validatorScriptId = script2.id;
+  task.checkerScript = Promise.resolve(script1);
+  task.validatorScript = Promise.resolve(script2);
   await taskRepository.save(task);
 
   task = new Task();
-  task.ownerId = 1;
+  task.owner = Promise.resolve(user);
   task.title = 'This Problem Is So Fetch';
   task.statement = `Rob has no opinion on everything. He finds abortion neither good or bad and he is indifferent about whether or not he likes the president's absence during funerals. And unlike many Filipinos, he is not even affected whether Dingdong should have married Marian. Overall, he is a pretty boring person.
 
@@ -155,8 +151,8 @@ async function runSeedData() {
   task.compileMemoryLimit = 8811;
   task.submissionSizeLimit = 9999;
   task.isPublicInArchive = true;
-  task.checkerScriptId = script1.id;
-  task.validatorScriptId = script2.id;
+  task.checkerScript = Promise.resolve(script1);
+  task.validatorScript = Promise.resolve(script2);
   await taskRepository.save(task);
 }
 

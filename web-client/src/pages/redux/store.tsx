@@ -1,8 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import userReducer, { UserStateLoader } from './userSlice';
-
-export const userStateLoader = new UserStateLoader();
+import userReducer, { userStateLoader } from './userSlice';
 
 export default configureStore({
   reducer: {

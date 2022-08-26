@@ -1,25 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from "typeorm";
 
-import { File } from '../files/File';
-
-import { Task } from './Task';
+import type { File, Task } from 'orm/entities';
 
 @Entity('task_attachments')
-export class TaskAttachment {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class TaskAttachment extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @ManyToOne(() => Task) // many attachments can be related to one Task
+  @ManyToOne('Task', (task: Task) => task.attachments)
   @JoinColumn({ name: 'task_id' })
-  task: Task;
+  task: Promise<Task>;
 
-  @Column({ name: 'task_id' })
-  taskId: number;
-
-  @ManyToOne(() => File) // many attachment instances can all point back to one File
+  /**
+   * This is set as OneToOne because we'd rather not do reference counting to 
+   * see whether a File instance can be safely deleted due to the possibility of 
+   * it being depended upon by many TaskAttachment instances. 
+   * 
+   * Plus, many File instances could just point at the same fileUrl
+   */
+  @OneToOne('File')
   @JoinColumn({ name: 'file_id' })
-  file: File;
-
-  @Column({ name: 'file_id' })
-  fileId: number;
-}
+  file: Promise<File>;
+};

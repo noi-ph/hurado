@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  "/auth/login": {
+  "/v1/users/login": {
     post: {
       responses: {
         /** OK */
@@ -19,15 +19,17 @@ export interface paths {
             "application/json": components["schemas"]["UserError"];
           };
         };
+        /** Internal server error */
+        500: unknown;
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["AuthLogin"];
+          "application/json": components["schemas"]["LoginPayload"];
         };
       };
     };
   };
-  "/auth/register": {
+  "/v1/users/register": {
     post: {
       responses: {
         /** OK */
@@ -38,15 +40,17 @@ export interface paths {
             "application/json": components["schemas"]["UserError"];
           };
         };
+        /** Internal server error */
+        500: unknown;
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["AuthRegister"];
+          "application/json": components["schemas"]["RegisterPayload"];
         };
       };
     };
   };
-  "/users/{id}": {
+  "/v1/users/{id}": {
     get: {
       parameters: {
         path: {
@@ -55,9 +59,15 @@ export interface paths {
       };
       responses: {
         /** OK */
-        200: unknown;
-        /** Bad request */
-        400: unknown;
+        200: {
+          content: {
+            "application/json": components["schemas"]["User"];
+          };
+        };
+        /** Not found */
+        404: unknown;
+        /** Internal server error */
+        500: unknown;
       };
     };
     patch: {
@@ -74,11 +84,17 @@ export interface paths {
           };
         };
         /** Bad request */
-        400: unknown;
+        400: {
+          content: {
+            "application/json": components["schemas"]["UserError"];
+          };
+        };
+        /** Internal server error */
+        500: unknown;
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["UserPatch"];
+          "application/json": components["schemas"]["UserEditPayload"];
         };
       };
     };
@@ -88,19 +104,7 @@ export interface paths {
       };
     };
   };
-  "/tasks": {
-    get: {
-      responses: {
-        /** OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["TaskList"][];
-          };
-        };
-      };
-    };
-  };
-  "/tasks/{id}": {
+  "/v1/users/{id}/all-details": {
     get: {
       parameters: {
         path: {
@@ -111,9 +115,15 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["TaskRead"];
+            "application/json": components["schemas"]["UserDetailed"];
           };
         };
+        /** Unauthorized */
+        403: unknown;
+        /** Not found */
+        404: unknown;
+        /** Internal server error */
+        500: unknown;
       };
     };
     parameters: {
@@ -122,49 +132,8 @@ export interface paths {
       };
     };
   };
-  "/tasks/find/{idOrSlug}": {
-    get: {
-      parameters: {
-        path: {
-          /** A task id or taks slug */
-          idOrSlug: string;
-        };
-      };
-      responses: {
-        /** OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["TaskRead"];
-          };
-        };
-      };
-    };
-    parameters: {
-      path: {
-        /** A task id or taks slug */
-        idOrSlug: string;
-      };
-    };
-  };
-  "/judge/tasks": {
-    post: {
-      responses: {
-        /** OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["TaskList"][];
-          };
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TaskSetter"];
-        };
-      };
-    };
-  };
-  "/judge/tasks/{id}": {
-    get: {
+  "/v1/tasks/{id}": {
+    put: {
       parameters: {
         path: {
           id: string;
@@ -174,69 +143,91 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["TaskSetter"];
-          };
-        };
-      };
-    };
-    patch: {
-      parameters: {
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["TaskSetter"];
+            "application/json": components["schemas"]["Task"];
           };
         };
         /** Bad request */
-        400: unknown;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TaskSetter"];
-        };
-      };
-    };
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-  };
-  "/files/upload": {
-    post: {
-      responses: {
-        /** OK */
-        200: {
+        400: {
           content: {
-            "application/json": components["schemas"]["FileRead"];
+            "application/json": components["schemas"]["TaskError"];
           };
         };
-        /** Bad request */
-        400: unknown;
+        /** Not logged in */
+        401: unknown;
+        /** Unauthorized */
+        403: unknown;
+        /** Not found */
+        404: unknown;
+        /** Internal server error */
+        500: unknown;
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["FileCreate"];
+          "application/json": components["schemas"]["TaskPayload"];
         };
       };
     };
-  };
-  "/scripts/create": {
     post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
       responses: {
         /** OK */
         200: unknown;
         /** Bad request */
-        400: unknown;
+        400: {
+          content: {
+            "application/json": components["schemas"]["SubmissionError"];
+          };
+        };
+        /** Not logged in */
+        401: unknown;
+        /** Unauthorized */
+        403: unknown;
+        /** Not found */
+        404: unknown;
+        /** Internal server error */
+        500: unknown;
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Script"];
+          "application/json": components["schemas"]["SubmissionPayload"];
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/v1/tasks": {
+    post: {
+      responses: {
+        /** OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Task"];
+          };
+        };
+        /** Bad request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["TaskError"];
+          };
+        };
+        /** Not logged in */
+        401: unknown;
+        /** Unauthorized */
+        403: unknown;
+        /** Internal server error */
+        500: unknown;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["TaskPayload"];
         };
       };
     };
@@ -245,82 +236,190 @@ export interface paths {
 
 export interface components {
   schemas: {
-    AuthLogin: {
+    LoginPayload: {
       email: string;
       password: string;
     };
-    AuthRegister: {
+    RegisterPayload: {
       email: string;
       username: string;
       password: string;
+      passwordConfirm: string;
     };
-    User: {
-      id: number;
-      email: string;
-      username: string;
+    UserEditPayload: {
+      email?: string;
+      username?: string;
       school?: string;
       name?: string;
       country?: string;
-      isAdmin: boolean;
-    };
-    UserPatch: {
-      id: number;
-      email: string;
-      username: string;
       password?: string;
-      school?: string;
-      firstName?: string;
-      lastName?: string;
-      country?: string;
+      passwordConfirm?: string;
     };
-    FileRead: {
-      id: number;
-      fileURL: string;
+    SubmissionPayload: {
+      languageCode: string;
+      contestId?: string;
+    };
+    FilePayload: {
       name: string;
+      size: number;
+      fileUrl: string;
     };
-    FileCreate: {
-      fileURL: string;
-      name: string;
-    };
-    Script: {
-      id: number;
-      file: components["schemas"]["FileRead"];
+    ScriptPayload: {
+      file: components["schemas"]["FilePayload"];
       languageCode: string;
       runtimeArgs: string;
     };
-    TaskRead: {
-      id: number;
+    SubtaskPayload: {
+      name: string;
+      order: number;
+      scoreMax: number;
+      scorerScript: components["schemas"]["ScriptPayload"];
+      validatorScript: components["schemas"]["ScriptPayload"];
+      testDataPattern: string[];
+    };
+    TaskAttachmentPayload: {
+      file: components["schemas"]["FilePayload"];
+    };
+    TestDataPayload: {
+      order: number;
+      name: string;
+      inputFile: components["schemas"]["FilePayload"];
+      outputFile: components["schemas"]["FilePayload"];
+      judgeFile?: components["schemas"]["FilePayload"];
+      isSample: boolean;
+    };
+    TaskDeveloperPayload: {
+      username: string;
+      order: number;
+      role: string;
+    };
+    TaskPayload: {
       title: string;
       slug: string;
       description?: string;
+      statement: string;
+      allowedLanguages: string;
+      taskType: string;
+      scoreMax: number;
+      checkerScript: components["schemas"]["ScriptPayload"];
+      timeLimit: number;
+      memoryLimit: number;
+      compileTimeLimit: number;
+      compileMemoryLimit: number;
+      submissionSizeLimit: number;
+      validatorScript?: components["schemas"]["ScriptPayload"];
+      isPublicInArchive: boolean;
+      subtasks?: components["schemas"]["SubtaskPayload"][];
+      attachments?: components["schemas"]["TaskAttachmentPayload"][];
+      data?: components["schemas"]["TestDataPayload"][];
+      developers?: components["schemas"]["TaskDeveloperPayload"][];
+    };
+    UserError: {
+      email?: string;
+      username?: string;
+      password?: string;
+      passwordConfirm?: string;
+      country?: string;
+    };
+    SubmissionError: {
+      languageCode?: string;
+    };
+    FileError: {
+      name?: string;
+      size?: string;
+      fileUrl?: string;
+    };
+    ScriptError: {
+      file?: components["schemas"]["FileError"];
+      languageCode?: string;
+      runtimeArgs?: string;
+    };
+    SubtaskError: {
+      name?: string;
+      order?: string;
+      scoreMax?: string;
+      scorerScript?: components["schemas"]["ScriptError"];
+      validatorScript?: components["schemas"]["ScriptError"];
+      testDataPattern?: string;
+    };
+    TaskAttachmentError: {
+      file?: components["schemas"]["FileError"];
+    };
+    TestDataError: {
+      order?: string;
+      name?: string;
+      inputFile?: components["schemas"]["FileError"];
+      outputFile?: components["schemas"]["FileError"];
+      judgeFile?: components["schemas"]["FileError"];
+      isSample?: string;
+    };
+    TaskDeveloperError: {
+      username?: string;
+      order?: string;
+      role?: string;
+    };
+    TaskError: {
+      title?: string;
+      slug?: string;
+      description?: string;
+      statement?: string;
+      allowedLanguages?: string;
+      taskType?: string;
+      scoreMax?: string;
+      checkerScript?: components["schemas"]["ScriptError"];
+      timeLimit?: string;
+      memoryLimit?: string;
+      compileTimeLimit?: string;
+      compileMemoryLimit?: string;
+      submissionSizeLimit?: string;
+      validatorScript?: components["schemas"]["ScriptError"];
+      isPublicInArchive?: string;
+      subtasks?: components["schemas"]["SubtaskError"][];
+      attachments?: components["schemas"]["TaskAttachmentError"][];
+      data?: components["schemas"]["TestDataError"][];
+      developers?: components["schemas"]["TaskDeveloperError"][];
+    };
+    User: {
+      id: string;
+      email: string;
+      username: string;
+      createdAt: string;
+      isAdmin: boolean;
+      school?: string;
+      name?: string;
+      country: string;
+    };
+    UserDetailed: {
+      id: string;
+      email: string;
+      username: string;
+      createdAt: string;
+      isAdmin: boolean;
+      school?: string;
+      name?: string;
+      country: string;
+      tasks: { [key: string]: unknown };
+      develops: { [key: string]: unknown };
+      submissions: { [key: string]: unknown };
+      contests: { [key: string]: unknown };
+      participations: { [key: string]: unknown };
+    };
+    Task: {
+      title: string;
+      slug: string;
+      description?: string;
+      statement: string;
       allowedLanguages: string;
       taskType: string;
       scoreMax: number;
       timeLimit: number;
       memoryLimit: number;
       compileTimeLimit: number;
-      compileMemoryLimit?: number;
+      compileMemoryLimit: number;
       submissionSizeLimit: number;
-      validatorId?: number;
       isPublicInArchive: boolean;
-      language: string;
     } & {
-      statement: unknown;
-    };
-    TaskList: {
-      tasks: components["schemas"]["TaskRead"][];
-    };
-    TaskSetter: components["schemas"]["TaskRead"] & {
-      checkerId: number;
-      validatorId?: number;
-    };
-    UserError: {
-      id?: string;
-      email?: string;
-      username?: string;
-      password?: string;
-      passwordConfirm?: string;
-      country?: string;
+      checkerScript: unknown;
     };
   };
 }

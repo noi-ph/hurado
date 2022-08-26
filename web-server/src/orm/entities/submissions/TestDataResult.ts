@@ -1,30 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne } from "typeorm";
 
-import { TestData } from '../tasks/TestData';
-
-import { Result } from './Result';
-import { Verdicts } from './types';
+import { Verdicts } from "orm/entities/enums";
+import type { TestData, Result } from 'orm/entities';
 
 @Entity('test_data_results')
-export class TestDataResult {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class TestDataResult extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @ManyToOne(() => Result)
+  @OneToOne('Result')
   @JoinColumn({ name: 'result_id' })
-  result: Result;
+  result: Promise<Result>;
 
-  @Column({ name: 'result_id' })
-  resultId: number;
-
-  @ManyToOne(() => TestData)
+  @ManyToOne('TestData', (testdata: TestData) => testdata.results)
   @JoinColumn({ name: 'test_data_id' })
-  testData: TestData;
+  testData: Promise<TestData>;
 
-  @Column({ name: 'test_data_id' })
-  testDataId: number;
-
-  @Column({ type: 'enum', enum: Verdicts })
+  @Column('enum', { enum: Verdicts })
   verdict: Verdicts;
 
   @Column({ name: 'running_time' })
@@ -37,6 +29,6 @@ export class TestDataResult {
   @Column({ name: 'raw_score' })
   rawScore: number;
 
-  @CreateDateColumn({ name: 'verdict_gotten_at' })
+  @Column({ name: 'verdict_gotten_at' })
   verdictGottenAt: Date;
-}
+};

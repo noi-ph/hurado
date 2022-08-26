@@ -2,18 +2,14 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import fs from 'fs';
 import path from 'path';
-
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import './utils/response/customSuccess';
+import routes from 'routes';
 import { AppDataSource } from 'orm/data-source';
-
-import { errorHandler, errorInterceptor } from './middleware/errorHandler';
-import routes from './routes';
 
 export const app = express();
 app.use(cors());
@@ -32,9 +28,6 @@ try {
 app.use(morgan('combined'));
 
 app.use('/', routes);
-
-app.use(errorInterceptor);
-app.use(errorHandler);
 
 const port = process.env.PORT || 4000;
 

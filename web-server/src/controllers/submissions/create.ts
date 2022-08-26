@@ -1,19 +1,28 @@
-import { NextFunction, Request, Response } from "express";
-import { AppDataSource } from "orm/data-source";
-import { File } from "orm/entities/files/File";
-import { Submission } from "orm/entities/submissions/Submission";
-import { SubmissionFile } from "orm/entities/submissions/SubmissionFile";
-import { SubmissionPayload } from "utils/payloads";
+import { Request, Response, NextFunction } from "express";
 
-export const create = async (req: Request, res: Response, next: NextFunction) => {
-  const { languageCode, taskId } = req.body as SubmissionPayload;
-  const submission = new Submission(req.jwtPayload.id, taskId, languageCode);
+import { ServerAPI } from "types";
+import { AppDataSource } from "orm/data-source";
+import { Contest, File, Submission, SubmissionFile, Task, User } from "orm/entities";
+
+export const createSubmission = async (req: Request, res: Response, next: NextFunction) => {
+  const { languageCode, contestId } = req.body as ServerAPI['SubmissionPayload'];
+  
+  const user = await AppDataSource.getRepository(User).findOne({ where: { id: req.jwtPayload.id } });
+  const task = await AppDataSource.getRepository(Task).findOne({ where: { id: req.params.taskId } });
+  
+  const submission = new Submission(user, task, languageCode);
+
+  if (contestId) {
+    submission.contest = Promise.resolve(await AppDataSource.getRepository(Contest).findOne({ where: { id: contestId } }));
+  }
+
   const submissionFiles: SubmissionFile[] = [];
   const files: File[] = [];
+
   for (let i = 0; i < req.files.length; i++) {
     const rawFile: Express.Multer.File = req.files[i];
-    const file = new File(rawFile.originalname, rawFile.path);
-    const submissionFile = new SubmissionFile(file, submission);
+    const file = new File(rawFile.originalname, rawFile.size, rawFile.path);
+    const submissionFile = new SubmissionFile(file, submission)
 
     submissionFiles.push(submissionFile);
     files.push(file);
@@ -25,5 +34,5 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     await transaction.save(submissionFiles);
   })
 
-  res.status(200).send(submissionFiles);
-}
+  res.status(200).end();
+};

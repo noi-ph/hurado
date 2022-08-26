@@ -1,15 +1,14 @@
-import { Router } from 'express';
+import { Router } from "express";
 
-import { show, edit, destroy } from 'controllers/users';
-import { checkJwt } from 'middleware/checkJwt';
-import { validatorEdit } from 'middleware/validation/users';
+import { login, register, edit, show } from "controllers/users";
+import { validationLogin, validationRegister, validationEdit, validationShow } from "middleware/validation/users";
+import { checkJwt } from "middleware/checkJwt";
 
 const router = Router();
-
-router.get('/:id([0-9]+)', [checkJwt], show);
-
-router.patch('/:id([0-9]+)', [checkJwt, validatorEdit], edit);
-
-router.delete('/:id([0-9]+)', [checkJwt], destroy);
+router.put('/login', [validationLogin], login);
+router.post('/register', [validationRegister], register);
+router.patch('/:id([0-9]+)', [checkJwt(true), validationEdit], edit);
+router.get('/:id([0-9]+)/all-details', [checkJwt(true), validationShow], show(true));
+router.get('/:id([0-9]+)', [checkJwt(false)], show(false));
 
 export default router;
