@@ -11,7 +11,6 @@ import morgan from 'morgan';
 
 import { AppDataSource } from 'orm/data-source';
 
-import { errorHandler, errorInterceptor } from './middleware/errorHandler';
 import routes from './routes';
 
 export const app = express();
@@ -31,9 +30,6 @@ try {
 app.use(morgan('combined'));
 
 app.use('/', routes);
-
-app.use(errorInterceptor);
-app.use(errorHandler);
 
 const port = process.env.PORT || 4000;
 
