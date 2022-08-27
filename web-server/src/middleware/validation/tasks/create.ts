@@ -3,7 +3,7 @@ import validator from 'validator';
 
 import { AppDataSource } from 'orm/data-source';
 import { Task, User } from 'orm/entities';
-import { AllowedLanguages, TaskDeveloperRoles, TaskTypes } from 'orm/entities/enums';
+import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
 
 import { validateSlug } from './slug';
@@ -77,7 +77,7 @@ export const validationCreate = async (req: Request, res: Response, next: NextFu
 
   if (validator.isEmpty(rbody.taskType)) {
     err.taskType = 'This field is required';
-  } else if (!Object.values(TaskTypes).includes(rbody.taskType as TaskTypes)) {
+  } else if (!Object.values(TaskType).includes(rbody.taskType as TaskType)) {
     err.taskType = 'That task type is invalid';
   }
 

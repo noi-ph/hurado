@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('files')
 export class File extends BaseEntity {
@@ -13,12 +13,12 @@ export class File extends BaseEntity {
 
   @Column('bytea')
   contents: Buffer;
+}
 
-  constructor(name: string, size: number, contents: Buffer) {
-    super();
-
-    this.name = name;
-    this.size = size,
-    this.contents = contents;
-  }
-};
+export function createFile(args: { name: string; contents: Buffer }) {
+  const file = new File();
+  file.name = args.name;
+  file.size = args.contents.byteLength;
+  file.contents = args.contents;
+  return file;
+}

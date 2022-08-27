@@ -1,9 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { ServerAPI } from 'types';
-import { File, Script, Subtask, TaskAttachment, TestData, Task, User, TaskDeveloper } from 'orm/entities';
 import { AppDataSource } from 'orm/data-source';
-import { AllowedLanguages, TaskDeveloperRoles, TaskTypes } from 'orm/entities/enums';
+import {
+  File,
+  Script,
+  Subtask,
+  TaskAttachment,
+  TestData,
+  Task,
+  User,
+  TaskDeveloper,
+  createFile,
+  createScript,
+} from 'orm/entities';
+import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
+import { ServerAPI } from 'types';
 
 export const createTask = async (req: Request, res: Response, next: NextFunction) => {
   const rbody = req.body as ServerAPI['TaskPayload'];
@@ -16,10 +27,17 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
 
   [rbody.checkerScript, rbody.validatorScript].forEach((s) => {
     if (Object.keys(s).length) {
-      const file = new File(s.file.name, s.file.size, req.files[s.file.name][0].buffer);
+      const file = createFile({
+        name: s.file.name,
+        contents: req.files[s.file.name][0].buffer,
+      });
       files.push(file);
 
-      const script = new Script(file, s.languageCode, s.runtimeArgs);
+      const script = createScript({
+        file,
+        languageCode: s.languageCode,
+        runtimeArgs: s.runtimeArgs,
+      });
       scripts.push(script);
     }
   });
@@ -35,7 +53,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
 
   task.statement = rbody.statement;
   task.allowedLanguages = rbody.allowedLanguages as AllowedLanguages;
-  task.taskType = rbody.taskType as TaskTypes;
+  task.taskType = rbody.taskType as TaskType;
   task.scoreMax = rbody.scoreMax;
   task.checkerScript = Promise.resolve(scripts[0]);
   task.timeLimit = rbody.timeLimit;
@@ -53,10 +71,16 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   }
 
   rbody.data.forEach((d) => {
-    const inputFile = new File(d.inputFile.name, d.inputFile.size, req.files[d.inputFile.name][0].buffer);
+    const inputFile = createFile({
+      name: d.inputFile.name,
+      contents: req.files[d.inputFile.name][0].buffer,
+    });
     files.push(inputFile);
-    
-    const outputFile = new File(d.outputFile.name, d.outputFile.size, req.files[d.outputFile.name][0].buffer);
+
+    const outputFile = createFile({
+      name: d.outputFile.name,
+      contents: req.files[d.outputFile.name][0].buffer,
+    });
     files.push(outputFile);
 
     const testData = new TestData();
@@ -65,9 +89,12 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
     testData.name = d.name;
     testData.inputFile = Promise.resolve(inputFile);
     testData.outputFile = Promise.resolve(outputFile);
-    
+
     if (Object.keys(d.judgeFile).length) {
-      const judgeFile = new File(d.judgeFile.name, d.judgeFile.size, req.files[d.judgeFile.name][0].buffer);
+      const judgeFile = createFile({
+        name: d.judgeFile.name,
+        contents: req.files[d.judgeFile.name][0].buffer,
+      });
       files.push(judgeFile);
 
       testData.judgeFile = Promise.resolve(judgeFile);
@@ -78,16 +105,30 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   });
 
   rbody.subtasks.forEach((s) => {
-    const scorerFile = new File(s.scorerScript.file.name, s.scorerScript.file.size, req.files[s.scorerScript.file.name][0].buffer);
+    const scorerFile = createFile({
+      name: s.scorerScript.file.name,
+      contents: req.files[s.scorerScript.file.name][0].buffer,
+    });
     files.push(scorerFile);
 
-    const scorerScript = new Script(scorerFile, s.scorerScript.languageCode, s.scorerScript.runtimeArgs);
+    const scorerScript = createScript({
+      file: scorerFile,
+      languageCode: s.scorerScript.languageCode,
+      runtimeArgs: s.scorerScript.runtimeArgs,
+    });
     scripts.push(scorerScript);
 
-    const validatorFile = new File(s.validatorScript.file.name, s.validatorScript.file.size, req.files[s.validatorScript.file.name][0].buffer);
+    const validatorFile = createFile({
+      name: s.validatorScript.file.name,
+      contents: req.files[s.validatorScript.file.name][0].buffer,
+    });
     files.push(validatorFile);
 
-    const validatorScript = new Script(validatorFile, s.validatorScript.languageCode, s.validatorScript.runtimeArgs);
+    const validatorScript = createScript({
+      file: validatorFile,
+      languageCode: s.validatorScript.languageCode,
+      runtimeArgs: s.validatorScript.runtimeArgs,
+    });
     scripts.push(validatorScript);
 
     const subtask = new Subtask();
@@ -101,7 +142,10 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   });
 
   rbody.attachments.forEach((a) => {
-    const file = new File(a.file.name, a.file.size, req.files[a.file.name][0].buffer);
+    const file = createFile({
+      name: a.file.name,
+      contents: req.files[a.file.name][0].buffer,
+    });
     files.push(file);
 
     const attachment = new TaskAttachment();

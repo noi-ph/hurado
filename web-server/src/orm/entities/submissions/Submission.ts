@@ -1,4 +1,14 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, OneToOne, OneToMany } from "typeorm";
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
 
 import type { Task, User, Contest, Result, SubmissionFile } from 'orm/entities';
 
@@ -40,4 +50,4 @@ export class Submission extends BaseEntity {
     this.task = Promise.resolve(task);
     this.languageCode = languageCode;
   }
-};
+}

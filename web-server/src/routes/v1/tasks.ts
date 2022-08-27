@@ -12,10 +12,14 @@ const upload = multer({ storage: storage });
 
 const router = Router();
 router.get('/', [checkJwt(false)], listTasks);
-router.post('/:idOrSlug([0-9]+)', [checkJwt(false), upload.any(), idOrSlug, validationSubmission], createSubmission);
+router.post(
+  '/:idOrSlug([0-9A-Za-z-]+)',
+  [checkJwt(false), upload.any(), idOrSlug, validationSubmission],
+  createSubmission,
+);
 router.post('/', [checkJwt(true), upload.any(), validationCreate], createTask);
-router.put('/:idOrSlug([0-9]+)', [checkJwt(true), upload.any(), idOrSlug, validationEdit], editTask);
-router.get('/:idOrSlug([0-9]+)', [checkJwt(false), idOrSlug, validateAccess(false)], viewTask(false));
-router.get('/:idOrSlug([0-9]+)/all-details', [checkJwt(true), idOrSlug, validateAccess(true)], viewTask(true));
+router.put('/:idOrSlug([0-9A-Za-z-]+)', [checkJwt(true), upload.any(), idOrSlug, validationEdit], editTask);
+router.get('/:idOrSlug([0-9A-Za-z-]+)', [checkJwt(false), idOrSlug, validateAccess(false)], viewTask(false));
+router.get('/:idOrSlug([0-9A-Za-z-]+)/all-details', [checkJwt(true), idOrSlug, validateAccess(true)], viewTask(true));
 
 export default router;

@@ -264,6 +264,6 @@ export class CreateUsers100000000001 implements MigrationInterface {
     await queryRunner.query('DROP TABLE users');
     await queryRunner.query('DROP TABLE scripts');
     await queryRunner.query('DROP TABLE files');
-    await queryRunner.query('DROP EXTENSION "uuid-ossp"')
+    await queryRunner.query('DROP EXTENSION "uuid-ossp"');
   }
-};
+}

@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import { AppDataSource } from "orm/data-source";
-import { Task, User } from "orm/entities";
+import { Request, Response, NextFunction } from 'express';
+
+import { AppDataSource } from 'orm/data-source';
+import { Task, User } from 'orm/entities';
 
 const strict = async (req: Request, res: Response, next: NextFunction) => {
   const task = await AppDataSource.getRepository(Task).findOne({ where: { id: req.params.id } });
@@ -11,7 +12,7 @@ const strict = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   const user = await AppDataSource.getRepository(User).findOne({ where: { id: req.jwtPayload.id } });
-  
+
   if (user.isAdmin || (await task.owner).id === user.id) {
     return next();
   } else {

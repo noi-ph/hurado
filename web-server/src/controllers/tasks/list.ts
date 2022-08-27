@@ -1,16 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AppDataSource } from 'orm/data-source';
-import { Task } from 'orm/entities';
+import { TaskRepository } from 'orm/repositories';
 
 export const listTasks = async (req: Request, res: Response, next: NextFunction) => {
-  const isLoggedIn = req.jwtPayload !== null;
-  const taskRepository = AppDataSource.getRepository(Task);
-
+  console.log('heyyyyyyy');
   try {
-    const tasks = await taskRepository.find({
+    const tasks = await TaskRepository.find({
       select: ['id', 'title', 'slug', 'description', 'isPublicInArchive'],
       where: { isPublicInArchive: true },
+      relations: {
+        testData: true,
+        subtasks: true,
+        developers: true,
+        attachments: true,
+      },
     });
 
     res.status(200).send(tasks);
