@@ -1,11 +1,12 @@
-import validator from "validator";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
+import validator from 'validator';
 
-import { ServerAPI } from "types";
-import { AppDataSource } from "orm/data-source";
-import { User } from "orm/entities";
+import { AppDataSource } from 'orm/data-source';
+import { User } from 'orm/entities';
+import { ServerAPI } from 'types';
 
 export const validationLogin = async (req: Request, res: Response, next: NextFunction) => {
+  console.log('halp!!');
   let { email, password } = req.body as ServerAPI['LoginPayload'];
 
   email = email ? email : '';

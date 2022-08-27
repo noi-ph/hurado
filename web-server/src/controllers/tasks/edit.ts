@@ -2,8 +2,19 @@ import { Request, Response, NextFunction } from 'express';
 import { BaseEntity } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import { File, Script, Task, TaskAttachment, TestData, Subtask, TaskDeveloper, User } from 'orm/entities';
-import { AllowedLanguages, TaskDeveloperRoles, TaskTypes } from 'orm/entities/enums';
+import {
+  File,
+  Script,
+  Task,
+  TaskAttachment,
+  TestData,
+  Subtask,
+  TaskDeveloper,
+  User,
+  createScript,
+  createFile,
+} from 'orm/entities';
+import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
 
 export const editTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +50,10 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         file.size = s.file.size;
         file.contents = req.files[s.file.name][0].buffer;
       } else {
-        file = new File(s.file.name, s.file.size, req.files[s.file.name][0].buffer);
+        file = createFile({
+          name: s.file.name,
+          contents: req.files[s.file.name][0].buffer,
+        });
         newFile = true;
       }
       files.push(file);
@@ -56,7 +70,11 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         script.languageCode = s.languageCode;
         script.runtimeArgs = s.runtimeArgs;
       } else {
-        script = new Script(file, s.languageCode, s.runtimeArgs);
+        script = createScript({
+          file,
+          languageCode: s.languageCode,
+          runtimeArgs: s.runtimeArgs,
+        });
       }
       scripts.push(script);
     }
@@ -88,7 +106,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
 
   task.statement = rbody.statement;
   task.allowedLanguages = rbody.allowedLanguages as AllowedLanguages;
-  task.taskType = rbody.taskType as TaskTypes;
+  task.taskType = rbody.taskType as TaskType;
   task.scoreMax = rbody.scoreMax;
   task.timeLimit = rbody.timeLimit;
   task.memoryLimit = rbody.memoryLimit;
@@ -124,7 +142,10 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         toDelete.push(oldInputFile);
       }
 
-      inputFile = new File(d.inputFile.name, d.inputFile.size, req.files[d.inputFile.name][0].buffer);
+      inputFile = createFile({
+        name: d.inputFile.name,
+        contents: req.files[d.inputFile.name][0].buffer,
+      });
     }
     files.push(inputFile);
     testData.inputFile = Promise.resolve(inputFile);
@@ -141,7 +162,10 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         toDelete.push(oldOutputFile);
       }
 
-      outputFile = new File(d.outputFile.name, d.outputFile.size, req.files[d.outputFile.name][0].buffer);
+      outputFile = createFile({
+        name: d.outputFile.name,
+        contents: req.files[d.outputFile.name][0].buffer,
+      });
     }
     files.push(outputFile);
     testData.outputFile = Promise.resolve(outputFile);
@@ -159,7 +183,10 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
           toDelete.push(oldJudgeFile);
         }
 
-        judgeFile = new File(d.judgeFile.name, d.judgeFile.size, req.files[d.judgeFile.name][0].buffer);
+        judgeFile = createFile({
+          name: d.judgeFile.name,
+          contents: req.files[d.judgeFile.name][0].buffer,
+        });
       }
       files.push(judgeFile);
       testData.judgeFile = Promise.resolve(judgeFile);
@@ -178,7 +205,10 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         file.size = sc.file.size;
         file.contents = req.files[sc.file.name][0].buffer;
       } else {
-        file = new File(sc.file.name, sc.file.size, req.files[sc.file.name][0].buffer);
+        file = createFile({
+          name: sc.file.name,
+          contents: req.files[sc.file.name][0].buffer,
+        });
         newFile = true;
       }
       files.push(file);
@@ -195,7 +225,11 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         script.languageCode = sc.languageCode;
         script.runtimeArgs = sc.runtimeArgs;
       } else {
-        script = new Script(file, sc.languageCode, sc.runtimeArgs);
+        script = createScript({
+          file,
+          languageCode: sc.languageCode,
+          runtimeArgs: sc.runtimeArgs,
+        });
       }
       scripts.push(script);
     }
@@ -249,7 +283,10 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
         toDelete.push(oldFile);
       }
 
-      file = new File(a.file.name, a.file.size, req.files[a.file.name][0].buffer);
+      file = createFile({
+        name: a.file.name,
+        contents: req.files[a.file.name][0].buffer,
+      });
     }
     files.push(file);
     attachment.file = Promise.resolve(file);

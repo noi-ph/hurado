@@ -1,11 +1,12 @@
-import validator from 'validator';
 import { Request, Response, NextFunction } from 'express';
+import validator from 'validator';
 
-import { ServerAPI } from 'types';
-import { validateSlug } from './slug';
 import { AppDataSource } from 'orm/data-source';
 import { Task, User } from 'orm/entities';
-import { AllowedLanguages, TaskDeveloperRoles, TaskTypes } from 'orm/entities/enums';
+import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
+import { ServerAPI } from 'types';
+
+import { validateSlug } from './slug';
 
 export const validationEdit = async (req: Request, res: Response, next: NextFunction) => {
   const task = await AppDataSource.getRepository(Task).findOne({ where: { id: req.params.id } });
@@ -15,7 +16,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
     return;
   }
 
-  let rbody = req.body as ServerAPI['TaskPayload'];
+  const rbody = req.body as ServerAPI['TaskPayload'];
 
   rbody.title = rbody.title ? rbody.title : '';
   rbody.slug = rbody.slug ? rbody.slug : '';
@@ -35,7 +36,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
   rbody.subtasks = rbody.subtasks ? rbody.subtasks : [];
   rbody.data = rbody.data ? rbody.data : [];
   rbody.developers = rbody.developers ? rbody.developers : [];
-  
+
   rbody.isPublicInArchive = rbody.isPublicInArchive ? rbody.isPublicInArchive : false;
 
   const files: { [name: string]: Express.Multer.File[] } = {};
@@ -50,7 +51,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
       }
     }
   }
-  
+
   const err: ServerAPI['TaskError'] = {};
 
   if (validator.isEmpty(rbody.title)) {
@@ -63,7 +64,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
     const slugError = validateSlug(rbody.slug);
     if (Object.keys(slugError).length) {
       err.slug = slugError.slug;
-    } else if (rbody.slug !== task.slug) { 
+    } else if (rbody.slug !== task.slug) {
       const task = await AppDataSource.getRepository(Task).findOne({ where: { slug: rbody.slug } });
       if (task) {
         err.slug = 'That slug is already taken';
@@ -83,7 +84,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
 
   if (validator.isEmpty(rbody.taskType)) {
     err.taskType = 'This field is required';
-  } else if (!Object.values(TaskTypes).includes(rbody.taskType as TaskTypes)) {
+  } else if (!Object.values(TaskType).includes(rbody.taskType as TaskType)) {
     err.taskType = 'That task type is invalid';
   }
 
@@ -97,7 +98,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
 
   if (Number.isNaN(rbody.memoryLimit) || rbody.memoryLimit <= 0) {
     err.memoryLimit = 'Memory limit must be more than zero';
-  } else if (!Number.isNaN(rbody.memoryLimit) && rbody.memoryLimit % 2**20 !== 0) {
+  } else if (!Number.isNaN(rbody.memoryLimit) && rbody.memoryLimit % 2 ** 20 !== 0) {
     err.memoryLimit = 'Memory limit must be divisible by 2^20';
   }
 
@@ -131,15 +132,25 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
     rbody.subtasks[i].name = rbody.subtasks[i].name ? rbody.subtasks[i].name : '';
 
     const scorerScriptName = rbody.subtasks[i].scorerScript.file.name ? rbody.subtasks[i].scorerScript.file.name : '';
-    rbody.subtasks[i].scorerScript.languageCode = rbody.subtasks[i].scorerScript.languageCode ? rbody.subtasks[i].scorerScript.languageCode : '';
-    rbody.subtasks[i].scorerScript.runtimeArgs = rbody.subtasks[i].scorerScript.runtimeArgs ? rbody.subtasks[i].scorerScript.runtimeArgs : '';
+    rbody.subtasks[i].scorerScript.languageCode = rbody.subtasks[i].scorerScript.languageCode
+      ? rbody.subtasks[i].scorerScript.languageCode
+      : '';
+    rbody.subtasks[i].scorerScript.runtimeArgs = rbody.subtasks[i].scorerScript.runtimeArgs
+      ? rbody.subtasks[i].scorerScript.runtimeArgs
+      : '';
 
-    const validatorScriptName = rbody.subtasks[i].validatorScript.file.name ? rbody.subtasks[i].validatorScript.file.name : '';
-    rbody.subtasks[i].validatorScript.languageCode = rbody.subtasks[i].validatorScript.languageCode ? rbody.subtasks[i].validatorScript.languageCode : '';
-    rbody.subtasks[i].validatorScript.runtimeArgs = rbody.subtasks[i].validatorScript.runtimeArgs ? rbody.subtasks[i].validatorScript.runtimeArgs : '';
+    const validatorScriptName = rbody.subtasks[i].validatorScript.file.name
+      ? rbody.subtasks[i].validatorScript.file.name
+      : '';
+    rbody.subtasks[i].validatorScript.languageCode = rbody.subtasks[i].validatorScript.languageCode
+      ? rbody.subtasks[i].validatorScript.languageCode
+      : '';
+    rbody.subtasks[i].validatorScript.runtimeArgs = rbody.subtasks[i].validatorScript.runtimeArgs
+      ? rbody.subtasks[i].validatorScript.runtimeArgs
+      : '';
 
     rbody.subtasks[i].testDataPattern = rbody.subtasks[i].testDataPattern ? rbody.subtasks[i].testDataPattern : [];
-    
+
     rbody.subtasks[i].order = rbody.subtasks[i].order ? rbody.subtasks[i].order : 0;
     const scoreMax = rbody.subtasks[i].scoreMax ? rbody.subtasks[i].scoreMax : 0;
 
@@ -157,9 +168,9 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
       rbody.subtasks[i].scorerScript.file.size = file.size;
     }
 
-    if (validator.isEmpty(validatorScriptName)){
+    if (validator.isEmpty(validatorScriptName)) {
       err.subtasks[i].validatorScript.file.name = 'This field is required';
-    } else if (!(validatorScriptName in files)){
+    } else if (!(validatorScriptName in files)) {
       err.subtasks[i].validatorScript.file.contents = 'This field is required';
     } else {
       const file = files[validatorScriptName][0];
@@ -191,7 +202,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
     const judgeFileName = rbody.data[i].judgeFile.name ? rbody.data[i].judgeFile.name : '';
 
     // TODO validate order
-    
+
     if (validator.isEmpty(rbody.data[i].name)) {
       err.data[i].name = 'This field is required';
     }
@@ -217,7 +228,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
       rbody.data[i].outputFile.contents = file.buffer;
       rbody.data[i].outputFile.size = file.size;
     }
-    
+
     if (!validator.isEmpty(judgeFileName)) {
       if (!(judgeFileName in files)) {
         err.data[i].judgeFile.contents = 'This field is required';
@@ -236,7 +247,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
 
     // TODO validate order
 
-    if (validator.isEmpty(username)){
+    if (validator.isEmpty(username)) {
       err.developers[i].username = 'This field is required';
     } else {
       const user = await AppDataSource.getRepository(User).findOne({ where: { username } });

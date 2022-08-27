@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
 import type { File } from 'orm/entities/files';
 
@@ -16,12 +16,12 @@ export class Script extends BaseEntity {
 
   @Column({ name: 'runtime_args' })
   runtimeArgs: string;
+}
 
-  constructor(file: File, languageCode: string, runtimeArgs: string) {
-    super();
-
-    this.file = Promise.resolve(file);
-    this.languageCode = languageCode;
-    this.runtimeArgs = runtimeArgs;
-  }
-};
+export function createScript(args: { file: File; languageCode: string; runtimeArgs: string }) {
+  const script = new Script();
+  script.file = Promise.resolve(args.file);
+  script.languageCode = args.languageCode;
+  script.runtimeArgs = args.runtimeArgs;
+  return script;
+}

@@ -1,18 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AppDataSource } from 'orm/data-source';
-import { User } from 'orm/entities';
+import { UserRepository } from 'orm/repositories';
 
 const allDetails = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
-  const userRepository = AppDataSource.getRepository(User);
-  const user = await userRepository.findOne({ where: { id }, relations: {
-    tasks: true,
-    develops: true,
-    submissions: true,
-    contests: true,
-    participations: true
-  } });
+  const user = await UserRepository.findOne({
+    where: { id },
+    relations: {
+      tasks: true,
+      develops: true,
+      submissions: true,
+      contests: true,
+      participations: true,
+    },
+  });
 
   if (!user) {
     res.status(404).end();
@@ -23,9 +24,8 @@ const allDetails = async (req: Request, res: Response, next: NextFunction) => {
 
 const notAllDetails = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
-  const userRepository = AppDataSource.getRepository(User);
-  const user = await userRepository.findOne({ where: { id } });
-  
+  const user = await UserRepository.findOne({ where: { id } });
+
   if (!user) {
     res.status(404).end();
   } else {

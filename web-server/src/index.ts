@@ -9,7 +9,7 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import { AppDataSource } from 'orm/data-source';
+import { AppDataSourceInitialization } from 'orm/repositories';
 import routes from 'routes';
 
 export const app = express();
@@ -34,7 +34,7 @@ const port = process.env.PORT || 4000;
 
 (async () => {
   try {
-    await AppDataSource.initialize();
+    await AppDataSourceInitialization;
     console.log('Database connection initialized successfully');
   } catch (err) {
     console.warn('Database connection failed initializing');

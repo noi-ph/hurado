@@ -1,6 +1,6 @@
 export enum AllowedLanguages {
   All = 'All',
-};
+}
 
 export enum Countries {
   AD = 'AD',
@@ -251,7 +251,7 @@ export enum Countries {
   ZA = 'ZA',
   ZM = 'ZM',
   ZW = 'ZW',
-};
+}
 
 export enum TaskDeveloperRoles {
   Setter = 'Setter',
@@ -260,15 +260,15 @@ export enum TaskDeveloperRoles {
   Tester = 'Tester',
   Editorialist = 'Editorialist',
   Other = 'Other',
-};
+}
 
-export enum TaskTypes {
+export enum TaskType {
   IcpcStyle = 'ICPC-Style',
   Batch = 'Batch',
   OutputOnly = 'Output-only',
   Communication = 'Communication',
   Custom = 'Custom',
-};
+}
 
 export enum Verdicts {
   Queued = 'Queued',
@@ -280,4 +280,4 @@ export enum Verdicts {
   MLE = 'MLE',
   CE = 'CE',
   Skipped = 'Skipped',
-};
+}

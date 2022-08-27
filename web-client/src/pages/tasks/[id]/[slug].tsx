@@ -12,12 +12,13 @@ const ShowTaskPage = () => {
 
   const router = useRouter();
 
-  const getTask = async (idOrSlug: string | number) => {
+  const getTask = async(idOrSlug: string) => {
+    console.log(idOrSlug);
     try {
       const response = await http.get(`http://localhost:4000/v1/tasks/${idOrSlug}`);
-      
-      return response.data.data;
-    } catch (err: unknown) {  
+
+      return response.data;
+    } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const status = err.response?.status;
         const errorData = err.response?.data;
@@ -32,20 +33,16 @@ const ShowTaskPage = () => {
         alert('Something unexpected happened');
       }
     }
+    return null;
   };
 
   React.useEffect(() => {
-    const runEffect = async () => {
+    const runEffect = async() => {
       const { id, slug } = router.query;
       if (id && slug) {
-        const task1 = await getTask(parseInt(id.toString()));
-        const task2 = await getTask(slug.toString());
-        if (task1?.id === task2?.id) {
-          setTask(task1);
-        } else {
-          setState(`Either '${id}' or '${slug}' does not corresponse to a task`);
-        }
-      } 
+        const responseTask = await getTask(id as string);
+        setTask(responseTask);
+      }
     };
 
     if (router.isReady) {
@@ -61,37 +58,37 @@ const ShowTaskPage = () => {
 
         {task.language}
         <br />
-        
+
         {task.description}
         <br />
-        
+
         {task.statement}
         <br />
-        
+
         Accepts: {task.allowedLanguages}
         <br />
-        
+
         Task type: {task.taskType}
         <br />
-        
+
         Maximum score: {task.scoreMax}
         <br />
-        
+
         Time limit: {task.timeLimit}s
         <br />
-        
+
         Memory limit: {task.memoryLimit}
         <br />
-        
+
         Compile time limit: {task.compileTimeLimit}s
         <br />
-        
+
         Compile memory limit: {task.compileMemoryLimit}
         <br />
-        
+
         Submission size limit: {task.submissionSizeLimit}
         <br />
-        
+
         Is public | In archive? {task.isPublicInArchive.toString()}
         <br />
 

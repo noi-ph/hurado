@@ -19,7 +19,7 @@ import type {
   Submission,
   Subtask,
 } from 'orm/entities';
-import { AllowedLanguages, TaskTypes } from 'orm/entities/enums';
+import { AllowedLanguages, TaskType } from 'orm/entities/enums';
 
 @Entity('tasks')
 export class Task extends BaseEntity {
@@ -49,8 +49,8 @@ export class Task extends BaseEntity {
   })
   allowedLanguages: AllowedLanguages;
 
-  @Column('enum', { name: 'task_type', enum: TaskTypes })
-  taskType: TaskTypes;
+  @Column('enum', { name: 'task_type', enum: TaskType })
+  taskType: TaskType;
 
   @Column({ name: 'score_max' })
   scoreMax: number;
