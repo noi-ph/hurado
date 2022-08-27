@@ -1,8 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/errorTypes';
-
 import { Script } from '../scripts/Script';
 import { User } from '../users/User';
 
@@ -55,7 +52,7 @@ export class Task {
 
   @Column({
     default: 1099511627776, // 1024GB
-    name: 'memory_limit'
+    name: 'memory_limit',
   })
   memoryLimit: number;
 
@@ -64,13 +61,13 @@ export class Task {
 
   @Column({
     default: 1099511627776, // 1024GB
-    name: 'compile_memory_limit'
+    name: 'compile_memory_limit',
   })
   compileMemoryLimit: number;
 
   @Column({
     default: 32768, // 32KB,
-    name: 'submission_size_limit'
+    name: 'submission_size_limit',
   })
   submissionSizeLimit: number;
 
@@ -91,7 +88,6 @@ export class Task {
     const allowedCharacters = /^[a-z0-9\.\-]*$/;
     const hasDoubleSymbols = /((\.\-)|(\-\.)|(\.\.)|(\-\-))/;
     const hasAlphanumeric = /[a-z0-9]/;
-    const errors = new ErrorArray();
 
     if (!slug.match(allowedCharacters)) {
       errors.put('slug', 'Slug has invalid characters');

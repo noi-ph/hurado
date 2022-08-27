@@ -2,12 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
 import { User } from 'orm/entities/users/User';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 export const destroy = async (req: Request, res: Response, next: NextFunction) => {
-  const errors = new ErrorArray();
-
   const id = req.params.id;
 
   const userRepository = AppDataSource.getRepository(User);
