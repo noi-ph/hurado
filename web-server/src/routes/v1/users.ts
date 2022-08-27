@@ -1,8 +1,8 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import { login, register, edit, show } from "controllers/users";
-import { validationLogin, validationRegister, validationEdit, validationShow } from "middleware/validation/users";
-import { checkJwt } from "middleware/checkJwt";
+import { login, register, edit, show } from 'controllers/users';
+import { checkJwt } from 'middleware/checkJwt';
+import { validationLogin, validationRegister, validationEdit, validationShow } from 'middleware/validation/users';
 
 const router = Router();
 router.put('/login', [validationLogin], login);
