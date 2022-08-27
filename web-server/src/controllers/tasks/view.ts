@@ -3,8 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from 'orm/data-source';
 import { Task } from 'orm/entities/tasks/Task';
 import { User } from 'orm/entities/users/User';
-import { CustomError } from 'utils/response/custom-error/CustomError';
-import { ErrorArray } from 'utils/response/custom-error/errorTypes';
 
 const isAllowedAccess = async (req: Request) => {
   if (req.jwtPayload) {

@@ -9,7 +9,6 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import './utils/response/customSuccess';
 import { AppDataSource } from 'orm/data-source';
 
 import { errorHandler, errorInterceptor } from './middleware/errorHandler';

@@ -8,26 +8,21 @@ const TasksPage = () => {
   const [tasks, setTasks] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    const getTasks = async () => {
+    const getTasks = async() => {
       try {
-        const response = await http.get(`http://localhost:4000/v1/tasks`);
+        const response = await http.get('http://localhost:4000/v1/tasks');
 
-        setTasks(response.data.data);
-      } catch (err: unknown) {  
-      if (err instanceof AxiosError) {
-        const status = err.response?.status;
-        const errorData = err.response?.data;
+        setTasks(response.data);
+      } catch (err: unknown) {
+        if (err instanceof AxiosError) {
+          // The console.log stays while the error isn't properly annotated
+          console.log(err);
+        } else {
+          console.log(err);
 
-        // The console.log stays while the error isn't properly annotated
-        console.log(errorData);
-
-        alert(`${status}: ${errorData.errorMessage}`);
-      } else {
-        console.log(err);
-
-        alert('Something unexpected happened');
+          alert('Something unexpected happened');
+        }
       }
-    }
     };
 
     getTasks();
@@ -42,7 +37,7 @@ const TasksPage = () => {
     <React.Fragment>
       {taskComponents}
     </React.Fragment>
-  )
+  );
 };
 
 export default TasksPage;
