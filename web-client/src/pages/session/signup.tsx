@@ -19,7 +19,7 @@ const SignUpPage = () => {
 
   const onSignUpClick = async () => {
     try {
-      await http.post(`http://localhost:4000/v1/auth/register`, { email, username, password, passwordConfirm });
+      await http.post(`http://localhost:4000/v1/users/register`, { email, username, password, passwordConfirm });
 
       router.push('/session/login');
 

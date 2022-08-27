@@ -9,7 +9,7 @@
     "sql": "docker exec -it postgres sh -c 'PGPASSWORD=$POSTGRES_PASSWORD psql $POSTGRES_DB -U $POSTGRES_USER'",
     "migration:run": "./scripts/dev-run.sh ts-node ./node_modules/typeorm/cli.js migration:run --dataSource ./src/orm/data-source.ts",
     "migration:revert": "./scripts/dev-run.sh ts-node ./node_modules/typeorm/cli.js migration:revert --dataSource ./src/orm/data-source.ts",
-    "migration:generate": "./scripts/dev-run.sh ts-node ./node_modules/.bin/typeorm migration:generate --pretty --dataSource ./src/orm/data-source.ts -n ",
+    "migration:generate": "./scripts/dev-run.sh ts-node ./node_modules/.bin/typeorm migration:generate --pretty --dataSource ./src/orm/data-source.ts",
     "migration:create": "./scripts/dev-run.sh ts-node ./node_modules/.bin/typeorm migration:create --dataSource ./src/orm/data-source.ts -n ",
     "openapi:generate": "./scripts/generate-openapi.sh",
     "build": "rimraf dist && tsc",

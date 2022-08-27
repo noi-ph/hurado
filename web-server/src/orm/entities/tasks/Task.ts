@@ -1,23 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
 
-import { Script } from '../scripts/Script';
-import { User } from '../users/User';
-
-import { AllowedLanguages, Languages, TaskTypes } from './types';
-
-// IMPORTANT: TO-DO still lacking validation
+import type {
+  User,
+  Script,
+  TaskAttachment,
+  TaskDeveloper,
+  TestData,
+  ContestTask,
+  Submission,
+  Subtask,
+} from 'orm/entities';
+import { AllowedLanguages, TaskTypes } from 'orm/entities/enums';
 
 @Entity('tasks')
-export class Task {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Task extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne('User', (user: User) => user.tasks)
   @JoinColumn({ name: 'owner_id' })
-  owner: User;
-
-  @Column({ name: 'owner_id' })
-  ownerId: number;
+  owner: Promise<User>;
 
   @Column()
   title: string;
@@ -26,85 +37,74 @@ export class Task {
   slug: string;
 
   @Column({ nullable: true })
-  description: string;
+  description: string | null;
 
   @Column()
-  statement: string; //please check data type (for LaTeX)
+  statement: string;
 
-  @Column({ type: 'enum', enum: AllowedLanguages, default: AllowedLanguages.All, name: 'allowed_languages' })
+  @Column('enum', {
+    name: 'allowed_languages',
+    enum: AllowedLanguages,
+    default: AllowedLanguages.All,
+  })
   allowedLanguages: AllowedLanguages;
 
-  @Column({ type: 'enum', enum: TaskTypes, default: TaskTypes.Batch, name: 'task_type' })
+  @Column('enum', { name: 'task_type', enum: TaskTypes })
   taskType: TaskTypes;
 
   @Column({ name: 'score_max' })
   scoreMax: number;
 
-  @ManyToOne(() => Script)
+  @OneToOne('Script')
   @JoinColumn({ name: 'checker_script_id' })
-  checkerScript: Script;
+  checkerScript: Promise<Script>;
 
-  @Column({ name: 'checker_script_id' })
-  checkerScriptId: number;
-
-  @Column({ default: 2, name: 'time_limit' })
+  @Column({ name: 'time_limit', default: 2 })
   timeLimit: number;
 
   @Column({
-    default: 1099511627776, // 1024GB
     name: 'memory_limit',
+    default: 1099511627776, // 1024GB
   })
   memoryLimit: number;
 
-  @Column({ default: 10, name: 'compile_time_limit' })
+  @Column({ name: 'compile_time_limit', default: 10 })
   compileTimeLimit: number;
 
   @Column({
-    default: 1099511627776, // 1024GB
     name: 'compile_memory_limit',
+    default: 1099511627776, // 1024GB
   })
   compileMemoryLimit: number;
 
   @Column({
-    default: 32768, // 32KB,
     name: 'submission_size_limit',
+    default: 32768, // 32KB
   })
   submissionSizeLimit: number;
 
-  @ManyToOne(() => Script)
+  @OneToOne('Script', { nullable: true })
   @JoinColumn({ name: 'validator_script_id' })
-  validatorScript: Script;
+  validatorScript: Promise<Script> | null;
 
-  @Column({ name: 'validator_script_id' })
-  validatorScriptId: number;
+  @Column({ name: 'is_public_in_archive', default: false })
+  isPublicInArchive: boolean;
 
-  @Column({ default: false, name: 'is_public_in_archive' })
-  isPublicInArchive: boolean; // not sure how to only give admins access to edit
+  @OneToMany('TaskAttachment', (attachment: TaskAttachment) => attachment.task)
+  attachments: Promise<TaskAttachment[]>;
 
-  @Column({ type: 'enum', enum: Languages, default: Languages.English })
-  language: Languages;
+  @OneToMany('TaskDeveloper', (developer: TaskDeveloper) => developer.task)
+  developers: Promise<TaskDeveloper[]>;
 
-  setSlug(slug: string) {
-    const allowedCharacters = /^[a-z0-9\.\-]*$/;
-    const hasDoubleSymbols = /((\.\-)|(\-\.)|(\.\.)|(\-\-))/;
-    const hasAlphanumeric = /[a-z0-9]/;
+  @OneToMany('TestData', (testData: TestData) => testData.task)
+  testData: Promise<TestData[]>;
 
-    if (!slug.match(allowedCharacters)) {
-      errors.put('slug', 'Slug has invalid characters');
-    }
+  @OneToMany('ContestTask', (contestTask: ContestTask) => contestTask.task)
+  appearsIn: Promise<ContestTask[]>;
 
-    if (slug.match(hasDoubleSymbols)) {
-      errors.put('slug', 'Slug has double symbols');
-    }
+  @OneToMany('Submission', (submission: Submission) => submission.task)
+  submissions: Promise<Submission[]>;
 
-    if (!slug.match(hasAlphanumeric)) {
-      errors.put('slug', 'Slug must have at least one alphanumeric character');
-    }
-
-    if (errors.isEmpty) {
-      this.slug = slug;
-    } else {
-      throw new CustomError(400, 'Validation', 'Slug is invalid', null, errors);
-    }
-  }
+  @OneToMany('Subtask', (subtask: Subtask) => subtask.task)
+  subtasks: Promise<Subtask[]>;
 }

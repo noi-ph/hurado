@@ -1,25 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from "typeorm";
 
-import { Script } from '../scripts/Script';
-
-import { Task } from './Task';
-
-// IMPORTANT: TO-DO still lacking validation
+import type { Script, Task, SubtaskResult } from 'orm/entities';
 
 @Entity('subtasks')
-export class Subtask {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Subtask extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
 
-  @ManyToOne(() => Task) // many subtasks can belong to one task
+  @ManyToOne('Task', (task: Task) => task.subtasks)
   @JoinColumn({ name: 'task_id' })
-  task: Task;
-
-  @Column({ name: 'task_id' })
-  taskId: number;
+  task: Promise<Task>;
 
   @Column()
   order: number;
@@ -27,20 +20,17 @@ export class Subtask {
   @Column({ name: 'score_max' })
   scoreMax: number;
 
-  @ManyToOne(() => Script)
-  @JoinColumn({ name: 'scorer_script' })
-  scorerScript: Script;
+  @OneToOne('Script')
+  @JoinColumn({ name: 'scorer_script_id' })
+  scorerScript: Promise<Script>;
 
-  @Column({ name: 'scorer_script_id' })
-  scorerScriptId: number;
-
-  @ManyToOne(() => Script)
+  @OneToOne('Script')
   @JoinColumn({ name: 'validator_script_id' })
-  validatorScript: Script;
+  validatorScript: Promise<Script>;
 
-  @Column({ nullable: true, name: 'validator_script_id' })
-  validatorScriptId: number;
+  @Column('text', { name: 'test_data_pattern', array: true, default: [] })
+  testDataPattern: string[];
 
-  @Column({ name: 'test_data_pattern' })
-  testDataPattern: string; // NOTE: would have done an Array but not supported on our postgres apparently
-}
+  @OneToMany('SubtaskResult', (result: SubtaskResult) => result.subtask)
+  results: Promise<SubtaskResult[]>;
+};
