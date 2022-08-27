@@ -1,8 +1,8 @@
 import React from 'react';
 import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-
 import { Provider } from 'react-redux';
+import { MathJaxContext } from 'better-react-mathjax';
 
 import { Main } from '../components/Main';
 import store from './redux/store';
@@ -10,6 +10,21 @@ import store from './redux/store';
 import '../styles/main.css';
 import '../styles/fonts.css';
 import '../styles/prism-a11y-dark.css';
+
+const config = {
+  loader: { load: ["[tex]/html"] },
+  tex: {
+    packages: { "[+]": ["html"] },
+    inlineMath: [
+      ["$", "$"],
+      ["\\(", "\\)"]
+    ],
+    displayMath: [
+      ["$$", "$$"],
+      ["\\[", "\\]"]
+    ]
+  }
+};
 
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -27,7 +42,9 @@ const App = ({ Component, pageProps }: AppProps) => {
   }
   return (
     <Provider store={store}>
-      {main}
+      <MathJaxContext config={config}>
+        {main}
+      </MathJaxContext>
     </Provider>
   );
 };

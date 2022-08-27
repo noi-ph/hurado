@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
+import { MathJax } from 'better-react-mathjax';
 
 import { ServerAPI } from '../../../types/openapi';
 import { http } from '../../../utils/http';
@@ -62,7 +63,9 @@ const ShowTaskPage = () => {
         {task.description}
         <br />
 
-        {task.statement}
+        <MathJax>
+          {task.statement}
+        </MathJax>
         <br />
 
         Accepts: {task.allowedLanguages}
