@@ -14,7 +14,7 @@ const ViewPage = () => {
     try {
       const response = await http.get(`http://localhost:4000/v1/users/${id}`);
 
-      setUser(response.data.data);
+      setUser(response.data);
     } catch (e: unknown) {
       if ((e instanceof AxiosError) && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;

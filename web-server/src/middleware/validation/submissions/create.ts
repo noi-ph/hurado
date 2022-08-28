@@ -3,13 +3,12 @@ import { NextFunction, Request, Response } from "express";
 import { Equal } from "typeorm";
 
 import { ServerAPI } from "types";
-import { AppDataSource } from "orm/data-source";
-import { Contest, Participation, Task, User } from "orm/entities";
+import { TaskRepository, UserRepository, ContestRepository, ParticipationRepository } from "orm/repositories";
 
 export const validationSubmission = async (req: Request, res: Response, next: NextFunction) => {
   let { languageCode, contestId } = req.body as ServerAPI['SubmissionPayload'];
 
-  const task = await AppDataSource.getRepository(Task).findOne({ 
+  const task = await TaskRepository.findOne({ 
     where: { id: req.params.id } 
   });
   
@@ -18,7 +17,7 @@ export const validationSubmission = async (req: Request, res: Response, next: Ne
     return;
   }
 
-  const user = await AppDataSource.getRepository(User).findOne({ 
+  const user = await UserRepository.findOne({ 
     where: { id: req.jwtPayload.id }
   });
 
@@ -28,15 +27,14 @@ export const validationSubmission = async (req: Request, res: Response, next: Ne
   }
 
   if (contestId) {
-    const contests = AppDataSource.getRepository(Contest);
-    const contest = await contests.findOne({ where: { id: contestId } });
+    const contest = await ContestRepository.findOne({ where: { id: contestId } });
 
     if (!contest || !user) {
       res.status(404).end();
       return;
     }
 
-    const participation = await AppDataSource.getRepository(Participation).findOne({ where: { 
+    const participation = await ParticipationRepository.findOne({ where: { 
       user: Equal(user), 
       contest: Equal(contest) 
     } });

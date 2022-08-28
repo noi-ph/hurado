@@ -1,8 +1,7 @@
 import * as fs from 'fs';
-import { chdir, cwd } from 'process';
 
 import { AppDataSource } from 'orm/data-source';
-import { createFile, createScript, File, Script, Task } from 'orm/entities';
+import { createFile, createScript } from 'orm/entities';
 import { TaskType } from 'orm/entities/enums';
 import { AppDataSourceInitialization, TaskRepository, UserRepository } from 'orm/repositories';
 

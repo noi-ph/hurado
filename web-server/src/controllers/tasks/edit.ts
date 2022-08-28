@@ -5,17 +5,25 @@ import { AppDataSource } from 'orm/data-source';
 import {
   File,
   Script,
-  Task,
   TaskAttachment,
   TestData,
   Subtask,
   TaskDeveloper,
-  User,
   createScript,
   createFile,
 } from 'orm/entities';
 import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
+import { 
+  FileRepository, 
+  ScriptRepository, 
+  SubtaskRepository, 
+  TaskAttachmentRepository, 
+  TaskDeveloperRepository, 
+  TaskRepository, 
+  TestDataRepository, 
+  UserRepository 
+} from 'orm/repositories';
 
 export const editTask = async (req: Request, res: Response, next: NextFunction) => {
   const rbody = req.body as ServerAPI['TaskPayload'];
@@ -27,7 +35,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
   const attachments: TaskAttachment[] = [];
   const toDelete: BaseEntity[] = [];
 
-  const task = await AppDataSource.getRepository(Task).findOne({
+  const task = await TaskRepository.findOne({
     where: { id: req.params.id },
     relations: {
       testData: true,
@@ -36,16 +44,13 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
       attachments: true,
     },
   });
-  const fileRepository = AppDataSource.getRepository(File);
-  const scriptRepository = AppDataSource.getRepository(Script);
-  const userRepository = AppDataSource.getRepository(User);
 
   for (const s of [rbody.checkerScript, rbody.validatorScript]) {
     if (Object.keys(s).length) {
       let newFile = false;
       let file: File | null = null;
       if (s.file.id) {
-        file = await fileRepository.findOne({ where: { id: s.file.id } });
+        file = await FileRepository.findOne({ where: { id: s.file.id } });
         file.name = s.file.name;
         file.size = s.file.size;
         file.contents = req.files[s.file.name][0].buffer;
@@ -60,7 +65,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
 
       let script: Script | null = null;
       if (s.id) {
-        script = await scriptRepository.findOne({ where: { id: s.id } });
+        script = await ScriptRepository.findOne({ where: { id: s.id } });
 
         if (newFile) {
           toDelete.push(await script.file);
@@ -121,7 +126,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
   for (const d of rbody.data) {
     let testData: TestData | null = null;
     if (d.id) {
-      testData = await AppDataSource.getRepository(TestData).findOne({ where: { id: d.id } });
+      testData = await TestDataRepository.findOne({ where: { id: d.id } });
     } else {
       testData = new TestData();
     }
@@ -132,7 +137,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
 
     let inputFile: File | null = null;
     if (d.inputFile.id) {
-      inputFile = await fileRepository.findOne({ where: { id: d.inputFile.id } });
+      inputFile = await FileRepository.findOne({ where: { id: d.inputFile.id } });
       inputFile.name = d.inputFile.name;
       inputFile.size = d.inputFile.size;
       inputFile.contents = req.files[d.inputFile.name][0].buffer;
@@ -152,7 +157,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
 
     let outputFile: File | null = null;
     if (d.outputFile.id) {
-      outputFile = await fileRepository.findOne({ where: { id: d.outputFile.id } });
+      outputFile = await FileRepository.findOne({ where: { id: d.outputFile.id } });
       outputFile.name = d.outputFile.name;
       outputFile.size = d.outputFile.size;
       outputFile.contents = req.files[d.outputFile.name][0].buffer;
@@ -173,7 +178,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
     if (Object.keys(d.judgeFile).length) {
       let judgeFile: File | null = null;
       if (d.judgeFile.id) {
-        judgeFile = await fileRepository.findOne({ where: { id: d.judgeFile.id } });
+        judgeFile = await FileRepository.findOne({ where: { id: d.judgeFile.id } });
         judgeFile.name = d.judgeFile.name;
         judgeFile.size = d.judgeFile.size;
         judgeFile.contents = req.files[d.judgeFile.name][0].buffer;
@@ -200,7 +205,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
       let newFile = false;
       let file: File | null = null;
       if (sc.file.id) {
-        file = await fileRepository.findOne({ where: { id: sc.file.id } });
+        file = await FileRepository.findOne({ where: { id: sc.file.id } });
         file.name = sc.file.name;
         file.size = sc.file.size;
         file.contents = req.files[sc.file.name][0].buffer;
@@ -215,7 +220,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
 
       let script: Script | null = null;
       if (sc.id) {
-        script = await scriptRepository.findOne({ where: { id: sc.id } });
+        script = await ScriptRepository.findOne({ where: { id: sc.id } });
 
         if (newFile) {
           toDelete.push(await script.file);
@@ -236,7 +241,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
 
     let subtask: Subtask | null = null;
     if (s.id) {
-      subtask = await AppDataSource.getRepository(Subtask).findOne({ where: { id: s.id } });
+      subtask = await SubtaskRepository.findOne({ where: { id: s.id } });
     } else {
       subtask = new Subtask();
     }
@@ -265,7 +270,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
   for (const a of rbody.attachments) {
     let attachment: TaskAttachment | null = null;
     if (a.id) {
-      attachment = await AppDataSource.getRepository(TaskAttachment).findOne({ where: { id: a.id } });
+      attachment = await TaskAttachmentRepository.findOne({ where: { id: a.id } });
     } else {
       attachment = new TaskAttachment();
     }
@@ -273,7 +278,7 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
 
     let file: File | null = null;
     if (a.file.id) {
-      file = await fileRepository.findOne({ where: { id: a.file.id } });
+      file = await FileRepository.findOne({ where: { id: a.file.id } });
       file.name = a.file.name;
       file.size = a.file.size;
       file.contents = req.files[a.file.name][0].buffer;
@@ -296,12 +301,12 @@ export const editTask = async (req: Request, res: Response, next: NextFunction) 
   for (const d of rbody.developers) {
     let dev: TaskDeveloper | null = null;
     if (d.id) {
-      dev = await AppDataSource.getRepository(TaskDeveloper).findOne({ where: { id: d.id } });
+      dev = await TaskDeveloperRepository.findOne({ where: { id: d.id } });
     } else {
       dev = new TaskDeveloper();
     }
     dev.task = Promise.resolve(task);
-    dev.user = Promise.resolve(await userRepository.findOne({ where: { username: d.username } }));
+    dev.user = Promise.resolve(await UserRepository.findOne({ where: { username: d.username } }));
     dev.order = d.order;
     dev.role = d.role as TaskDeveloperRoles;
     developers.push(dev);

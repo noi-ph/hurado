@@ -2,11 +2,10 @@ import validator from 'validator';
 import { Request, Response, NextFunction } from 'express';
 
 import { ServerAPI } from 'types';
-import { AppDataSource } from 'orm/data-source';
-import { User } from 'orm/entities';
 import { validateUsername } from './username';
 import { UserConstants } from 'consts/User';
 import { Countries } from 'orm/entities/enums';
+import { UserRepository } from 'orm/repositories';
 
 export const validationEdit = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.jwtPayload.id;
@@ -20,15 +19,14 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
   password = password ? password : '';
   passwordConfirm = passwordConfirm ? passwordConfirm : '';
 
-  const userRepository = AppDataSource.getRepository(User);
-  const user = await userRepository.findOne({ where: { id }});
+  const user = await UserRepository.findOne({ where: { id }});
   const err: ServerAPI['UserError'] = {};
 
   if (!validator.isEmpty(email) && email !== user.email) {
     if (!validator.isEmail(email)) {
       err.email = 'That e-mail address is invalid';
     } else {
-      const user = await userRepository.findOne({ where: { email } });
+      const user = await UserRepository.findOne({ where: { email } });
       if (user) {
         err.email = 'That e-mail address is already registered';
       }
@@ -40,7 +38,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
     if (Object.keys(usernameError).length) {
       err.username = usernameError.username;
     } else {
-      const user = await userRepository.findOne({ where: { username } });
+      const user = await UserRepository.findOne({ where: { username } });
       if (user) {
         err.username = 'That username is already taken';
       }

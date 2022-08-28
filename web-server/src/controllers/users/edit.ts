@@ -1,15 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AppDataSource } from 'orm/data-source';
-import { User } from 'orm/entities';
 import { Countries } from 'orm/entities/enums';
+import { UserRepository } from 'orm/repositories';
 import { ServerAPI } from 'types';
 
 export const edit = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.jwtPayload.id;
   let { email, username, school, name, country, password } = req.body as ServerAPI['UserEditPayload'];
-  const userRepository = AppDataSource.getRepository(User);
-  const user = await userRepository.findOne({ where: { id } });
+  const user = await UserRepository.findOne({ where: { id } });
   
   try {
     if (email) {
@@ -36,7 +34,7 @@ export const edit = async (req: Request, res: Response, next: NextFunction) => {
       user.setPassword(password);
     }
 
-    await userRepository.save(user);
+    await UserRepository.save(user);
     res.status(200).send(user);
   } catch (e) {
     res.status(500).end();

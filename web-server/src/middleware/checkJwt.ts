@@ -43,7 +43,7 @@ const lax = (req: Request, res: Response, next: NextFunction) => {
     req.jwtPayload = jwtPayload as JwtPayload;
 
     const newToken = createJwtToken(jwtPayload as JwtPayload);
-    res.setHeader('token', `Bearer ${newToken}`);
+    res.setHeader('token', newToken);
     return next();
   } catch (e) {
     req.jwtPayload = null;

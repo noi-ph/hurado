@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import validator from 'validator';
 
-import { AppDataSource } from 'orm/data-source';
-import { User } from 'orm/entities';
 import { ServerAPI } from 'types';
+import { UserRepository } from 'orm/repositories';
 
 export const validationLogin = async (req: Request, res: Response, next: NextFunction) => {
   console.log('halp!!');
@@ -12,7 +11,6 @@ export const validationLogin = async (req: Request, res: Response, next: NextFun
   email = email ? email : '';
   password = password ? password : '';
 
-  const userRepository = AppDataSource.getRepository(User);
   const err: ServerAPI['UserError'] = {};
 
   if (validator.isEmpty(email)) {
@@ -28,7 +26,7 @@ export const validationLogin = async (req: Request, res: Response, next: NextFun
   }
 
   try {
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await UserRepository.findOne({ where: { email } });
 
     if (!user) {
       err.email = 'User not found';

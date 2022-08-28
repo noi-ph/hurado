@@ -8,13 +8,13 @@ import {
   TaskAttachment,
   TestData,
   Task,
-  User,
   TaskDeveloper,
   createFile,
   createScript,
 } from 'orm/entities';
 import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
+import { UserRepository } from 'orm/repositories';
 
 export const createTask = async (req: Request, res: Response, next: NextFunction) => {
   const rbody = req.body as ServerAPI['TaskPayload'];
@@ -43,7 +43,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   });
 
   const task = new Task();
-  task.owner = Promise.resolve(await AppDataSource.getRepository(User).findOne({ where: { id: req.jwtPayload.id } }));
+  task.owner = Promise.resolve(await UserRepository.findOne({ where: { id: req.jwtPayload.id } }));
   task.title = rbody.title;
   task.slug = rbody.slug;
 
@@ -154,11 +154,10 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
     attachments.push(attachment);
   });
 
-  const userRepository = AppDataSource.getRepository(User);
   for (const d of rbody.developers) {
     const dev = new TaskDeveloper();
     dev.task = Promise.resolve(task);
-    dev.user = Promise.resolve(await userRepository.findOne({ where: { username: d.username } }));
+    dev.user = Promise.resolve(await UserRepository.findOne({ where: { username: d.username } }));
     dev.order = d.order;
     dev.role = d.role as TaskDeveloperRoles;
     developers.push(dev);
