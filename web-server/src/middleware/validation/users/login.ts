@@ -15,12 +15,13 @@ export const validationLogin = async (req: Request, res: Response, next: NextFun
 
   if (validator.isEmpty(email)) {
     err.email = 'This field is required';
-    res.status(400).json(err);
-    return;
   }
 
   if (validator.isEmpty(password)) {
     err.password = 'This field is required';
+  }
+
+  if (Object.keys(err).length) {
     res.status(400).json(err);
     return;
   }

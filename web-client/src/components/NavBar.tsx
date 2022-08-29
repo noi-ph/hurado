@@ -1,41 +1,26 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import Link from 'next/link';
+import { ReduxState } from 'pages/redux/store';
+import { LoggedOutNavBar, NonAdminNavBar, AdminNavBar } from './NavBars';
 
-type NavbarProps = {
-  children: ReactNode;
+export const NavBar = () => {
+  const user = useSelector((state: ReduxState) => state.user);
+  let navbar: React.ReactNode;
+
+  if (user.id) {
+    if (user.isAdmin) {
+      navbar = <AdminNavBar />;
+    } else {
+      navbar = <NonAdminNavBar />;
+    }
+  } else {
+    navbar = <LoggedOutNavBar />;
+  }
+
+  return (
+    <React.Fragment>
+      {navbar}
+    </React.Fragment>
+  );
 };
-
-type NavBarCardProps = {
-  href: string;
-  value: string;
-};
-
-export const NavBarCard = (props: NavBarCardProps) => (
-  <li className='mr-6'>
-    <Link href={props.href}>
-      <a>
-        {props.value}
-      </a>
-    </Link>
-  </li>
-);
-
-export const NavBar = (props: NavbarProps) => (
-  <div>
-    <ul className='navbar flex flex-wrap text-xl'>
-      {props.children}
-      <style jsx>
-        {`
-          .navbar :global(a) {
-            @apply text-gray-700;
-          }
-
-          .navbar :global(a:hover) {
-            @apply no-underline text-gray-900;
-          }
-        `}
-      </style>
-    </ul>
-  </div>
-);

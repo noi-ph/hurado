@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { AppConfig } from '../utils/AppConfig';
 import { ReduxState } from 'pages/redux/store';
-import { NavBar, NavBarCard } from './NavBar';
+import { NavBar, NavBarCard } from './NavBars/NavBar';
 
 type MainProps = {
   children: ReactNode;

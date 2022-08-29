@@ -2,7 +2,7 @@ import React from 'react';
 
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../pages/redux/store';
+import { ReduxState } from 'pages/redux/store';
 import Styles from './AdminNavBar.module.css';
 
 

@@ -1,0 +1,106 @@
+@media screen and (min-width: 600px) {
+  .modal {
+    background-color: white;
+
+    position: relative;
+
+    width: 555px;
+    height: 500px;
+  }  
+
+  .modal > div > input {
+    display: block;
+    
+    font-size: x-large;
+    
+    width: 100%;
+  }
+
+  .modal > div > input::placeholder {
+    color: grey;
+  }
+
+  .close {
+    font-size: xx-large;
+    font-weight: 100;
+
+    width: fit-content;
+    height: fit-content;
+
+    display: inline;
+
+    position: absolute;
+    right: 15px;
+    top: 5px;
+  }
+
+  .login {
+    text-align: center;
+
+    margin-top: 15px;
+
+    width: 100%;
+    height: fit-content;
+
+    font-weight: bolder;
+    font-size: 50px;
+  }
+
+  .email {
+    margin-top: 50px;
+  }
+
+  .input {
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 50px;
+
+    border-bottom: 1px solid black;
+  }
+
+  .button {
+    margin: 50px;
+    margin-top: 0px;
+    margin-bottom: 25px;
+
+    font-size: x-large;
+
+    border: 1px solid #003D5B;
+    border-radius: 60px;
+
+    width: 82%;
+  }
+
+  .forgot {
+    text-align: center;
+  }
+
+  .create {
+    text-align: center;
+
+    font-size: large;
+
+    margin-top: 25px;
+    padding-top: 20px;
+
+    border-top: 1px solid grey;
+  }
+
+  #email_error, #password_error {
+    display: none;
+
+    margin-left: 50px;
+
+    position: absolute;
+
+    color: red;
+  }
+
+  #email_error {
+    top: 178px;
+  }
+
+  #password_error {
+    top: 265px;
+  }
+}

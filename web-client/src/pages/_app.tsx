@@ -4,12 +4,13 @@ import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
 import { MathJaxContext } from 'better-react-mathjax';
 
-import { Main } from '../components/Main';
-import store from './redux/store';
+import { Main } from 'components/Main';
+import store from 'pages/redux/store';
 
-import '../styles/main.css';
-import '../styles/fonts.css';
-import '../styles/prism-a11y-dark.css';
+import 'styles/main.css';
+import 'styles/fonts.css';
+import { NavBar } from 'components/NavBar';
+import { Body } from 'components/Body/Body';
 
 const config = {
   loader: { load: ["[tex]/html"] },
@@ -31,7 +32,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   // TODO: Fix this later when other people start styling things.
   let main: React.ReactNode;
-  if (router.pathname == '/tasks/edit/[id]') {
+  if (router.pathname == '/tasks/edit/[id]' || router.pathname == '/playground') {
     main = <Component {...pageProps}/>;
   } else {
     main = (
@@ -40,10 +41,14 @@ const App = ({ Component, pageProps }: AppProps) => {
       </Main>
     );
   }
+
   return (
     <Provider store={store}>
       <MathJaxContext config={config}>
-        {main}
+        <NavBar />
+        <Body>
+          {main}
+        </Body>
       </MathJaxContext>
     </Provider>
   );

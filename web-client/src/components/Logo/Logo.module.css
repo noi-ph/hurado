@@ -1,0 +1,17 @@
+@media screen and (min-width: 600px) {
+  .logo {
+    letter-spacing: 3px;
+    font-size: x-large;
+    font-weight: 200;
+
+    margin: 15px;
+    margin-left: 40px;
+
+    width: fit-content;
+    height: fit-content;
+  }
+
+  .tarsier {
+    display: inline;
+  }
+}

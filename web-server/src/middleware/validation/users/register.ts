@@ -21,7 +21,7 @@ export const validationRegister = async (req: Request, res: Response, next: Next
   } else if (!validator.isEmail(email)) {
     err.email = 'That e-mail address is invalid';
   } else {
-    const user = UserRepository.findOne({ where: { email } });
+    const user = await UserRepository.findOne({ where: { email } });
     if (user) {
       err.email = 'That e-mail address is already registered';
     }
@@ -34,7 +34,7 @@ export const validationRegister = async (req: Request, res: Response, next: Next
     if (Object.keys(usernameError).length) {
       err.username = usernameError.username;
     } else {
-      const user = UserRepository.findOne({ where: { username } });
+      const user = await UserRepository.findOne({ where: { username } });
       if (user) {
         err.username = 'That username is already taken';
       }

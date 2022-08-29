@@ -10,7 +10,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["User"];
+            "application/json": components["schemas"]["Login"];
           };
         };
         /** Bad request */
@@ -473,6 +473,10 @@ export interface components {
       submissions: { [key: string]: unknown };
       contests: { [key: string]: unknown };
       participations: { [key: string]: unknown };
+    };
+    Login: {
+      jwt: string;
+      user: components["schemas"]["User"];
     };
     Task: {
       title: string;
