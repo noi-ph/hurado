@@ -17,7 +17,7 @@ const ShowTaskPageInterceptor = () => {
     try {
       const response = await http.get(`http://localhost:4000/v1/tasks/${idOrSlug}`);
       
-      return response.data.data;
+      return response.data;
     } catch (err: unknown) {  
       if (err instanceof AxiosError) {
         const status = err.response?.status;

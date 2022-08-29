@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux';
 
 
 import { AppConfig } from '../utils/AppConfig';
-import { UserState } from '../pages/redux/userSlice';
-import { NavBar, NavBarCard } from './NavBar';
+import { ReduxState } from 'pages/redux/store';
+import { NavBar, NavBarCard } from './NavBars/NavBar';
 
 type MainProps = {
   children: ReactNode;
 };
 
 const MainNavBarContents = () => {
-  const user = useSelector((state: UserState) => state.user);
+  const user = useSelector((state: ReduxState) => state.user);
 
   // Why are you logging me out when I first load the page??
   // const router = useRouter();

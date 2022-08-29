@@ -22,7 +22,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/Login'
         400:
           description: Bad request
           content:
@@ -681,6 +681,16 @@ components:
           type: object
         participations:
           type: object
+    Login:
+      type: object
+      required:
+        - jwt
+        - user
+      properties:
+        jwt:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
     Task:
       type: object
       required:

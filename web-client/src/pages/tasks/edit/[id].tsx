@@ -16,7 +16,7 @@ const EditTaskPage = () => {
     }
     http.get(`http://localhost:4000/v1/tasks/${taskId}/all-details`)
       .then((response) => {
-        const responseTask: Task = response.data.data;
+        const responseTask: Task = response.data;
         setTask(responseTask);
       });
   }, [router.query.id]);

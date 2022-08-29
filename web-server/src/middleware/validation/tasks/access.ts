@@ -1,17 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AppDataSource } from 'orm/data-source';
-import { Task, User } from 'orm/entities';
+import { TaskRepository, UserRepository } from 'orm/repositories';
 
 const strict = async (req: Request, res: Response, next: NextFunction) => {
-  const task = await AppDataSource.getRepository(Task).findOne({ where: { id: req.params.id } });
+  const task = await TaskRepository.findOne({ where: { id: req.params.id } });
 
   if (!task) {
     res.status(404).end();
     return;
   }
 
-  const user = await AppDataSource.getRepository(User).findOne({ where: { id: req.jwtPayload.id } });
+  const user = await UserRepository.findOne({ where: { id: req.jwtPayload.id } });
 
   if (user.isAdmin || (await task.owner).id === user.id) {
     return next();
@@ -21,7 +20,7 @@ const strict = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const lax = async (req: Request, res: Response, next: NextFunction) => {
-  const task = await AppDataSource.getRepository(Task).findOne({ where: { id: req.params.id } });
+  const task = await TaskRepository.findOne({ where: { id: req.params.id } });
 
   if (!task) {
     res.status(404).end();

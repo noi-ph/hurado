@@ -7,4 +7,5 @@ export const AppConfig = {
   locale: 'en',
   author: 'Anonymous',
   pagination_size: 5,
+  server: 'http://localhost:4000'
 };

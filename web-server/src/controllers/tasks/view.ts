@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AppDataSource } from 'orm/data-source';
-import { Task } from 'orm/entities/tasks/Task';
+import { TaskRepository } from 'orm/repositories';
 
 const allDetails = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
-  const task = await AppDataSource.getRepository(Task).findOne({
+  const task = await TaskRepository.findOne({
     where: { id },
     relations: {
       owner: true,
@@ -24,7 +23,7 @@ const allDetails = async (req: Request, res: Response, next: NextFunction) => {
 
 const notAllDetails = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
-  const task = await AppDataSource.getRepository(Task).findOne({ where: { id } });
+  const task = await TaskRepository.findOne({ where: { id } });
   res.status(200).send(task);
 };
 

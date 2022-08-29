@@ -1,18 +1,29 @@
 @tailwind base;
 
-a {
-  @apply text-blue-700;
-}
-
-a:hover {
-  @apply underline;
-}
-
 @tailwind components;
 
 @tailwind utilities;
 
-
 html {
   font-family: Montserrat;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  width: 100%;
+
+  position: relative;
+}
+
+a {
+  color: #003D5B;
+}
+
+a:hover {
+  @apply underline;
+  cursor: pointer;
 }

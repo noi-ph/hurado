@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import { TaskRepository } from 'orm/repositories';
 
 export const listTasks = async (req: Request, res: Response, next: NextFunction) => {
-  console.log('heyyyyyyy');
   try {
     const tasks = await TaskRepository.find({
       select: ['id', 'title', 'slug', 'description', 'isPublicInArchive'],
