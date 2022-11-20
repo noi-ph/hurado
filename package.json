@@ -1,0 +1,28 @@
+{
+  "name": "hurado",
+  "version": "1.0.0",
+  "description": "NOI.PH Online Judge",
+  "scripts": {
+    "system": "docker-compose --file docker-compose.yml up",
+    "backend:bash": "docker exec -it backend bash",
+    "frontend:bash": "docker exec -it frontend bash",
+    "system:bash": "docker exec -it system bash",
+    "backend:seed": "./scripts/dev-run.backend.sh npx ts-node /app/src/orm/seeds/seed-main.ts",
+    "migration:run": "./scripts/dev-run.backend.sh npx ts-node /app/node_modules/typeorm/cli.js migration:run --dataSource /app/src/orm/data-source.ts",
+    "migration:revert": "./scripts/dev-run.backend.sh npx ts-node /app/node_modules/typeorm/cli.js migration:revert --dataSource /app/src/orm/data-source.ts",
+    "openapi:generate": "./scripts/dev-run.backend.sh web-server/scripts/generate-openapi.sh",
+    "postgresql": "./scripts/dev-run.postgres.sh PGPASSWORD=$POSTGRES_PASSWORD psql $POSTGRES_DB -U $POSTGRES_USER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noiph/hurado.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noiph/hurado/issues"
+  },
+  "homepage": "https://github.com/noiph/hurado#readme",
+  "devDependencies": {
+    "husky": "^8.0.2"
+  }
+}
