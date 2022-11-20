@@ -1,7 +1,0 @@
-#!/bin/sh
-
-. "$(dirname "$0")/_/husky.sh"
-cd $(dirname $(dirname "$0"))
-
-./scripts/dev-run.backend.sh npx lint-staged --config .lintstagedrc --shell
-./scripts/dev-run.frontend.sh npx lint-staged --config .lintstagedrc --shell

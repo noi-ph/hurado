@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./web-client/
+      dockerfile: dockerfile.frontend
+    command: sh scripts/frontend.sh
+    ports:
+      - 3000:3000
+    volumes:
+      - ./web-client/:/app/
