@@ -1,40 +1,61 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "moduleResolution": "node",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ],
     "baseUrl": "src/",
-    "resolveJsonModule": true,
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ],
+    "outDir": "./dist",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022",
+      "ESNext",
+      "ESNext.AsyncIterable"
+    ],
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": false,
+    "declaration": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "strict": true,
-    "alwaysStrict": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strictNullChecks": true,
-
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
+    "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "allowUnreachableCode": false,
-    "noFallthroughCasesInSwitch": true,
-
-    "target": "es2021",
-    "outDir": "out",
-    "declaration": true,
-    "sourceMap": true,
-
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "allowJs": false,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-
-    "jsx": "preserve",
-    "noEmit": true,
+    "strict": true,
     "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true,
     "incremental": true
   },
-  "exclude": ["./out/**/*", "./node_modules/**/*"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "exclude": [
+    "./node_modules/**/*"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next.config.js"
+  ]
 }

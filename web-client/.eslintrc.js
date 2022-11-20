@@ -1,8 +1,8 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: './tsconfig.json',
-    tsconfigRootDir: __dirname,
+    project: 'tsconfig.json',
+    tsconfigRootDir: __dirname
   },
   env: {
     browser: true,
@@ -12,6 +12,7 @@ module.exports = {
     '@typescript-eslint',
     'react',
   ],
+  ignorePatterns: ['openapi-generated.ts'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -20,6 +21,7 @@ module.exports = {
     'plugin:import/warnings',
     'plugin:import/typescript',
     'plugin:@next/next/recommended',
+    'plugin:no-array-reduce/recommended',
   ],
   rules: {
     // For a list of available rules see:
@@ -173,7 +175,7 @@ module.exports = {
       }
     ]
   },
-  'settings': {
+  settings: {
     // This magic was copy-pasted from:
     // https://github.com/yannickcr/eslint-plugin-react#configuration
     'react': {
@@ -190,8 +192,17 @@ module.exports = {
       '.ts',
       '.tsx',
     ],
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        moduleDirectory: ['node_modules', 'src/'],
+      },
+    },
   },
   overrides: [
+    {
+      files: ["**/*.{ts,tsx,js,jsx}"]
+    },
     {
       files: [
         '**/*.test.{ts,tsx}',
@@ -230,4 +241,4 @@ module.exports = {
       },
     },
   ],
-}
+};
