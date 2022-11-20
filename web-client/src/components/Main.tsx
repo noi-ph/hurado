@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 
-
 import { AppConfig } from '../utils/AppConfig';
 import { ReduxState } from 'pages/redux/store';
 import { NavBar, NavBarCard } from './NavBars/NavBar';
