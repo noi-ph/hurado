@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
-import { createFile, File, Submission, SubmissionFile } from 'orm/entities';
+import { File, Submission, SubmissionFile, createFile } from 'orm/entities';
 import { ContestRepository, TaskRepository, UserRepository } from 'orm/repositories';
 import { ServerAPI } from 'types';
 

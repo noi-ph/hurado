@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { Countries } from 'orm/entities/enums';
 import { UserRepository } from 'orm/repositories';
@@ -6,7 +6,7 @@ import { ServerAPI } from 'types';
 
 export const edit = async (req: Request, res: Response, _next: NextFunction) => {
   const id = req.jwtPayload.id;
-  let { email, username, school, name, country, password } = req.body as ServerAPI['UserEditPayload'];
+  const { email, username, school, name, country, password } = req.body as ServerAPI['UserEditPayload'];
   const user = await UserRepository.findOne({ where: { id } });
 
   try {

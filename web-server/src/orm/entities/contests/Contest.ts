@@ -1,6 +1,6 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import type { User, ContestTask, Participation, Submission } from 'orm/entities';
+import type { ContestTask, Participation, Submission, User } from 'orm/entities';
 
 @Entity('contests')
 export class Contest extends BaseEntity {

@@ -10,7 +10,7 @@ import v1 from './v1';
 
 const router = Router();
 
-router.use(`/v1`, v1);
+router.use('/v1', v1);
 
 router.use('/docs', swaggerUi.serve);
 router.get('/docs', swaggerUi.setup(jsyaml.load(fs.readFileSync('src/types/openapi.yaml', 'utf8')) as JsonObject));

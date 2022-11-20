@@ -1,10 +1,10 @@
 import validator from 'validator';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { ServerAPI } from 'types';
 import { UserConstants } from 'consts/User';
-import { validateUsername } from './username';
 import { UserRepository } from 'orm/repositories';
+import { validateUsername } from './username';
 
 export const validationRegister = async (req: Request, res: Response, next: NextFunction) => {
   let { email, username, password, passwordConfirm } = req.body as ServerAPI['RegisterPayload'];

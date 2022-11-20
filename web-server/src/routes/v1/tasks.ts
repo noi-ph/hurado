@@ -5,10 +5,10 @@ import { createSubmission } from 'controllers/submissions';
 import { createTask, editTask, listTasks, viewTask } from 'controllers/tasks';
 import { checkJwt } from 'middleware/checkJwt';
 import { validationSubmission } from 'middleware/validation/submissions';
-import { validationCreate, validateAccess, validationEdit, idOrSlug } from 'middleware/validation/tasks';
+import { idOrSlug, validateAccess, validationCreate, validationEdit } from 'middleware/validation/tasks';
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 const router = Router();
 router.get('/', [checkJwt(false)], listTasks);

@@ -1,13 +1,13 @@
 import 'dotenv/config';
 import 'reflect-metadata';
 
+import fs from 'fs';
+import path from 'path';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import fs from 'fs';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import path from 'path';
 
 import routes from 'routes';
 

@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { User, Contest } from 'orm/entities';
+import { Contest, User } from 'orm/entities';
 
 @Entity('participations')
 export class Participation extends BaseEntity {

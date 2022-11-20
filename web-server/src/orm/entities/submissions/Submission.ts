@@ -1,16 +1,16 @@
 import {
   BaseEntity,
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
-  OneToOne,
+  Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import type { Task, User, Contest, Result, SubmissionFile } from 'orm/entities';
+import type { Contest, Result, SubmissionFile, Task, User } from 'orm/entities';
 
 @Entity('submissions')
 export class Submission extends BaseEntity {

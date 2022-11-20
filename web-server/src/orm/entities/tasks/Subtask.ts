@@ -1,15 +1,15 @@
 import {
   BaseEntity,
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import type { Script, Task, SubtaskResult } from 'orm/entities';
+import type { Script, SubtaskResult, Task } from 'orm/entities';
 
 @Entity('subtasks')
 export class Subtask extends BaseEntity {

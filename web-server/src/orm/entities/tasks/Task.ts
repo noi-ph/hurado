@@ -1,23 +1,23 @@
 import {
   BaseEntity,
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import type {
-  User,
+  ContestTask,
   Script,
+  Submission,
+  Subtask,
   TaskAttachment,
   TaskDeveloper,
   TestData,
-  ContestTask,
-  Submission,
-  Subtask,
+  User,
 } from 'orm/entities';
 import { AllowedLanguages, TaskType } from 'orm/entities/enums';
 

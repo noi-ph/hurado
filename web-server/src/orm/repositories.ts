@@ -2,14 +2,14 @@ import { AppDataSource } from './data-source';
 import {
   Contest,
   File,
-  Script,
-  Task,
-  User,
   Participation,
-  TestData,
+  Script,
   Subtask,
+  Task,
   TaskAttachment,
   TaskDeveloper,
+  TestData,
+  User,
 } from './entities';
 
 export const AppDataSourceInitialization = AppDataSource.initialize();

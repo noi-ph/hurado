@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import type { Task, TaskDeveloper, Submission, Contest, Participation } from 'orm/entities';
+import type { Contest, Participation, Submission, Task, TaskDeveloper } from 'orm/entities';
 import { Countries } from 'orm/entities/enums';
 
 @Entity('users')

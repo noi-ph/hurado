@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { BaseEntity } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import { File, Script, TaskAttachment, TestData, Subtask, TaskDeveloper, createScript, createFile } from 'orm/entities';
+import { File, Script, Subtask, TaskAttachment, TaskDeveloper, TestData, createFile, createScript } from 'orm/entities';
 import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
 import {

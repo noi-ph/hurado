@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import validator from 'validator';
 
 import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';

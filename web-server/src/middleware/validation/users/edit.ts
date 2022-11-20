@@ -1,11 +1,11 @@
 import validator from 'validator';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { ServerAPI } from 'types';
-import { validateUsername } from './username';
 import { UserConstants } from 'consts/User';
 import { Countries } from 'orm/entities/enums';
 import { UserRepository } from 'orm/repositories';
+import { validateUsername } from './username';
 
 export const validationEdit = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.jwtPayload.id;

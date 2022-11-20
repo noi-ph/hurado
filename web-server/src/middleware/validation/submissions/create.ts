@@ -3,10 +3,10 @@ import { NextFunction, Request, Response } from 'express';
 import { Equal } from 'typeorm';
 
 import { ServerAPI } from 'types';
-import { TaskRepository, UserRepository, ContestRepository, ParticipationRepository } from 'orm/repositories';
+import { ContestRepository, ParticipationRepository, TaskRepository, UserRepository } from 'orm/repositories';
 
 export const validationSubmission = async (req: Request, res: Response, next: NextFunction) => {
-  let { languageCode, contestId } = req.body as ServerAPI['SubmissionPayload'];
+  const { languageCode, contestId } = req.body as ServerAPI['SubmissionPayload'];
 
   const task = await TaskRepository.findOne({
     where: { id: req.params.id },

@@ -1,7 +1,7 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Verdicts } from 'orm/entities/enums';
-import type { TestData, Result } from 'orm/entities';
+import type { Result, TestData } from 'orm/entities';
 
 @Entity('test_data_results')
 export class TestDataResult extends BaseEntity {
