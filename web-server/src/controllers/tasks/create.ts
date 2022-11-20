@@ -16,7 +16,7 @@ import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enu
 import { ServerAPI } from 'types';
 import { UserRepository } from 'orm/repositories';
 
-export const createTask = async (req: Request, res: Response, next: NextFunction) => {
+export const createTask = async (req: Request, res: Response, _next: NextFunction) => {
   const rbody = req.body as ServerAPI['TaskPayload'];
   const files: File[] = [];
   const data: TestData[] = [];

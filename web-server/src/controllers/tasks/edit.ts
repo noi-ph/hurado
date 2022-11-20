@@ -25,7 +25,7 @@ import {
   UserRepository 
 } from 'orm/repositories';
 
-export const editTask = async (req: Request, res: Response, next: NextFunction) => {
+export const editTask = async (req: Request, res: Response, _next: NextFunction) => {
   const rbody = req.body as ServerAPI['TaskPayload'];
   const files: File[] = [];
   const data: TestData[] = [];

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { TaskRepository } from 'orm/repositories';
 
-const allDetails = async (req: Request, res: Response, next: NextFunction) => {
+const allDetails = async (req: Request, res: Response, _next: NextFunction) => {
   const id = req.params.id;
   const task = await TaskRepository.findOne({
     where: { id },
@@ -21,7 +21,7 @@ const allDetails = async (req: Request, res: Response, next: NextFunction) => {
   res.status(200).send(task);
 };
 
-const notAllDetails = async (req: Request, res: Response, next: NextFunction) => {
+const notAllDetails = async (req: Request, res: Response, _next: NextFunction) => {
   const id = req.params.id;
   const task = await TaskRepository.findOne({ where: { id } });
   res.status(200).send(task);

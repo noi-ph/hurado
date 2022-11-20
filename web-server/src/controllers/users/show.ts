@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { UserRepository } from 'orm/repositories';
 
-const allDetails = async (req: Request, res: Response, next: NextFunction) => {
+const allDetails = async (req: Request, res: Response, _next: NextFunction) => {
   const id = req.params.id;
   const user = await UserRepository.findOne({
     where: { id },
@@ -22,7 +22,7 @@ const allDetails = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const notAllDetails = async (req: Request, res: Response, next: NextFunction) => {
+const notAllDetails = async (req: Request, res: Response, _next: NextFunction) => {
   const id = req.params.id;
   const user = await UserRepository.findOne({ where: { id } });
 

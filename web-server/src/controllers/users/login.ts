@@ -4,7 +4,7 @@ import { UserRepository } from 'orm/repositories';
 import { JwtPayload, ServerAPI } from 'types';
 import { createJwtToken } from 'utils';
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response, _next: NextFunction) => {
   const { email } = req.body as ServerAPI['LoginPayload'];
 
   try {

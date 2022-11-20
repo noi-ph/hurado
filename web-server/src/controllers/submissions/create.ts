@@ -1,16 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
-import { createFile, File, Submission, SubmissionFile, Task, User } from 'orm/entities';
+import { createFile, File, Submission, SubmissionFile } from 'orm/entities';
 import { ContestRepository, TaskRepository, UserRepository } from 'orm/repositories';
 import { ServerAPI } from 'types';
 
-export const createSubmission = async (req: Request, res: Response, next: NextFunction) => {
+export const createSubmission = async (req: Request, res: Response, _next: NextFunction) => {
   const { languageCode, contestId } = req.body as ServerAPI['SubmissionPayload'];
 
   const user = await UserRepository.findOne({ where: { id: req.jwtPayload.id } });
   const task = await TaskRepository.findOne({ where: { id: req.params.taskId } });
 
+  if (user && task) {
+    
+  }
   const submission = new Submission(user, task, languageCode);
 
   if (contestId) {

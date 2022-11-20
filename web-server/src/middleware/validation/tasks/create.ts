@@ -233,7 +233,7 @@ export const validationCreate = async (req: Request, res: Response, next: NextFu
   }
 
   for (let i = 0; i < rbody.developers.length; i++) {
-    const order = rbody.developers[i].order ? rbody.developers[i].order : 0;
+    // const order = rbody.developers[i].order ? rbody.developers[i].order : 0;
     const username = rbody.developers[i].username ? rbody.developers[i].username : '';
     const role = rbody.developers[i].role ? rbody.developers[i].role : '';
 
