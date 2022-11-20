@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 
 import { Verdicts } from 'orm/entities/enums';
 import type { Submission } from 'orm/entities';
@@ -39,4 +39,4 @@ export class Result extends BaseEntity {
 
   @Column({ name: 'verdict_gotten_at' })
   verdictGottenAt: Date;
-};
+}

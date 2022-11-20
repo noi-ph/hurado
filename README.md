@@ -24,15 +24,9 @@ git clone https://github.com/noiph/hurado.git
 
 Download the [installer for Docker](https://docs.docker.com/desktop/release-notes/#docker-desktop-430) and install it. If you're using WSL 2, enable the following options: ![Docker WSL Settings](readme-docker-wsl-settings.png)
 
-#### Reinstall JQ, NodeJS, and Yarn
+#### Reinstall NodeJS
 
-To install JQ, just run:
-
-```shell
-sudo apt install jq
-```
-
-Then, update NodeJS by running the following:
+Update NodeJS by running the following:
 
 ```shell
 # uninstall NodeJS first
@@ -49,17 +43,10 @@ curl -fsSL https://deb.nodesource.com/setup_$version.x | sudo -E bash -
 sudo apt install -y nodejs
 ```
 
-Finally, install yarn from npm
-
-```shell
-npm install --global yarn
-```
-
 ## Running the Web Server
 
-1. Move to the `web-server` directory (`cd web-server`)
-2. Run `npm run servers`
-3. Wait a few minutes for it to download needed stuff. You should get a bunch of messages like:
+1. Run `npm run backend`
+2. Wait a few minutes for it to download needed stuff. You should get a bunch of messages like:
 
 ```bash
 # This is downloading the necessary images from the internet
@@ -88,17 +75,13 @@ Once you see that final Server running on port 4000, that means your server is r
 
 ## Running the Web Client
 
-1. Move to the web-client directory and run npm install
-2. Wait a few minutes for it to install.
-3. Run npm run dev and it should work.
+1. Run `npm run frontend`
 
 You should see this message:
 
 `ready - started server on 0.0.0.0:3000, url: http://localhost:3000`
 
 ## Useful backend commands
-
-`npm run servers` - Run all the necessary servers
 
 `npm run backend:bash` - Get a bash shell into the backend server. Useful for updating npm via `npm install` and random debugging
 

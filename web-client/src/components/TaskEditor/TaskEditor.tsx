@@ -1,7 +1,15 @@
 import produce from 'immer';
 import React from 'react';
-import { Task, TaskEditorAction, TaskEditorActionType, TaskEditorActionTypeWithHistory, TaskEditorTab, TaskState, TaskStateStack, UnreachableError } from './types';
-
+import {
+  Task,
+  TaskEditorAction,
+  TaskEditorActionType,
+  TaskEditorActionTypeWithHistory,
+  TaskEditorTab,
+  TaskState,
+  TaskStateStack,
+  UnreachableError,
+} from './types';
 
 type TaskEditorProps = {
   task: Task;
@@ -40,11 +48,7 @@ export class TaskEditor extends React.PureComponent<TaskEditorProps, TaskStateSt
       return null;
     }
     const active = this.state.stack[this.state.index];
-    return (
-      <div>
-        Henlo Frens! {active.isInPublicArchive ? 'Yes' : 'No'}
-      </div>
-    );
+    return <div>Henlo Frens! {active.isInPublicArchive ? 'Yes' : 'No'}</div>;
   }
 }
 
@@ -63,7 +67,7 @@ function createInitialTaskStack(task: Task): TaskStateStack {
 
 function applyTaskEditorActionWithHistory(
   history: TaskStateStack,
-  action: TaskEditorActionTypeWithHistory,
+  action: TaskEditorActionTypeWithHistory
 ): TaskStateStack {
   if (action.kind === TaskEditorAction.Undo) {
     if (history.index == 0) {

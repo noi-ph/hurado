@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 import type { Contest, Task } from 'orm/entities';
 
@@ -20,4 +20,4 @@ export class ContestTask extends BaseEntity {
 
   @Column()
   order: number;
-};
+}

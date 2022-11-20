@@ -1,4 +1,13 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from "typeorm";
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
 
 import type { File, Task, TestDataResult } from 'orm/entities';
 
@@ -29,9 +38,9 @@ export class TestData extends BaseEntity {
   @JoinColumn({ name: 'judge_file_id' })
   judgeFile: Promise<File> | null;
 
-  @Column({ name: 'is_sample', default: false})
+  @Column({ name: 'is_sample', default: false })
   isSample: boolean;
 
   @OneToMany('TestDataResult', (result: TestDataResult) => result.testData)
   results: Promise<TestDataResult[]>;
-};
+}

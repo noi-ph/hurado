@@ -1,13 +1,13 @@
-import React from "react";
-import { AxiosError } from "axios";
-import { useDispatch } from "react-redux";
+import React from 'react';
+import { AxiosError } from 'axios';
+import { useDispatch } from 'react-redux';
 
-import Styles from './Login.module.css';
 import { set } from 'pages/redux/userSlice';
-import { ServerAPI } from "types/openapi";
-import { AppConfig } from "utils/AppConfig";
-import { http, HttpResponse } from "utils/http";
-import { UserConstants } from "utils/types";
+import { ServerAPI } from 'types/openapi';
+import { AppConfig } from 'utils/AppConfig';
+import { HttpResponse, http } from 'utils/http';
+import { UserConstants } from 'utils/types';
+import Styles from './Login.module.css';
 
 type LoginModalProps = {
   id: string;
@@ -97,36 +97,66 @@ export const LoginModal = (props: LoginModalProps) => {
         `}
       </style>
       <div className={`${Styles.modal}`}>
-        <button className={`${Styles.close}`} onClick={closeModal}>X</button>
+        <button className={`${Styles.close}`} onClick={closeModal}>
+          X
+        </button>
 
         <div className={`${Styles.login}`}>Log in</div>
 
-        <div className={`${Styles.email} ${Styles.input}`} >
-          <input type='text' placeholder='E-mail address' value={email} onChange={(e) => {setEmail(e.target.value)}} />
+        <div className={`${Styles.email} ${Styles.input}`}>
+          <input
+            type="text"
+            placeholder="E-mail address"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+          />
         </div>
         <div id={ErrorAreas.Email} />
 
         <div className={`${Styles.input}`}>
-          <input type='password' placeholder='Password' value={password} onChange={(e) => {setPassword(e.target.value)}} />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
         </div>
         <div id={ErrorAreas.Password} />
 
-        <button className={`${Styles.button}`} onClick={onLoginClick}>Log in</button>
+        <button className={`${Styles.button}`} onClick={onLoginClick}>
+          Log in
+        </button>
 
         {/* TODO implement this */}
-        <div className={`${Styles.forgot}`} onClick={() => {alert('Under construction')}}><a>Forgot your password?</a></div>
+        <div
+          className={`${Styles.forgot}`}
+          onClick={() => {
+            alert('Under construction');
+          }}
+        >
+          <a>Forgot your password?</a>
+        </div>
 
         <div className={`${Styles.create}`}>
-          Don't have an account? <a onClick={() => {
-            closeModal();            
+          Don't have an account?{' '}
+          <a
+            onClick={() => {
+              closeModal();
 
-            const signup = document.getElementById(props.signupId);
-            if (signup) {
-              signup.style.display = 'flex';
-            }
-          }}>Create one!</a>
+              const signup = document.getElementById(props.signupId);
+              if (signup) {
+                signup.style.display = 'flex';
+              }
+            }}
+          >
+            Create one!
+          </a>
         </div>
       </div>
     </div>
   );
-}
+};

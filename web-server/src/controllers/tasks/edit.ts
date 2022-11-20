@@ -2,27 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import { BaseEntity } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import {
-  File,
-  Script,
-  TaskAttachment,
-  TestData,
-  Subtask,
-  TaskDeveloper,
-  createScript,
-  createFile,
-} from 'orm/entities';
+import { File, Script, TaskAttachment, TestData, Subtask, TaskDeveloper, createScript, createFile } from 'orm/entities';
 import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
-import { 
-  FileRepository, 
-  ScriptRepository, 
-  SubtaskRepository, 
-  TaskAttachmentRepository, 
-  TaskDeveloperRepository, 
-  TaskRepository, 
-  TestDataRepository, 
-  UserRepository 
+import {
+  FileRepository,
+  ScriptRepository,
+  SubtaskRepository,
+  TaskAttachmentRepository,
+  TaskDeveloperRepository,
+  TaskRepository,
+  TestDataRepository,
+  UserRepository,
 } from 'orm/repositories';
 
 export const editTask = async (req: Request, res: Response, _next: NextFunction) => {

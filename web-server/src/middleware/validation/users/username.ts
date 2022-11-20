@@ -1,5 +1,5 @@
-import { UserConstants } from "consts/User";
-import { ServerAPI } from "types";
+import { UserConstants } from 'consts/User';
+import { ServerAPI } from 'types';
 
 export const validateUsername = (username: string) => {
   const err: ServerAPI['UserError'] = {};

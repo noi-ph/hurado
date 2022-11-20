@@ -7,16 +7,9 @@ type ScriptUploadAreaProps = {
 };
 
 const ScriptUploadArea = (props: ScriptUploadAreaProps) => {
-  const {
-    name,
-    setName,
-    file,
-    setFile,
-    languageCode,
-    setLanguageCode,
-    runtimeArgs,
-    setRuntimeArgs
-  } = React.useContext(props.Context);
+  const { name, setName, file, setFile, languageCode, setLanguageCode, runtimeArgs, setRuntimeArgs } = React.useContext(
+    props.Context
+  );
 
   return (
     <React.Fragment>

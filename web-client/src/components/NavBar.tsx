@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { ReduxState } from 'pages/redux/store';
-import { LoggedOutNavBar, NonAdminNavBar, AdminNavBar } from './NavBars';
+import { AdminNavBar, LoggedOutNavBar, NonAdminNavBar } from './NavBars';
 
 export const NavBar = () => {
   const user = useSelector((state: ReduxState) => state.user);
@@ -18,9 +18,5 @@ export const NavBar = () => {
     navbar = <LoggedOutNavBar />;
   }
 
-  return (
-    <React.Fragment>
-      {navbar}
-    </React.Fragment>
-  );
+  return <React.Fragment>{navbar}</React.Fragment>;
 };

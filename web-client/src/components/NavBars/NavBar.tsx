@@ -11,18 +11,16 @@ type NavBarCardProps = {
 };
 
 export const NavBarCard = (props: NavBarCardProps) => (
-  <li className='mr-6'>
+  <li className="mr-6">
     <Link href={props.href}>
-      <a>
-        {props.value}
-      </a>
+      <a>{props.value}</a>
     </Link>
   </li>
 );
 
 export const NavBar = (props: NavbarProps) => (
   <div>
-    <ul className='navbar flex flex-wrap text-xl'>
+    <ul className="navbar flex flex-wrap text-xl">
       {props.children}
       <style jsx>
         {`

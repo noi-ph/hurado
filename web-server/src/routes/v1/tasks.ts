@@ -15,7 +15,7 @@ router.get('/', [checkJwt(false)], listTasks);
 router.post(
   '/:idOrSlug([0-9A-Za-z-]+)',
   [checkJwt(false), upload.any(), idOrSlug, validationSubmission],
-  createSubmission,
+  createSubmission
 );
 router.post('/', [checkJwt(true), upload.any(), validationCreate], createTask);
 router.put('/:idOrSlug([0-9A-Za-z-]+)', [checkJwt(true), upload.any(), idOrSlug, validationEdit], editTask);

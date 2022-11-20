@@ -8,7 +8,7 @@ const TasksPage = () => {
   const [tasks, setTasks] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    const getTasks = async() => {
+    const getTasks = async () => {
       try {
         const response = await http.get('http://localhost:4000/v1/tasks');
 
@@ -28,16 +28,10 @@ const TasksPage = () => {
     getTasks();
   }, []);
 
-  const taskComponents = tasks.map((i) => (
-    <TaskViewer id={i.id} title={i.title} slug={i.slug} />
-  ));
+  const taskComponents = tasks.map((i) => <TaskViewer id={i.id} title={i.title} slug={i.slug} />);
   console.log(taskComponents);
 
-  return (
-    <React.Fragment>
-      {taskComponents}
-    </React.Fragment>
-  );
+  return <React.Fragment>{taskComponents}</React.Fragment>;
 };
 
 export default TasksPage;

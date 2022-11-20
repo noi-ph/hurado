@@ -1,4 +1,13 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from "typeorm";
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
 
 import type { Script, Task, SubtaskResult } from 'orm/entities';
 
@@ -33,4 +42,4 @@ export class Subtask extends BaseEntity {
 
   @OneToMany('SubtaskResult', (result: SubtaskResult) => result.subtask)
   results: Promise<SubtaskResult[]>;
-};
+}

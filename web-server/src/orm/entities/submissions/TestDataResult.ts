@@ -1,6 +1,6 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 
-import { Verdicts } from "orm/entities/enums";
+import { Verdicts } from 'orm/entities/enums';
 import type { TestData, Result } from 'orm/entities';
 
 @Entity('test_data_results')
@@ -31,4 +31,4 @@ export class TestDataResult extends BaseEntity {
 
   @Column({ name: 'verdict_gotten_at' })
   verdictGottenAt: Date;
-};
+}

@@ -1,24 +1,24 @@
-import validator from "validator";
-import { NextFunction, Request, Response } from "express";
-import { Equal } from "typeorm";
+import validator from 'validator';
+import { NextFunction, Request, Response } from 'express';
+import { Equal } from 'typeorm';
 
-import { ServerAPI } from "types";
-import { TaskRepository, UserRepository, ContestRepository, ParticipationRepository } from "orm/repositories";
+import { ServerAPI } from 'types';
+import { TaskRepository, UserRepository, ContestRepository, ParticipationRepository } from 'orm/repositories';
 
 export const validationSubmission = async (req: Request, res: Response, next: NextFunction) => {
   let { languageCode, contestId } = req.body as ServerAPI['SubmissionPayload'];
 
-  const task = await TaskRepository.findOne({ 
-    where: { id: req.params.id } 
+  const task = await TaskRepository.findOne({
+    where: { id: req.params.id },
   });
-  
+
   if (!task) {
     res.status(404).end();
     return;
   }
 
-  const user = await UserRepository.findOne({ 
-    where: { id: req.jwtPayload.id }
+  const user = await UserRepository.findOne({
+    where: { id: req.jwtPayload.id },
   });
 
   if (!user && !task.isPublicInArchive) {
@@ -34,10 +34,12 @@ export const validationSubmission = async (req: Request, res: Response, next: Ne
       return;
     }
 
-    const participation = await ParticipationRepository.findOne({ where: { 
-      user: Equal(user), 
-      contest: Equal(contest) 
-    } });
+    const participation = await ParticipationRepository.findOne({
+      where: {
+        user: Equal(user),
+        contest: Equal(contest),
+      },
+    });
 
     if (!participation) {
       res.status(403).end();

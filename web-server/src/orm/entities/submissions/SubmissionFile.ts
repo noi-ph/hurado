@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 
 import type { File, Submission } from 'orm/entities';
 
@@ -21,4 +21,4 @@ export class SubmissionFile extends BaseEntity {
     this.file = Promise.resolve(file);
     this.submission = Promise.resolve(submission);
   }
-};
+}

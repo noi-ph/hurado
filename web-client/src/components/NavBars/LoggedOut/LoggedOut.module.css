@@ -9,10 +9,10 @@
     top: 0px;
 
     display: block;
-    
-    color: #003D5B;
+
+    color: #003d5b;
     font-weight: 300;
-  }  
+  }
 
   .navbar_reverse {
     height: 100%;
@@ -39,7 +39,7 @@
   .signup {
     border-width: 1px;
     border-radius: 5px;
-    border-color: #003D5B;
+    border-color: #003d5b;
 
     padding: 5px;
     padding-left: 10px;

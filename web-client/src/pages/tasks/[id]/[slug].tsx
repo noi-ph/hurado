@@ -13,7 +13,7 @@ const ShowTaskPage = () => {
 
   const router = useRouter();
 
-  const getTask = async(idOrSlug: string) => {
+  const getTask = async (idOrSlug: string) => {
     console.log(idOrSlug);
     try {
       const response = await http.get(`http://localhost:4000/v1/tasks/${idOrSlug}`);
@@ -38,7 +38,7 @@ const ShowTaskPage = () => {
   };
 
   React.useEffect(() => {
-    const runEffect = async() => {
+    const runEffect = async () => {
       const { id, slug } = router.query;
       if (id && slug) {
         const responseTask = await getTask(id as string);
@@ -56,54 +56,35 @@ const ShowTaskPage = () => {
       <React.Fragment>
         {task.id}: {task.title} ({task.slug})
         <br />
-
         {task.language}
         <br />
-
         {task.description}
         <br />
-
-        <MathJax>
-          {task.statement}
-        </MathJax>
+        <MathJax>{task.statement}</MathJax>
         <br />
-
         Accepts: {task.allowedLanguages}
         <br />
-
         Task type: {task.taskType}
         <br />
-
         Maximum score: {task.scoreMax}
         <br />
-
         Time limit: {task.timeLimit}s
         <br />
-
         Memory limit: {task.memoryLimit}
         <br />
-
         Compile time limit: {task.compileTimeLimit}s
         <br />
-
         Compile memory limit: {task.compileMemoryLimit}
         <br />
-
         Submission size limit: {task.submissionSizeLimit}
         <br />
-
         Is public | In archive? {task.isPublicInArchive.toString()}
         <br />
-
         <Link href={`/tasks/submit/${task.id}`}>Submit to this task</Link>
       </React.Fragment>
     );
   } else {
-    return (
-      <React.Fragment>
-        {state}
-      </React.Fragment>
-    );
+    return <React.Fragment>{state}</React.Fragment>;
   }
 };
 

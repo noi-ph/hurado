@@ -23,7 +23,7 @@ const LoginPage = () => {
 
   const user = useSelector((state: ReduxState) => state.user);
 
-  const onLoginClick = async() => {
+  const onLoginClick = async () => {
     try {
       const payload = { email, password };
       const response = await http.put('http://localhost:4000/v1/users/login', payload);
@@ -32,12 +32,14 @@ const LoginPage = () => {
       const jwt = data.jwt as string;
       const responseUser: ServerAPI['User'] = data.user;
 
-      dispatch(set({
-        id: responseUser.id,
-        username: responseUser.username,
-        email: responseUser.email,
-        isAdmin: responseUser.isAdmin,
-      }));
+      dispatch(
+        set({
+          id: responseUser.id,
+          username: responseUser.username,
+          email: responseUser.email,
+          isAdmin: responseUser.isAdmin,
+        })
+      );
 
       setLoaded(true);
 
@@ -46,7 +48,7 @@ const LoginPage = () => {
 
       console.log('Log-in is successful');
     } catch (e: unknown) {
-      if ((e instanceof AxiosError) && e.response) {
+      if (e instanceof AxiosError && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
         if (err.data.email) {
@@ -84,13 +86,13 @@ const LoginPage = () => {
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
       <p>{emailError}</p>
       <br />
-
       Password:
       <input value={password} onChange={(e) => setPassword(e.target.value)} />
       <p>{passwordError}</p>
       <br />
-
-      <button type='button' onClick={onLoginClick}>Log-in</button>
+      <button type="button" onClick={onLoginClick}>
+        Log-in
+      </button>
     </React.Fragment>
   );
 };

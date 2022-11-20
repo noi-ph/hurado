@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
-import { User } from "orm/entities";
-import { UserRepository } from "orm/repositories";
-import { ServerAPI } from "types";
+import { User } from 'orm/entities';
+import { UserRepository } from 'orm/repositories';
+import { ServerAPI } from 'types';
 
 export const register = async (req: Request, res: Response, _next: NextFunction) => {
   const { email, username, password } = req.body as ServerAPI['RegisterPayload'];
-  
+
   try {
     const user = new User();
     user.email = email;

@@ -2,25 +2,20 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
-    tsconfigRootDir: __dirname
+    tsconfigRootDir: __dirname,
   },
   env: {
     browser: true,
     es6: true,
   },
-  plugins: [
-    '@typescript-eslint',
-    'react',
-  ],
+  plugins: ['@typescript-eslint'],
   ignorePatterns: ['openapi-generated.ts'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
-    'plugin:@next/next/recommended',
     'plugin:no-array-reduce/recommended',
   ],
   rules: {
@@ -36,8 +31,8 @@ module.exports = {
     // Best Practices
     'array-callback-return': 'error',
     'block-scoped-var': 'error',
-    'consistent-return': ['error', { 'treatUndefinedAsUnspecified': false }],
-    'curly': 'error',
+    'consistent-return': ['error', { treatUndefinedAsUnspecified: false }],
+    curly: 'error',
     'default-case': 'error',
     'default-param-last': 'error',
     'dot-location': ['error', 'property'],
@@ -52,7 +47,7 @@ module.exports = {
     'no-floating-decimal': 'error',
     'no-invalid-this': 'off', // This is broken by typescript
     'no-lone-blocks': 'error',
-    'no-multi-spaces': ['error', { 'ignoreEOLComments': false, 'exceptions': { 'Property': true } }],
+    'no-multi-spaces': ['error', { ignoreEOLComments: false, exceptions: { Property: true } }],
     'no-new': 'error',
     'no-new-func': 'error',
     'no-octal-escape': 'error',
@@ -79,50 +74,54 @@ module.exports = {
     'comma-style': 'error',
     'computed-property-spacing': 'error',
     'func-names': ['error', 'never'],
-    'func-style': ['error', 'declaration', { 'allowArrowFunctions': true }],
+    'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
     'function-call-argument-newline': ['error', 'consistent'],
     'function-paren-newline': ['error', 'multiline-arguments'],
-    'indent': 'off', // overridden by @typescript-eslint/indent
+    indent: 'off', // overridden by @typescript-eslint/indent
     'jsx-quotes': ['error', 'prefer-single'],
     'key-spacing': 'error',
     'new-parens': ['error', 'always'],
     'no-lonely-if': 'error',
     'no-multi-assign': 'error',
-    'no-multiple-empty-lines': ['error', { 'max': 2, 'maxEOF': 1 }],
+    'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }],
     'no-trailing-spaces': 'error',
     'no-whitespace-before-property': 'error',
-    'object-curly-newline': ['error', { 'consistent': true }],
+    'object-curly-newline': ['error', { consistent: true }],
     'object-curly-spacing': ['error', 'always'],
-    'operator-linebreak': ['error', 'after', { 'overrides': { '?': 'before', ':': 'before' } }],
+    'operator-linebreak': ['error', 'after', { overrides: { '?': 'before', ':': 'before' } }],
     'prefer-object-spread': 'error',
-    'quotes': 'off',
-    'semi': 'off', // overridden by @typescript-eslint/semi
+    quotes: 'off',
+    semi: 'off', // overridden by @typescript-eslint/semi
     'semi-spacing': 'error',
     'space-before-blocks': 'error',
     'space-before-function-paren': 'off', // overridden by @typescript-eslint/space-before-function-paren
     'space-in-parens': ['error', 'never'],
-    'space-unary-ops': ['error', { 'words': true, 'nonwords': false }],
-    'spaced-comment': ['error', 'always', {
-      'line': {
-          'markers': ['/'],
-          'exceptions': ['-', '+', '*']
+    'space-unary-ops': ['error', { words: true, nonwords: false }],
+    'spaced-comment': [
+      'error',
+      'always',
+      {
+        line: {
+          markers: ['/'],
+          exceptions: ['-', '+', '*'],
+        },
+        block: {
+          markers: ['!'],
+          exceptions: ['*'],
+          balanced: true,
+        },
       },
-      'block': {
-          'markers': ['!'],
-          'exceptions': ['*'],
-          'balanced': true
-      }
-    }],
+    ],
     'switch-colon-spacing': 'error',
     // ECMAScript 6
     'no-duplicate-imports': 'error',
-    'no-restricted-imports': ['error', { 'patterns': ['tests/*'] }],
+    'no-restricted-imports': ['error', { patterns: ['tests/*'] }],
     'no-var': 'error',
     'object-shorthand': 'error',
     'prefer-const': 'error',
-    'sort-imports': ['error', { 'ignoreDeclarationSort': true }],
+    'sort-imports': ['error', { ignoreDeclarationSort: true }],
     'template-curly-spacing': ['error', 'never'],
-    'yield-star-spacing': ['error', { 'before': false, 'after': true }],
+    'yield-star-spacing': ['error', { before: false, after: true }],
     // typescript-eslint:
     // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
     //
@@ -131,67 +130,52 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/func-call-spacing': 'error',
     '@typescript-eslint/indent': ['error', 2],
-    '@typescript-eslint/naming-convention': [
-      'error',
-      { "selector": "enumMember", "format": ["PascalCase"] },
-    ],
+    '@typescript-eslint/naming-convention': ['error', { selector: 'enumMember', format: ['PascalCase'] }],
     '@typescript-eslint/no-require-imports': 'error',
     '@typescript-eslint/no-shadow': 'error',
     '@typescript-eslint/no-this-alias': 'off',
     '@typescript-eslint/no-unused-expressions': 'error',
-    '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
-    '@typescript-eslint/no-use-before-define': ['error', {
-      'functions': false,
-      'classes': false,
-      'variables': true,
-      'enums': true,
-      'typedefs': false,
-    }],
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-use-before-define': [
+      'error',
+      {
+        functions: false,
+        classes: false,
+        variables: true,
+        enums: true,
+        typedefs: false,
+      },
+    ],
     '@typescript-eslint/prefer-for-of': 'error',
     '@typescript-eslint/prefer-nullish-coalescing': 'error',
     '@typescript-eslint/prefer-optional-chain': 'error',
     '@typescript-eslint/prefer-readonly': 'error',
     '@typescript-eslint/promise-function-async': 'off', // We might want promise functions that are not async
-    '@typescript-eslint/quotes': ['error', 'single', { 'avoidEscape': true }],
-    '@typescript-eslint/restrict-plus-operands': ['error', { 'checkCompoundAssignments': true }],
+    '@typescript-eslint/quotes': ['error', 'single', { avoidEscape: true }],
+    '@typescript-eslint/restrict-plus-operands': ['error', { checkCompoundAssignments: true }],
     '@typescript-eslint/return-await': 'error',
     '@typescript-eslint/semi': ['error', 'always'],
     '@typescript-eslint/space-before-function-paren': ['error', 'never'],
-    // eslint-plugin-react:
-    // https://github.com/yannickcr/eslint-plugin-react#list-of-supported-rules
-    'react/button-has-type': 'error',
-    'react/display-name': 'error',
-    'react/prop-types': 'off',
-    'react/jsx-equals-spacing': ['error', 'never'],
-    'react/jsx-uses-react': 'error',
-    'react/jsx-uses-vars': 'error',
     // eslint-plugin-import
     // https://github.com/benmosher/eslint-plugin-impor
     'import/no-unresolved': 'off', // Let the typescript compiler handle module resolution
-    'import/order': ['warn',
+    'import/order': [
+      'warn',
       {
-        'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
-        'alphabetize': { 'caseInsensitive': false }
-      }
-    ]
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
+        alphabetize: { caseInsensitive: false },
+      },
+    ],
   },
   settings: {
     // This magic was copy-pasted from:
     // https://github.com/yannickcr/eslint-plugin-react#configuration
-    'react': {
-      'version': 'detect',
-    },
-    'propWrapperFunctions': [
-        'forbidExtraProps',
-        { 'property': 'freeze', 'object': 'Object' },
-        { 'property': 'myFavoriteWrapper' }
+    propWrapperFunctions: [
+      'forbidExtraProps',
+      { property: 'freeze', object: 'Object' },
+      { property: 'myFavoriteWrapper' },
     ],
-    'import/extensions': [
-      '.js',
-      '.jsx',
-      '.ts',
-      '.tsx',
-    ],
+    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
     'import/resolver': {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -201,37 +185,28 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["**/*.{ts,tsx,js,jsx}"]
+      files: ['**/*.{ts,tsx,js,jsx}'],
     },
     {
-      files: [
-        '**/*.test.{ts,tsx}',
-      ],
+      files: ['**/*.test.{ts,tsx}'],
       env: {
         jest: true,
       },
       // Can't extend in overrides: https://github.com/eslint/eslint/issues/8813
       // 'extends': ['plugin:jest/recommended']
-      plugins: [
-        'react',
-        'jest',
-      ],
+      plugins: ['react', 'jest'],
       rules: {
         'no-restricted-imports': 'off',
-      }
+      },
     },
     {
-      files: [
-        'src/index.tsx',
-      ],
+      files: ['src/index.tsx'],
       env: {
         node: true,
       },
     },
     {
-      files: [
-        '**/serviceWorker.ts',
-      ],
+      files: ['**/serviceWorker.ts'],
       env: {
         serviceworker: true,
         node: true,

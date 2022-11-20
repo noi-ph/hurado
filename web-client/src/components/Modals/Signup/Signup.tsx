@@ -1,22 +1,22 @@
-import { AxiosError } from "axios";
-import React from "react";
-import { ServerAPI } from "types/openapi";
-import { AppConfig } from "utils/AppConfig";
-import { http, HttpResponse } from "utils/http";
+import { AxiosError } from 'axios';
+import React from 'react';
+import { ServerAPI } from 'types/openapi';
+import { AppConfig } from 'utils/AppConfig';
+import { HttpResponse, http } from 'utils/http';
 
 import Styles from './Signup.module.css';
 
 type SignupModalProps = {
   id: string;
   loginId: string;
-}
+};
 
 const ErrorAreas = {
   Email: Styles.email_error,
   Username: Styles.username_error,
   Password: Styles.password_error,
-  PasswordConfirm: Styles.passwordConfirm_error
-}
+  PasswordConfirm: Styles.passwordConfirm_error,
+};
 
 export const SignupModal = (props: SignupModalProps) => {
   const [email, setEmail] = React.useState('');
@@ -49,7 +49,7 @@ export const SignupModal = (props: SignupModalProps) => {
   };
 
   const openLoginModal = () => {
-    closeModal();            
+    closeModal();
 
     const login = document.getElementById(props.loginId);
     if (login) {
@@ -60,7 +60,7 @@ export const SignupModal = (props: SignupModalProps) => {
   const onSignupClick = async () => {
     clearErrors();
 
-    const payload: ServerAPI['RegisterPayload'] = {email, username, password, passwordConfirm};
+    const payload: ServerAPI['RegisterPayload'] = { email, username, password, passwordConfirm };
 
     try {
       await http.post(`${AppConfig.server}/v1/users/register`, payload);
@@ -111,31 +111,63 @@ export const SignupModal = (props: SignupModalProps) => {
         `}
       </style>
       <div className={`${Styles.modal}`}>
-        <button className={`${Styles.close}`} onClick={closeModal}>X</button>
+        <button className={`${Styles.close}`} onClick={closeModal}>
+          X
+        </button>
 
         <div className={`${Styles.signup}`}>Sign up</div>
-        
+
         <div className={`${Styles.email} ${Styles.input}`}>
-          <input type='text' placeholder='E-mail address' value={email} onChange={(e) => {setEmail(e.target.value)}} />
+          <input
+            type="text"
+            placeholder="E-mail address"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+          />
         </div>
         <div id={ErrorAreas.Email} />
 
         <div className={`${Styles.input}`}>
-          <input type='text' placeholder='Username' value={username} onChange={(e) => {setUsername(e.target.value)}} />
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
+          />
         </div>
         <div id={ErrorAreas.Username} />
-        
+
         <div className={`${Styles.input}`}>
-          <input type='password' placeholder='Password' value={password} onChange={(e) => {setPassword(e.target.value)}} />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
         </div>
         <div id={ErrorAreas.Password} />
 
         <div className={`${Styles.input}`}>
-          <input type='password' placeholder='Password confirm' value={passwordConfirm} onChange={(e) => {setPasswordConfirm(e.target.value)}} />
+          <input
+            type="password"
+            placeholder="Password confirm"
+            value={passwordConfirm}
+            onChange={(e) => {
+              setPasswordConfirm(e.target.value);
+            }}
+          />
         </div>
         <div id={ErrorAreas.PasswordConfirm} />
 
-        <button className={`${Styles.button}`} onClick={onSignupClick}>Sign up</button>
+        <button className={`${Styles.button}`} onClick={onSignupClick}>
+          Sign up
+        </button>
 
         <div className={`${Styles.login}`}>
           Already have an account? <a onClick={openLoginModal}>Log in!</a>

@@ -1,5 +1,5 @@
-import { TaskConstants } from "consts/Task";
-import { ServerAPI } from "types";
+import { TaskConstants } from 'consts/Task';
+import { ServerAPI } from 'types';
 
 export const validateSlug = (slug: string) => {
   const err: ServerAPI['TaskError'] = {};

@@ -8,7 +8,7 @@ export const edit = async (req: Request, res: Response, _next: NextFunction) => 
   const id = req.jwtPayload.id;
   let { email, username, school, name, country, password } = req.body as ServerAPI['UserEditPayload'];
   const user = await UserRepository.findOne({ where: { id } });
-  
+
   try {
     if (email) {
       user.email = email;

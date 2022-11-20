@@ -20,19 +20,24 @@ const SubmitToTaskPage = () => {
       const fileBlob = new Blob([code], { type: mimeType });
       const formData = new FormData();
       formData.append(fileName, fileBlob);
-      formData.append('data', JSON.stringify({
-        submission: {
-          taskId,
-          languageCode
-        }
-      }));
+      formData.append(
+        'data',
+        JSON.stringify({
+          submission: {
+            taskId,
+            languageCode,
+          },
+        })
+      );
 
-      await http.put(`http://localhost:4000/v1/submissions`, formData, { headers: {
-        'Content-Type': 'multipart/form-data'
-      }});
-      
+      await http.put('http://localhost:4000/v1/submissions', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       alert('Submission successful');
-    } catch (err: unknown) {  
+    } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const status = err.response?.status;
         const errorData = err.response?.data;
@@ -46,7 +51,7 @@ const SubmitToTaskPage = () => {
 
         alert('Something unexpected happened');
       }
-    }    
+    }
   };
 
   React.useEffect(() => {
@@ -61,18 +66,18 @@ const SubmitToTaskPage = () => {
         await http.get(`http://localhost:4000/v1/tasks/${id}`);
 
         setTaskId(parseInt(id.toString()));
-      } catch (err: unknown) {  
+      } catch (err: unknown) {
         if (err instanceof AxiosError) {
           const status = err.response?.status;
           const errorData = err.response?.data;
-  
+
           // The console.log stays while the error isn't properly annotated
           console.log(errorData);
-  
+
           alert(`${status}: ${errorData.errorMessage}`);
         } else {
           console.log(err);
-  
+
           alert('Something unexpected happened');
         }
       }
@@ -86,36 +91,31 @@ const SubmitToTaskPage = () => {
   if (taskId) {
     return (
       <React.Fragment>
-        Filename: 
+        Filename:
         <input value={fileName} onChange={(e) => setFileName(e.target.value)} />
-
         Language:
-        <select onChange={(e) => {
-          const [ mt, lc ] = e.target.value.split('|');
-          setMimeType(mt);
-          setLanguageCode(lc);
-        }}>
+        <select
+          onChange={(e) => {
+            const [mt, lc] = e.target.value.split('|');
+            setMimeType(mt);
+            setLanguageCode(lc);
+          }}
+        >
           {/* TODO get the languages from server? and make a dynamic drowdown */}
-          <option value='text/x-c|C++'>C++</option>
-          <option value='text/x-script.python|Python3'>Python3</option>
-          <option value='plain/text|PlainText'>PlainText</option>
+          <option value="text/x-c|C++">C++</option>
+          <option value="text/x-script.python|Python3">Python3</option>
+          <option value="plain/text|PlainText">PlainText</option>
         </select>
         <br />
-  
         Code:
         <br />
         <textarea value={code} onChange={(e) => setCode(e.target.value)} />
         <br />
-  
         <button onClick={onSubmissionSubmit}>Submit to task</button>
       </React.Fragment>
     );
   } else {
-    return (
-      <React.Fragment>
-        Task not found
-      </React.Fragment>
-    )
+    return <React.Fragment>Task not found</React.Fragment>;
   }
 };
 

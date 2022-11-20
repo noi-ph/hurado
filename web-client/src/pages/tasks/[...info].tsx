@@ -16,9 +16,9 @@ const ShowTaskPageInterceptor = () => {
   const getTask = async (idOrSlug: string | number) => {
     try {
       const response = await http.get(`http://localhost:4000/v1/tasks/${idOrSlug}`);
-      
+
       return response.data;
-    } catch (err: unknown) {  
+    } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const status = err.response?.status;
         const errorData = err.response?.data;
@@ -42,16 +42,16 @@ const ShowTaskPageInterceptor = () => {
         const idOrSlug = info[0];
         const task = await getTask(idOrSlug);
         if (task) {
-          setState("Redirecting...");
+          setState('Redirecting...');
           redirectToTaskPage(task.id, task.slug);
         } else {
-          setState("Task not found");
+          setState('Task not found');
         }
       } else if (info?.length == 2) {
         // this shouldn't happen, but handle it anyway
         redirectToTaskPage(parseInt(info[0]), info[1]);
       } else {
-        setState("Unable to process URL");
+        setState('Unable to process URL');
       }
     };
 
@@ -60,11 +60,7 @@ const ShowTaskPageInterceptor = () => {
     }
   }, [router.isReady]);
 
-  return (
-    <React.Fragment>
-      {state}
-    </React.Fragment>
-  );
+  return <React.Fragment>{state}</React.Fragment>;
 };
 
 export default ShowTaskPageInterceptor;

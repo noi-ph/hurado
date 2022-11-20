@@ -12,7 +12,6 @@ export const createSubmission = async (req: Request, res: Response, _next: NextF
   const task = await TaskRepository.findOne({ where: { id: req.params.taskId } });
 
   if (user && task) {
-    
   }
   const submission = new Submission(user, task, languageCode);
 

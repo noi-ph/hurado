@@ -6,28 +6,28 @@ import { ScriptUploadArea } from '../../components/Script';
 import { http } from '../../utils/http';
 
 const CreateTaskPage = () => {
-  const [title, setTitle] = React.useState("");
-  const [slug, setSlug] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [statement, setStatement] = React.useState("");
-  const [allowedLanguages, setAllowedLanguages] = React.useState("All");
-  const [taskType, setTaskType] = React.useState("Batch");
+  const [title, setTitle] = React.useState('');
+  const [slug, setSlug] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [statement, setStatement] = React.useState('');
+  const [allowedLanguages, setAllowedLanguages] = React.useState('All');
+  const [taskType, setTaskType] = React.useState('Batch');
   const [scoreMax, setScoreMax] = React.useState(100);
-  const [checkerName, setCheckerName] = React.useState("");
+  const [checkerName, setCheckerName] = React.useState('');
   const [checkerFile, setCheckerFile] = React.useState(null);
-  const [checkerLanguageCode, setCheckerLanguageCode] = React.useState("");
-  const [checkerRuntimeArgs, setCheckerRuntimeArgs] = React.useState("");
+  const [checkerLanguageCode, setCheckerLanguageCode] = React.useState('');
+  const [checkerRuntimeArgs, setCheckerRuntimeArgs] = React.useState('');
   const [timeLimit, setTimeLimit] = React.useState(2);
   const [memoryLimit, setMemoryLimit] = React.useState(1099511627776);
   const [compileTimeLimit, setCompileTimeLimit] = React.useState(10);
   const [compileMemoryLimit, setCompileMemoryLimit] = React.useState(1099511627776);
   const [submissionSizeLimit, setSubmissionSizeLimit] = React.useState(32768);
-  const [validatorName, setValidatorName] = React.useState("");
+  const [validatorName, setValidatorName] = React.useState('');
   const [validatorFile, setValidatorFile] = React.useState<File | null>(null);
-  const [validatorLanguageCode, setValidatorLanguageCode] = React.useState("");
-  const [validatorRuntimeArgs, setValidatorRuntimeArgs] = React.useState("");
+  const [validatorLanguageCode, setValidatorLanguageCode] = React.useState('');
+  const [validatorRuntimeArgs, setValidatorRuntimeArgs] = React.useState('');
   const [isPublicInArchive, setIsPublicInArchive] = React.useState(false);
-  const [language, setLanguage] = React.useState("en-US");
+  const [language, setLanguage] = React.useState('en-US');
 
   const CheckerContext = React.createContext({
     name: checkerName,
@@ -37,7 +37,7 @@ const CreateTaskPage = () => {
     languageCode: checkerLanguageCode,
     setLanguageCode: setCheckerLanguageCode,
     runtimeArgs: checkerRuntimeArgs,
-    setRuntimeArgs: setCheckerRuntimeArgs
+    setRuntimeArgs: setCheckerRuntimeArgs,
   });
   const ValidatorContext = React.createContext({
     name: validatorName,
@@ -47,61 +47,66 @@ const CreateTaskPage = () => {
     languageCode: validatorLanguageCode,
     setLanguageCode: setValidatorLanguageCode,
     runtimeArgs: validatorRuntimeArgs,
-    setRuntimeArgs: setValidatorRuntimeArgs
+    setRuntimeArgs: setValidatorRuntimeArgs,
   });
 
   const router = useRouter();
 
   const createTask = async (e: any) => {
-    e.preventDefault();  // Prevents automatic page reloading
+    e.preventDefault(); // Prevents automatic page reloading
 
     if (!validatorFile || !checkerFile) {
       return;
     }
-    
+
     try {
       const formData = new FormData();
       formData.append(checkerName, checkerFile);
       formData.append(validatorName, validatorFile);
-      formData.append('data', JSON.stringify({
-        title,
-        slug,
-        description,
-        statement,
-        allowedLanguages,
-        taskType,
-        scoreMax,
-        checker: {
-          file: {
-            name: checkerName,
+      formData.append(
+        'data',
+        JSON.stringify({
+          title,
+          slug,
+          description,
+          statement,
+          allowedLanguages,
+          taskType,
+          scoreMax,
+          checker: {
+            file: {
+              name: checkerName,
+            },
+            languageCode: checkerLanguageCode,
+            runtimeArgs: checkerRuntimeArgs,
           },
-          languageCode: checkerLanguageCode,
-          runtimeArgs: checkerRuntimeArgs
-        },
-        timeLimit,
-        memoryLimit,
-        compileTimeLimit,
-        compileMemoryLimit,
-        submissionSizeLimit,
-        validator: {
-          file: {
-            name: validatorName,
+          timeLimit,
+          memoryLimit,
+          compileTimeLimit,
+          compileMemoryLimit,
+          submissionSizeLimit,
+          validator: {
+            file: {
+              name: validatorName,
+            },
+            languageCode: validatorLanguageCode,
+            runtimeArgs: validatorRuntimeArgs,
           },
-          languageCode: validatorLanguageCode,
-          runtimeArgs: validatorRuntimeArgs
-        },
-        isPublicInArchive,
-        language,
-      }));
+          isPublicInArchive,
+          language,
+        })
+      );
 
-      const taskResponse = await http.post(`http://localhost:4000/v1/tasks`, formData, { headers: {
-        'Content-Type': 'multipart/form-data'
-      } });
+      const taskResponse = await http.post('http://localhost:4000/v1/tasks', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       alert('Task created successfully');
-      
+
       router.push(`/tasks/edit/${taskResponse.data.id}`);
-    } catch (err: unknown) {  
+    } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const status = err.response?.status;
         const errorData = err.response?.data;
@@ -193,13 +198,21 @@ const CreateTaskPage = () => {
 
       <label>
         Compile memory limit:
-        <input type="text" value={compileMemoryLimit} onChange={(e) => setCompileMemoryLimit(parseInt(e.target.value))} />
+        <input
+          type="text"
+          value={compileMemoryLimit}
+          onChange={(e) => setCompileMemoryLimit(parseInt(e.target.value))}
+        />
       </label>
       <br />
 
       <label>
         Submissions size limit:
-        <input type="text" value={submissionSizeLimit} onChange={(e) => setSubmissionSizeLimit(parseInt(e.target.value))} />
+        <input
+          type="text"
+          value={submissionSizeLimit}
+          onChange={(e) => setSubmissionSizeLimit(parseInt(e.target.value))}
+        />
       </label>
       <br />
 
@@ -209,18 +222,22 @@ const CreateTaskPage = () => {
         <ScriptUploadArea Context={ValidatorContext} />
         <br />
         -----------------
-      </label> 
+      </label>
       <br />
 
       <label>
         Is public/in archive?
-        <input type="text" value={isPublicInArchive.toString()} onChange={(e) => setIsPublicInArchive(e.target.value === "true")} />
+        <input
+          type="text"
+          value={isPublicInArchive.toString()}
+          onChange={(e) => setIsPublicInArchive(e.target.value === 'true')}
+        />
       </label>
       <br />
 
       <label>
         Language:
-        <input type="text" value={language} onChange={(e) => setLanguage(e.target.value)}/>
+        <input type="text" value={language} onChange={(e) => setLanguage(e.target.value)} />
       </label>
       <br />
 

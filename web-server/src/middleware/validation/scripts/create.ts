@@ -1,6 +1,6 @@
-import validator from "validator";
+import validator from 'validator';
 
-import { ServerAPI } from "types";
+import { ServerAPI } from 'types';
 
 export const validateScriptPayload = (script: ServerAPI['ScriptPayload'], file: Express.Multer.File | null) => {
   const err: ServerAPI['ScriptError'] = {};

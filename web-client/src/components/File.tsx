@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 type FileUploadAreaProps = {
   forName: {
@@ -25,7 +25,14 @@ const FileUploadArea = (props: FileUploadAreaProps) => {
 
       <label>
         File:
-        <input type="file" onChange={(e) => {if (e.target.files) setFile(e.target.files[0])}} />
+        <input
+          type="file"
+          onChange={(e) => {
+            if (e.target.files) {
+              setFile(e.target.files[0]);
+            }
+          }}
+        />
       </label>
     </React.Fragment>
   );

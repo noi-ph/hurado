@@ -19,7 +19,7 @@ export const validationEdit = async (req: Request, res: Response, next: NextFunc
   password = password ? password : '';
   passwordConfirm = passwordConfirm ? passwordConfirm : '';
 
-  const user = await UserRepository.findOne({ where: { id }});
+  const user = await UserRepository.findOne({ where: { id } });
   const err: ServerAPI['UserError'] = {};
 
   if (!validator.isEmpty(email) && email !== user.email) {

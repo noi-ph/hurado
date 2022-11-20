@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
 import type { User, ContestTask, Participation, Submission } from 'orm/entities';
 
@@ -34,4 +34,4 @@ export class Contest extends BaseEntity {
 
   @OneToMany('Submission', (submission: Submission) => submission.contest)
   submissions: Promise<Submission[]>;
-};
+}

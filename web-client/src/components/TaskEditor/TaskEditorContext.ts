@@ -5,7 +5,9 @@ type TaskEditorActionFunction = (action: TaskEditorActionTypeWithHistory) => Tas
 
 export const TaskEditorHistory = React.createContext<TaskStateStack>(null as unknown as TaskStateStack);
 
-export const TaskEditorAction = React.createContext<TaskEditorActionFunction>(null as unknown as TaskEditorActionFunction);
+export const TaskEditorAction = React.createContext<TaskEditorActionFunction>(
+  null as unknown as TaskEditorActionFunction
+);
 
 export function useTaskEditorState(): TaskState {
   const history = useContext(TaskEditorHistory);

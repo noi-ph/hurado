@@ -13,18 +13,18 @@ import { NavBar } from 'components/NavBar';
 import { Body } from 'components/Body/Body';
 
 const config = {
-  loader: { load: ["[tex]/html"] },
+  loader: { load: ['[tex]/html'] },
   tex: {
-    packages: { "[+]": ["html"] },
+    packages: { '[+]': ['html'] },
     inlineMath: [
-      ["$", "$"],
-      ["\\(", "\\)"]
+      ['$', '$'],
+      ['\\(', '\\)'],
     ],
     displayMath: [
-      ["$$", "$$"],
-      ["\\[", "\\]"]
-    ]
-  }
+      ['$$', '$$'],
+      ['\\[', '\\]'],
+    ],
+  },
 };
 
 const App = ({ Component, pageProps }: AppProps) => {
@@ -33,7 +33,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   // TODO: Fix this later when other people start styling things.
   let main: React.ReactNode;
   if (router.pathname == '/tasks/edit/[id]' || router.pathname == '/playground') {
-    main = <Component {...pageProps}/>;
+    main = <Component {...pageProps} />;
   } else {
     main = (
       <Main>
@@ -46,9 +46,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     <Provider store={store}>
       <MathJaxContext config={config}>
         <NavBar />
-        <Body>
-          {main}
-        </Body>
+        <Body>{main}</Body>
       </MathJaxContext>
     </Provider>
   );

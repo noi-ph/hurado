@@ -1,14 +1,14 @@
 import React from 'react';
 
-import Styles from './LoggedOut.module.css';
 import { Logo } from 'components/Logo/Logo';
 import { LoginModal } from 'components/Modals/Login/Login';
 import { SignupModal } from 'components/Modals/Signup/Signup';
+import Styles from './LoggedOut.module.css';
 
 enum Modals {
   Login = 'login',
   Signup = 'signup',
-};
+}
 
 export const LoggedOutNavBar = () => {
   const showModal = (id: Modals) => {
@@ -23,9 +23,7 @@ export const LoggedOutNavBar = () => {
       <div className={`${Styles.navbar}`}>
         <Logo />
         <div className={`${Styles.navbar_reverse}`}>
-          <div onClick={() => showModal(Modals.Login)}>
-            Log in
-          </div>
+          <div onClick={() => showModal(Modals.Login)}>Log in</div>
           <div className={`${Styles.signup}`} onClick={() => showModal(Modals.Signup)}>
             Sign up
           </div>

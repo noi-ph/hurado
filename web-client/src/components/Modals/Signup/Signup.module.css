@@ -10,9 +10,9 @@
 
   .modal > div > input {
     display: block;
-    
+
     font-size: x-large;
-    
+
     width: 100%;
   }
 
@@ -72,13 +72,16 @@
 
     font-size: x-large;
 
-    border: 1px solid #003D5B;
+    border: 1px solid #003d5b;
     border-radius: 60px;
 
     width: 82%;
   }
 
-  #email_error, #username_error, #password_error, #passwordConfirm_error {
+  #email_error,
+  #username_error,
+  #password_error,
+  #passwordConfirm_error {
     display: none;
 
     margin-left: 50px;

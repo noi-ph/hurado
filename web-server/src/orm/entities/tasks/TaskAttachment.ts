@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 
 import type { File, Task } from 'orm/entities';
 
@@ -12,13 +12,13 @@ export class TaskAttachment extends BaseEntity {
   task: Promise<Task>;
 
   /**
-   * This is set as OneToOne because we'd rather not do reference counting to 
-   * see whether a File instance can be safely deleted due to the possibility of 
-   * it being depended upon by many TaskAttachment instances. 
-   * 
+   * This is set as OneToOne because we'd rather not do reference counting to
+   * see whether a File instance can be safely deleted due to the possibility of
+   * it being depended upon by many TaskAttachment instances.
+   *
    * Plus, many File instances could just point at the same contents
    */
   @OneToOne('File')
   @JoinColumn({ name: 'file_id' })
   file: Promise<File>;
-};
+}

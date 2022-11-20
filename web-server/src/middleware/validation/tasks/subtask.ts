@@ -1,9 +1,13 @@
-import validator from "validator";
+import validator from 'validator';
 
-import { ServerAPI } from "types";
-import { validateScriptPayload } from "../scripts";
+import { ServerAPI } from 'types';
+import { validateScriptPayload } from '../scripts';
 
-export const validateSubtask = (subtask: ServerAPI['SubtaskPayload'], scorerScriptFile: Express.Multer.File, validatorScriptFile: Express.Multer.File) => {
+export const validateSubtask = (
+  subtask: ServerAPI['SubtaskPayload'],
+  scorerScriptFile: Express.Multer.File,
+  validatorScriptFile: Express.Multer.File
+) => {
   const err: ServerAPI['SubtaskError'] = {};
 
   if (validator.isEmpty(subtask.name)) {

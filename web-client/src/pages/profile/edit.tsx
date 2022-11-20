@@ -1,12 +1,11 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AxiosError } from 'axios';
 
-import { set } from 'pages/redux/userSlice';
+import { set, userStateLoader } from 'pages/redux/userSlice';
 import { ReduxState } from 'pages/redux/store';
-import { userStateLoader } from 'pages/redux/userSlice';
 import { ServerAPI } from 'types/openapi';
-import { http, HttpResponse } from 'utils/http';
+import { HttpResponse, http } from 'utils/http';
 
 const EditPage = () => {
   const user = useSelector((state: ReduxState) => state.user);
@@ -40,7 +39,7 @@ const EditPage = () => {
         passwordConfirm,
         school,
         name,
-        country
+        country,
       });
 
       dispatch(set(response.data));
@@ -48,28 +47,38 @@ const EditPage = () => {
 
       alert('Profile has been edited');
     } catch (e: unknown) {
-      if ((e instanceof AxiosError) && e.response) {
+      if (e instanceof AxiosError && e.response) {
         const err: HttpResponse<ServerAPI['UserError']> = e.response;
 
-        if(err.data.email) {
+        if (err.data.email) {
           setEmailError(err.data.email);
-        } else setEmailError('');
+        } else {
+          setEmailError('');
+        }
 
-        if(err.data.username) {
+        if (err.data.username) {
           setUsernameError(err.data.username);
-        } else setUsernameError('');
+        } else {
+          setUsernameError('');
+        }
 
-        if(err.data.password) {
+        if (err.data.password) {
           setPasswordError(err.data.password);
-        } else setPasswordError('');
+        } else {
+          setPasswordError('');
+        }
 
-        if(err.data.passwordConfirm) {
+        if (err.data.passwordConfirm) {
           setPasswordConfirmError(err.data.passwordConfirm);
-        } else setPasswordConfirmError('');
+        } else {
+          setPasswordConfirmError('');
+        }
 
-        if(err.data.country) {
+        if (err.data.country) {
           setCountryError(err.data.country);
-        } else setCountryError('');
+        } else {
+          setCountryError('');
+        }
 
         if (err.status == 500) {
           alert(`${err.status}: Internal server error`);
@@ -88,46 +97,38 @@ const EditPage = () => {
     if (edited) {
       userStateLoader.saveState(user);
     }
-  }, [edited])
+  }, [edited]);
 
   return (
     <React.Fragment>
       -----Set changes below-----
       <br />
-
       E-mail:
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
       <p>{emailError}</p>
       <br />
-
       Username:
       <input value={username} onChange={(e) => setUsername(e.target.value)} />
       <p>{usernameError}</p>
       <br />
-
       Password:
       <input value={password} onChange={(e) => setPassword(e.target.value)} />
       <p>{passwordError}</p>
       <br />
-
       Password confirmation:
       <input value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
       <p>{passwordConfirmError}</p>
       <br />
-
       School:
       <input value={school} onChange={(e) => setSchool(e.target.value)} />
       <br />
-
       Name:
       <input value={name} onChange={(e) => setName(e.target.value)} />
       <br />
-
       Country:
       <input value={country} onChange={(e) => setCountry(e.target.value)} />
       <br />
       <p>{countryError}</p>
-
       <button onClick={onEditClick}>Edit profile</button>
     </React.Fragment>
   );

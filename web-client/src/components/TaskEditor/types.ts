@@ -26,32 +26,27 @@ export enum TaskEditorAction {
 }
 
 type TaskEditorActionUndo = {
-  kind: TaskEditorAction.Undo,
+  kind: TaskEditorAction.Undo;
 };
 
 type TaskEditorActionRedo = {
-  kind: TaskEditorAction.Redo,
+  kind: TaskEditorAction.Redo;
 };
 
 type TaskEditorActionChangeTab = {
-  kind: TaskEditorAction.ChangeTab,
-  tab: TaskEditorTab,
+  kind: TaskEditorAction.ChangeTab;
+  tab: TaskEditorTab;
 };
 
 type TaskEditorActionChangeDetail = {
-  kind: TaskEditorAction.ChangeDetail,
-  detail: string,
-  value: string,
+  kind: TaskEditorAction.ChangeDetail;
+  detail: string;
+  value: string;
 };
 
-export type TaskEditorActionType =
-  | TaskEditorActionChangeTab
-  | TaskEditorActionChangeDetail;
+export type TaskEditorActionType = TaskEditorActionChangeTab | TaskEditorActionChangeDetail;
 
-export type TaskEditorActionTypeWithHistory =
-  | TaskEditorActionUndo
-  | TaskEditorActionRedo
-  | TaskEditorActionType;
+export type TaskEditorActionTypeWithHistory = TaskEditorActionUndo | TaskEditorActionRedo | TaskEditorActionType;
 
 export type Task = {
   id: number;

@@ -21,13 +21,9 @@ const LogoutPage = () => {
     } finally {
       router.push('/session/login');
     }
-  }, [])
+  }, []);
 
-  return (
-    <React.Fragment>
-      Logging out...
-    </React.Fragment>
-  );
+  return <React.Fragment>Logging out...</React.Fragment>;
 };
 
 export default LogoutPage;

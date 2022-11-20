@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
-import { UserRepository } from "orm/repositories";
+import { UserRepository } from 'orm/repositories';
 
 export const validationShow = async (req: Request, res: Response, next: NextFunction) => {
   const requestorId = req.jwtPayload.id;

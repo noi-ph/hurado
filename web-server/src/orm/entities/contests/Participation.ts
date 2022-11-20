@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 
-import { User, Contest } from "orm/entities";
+import { User, Contest } from 'orm/entities';
 
 @Entity('participations')
 export class Participation extends BaseEntity {
@@ -35,4 +35,4 @@ export class Participation extends BaseEntity {
   checkIfPasswordMatch(unencryptedPassword: string) {
     return bcrypt.compareSync(unencryptedPassword, this.hashedPassword);
   }
-};
+}

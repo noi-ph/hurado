@@ -4,19 +4,19 @@
  */
 
 export interface paths {
-  "/v1/users/login": {
+  '/v1/users/login': {
     post: {
       responses: {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Login"];
+            'application/json': components['schemas']['Login'];
           };
         };
         /** Bad request */
         400: {
           content: {
-            "application/json": components["schemas"]["UserError"];
+            'application/json': components['schemas']['UserError'];
           };
         };
         /** Internal server error */
@@ -24,12 +24,12 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["LoginPayload"];
+          'application/json': components['schemas']['LoginPayload'];
         };
       };
     };
   };
-  "/v1/users/register": {
+  '/v1/users/register': {
     post: {
       responses: {
         /** OK */
@@ -37,7 +37,7 @@ export interface paths {
         /** Bad request */
         400: {
           content: {
-            "application/json": components["schemas"]["UserError"];
+            'application/json': components['schemas']['UserError'];
           };
         };
         /** Internal server error */
@@ -45,12 +45,12 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["RegisterPayload"];
+          'application/json': components['schemas']['RegisterPayload'];
         };
       };
     };
   };
-  "/v1/users/{id}": {
+  '/v1/users/{id}': {
     get: {
       parameters: {
         path: {
@@ -61,7 +61,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["User"];
+            'application/json': components['schemas']['User'];
           };
         };
         /** Not found */
@@ -80,13 +80,13 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["User"];
+            'application/json': components['schemas']['User'];
           };
         };
         /** Bad request */
         400: {
           content: {
-            "application/json": components["schemas"]["UserError"];
+            'application/json': components['schemas']['UserError'];
           };
         };
         /** Internal server error */
@@ -94,7 +94,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["UserEditPayload"];
+          'application/json': components['schemas']['UserEditPayload'];
         };
       };
     };
@@ -104,7 +104,7 @@ export interface paths {
       };
     };
   };
-  "/v1/users/{id}/all-details": {
+  '/v1/users/{id}/all-details': {
     get: {
       parameters: {
         path: {
@@ -115,7 +115,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["UserDetailed"];
+            'application/json': components['schemas']['UserDetailed'];
           };
         };
         /** Unauthorized */
@@ -132,7 +132,7 @@ export interface paths {
       };
     };
   };
-  "/v1/tasks/{idOrSlug}": {
+  '/v1/tasks/{idOrSlug}': {
     get: {
       parameters: {
         path: {
@@ -143,7 +143,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task"];
+            'application/json': components['schemas']['Task'];
           };
         };
         /** Not logged in */
@@ -164,13 +164,13 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task"];
+            'application/json': components['schemas']['Task'];
           };
         };
         /** Bad request */
         400: {
           content: {
-            "application/json": components["schemas"]["TaskError"];
+            'application/json': components['schemas']['TaskError'];
           };
         };
         /** Not logged in */
@@ -184,7 +184,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["TaskPayload"];
+          'application/json': components['schemas']['TaskPayload'];
         };
       };
     };
@@ -200,7 +200,7 @@ export interface paths {
         /** Bad request */
         400: {
           content: {
-            "application/json": components["schemas"]["SubmissionError"];
+            'application/json': components['schemas']['SubmissionError'];
           };
         };
         /** Not logged in */
@@ -214,7 +214,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["SubmissionPayload"];
+          'application/json': components['schemas']['SubmissionPayload'];
         };
       };
     };
@@ -224,7 +224,7 @@ export interface paths {
       };
     };
   };
-  "/v1/tasks/{idOrSlug}/all-details": {
+  '/v1/tasks/{idOrSlug}/all-details': {
     get: {
       parameters: {
         path: {
@@ -235,7 +235,7 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["TaskDetailed"];
+            'application/json': components['schemas']['TaskDetailed'];
           };
         };
         /** Not logged in */
@@ -254,13 +254,13 @@ export interface paths {
       };
     };
   };
-  "/v1/tasks": {
+  '/v1/tasks': {
     get: {
       responses: {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["TaskSummary"][];
+            'application/json': components['schemas']['TaskSummary'][];
           };
         };
         /** Internal server error */
@@ -272,13 +272,13 @@ export interface paths {
         /** OK */
         200: {
           content: {
-            "application/json": components["schemas"]["Task"];
+            'application/json': components['schemas']['Task'];
           };
         };
         /** Bad request */
         400: {
           content: {
-            "application/json": components["schemas"]["TaskError"];
+            'application/json': components['schemas']['TaskError'];
           };
         };
         /** Not logged in */
@@ -290,7 +290,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["TaskPayload"];
+          'application/json': components['schemas']['TaskPayload'];
         };
       };
     };
@@ -331,7 +331,7 @@ export interface components {
     };
     ScriptPayload: {
       id?: string;
-      file: components["schemas"]["FilePayload"];
+      file: components['schemas']['FilePayload'];
       languageCode: string;
       runtimeArgs: string;
     };
@@ -340,21 +340,21 @@ export interface components {
       name: string;
       order: number;
       scoreMax: number;
-      scorerScript: components["schemas"]["ScriptPayload"];
-      validatorScript: components["schemas"]["ScriptPayload"];
+      scorerScript: components['schemas']['ScriptPayload'];
+      validatorScript: components['schemas']['ScriptPayload'];
       testDataPattern: string[];
     };
     TaskAttachmentPayload: {
       id?: string;
-      file: components["schemas"]["FilePayload"];
+      file: components['schemas']['FilePayload'];
     };
     TestDataPayload: {
       id?: string;
       order: number;
       name: string;
-      inputFile: components["schemas"]["FilePayload"];
-      outputFile: components["schemas"]["FilePayload"];
-      judgeFile?: components["schemas"]["FilePayload"];
+      inputFile: components['schemas']['FilePayload'];
+      outputFile: components['schemas']['FilePayload'];
+      judgeFile?: components['schemas']['FilePayload'];
       isSample: boolean;
     };
     TaskDeveloperPayload: {
@@ -371,18 +371,18 @@ export interface components {
       allowedLanguages: string;
       taskType: string;
       scoreMax: number;
-      checkerScript: components["schemas"]["ScriptPayload"];
+      checkerScript: components['schemas']['ScriptPayload'];
       timeLimit: number;
       memoryLimit: number;
       compileTimeLimit: number;
       compileMemoryLimit: number;
       submissionSizeLimit: number;
-      validatorScript?: components["schemas"]["ScriptPayload"];
+      validatorScript?: components['schemas']['ScriptPayload'];
       isPublicInArchive: boolean;
-      subtasks?: components["schemas"]["SubtaskPayload"][];
-      attachments?: components["schemas"]["TaskAttachmentPayload"][];
-      data?: components["schemas"]["TestDataPayload"][];
-      developers?: components["schemas"]["TaskDeveloperPayload"][];
+      subtasks?: components['schemas']['SubtaskPayload'][];
+      attachments?: components['schemas']['TaskAttachmentPayload'][];
+      data?: components['schemas']['TestDataPayload'][];
+      developers?: components['schemas']['TaskDeveloperPayload'][];
     };
     UserError: {
       email?: string;
@@ -400,7 +400,7 @@ export interface components {
       contents?: string;
     };
     ScriptError: {
-      file?: components["schemas"]["FileError"];
+      file?: components['schemas']['FileError'];
       languageCode?: string;
       runtimeArgs?: string;
     };
@@ -408,19 +408,19 @@ export interface components {
       name?: string;
       order?: string;
       scoreMax?: string;
-      scorerScript?: components["schemas"]["ScriptError"];
-      validatorScript?: components["schemas"]["ScriptError"];
+      scorerScript?: components['schemas']['ScriptError'];
+      validatorScript?: components['schemas']['ScriptError'];
       testDataPattern?: string;
     };
     TaskAttachmentError: {
-      file?: components["schemas"]["FileError"];
+      file?: components['schemas']['FileError'];
     };
     TestDataError: {
       order?: string;
       name?: string;
-      inputFile?: components["schemas"]["FileError"];
-      outputFile?: components["schemas"]["FileError"];
-      judgeFile?: components["schemas"]["FileError"];
+      inputFile?: components['schemas']['FileError'];
+      outputFile?: components['schemas']['FileError'];
+      judgeFile?: components['schemas']['FileError'];
       isSample?: string;
     };
     TaskDeveloperError: {
@@ -436,18 +436,18 @@ export interface components {
       allowedLanguages?: string;
       taskType?: string;
       scoreMax?: string;
-      checkerScript?: components["schemas"]["ScriptError"];
+      checkerScript?: components['schemas']['ScriptError'];
       timeLimit?: string;
       memoryLimit?: string;
       compileTimeLimit?: string;
       compileMemoryLimit?: string;
       submissionSizeLimit?: string;
-      validatorScript?: components["schemas"]["ScriptError"];
+      validatorScript?: components['schemas']['ScriptError'];
       isPublicInArchive?: string;
-      subtasks?: components["schemas"]["SubtaskError"][];
-      attachments?: components["schemas"]["TaskAttachmentError"][];
-      data?: components["schemas"]["TestDataError"][];
-      developers?: components["schemas"]["TaskDeveloperError"][];
+      subtasks?: components['schemas']['SubtaskError'][];
+      attachments?: components['schemas']['TaskAttachmentError'][];
+      data?: components['schemas']['TestDataError'][];
+      developers?: components['schemas']['TaskDeveloperError'][];
     };
     User: {
       id: string;
@@ -476,7 +476,7 @@ export interface components {
     };
     Login: {
       jwt: string;
-      user: components["schemas"]["User"];
+      user: components['schemas']['User'];
     };
     Task: {
       title: string;
@@ -494,15 +494,15 @@ export interface components {
       isPublicInArchive: boolean;
     };
     TaskDetailed: {
-      owner: components["schemas"]["User"];
-      checkerScript: components["schemas"]["ScriptPayload"];
-      validatorScript?: components["schemas"]["ScriptPayload"];
-      attachments?: components["schemas"]["TaskAttachmentPayload"][];
-      developers?: components["schemas"]["TaskDeveloperPayload"][];
-      testData?: components["schemas"]["TestDataPayload"][];
+      owner: components['schemas']['User'];
+      checkerScript: components['schemas']['ScriptPayload'];
+      validatorScript?: components['schemas']['ScriptPayload'];
+      attachments?: components['schemas']['TaskAttachmentPayload'][];
+      developers?: components['schemas']['TaskDeveloperPayload'][];
+      testData?: components['schemas']['TestDataPayload'][];
       appearsIn?: { [key: string]: unknown }[];
-      submissions?: components["schemas"]["SubmissionPayload"][];
-      subtasks?: components["schemas"]["SubtaskPayload"][];
+      submissions?: components['schemas']['SubmissionPayload'][];
+      subtasks?: components['schemas']['SubtaskPayload'][];
       title: string;
       slug: string;
       description?: string;
