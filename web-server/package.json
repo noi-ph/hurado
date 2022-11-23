@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "hurado-backend",
   "version": "1.0.0",
   "description": "NOI.PH Online Judge Backend",
   "main": "src/index.ts",

@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "hurado-frontend",
   "version": "1.0.0",
   "description": "NOI.PH Online Judge Frontend",
   "main": "src/pages/index.tsx",
