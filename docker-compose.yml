@@ -1,8 +1,22 @@
 version: '3.3'
 
 services:
+  frontend:
+    container_name: frontend
+    profiles:
+      - frontend
+    build:
+      context: ./web-client/
+      dockerfile: dockerfile.frontend
+    command: sh scripts/frontend.sh
+    ports:
+      - 3000:3000
+    volumes:
+      - ./web-client/:/app/
   postgres:
     container_name: postgres
+    profiles:
+      - backend
     image: postgres:14-bullseye
     restart: always
     env_file:
@@ -13,6 +27,8 @@ services:
       - ./web-server/database/postgres:/var/lib/postgres/data/
   backend:
     container_name: backend
+    profiles:
+      - backend
     build: 
       context: ./web-server/
       dockerfile: dockerfile.backend

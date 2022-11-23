@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "NOI.PH Online Judge",
   "scripts": {
-    "frontend": "docker-compose --file docker-compose.frontend.yml up",
-    "backend": "docker-compose --file docker-compose.backend.yml up",
+    "frontend": "docker-compose --file docker-compose.yml --profile frontend up",
+    "backend": "docker-compose --file docker-compose.yml --profile backend up",
     "backend:bash": "docker exec -it backend bash",
     "frontend:bash": "docker exec -it frontend bash",
     "backend:seed": "./scripts/dev-run.backend.sh npx ts-node /app/src/orm/seeds/seed-main.ts",

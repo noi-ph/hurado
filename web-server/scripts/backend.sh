@@ -8,5 +8,4 @@ if ! which ts-node-dev > /dev/null ; then
     npm install
 fi
 
-git init
 npx ts-node-dev --respawn src/index.ts
