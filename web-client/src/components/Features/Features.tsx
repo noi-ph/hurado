@@ -10,7 +10,7 @@ export const Features = () => {
     <React.Fragment>
       <div className={`${Styles.question}`}>What's in Algurado?</div>
       <div align="center">
-        <img className={`${Styles.circles}`} src={`${router.basePath}/Circles.png`} />
+        <img className={`${Styles.circles}`} src={`${router.basePath}/assets/images/Circles.png`} />
       </div>
     </React.Fragment>
   );

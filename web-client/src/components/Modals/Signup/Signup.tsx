@@ -1,10 +1,10 @@
-import { AxiosError } from 'axios';
 import React from 'react';
+import { AxiosError } from 'axios';
+
+import Styles from './Signup.module.css';
 import { ServerAPI } from 'types/openapi';
 import { AppConfig } from 'utils/AppConfig';
 import { HttpResponse, http } from 'utils/http';
-
-import Styles from './Signup.module.css';
 
 type SignupModalProps = {
   id: string;

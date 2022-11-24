@@ -2,12 +2,12 @@ import React from 'react';
 import { AxiosError } from 'axios';
 import { useDispatch } from 'react-redux';
 
-import { set } from 'pages/redux/userSlice';
+import Styles from './Login.module.css';
+import { set } from 'redux/userSlice';
 import { ServerAPI } from 'types/openapi';
 import { AppConfig } from 'utils/AppConfig';
 import { HttpResponse, http } from 'utils/http';
-import { UserConstants } from 'utils/types';
-import Styles from './Login.module.css';
+import { UserEnum } from 'utils/UserEnum';
 
 type LoginModalProps = {
   id: string;
@@ -57,7 +57,7 @@ export const LoginModal = (props: LoginModalProps) => {
     try {
       const response: HttpResponse<ServerAPI['Login']> = await http.put(`${AppConfig.server}/v1/users/login`, payload);
 
-      localStorage.setItem(UserConstants.JWT, response.data.jwt);
+      localStorage.setItem(UserEnum.Token, response.data.jwt);
       dispatch(set(response.data.user));
       closeModal();
     } catch (e: unknown) {

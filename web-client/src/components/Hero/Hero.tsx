@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 
 import { Tarsier } from 'components/Logo/Tarsier';
-import { Modals, showModal } from 'components/NavBars/LoggedOut/LoggedOut';
+import { Modals, showModal } from 'components/NavBar/LoggedOut';
 import Styles from './Hero.module.css';
 
 export const Hero = () => {
@@ -12,7 +12,7 @@ export const Hero = () => {
     <React.Fragment>
       <div className={`${Styles.algurado}`}>Algurado</div>
       <div className={`${Styles.hurado}`}>
-        Online Judge by <img className={`${Styles.noi}`} src={`${router.basePath}/NOI Logo.png`} />
+        Online Judge by <img className={`${Styles.noi}`} src={`${router.basePath}/assets/images/NOI Logo.png`} />
       </div>
       <Tarsier className={`${Styles.tarsier}`} />
       <button className={`${Styles.join}`} onClick={() => showModal(Modals.Signup)}>
