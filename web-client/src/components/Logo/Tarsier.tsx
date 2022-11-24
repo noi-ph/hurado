@@ -1,22 +1,20 @@
 import React from 'react';
 
 type TarsierProps = {
-  width: string;
-  height: string;
   className: string;
 };
 
 export const Tarsier = (props: TarsierProps) => (
   <svg
     className={props.className}
-    width={props.width}
-    height={props.height}
-    viewBox={`0 0 ${props.width} ${props.height}`}
+    width="100%"
+    height="100%"
+    viewBox="0 0 263 414"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
   >
-    <rect width={props.width} height={props.height} fill="url(#pattern0)" />
+    <rect width="100%" height="100%" fill="url(#pattern0)" />
     <defs>
       <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
         <use xlinkHref="#image0_230_630" transform="translate(-0.00922404) scale(0.00387243 0.00241546)" />

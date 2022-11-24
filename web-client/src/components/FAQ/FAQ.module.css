@@ -1,0 +1,25 @@
+@media screen and (min-width: 600px) {
+  .FAQ {
+    margin-left: 30px;
+    margin-bottom: 15px;
+
+    font-size: 40px;
+    color: #7879f1;
+  }
+
+  .text {
+    margin-left: 60px;
+    margin-right: 60px;
+    margin-bottom: 30px;
+
+    color: #2c2c2c;
+    font-weight: 300;
+  }
+
+  .line {
+    height: 1px;
+    width: 60%;
+
+    border-top: 2px solid #7879f1;
+  }
+}

@@ -11,7 +11,7 @@ export const Logo = () => {
     <button className={`${Styles.logo}`} onClick={() => router.push('/')}>
       a
       <span>
-        <Tarsier className={`${Styles.tarsier}`} width="30" height="50" />
+        <Tarsier className={`${Styles.tarsier}`} />
       </span>
       urado
     </button>

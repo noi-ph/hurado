@@ -5,7 +5,6 @@ import { ServerAPI } from 'types';
 import { UserRepository } from 'orm/repositories';
 
 export const validationLogin = async (req: Request, res: Response, next: NextFunction) => {
-  console.log('halp!!');
   let { email, password } = req.body as ServerAPI['LoginPayload'];
 
   email = email ? email : '';

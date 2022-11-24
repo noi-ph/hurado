@@ -13,5 +13,7 @@
 
   .tarsier {
     display: inline;
+    width: 30px;
+    height: 50px;
   }
 }

@@ -1,0 +1,58 @@
+@media screen and (min-width: 600px) {
+  .algurado {
+    font-size: 10vw;
+    color: white;
+
+    z-index: 2;
+    position: absolute;
+    top: 8vw;
+    left: 8vw;
+  }
+
+  .hurado {
+    font-size: 2.4vw;
+    font-weight: 100;
+    color: white;
+
+    width: 35vw;
+
+    z-index: 3;
+    position: absolute;
+    top: 20vw;
+    left: 25vw;
+  }
+
+  .noi {
+    width: 8vw;
+
+    z-index: 3;
+    display: inline;
+  }
+
+  .tarsier {
+    width: 20vw;
+    height: 30vw;
+
+    z-index: 3;
+    position: absolute;
+    top: 3vw;
+    right: 13vw;
+  }
+
+  .join {
+    z-index: 3;
+    position: absolute;
+    top: 27vw;
+    left: 38vw;
+
+    color: #85a4ff;
+    font-size: 2.8vw;
+    line-height: 4vw;
+
+    padding-left: 3vw;
+    padding-right: 3vw;
+
+    border: 1px solid #85a4ff;
+    border-radius: 15px;
+  }
+}
