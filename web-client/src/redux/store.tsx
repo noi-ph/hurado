@@ -11,6 +11,6 @@ export default configureStore({
     user: userReducer,
   },
   preloadedState: {
-    user: userStateLoader.loadState(),
+    user: await userStateLoader.loadState(),
   },
 });
