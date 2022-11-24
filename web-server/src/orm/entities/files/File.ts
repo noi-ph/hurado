@@ -14,11 +14,3 @@ export class File extends BaseEntity {
   @Column('bytea')
   contents: Buffer;
 }
-
-export function createFile(args: { name: string; contents: Buffer }) {
-  const file = new File();
-  file.name = args.name;
-  file.size = args.contents.byteLength;
-  file.contents = args.contents;
-  return file;
-}

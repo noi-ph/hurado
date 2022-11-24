@@ -17,11 +17,3 @@ export class Script extends BaseEntity {
   @Column({ name: 'runtime_args' })
   runtimeArgs: string;
 }
-
-export function createScript(args: { file: File; languageCode: string; runtimeArgs: string }) {
-  const script = new Script();
-  script.file = Promise.resolve(args.file);
-  script.languageCode = args.languageCode;
-  script.runtimeArgs = args.runtimeArgs;
-  return script;
-}

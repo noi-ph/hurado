@@ -1,9 +1,8 @@
 import * as fs from 'fs';
 
 import { AppDataSource } from 'orm/data-source';
-import { createFile, createScript } from 'orm/entities';
 import { TaskType } from 'orm/entities/enums';
-import { AppDataSourceInitialization, TaskRepository, UserRepository } from 'orm/repositories';
+import { AppDataSourceInitialization, TaskRepository, UserRepository, FileRepository, ScriptRepository } from 'orm/repositories';
 
 async function runSeedData() {
   await AppDataSourceInitialization;
@@ -63,23 +62,31 @@ async function runSeedData() {
 
     const noop = fs.readFileSync('./noop.py');
 
-    const oldestChecker = createScript({
-      file: createFile({
-        name: 'oldest-checker.py',
-        contents: noop,
-      }),
-      languageCode: 'python',
-      runtimeArgs: '',
+    const oldestCheckerFile = FileRepository.create({
+      name: 'oldest-checker.py',
+      size: noop.byteLength,
+      contents: noop
     });
 
-    const oldestValidator = createScript({
-      file: createFile({
-        name: 'oldest-validator.py',
-        contents: noop,
-      }),
+    const oldestChecker = ScriptRepository.create({
       languageCode: 'python',
-      runtimeArgs: '',
+      runtimeArgs: ''
     });
+
+    oldestChecker.file = Promise.resolve(oldestCheckerFile);
+
+    const oldestValidatorFile = FileRepository.create({
+      name: 'oldest-validator.py',
+      size: noop.byteLength,
+      contents: noop
+    });
+
+    const oldestValidator = ScriptRepository.create({
+      languageCode: 'python',
+      runtimeArgs: ''
+    });
+
+    oldestValidator.file = Promise.resolve(oldestValidatorFile);
 
     const oldest = TaskRepository.create({
       owner: Promise.resolve(walter),
@@ -103,33 +110,40 @@ async function runSeedData() {
     oldest.checkerScript = Promise.resolve(oldestChecker);
     oldest.validatorScript = Promise.resolve(oldestValidator);
     await transaction.save([
-      await oldestChecker.file,
+      oldestCheckerFile,
       oldestChecker,
-      await oldestValidator.file,
+      oldestValidatorFile,
       oldestValidator,
       oldest,
     ]);
 
-    const fetchChecker = createScript({
-      file: createFile({
-        name: 'fetch-checker.py',
-        contents: noop,
-      }),
-      languageCode: 'python',
-      runtimeArgs: '',
+    const fetchCheckerFile = FileRepository.create({
+      name: 'fetch-checker.py',
+      size: noop.byteLength,
+      contents: noop
     });
 
-    const fetchValidator = createScript({
-      file: createFile({
-        name: 'fetch-validator.py',
-        contents: noop,
-      }),
+    const fetchChecker = ScriptRepository.create({
       languageCode: 'python',
       runtimeArgs: '',
+    })
+
+    fetchChecker.file = Promise.resolve(fetchCheckerFile);
+
+    const fetchValidatorFile = FileRepository.create({
+      name: 'fetch-validator.py',
+      size: noop.byteLength,
+      contents: noop
     });
+
+    const fetchValidator = ScriptRepository.create({
+      languageCode: 'python',
+      runtimeArgs: '',
+    })
+
+    fetchValidator.file = Promise.resolve(fetchValidatorFile);
 
     const fetch = TaskRepository.create({
-      owner: Promise.resolve(walter),
       title: 'This Problem Is So Fetch',
       slug: 'this-problem-is-so-fetch',
       taskType: TaskType.Batch,
@@ -142,10 +156,11 @@ async function runSeedData() {
       submissionSizeLimit: 9999,
       isPublicInArchive: true,
     });
+    
     fetch.owner = Promise.resolve(walter);
     fetch.checkerScript = Promise.resolve(fetchChecker);
     fetch.validatorScript = Promise.resolve(fetchValidator);
-    await transaction.save([await fetchChecker.file, fetchChecker, await fetchValidator.file, fetchValidator, fetch]);
+    await transaction.save([fetchCheckerFile, fetchChecker, fetchValidatorFile, fetchValidator, fetch]);
 
     process.chdir(originalCWD);
   });
