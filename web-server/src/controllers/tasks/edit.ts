@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseEntity } from 'typeorm';
 
 import { AppDataSource } from 'orm/data-source';
-import { File, Script, Subtask, TaskAttachment, TaskDeveloper, TestData, createFile, createScript } from 'orm/entities';
+import { File, Script, Subtask, TaskAttachment, TaskDeveloper, TestData } from 'orm/entities';
 import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
 import {
@@ -46,10 +46,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
         file.size = s.file.size;
         file.contents = req.files[s.file.name][0].buffer;
       } else {
-        file = createFile({
-          name: s.file.name,
-          contents: req.files[s.file.name][0].buffer,
-        });
+        file = new File();
+        file.name = s.file.name;
+        file.contents = req.files[s.file.name][0].buffer;
+        file.size = file.contents.byteLength;
         newFile = true;
       }
       files.push(file);
@@ -66,11 +66,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
         script.languageCode = s.languageCode;
         script.runtimeArgs = s.runtimeArgs;
       } else {
-        script = createScript({
-          file,
-          languageCode: s.languageCode,
-          runtimeArgs: s.runtimeArgs,
-        });
+        script = new Script();
+        script.file = Promise.resolve(file);
+        script.languageCode = s.languageCode;
+        script.runtimeArgs = s.runtimeArgs;
       }
       scripts.push(script);
     }
@@ -138,10 +137,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
         toDelete.push(oldInputFile);
       }
 
-      inputFile = createFile({
-        name: d.inputFile.name,
-        contents: req.files[d.inputFile.name][0].buffer,
-      });
+      inputFile = new File();
+      inputFile.name = d.inputFile.name;
+      inputFile.contents = req.files[d.inputFile.name][0].buffer;
+      inputFile.size = inputFile.contents.byteLength;
     }
     files.push(inputFile);
     testData.inputFile = Promise.resolve(inputFile);
@@ -158,10 +157,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
         toDelete.push(oldOutputFile);
       }
 
-      outputFile = createFile({
-        name: d.outputFile.name,
-        contents: req.files[d.outputFile.name][0].buffer,
-      });
+      outputFile = new File();
+      outputFile.name = d.outputFile.name;
+      outputFile.contents = req.files[d.outputFile.name][0].buffer;
+      outputFile.size = outputFile.contents.byteLength;
     }
     files.push(outputFile);
     testData.outputFile = Promise.resolve(outputFile);
@@ -179,10 +178,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
           toDelete.push(oldJudgeFile);
         }
 
-        judgeFile = createFile({
-          name: d.judgeFile.name,
-          contents: req.files[d.judgeFile.name][0].buffer,
-        });
+        judgeFile = new File();
+        judgeFile.name = d.judgeFile.name;
+        judgeFile.contents = req.files[d.judgeFile.name][0].buffer;
+        judgeFile.size = judgeFile.contents.byteLength;
       }
       files.push(judgeFile);
       testData.judgeFile = Promise.resolve(judgeFile);
@@ -201,10 +200,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
         file.size = sc.file.size;
         file.contents = req.files[sc.file.name][0].buffer;
       } else {
-        file = createFile({
-          name: sc.file.name,
-          contents: req.files[sc.file.name][0].buffer,
-        });
+        file = new File();
+        file.name = sc.file.name;
+        file.contents = req.files[sc.file.name][0].buffer;
+        file.size = file.contents.byteLength;
         newFile = true;
       }
       files.push(file);
@@ -221,11 +220,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
         script.languageCode = sc.languageCode;
         script.runtimeArgs = sc.runtimeArgs;
       } else {
-        script = createScript({
-          file,
-          languageCode: sc.languageCode,
-          runtimeArgs: sc.runtimeArgs,
-        });
+        script = new Script();
+        script.file = Promise.resolve(file);
+        script.languageCode = sc.languageCode;
+        script.runtimeArgs = sc.runtimeArgs;
       }
       scripts.push(script);
     }
@@ -279,10 +277,10 @@ export const editTask = async (req: Request, res: Response, _next: NextFunction)
         toDelete.push(oldFile);
       }
 
-      file = createFile({
-        name: a.file.name,
-        contents: req.files[a.file.name][0].buffer,
-      });
+      file = new File();
+      file.name = a.file.name;
+      file.contents = req.files[a.file.name][0].buffer;
+      file.size = file.contents.byteLength;
     }
     files.push(file);
     attachment.file = Promise.resolve(file);

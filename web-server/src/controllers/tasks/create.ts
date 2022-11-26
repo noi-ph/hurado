@@ -8,9 +8,7 @@ import {
   Task,
   TaskAttachment,
   TaskDeveloper,
-  TestData,
-  createFile,
-  createScript,
+  TestData
 } from 'orm/entities';
 import { AllowedLanguages, TaskDeveloperRoles, TaskType } from 'orm/entities/enums';
 import { ServerAPI } from 'types';
@@ -27,17 +25,16 @@ export const createTask = async (req: Request, res: Response, _next: NextFunctio
 
   [rbody.checkerScript, rbody.validatorScript].forEach((s) => {
     if (Object.keys(s).length) {
-      const file = createFile({
-        name: s.file.name,
-        contents: req.files[s.file.name][0].buffer,
-      });
+      const file = new File();
+      file.name = s.file.name;
+      file.contents = req.files[s.file.name][0].buffer;
+      file.size = file.contents.byteLength;
       files.push(file);
 
-      const script = createScript({
-        file,
-        languageCode: s.languageCode,
-        runtimeArgs: s.runtimeArgs,
-      });
+      const script = new Script();
+      script.file = Promise.resolve(file);
+      script.languageCode = s.languageCode;
+      script.runtimeArgs = s.runtimeArgs;
       scripts.push(script);
     }
   });
@@ -71,16 +68,16 @@ export const createTask = async (req: Request, res: Response, _next: NextFunctio
   }
 
   rbody.data.forEach((d) => {
-    const inputFile = createFile({
-      name: d.inputFile.name,
-      contents: req.files[d.inputFile.name][0].buffer,
-    });
+    const inputFile = new File();
+    inputFile.name = d.inputFile.name;
+    inputFile.contents = req.files[d.inputFile.name][0].buffer;
+    inputFile.size = inputFile.contents.byteLength;
     files.push(inputFile);
 
-    const outputFile = createFile({
-      name: d.outputFile.name,
-      contents: req.files[d.outputFile.name][0].buffer,
-    });
+    const outputFile = new File();
+    outputFile.name = d.outputFile.name;
+    outputFile.contents = req.files[d.outputFile.name][0].buffer;
+    outputFile.size = outputFile.contents.byteLength;
     files.push(outputFile);
 
     const testData = new TestData();
@@ -91,10 +88,10 @@ export const createTask = async (req: Request, res: Response, _next: NextFunctio
     testData.outputFile = Promise.resolve(outputFile);
 
     if (Object.keys(d.judgeFile).length) {
-      const judgeFile = createFile({
-        name: d.judgeFile.name,
-        contents: req.files[d.judgeFile.name][0].buffer,
-      });
+      const judgeFile = new File();
+      judgeFile.name = d.judgeFile.name;
+      judgeFile.contents = req.files[d.judgeFile.name][0].buffer;
+      judgeFile.size = judgeFile.contents.byteLength;
       files.push(judgeFile);
 
       testData.judgeFile = Promise.resolve(judgeFile);
@@ -105,30 +102,28 @@ export const createTask = async (req: Request, res: Response, _next: NextFunctio
   });
 
   rbody.subtasks.forEach((s) => {
-    const scorerFile = createFile({
-      name: s.scorerScript.file.name,
-      contents: req.files[s.scorerScript.file.name][0].buffer,
-    });
+    const scorerFile = new File();
+    scorerFile.name = s.scorerScript.file.name;
+    scorerFile.contents = req.files[s.scorerScript.file.name][0].buffer;
+    scorerFile.size = scorerFile.contents.byteLength;
     files.push(scorerFile);
 
-    const scorerScript = createScript({
-      file: scorerFile,
-      languageCode: s.scorerScript.languageCode,
-      runtimeArgs: s.scorerScript.runtimeArgs,
-    });
+    const scorerScript = new Script();
+    scorerScript.file = Promise.resolve(scorerFile);
+    scorerScript.languageCode = s.scorerScript.languageCode;
+    scorerScript.runtimeArgs = s.scorerScript.runtimeArgs;
     scripts.push(scorerScript);
 
-    const validatorFile = createFile({
-      name: s.validatorScript.file.name,
-      contents: req.files[s.validatorScript.file.name][0].buffer,
-    });
+    const validatorFile = new File();
+    validatorFile.name = s.validatorScript.file.name;
+    validatorFile.contents = req.files[s.validatorScript.file.name][0].buffer;
+    validatorFile.size = validatorFile.contents.byteLength;
     files.push(validatorFile);
 
-    const validatorScript = createScript({
-      file: validatorFile,
-      languageCode: s.validatorScript.languageCode,
-      runtimeArgs: s.validatorScript.runtimeArgs,
-    });
+    const validatorScript = new Script();
+    validatorScript.file = Promise.resolve(validatorFile);
+    validatorScript.languageCode = s.validatorScript.languageCode;
+    validatorScript.runtimeArgs = s.validatorScript.runtimeArgs;
     scripts.push(validatorScript);
 
     const subtask = new Subtask();
@@ -142,10 +137,10 @@ export const createTask = async (req: Request, res: Response, _next: NextFunctio
   });
 
   rbody.attachments.forEach((a) => {
-    const file = createFile({
-      name: a.file.name,
-      contents: req.files[a.file.name][0].buffer,
-    });
+    const file = new File();
+    file.name = a.file.name;
+    file.contents = req.files[a.file.name][0].buffer;
+    file.size = file.contents.byteLength;
     files.push(file);
 
     const attachment = new TaskAttachment();

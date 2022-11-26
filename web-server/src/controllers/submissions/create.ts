@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { AppDataSource } from 'orm/data-source';
-import { File, Submission, SubmissionFile, createFile } from 'orm/entities';
+import { File, Submission, SubmissionFile } from 'orm/entities';
 import { ContestRepository, TaskRepository, UserRepository } from 'orm/repositories';
 import { ServerAPI } from 'types';
 
@@ -24,10 +24,10 @@ export const createSubmission = async (req: Request, res: Response, _next: NextF
 
   for (let i = 0; i < req.files.length; i++) {
     const rawFile: Express.Multer.File = req.files[i];
-    const file = createFile({
-      name: rawFile.originalname,
-      contents: rawFile.buffer,
-    });
+    const file = new File();
+    file.name = rawFile.originalname;
+    file.contents = rawFile.buffer;
+    file.size = rawFile.buffer.byteLength;
     const submissionFile = new SubmissionFile(file, submission);
 
     submissionFiles.push(submissionFile);
