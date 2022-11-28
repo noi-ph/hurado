@@ -1,0 +1,42 @@
+@media screen and (min-width: 600px) {
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-between;
+
+    padding-left: 60px;
+  }
+
+  .container > .container {
+    flex-wrap: wrap;
+    width: 600px;
+    justify-content: center;
+  }
+
+  .statement {
+    display: inline-block;
+    width: 600px;
+  }
+
+  .title {
+    font-size: 40px;
+    color: #7879f1;
+    
+    margin: 15px;
+    margin-left: 60px;
+    margin-right: 60px;
+  }
+
+  .solve {
+    display: block;
+    color: #85a4ff;
+    font-size: 30px;
+
+    width: 300px;
+    padding: 5px;
+
+    border: 1px solid #85a4ff;
+    border-radius: 15px;
+  }
+}
