@@ -1,0 +1,18 @@
+@media screen and (min-width: 600px) {
+  .container {
+    padding-top: 200px;
+    padding-bottom: 50px;
+    background-image: url('../../../public/assets/images/Footer.svg');
+    background-size: cover;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .group {
+    color: white;
+    font-weight: 100;
+  }
+}

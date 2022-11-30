@@ -1,25 +1,35 @@
 @media screen and (min-width: 600px) {
-  .container {
+  .big {
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     align-content: center;
-    justify-content: space-between;
+    justify-content: center;
+  }
 
+  .container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-around;
+    padding: 30px;
     padding-left: 60px;
   }
 
   .container > .container {
     flex-wrap: wrap;
-    width: 600px;
+    width: 500px;
     justify-content: center;
   }
 
   .statement {
     display: inline-block;
-    width: 600px;
+    width: 50%;
   }
 
   .title {
+    width: 100%;
     font-size: 40px;
     color: #7879f1;
     

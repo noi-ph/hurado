@@ -33,7 +33,7 @@ export const ProblemOverview = (props: ProblemOverviewProps) => {
   })()}, [])
 
   return (
-    <React.Fragment>
+    <div className={`${Styles.big}`}>
       <div className={`${Styles.title}`} align={props.titleAlign}>{title}</div>
       <div className={`${Styles.container}`}>
         <div className={`${Styles.statement}`}>{statement}</div>
@@ -49,6 +49,6 @@ export const ProblemOverview = (props: ProblemOverviewProps) => {
           </button>
         </div>
       </div>
-    </React.Fragment>
+    </div>
   );
 };
