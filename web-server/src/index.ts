@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import routes from 'routes';
+import { AppDataSourceInitialization } from 'orm/repositories';
 
 export const app = express();
 app.use(cors());
@@ -29,6 +30,7 @@ app.use('/', routes);
 
 (async () => {
   try {
+    await AppDataSourceInitialization;
     console.log('Database connection initialized successfully');
   } catch (e) {
     console.warn('Database connection failed initializing');
