@@ -24,11 +24,11 @@ export const ProblemOverview = (props: ProblemOverviewProps) => {
     const res: HttpResponse<ServerAPI['Task']> = await http.get(`${AppConfig.server}/v1/tasks/${props.slug}`);
     if (res.status == 404) {
       setTitle('Problem not found.');
-    } else if (res.status == 500) {
-      setTitle('Something unexpected happened');
     } else if (res.status == 200) {
       setTitle(res.data.title);
       setStatement(res.data.statement);
+    } else {
+      setTitle('Something unexpected happened.')
     }
   })()}, [])
 
