@@ -6,6 +6,7 @@ import { ProblemTestDataDisplay } from '../TestDataDisplay';
 import { http, HttpResponse } from 'utils/http';
 import { AppConfig } from 'utils/AppConfig';
 import { ServerAPI } from 'types/openapi';
+import { MathJax } from 'better-react-mathjax';
 
 type ProblemOverviewProps = {
   titleAlign: string;
@@ -36,7 +37,11 @@ export const ProblemOverview = (props: ProblemOverviewProps) => {
     <div className={`${Styles.big}`}>
       <div className={`${Styles.title}`} align={props.titleAlign}>{title}</div>
       <div className={`${Styles.container}`}>
-        <div className={`${Styles.statement}`}>{statement}</div>
+        <div className={`${Styles.statement}`}>
+          <MathJax>
+            {statement}
+          </MathJax>
+        </div>
         <div className={`${Styles.container}`}>
           <ProblemTestDataDisplay width='450px' height='200px' id='input-3249283472'>
             {input}

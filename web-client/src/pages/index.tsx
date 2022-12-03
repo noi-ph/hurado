@@ -11,7 +11,7 @@ const LandingPage = () => (
     <Hero />
     <Features />
     <FAQ />
-    <ProblemOverview titleAlign='right' slug='who-is-the-oldest' />
+    <ProblemOverview titleAlign='right' slug='this-problem-is-so-fetch' />
     <Footer />
   </React.Fragment>
 );
