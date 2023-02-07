@@ -11,112 +11,86 @@ NOI.PH's Online Judge
 
 ### Getting Started
 
-#### Clone the repository
+If you're using Windows, we recommend [using WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install) to emulate a Unix environment. If you haven't yet, [set up your own SSH-key and add it to your SSH-agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
-You can clone the repository by running the following commands:
+#### Fork the repository
+
+Fork the Hurado repository with the help of [this guide](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+
+#### Clone your fork of the repository
+
+Before cloning your fork of the repository, make sure that you have added your SSH-key to your SSH-agent. You can clone the repository by running the following command:
 
 ```shell
-cd ~/
-git clone https://github.com/noiph/hurado.git
+$ git clone git@github.com:your_username/hurado.git
 ```
 
 #### Setup Docker
 
 Download the [installer for Docker](https://docs.docker.com/desktop/release-notes/#docker-desktop-430) and install it. If you're using WSL 2, enable the following options: ![Docker WSL Settings](readme-docker-wsl-settings.png)
 
-#### Reinstall JQ, NodeJS, and Yarn
-
-To install JQ, just run:
-
-```shell
-sudo apt install jq
-```
-
-Then, update NodeJS by running the following:
-
-```shell
-# uninstall NodeJS first
-sudo apt remove nodejs npm
-# update and upgrade linux
-set -u
-sudo apt update
-sudo apt upgrade
-# download setup
-# replace $version with the latest stable version of NodeJS
-# e.g. curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-curl -fsSL https://deb.nodesource.com/setup_$version.x | sudo -E bash -
-# install nodejs again
-sudo apt install -y nodejs
-```
-
-Finally, install yarn from npm
-
-```shell
-npm install --global yarn
-```
-
 ## Running the Web Server
 
-1. Move to the `web-server` directory (`cd web-server`)
-2. Run `npm run servers`
-3. Wait a few minutes for it to download needed stuff. You should get a bunch of messages like:
+1. Move to the `hurado` directory (`cd hurado`)
+2. Run the code below. Don't worry about the version of your NodeJS, this environment was set up so that the Docker container works it out for you.
 
-```bash
-# This is downloading the necessary images from the internet
-Pulling db_postgres (postgres:14-bullseye)...
-...
-Status: Downloaded newer image for node:16-bullseye
-...
-# This is building the web-server specific image
-Step 5/9 : RUN npm install && npm cache clean --force
- ---> Running in 8e1211058803
-...
-Creating postgres ... done
-Creating backend      ... done
-...
-# This is the postgresql image running
-postgres         | 2022-07-31 08:44:36.706 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-postgres         | 2022-07-31 08:44:36.706 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-...
-# This is web-server running
-backend         | [INFO] 08:44:45 ts-node-dev ver. 1.1.8 (using ts-node ver. 9.1.1, typescript ver. 4.6.4)
-backend         | Server running on port 4000
-backend         | Database connection success. Connection name: 'default' Database: 'hurado'
+```shell
+$ . scripts/run-backend.sh
 ```
 
-Once you see that final Server running on port 4000, that means your server is running. You can test it by opening your browser and going to localhost:4000 and you should see this "💊 RESTful API boilerplate"
+3. After a bunch of messages, you'll eventually see the following:
+
+```shell
+hurado-backend  | [INFO] 08:44:45 ts-node-dev ver. 1.1.8 (using ts-node ver. 9.1.1, typescript ver. 4.6.4)
+hurado-backend  | Server running on port 4000
+```
+
+4. If you haven't yet, run the following:
+
+```shell
+$ . scripts/migration-run.sh
+$ . scripts/seed.sh
+```
+
+5. Visit https://localhost:4000 and you'll see "💊 RESTful API boilerplate." You could also play around with the API at https://localhost:4000/doc
+
+### Useful Web Server Scripts
+
+`. scripts/backend-bash.sh` - Get a bash shell into the web server. Useful for installing or updating dependencies through `npm install`, as well as random debugging.
+
+`. scripts/frontend-bash.sh` - Get a bash shell into the web client. Useful for installing or updating dependencies through `npm install`, as well as random debugging.
+
+`. scripts/sql.sh` - Get into a psql shell on the hurado-postgres container.
+
+`. scripts/migration-revert.sh` - Revert the lastest migration.
+
+`. scripts/migration-run.sh` - Run all the migrations in `web-server/src/orm/migrations`.
+
+`. scripts/seed.sh` - Seed the database with dummy data.
+
+`. scripts/openapi-generate.sh` - Generate OpenAPI types for both the web client and server.
 
 ## Running the Web Client
 
-1. Move to the web-client directory and run npm install
-2. Wait a few minutes for it to install.
-3. Run npm run dev and it should work.
+1. Move to the `hurado` directory, if you aren't there already (`cd hurado`)
+2. Run the code below. Don't worry about the version of your NodeJS, this environment was set up so that the Docker container works it out for you.
 
-You should see this message:
+```shell
+$ . scripts/run-frontend.sh
+```
 
-`ready - started server on 0.0.0.0:3000, url: http://localhost:3000`
+3. After a bunch of messages, you'll eventually see the following:
 
-## Useful backend commands
+```shell
+hurado-frontend  | ready - started server on 0.0.0.0:3000, url: http://localhost:3000
+```
 
-`npm run servers` - Run all the necessary servers
-
-`npm run backend:bash` - Get a bash shell into the backend server. Useful for updating npm via `npm install` and random debugging
-
-`npm run sql` - Get into a psql shell on the postgres server.
-
-`npm run migration:run` - Run all the migrations to the latest version
-
-`npm run migration:revert` - Revert the last migration
-
-`npm run backend:seed` - Seed the database with dummy data
-
-Note that as far as TypeORM is concerned, the seed scripts are also migrations.
+4. Visit https://localhost:3000 to view the web client!
 
 ## Contribution Workflow
 
-1. Fork the repository.
-2. Clone this repository into your local machine using `https://github.com/[your user name]/hurado.git`
-3. Add and commit your changes to the repository. Don't forget to add your name to the [Contributors](#contributors) section below.
+1. Follow the above instructions regarding forking, cloning, and running this repository.
+2. Add and commit your changes to the repository. Don't forget to add your name to the [Contributors](#contributors) section below.
 4. Submit a Pull Request and tag one of the contributors to review your code.
 5. Wait for the review and address the comments.
 6. Wait for the reviewer to approve your PR.
