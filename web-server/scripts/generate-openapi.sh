@@ -1,9 +1,3 @@
 #!/bin/sh
 
-PROJECT_ROOT=$(cd `dirname "$0"` && git rev-parse --show-toplevel)
-SERVER_ROOT=$PROJECT_ROOT/web-server
-CLIENT_ROOT=$PROJECT_ROOT/web-client
-
-docker exec backend sh -c "openapi-typescript src/types/openapi.yaml" > $SERVER_ROOT/src/types/openapi-generated.ts
-
-cp $SERVER_ROOT/src/types/openapi-generated.ts $CLIENT_ROOT/src/types/openapi-generated.ts
+npx openapi-typescript src/types/openapi.yaml > src/types/openapi-generated.ts
