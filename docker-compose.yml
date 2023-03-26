@@ -12,4 +12,4 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./web-server/database/postgres:/var/lib/postgres/data/
+      - ./volumes/postgres:/var/lib/postgres/data/
