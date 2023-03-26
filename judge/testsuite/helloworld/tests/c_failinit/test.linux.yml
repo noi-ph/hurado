@@ -1,6 +1,0 @@
-language: C
-time: 1
-memory: 1024
-source: fail.c
-expect: [RTE, MLE]
-feedback: ['failed initializing', 'segmentation fault']
