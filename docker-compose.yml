@@ -1,18 +1,6 @@
 version: '3.3'
 
 services:
-  hurado-frontend:
-    container_name: hurado-frontend
-    profiles:
-      - frontend
-    build:
-      context: ./web-client/
-      dockerfile: dockerfile.frontend
-    command: sh scripts/frontend.sh
-    ports:
-      - 3000:3000
-    volumes:
-      - ./web-client/:/app/
   hurado-postgres:
     container_name: hurado-postgres
     profiles:
@@ -25,24 +13,3 @@ services:
       - 5432:5432
     volumes:
       - ./web-server/database/postgres:/var/lib/postgres/data/
-  hurado-backend:
-    container_name: hurado-backend
-    profiles:
-      - backend
-    build: 
-      context: ./web-server/
-      dockerfile: dockerfile.backend
-    command: sh scripts/backend.sh
-    restart: always
-    stdin_open: true
-    tty: true
-    depends_on:
-      - hurado-postgres
-    links:
-      - hurado-postgres
-    env_file:
-      - .env
-    ports:
-      - 4000:4000
-    volumes:
-      - ./web-server/:/app/
