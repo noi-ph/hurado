@@ -1,7 +1,18 @@
-import 'dotenv/config';
+/* eslint-disable import/order */
+import path from 'path';
+import dotenv from 'dotenv';
+
+const ENV_PATH = path.join(__dirname, `../config/${process.env.DOTENV}`);
+console.log(`Loading environment from ${ENV_PATH}`);
+
+dotenv.config({
+  path: ENV_PATH,
+  debug: process.env.DOTENV.includes('development'),
+});
+/* eslint-enable import/order */
+
 import 'reflect-metadata';
 import fs from 'fs';
-import path from 'path';
 
 import bodyParser from 'body-parser';
 import cors from 'cors';

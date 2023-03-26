@@ -3,8 +3,6 @@ version: '3.3'
 services:
   hurado-postgres:
     container_name: hurado-postgres
-    profiles:
-      - backend
     image: postgres:14-bullseye
     restart: always
     env_file:
