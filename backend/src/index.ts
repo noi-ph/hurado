@@ -11,8 +11,8 @@ dotenv.config({
 });
 /* eslint-enable import/order */
 
+import 'express-async-errors';
 import 'reflect-metadata';
-import fs from 'fs';
 
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -28,18 +28,19 @@ app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-try {
-  const accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), {
-    flags: 'a',
-  });
-  app.use(morgan('combined', { stream: accessLogStream }));
-} catch (err) {
-  console.log(err);
-}
 app.use(morgan('combined'));
 
 app.use('/', routes);
+app.use((err: Error, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (err instanceof Error) {
+    console.error('Error Message:', err.message);
+    console.error(err.stack ?? 'No stack trace available');
+    res.status(500).send('Internal Server Error');
+  } else {
+    console.error('Unknown Error Message:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 const port = process.env.PORT || 4000;
 
