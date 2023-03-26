@@ -4,6 +4,7 @@
 
 node_modules/
 build/
+out/
 dist/
 tmp/
 temp/

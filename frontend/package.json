@@ -1,5 +1,5 @@
 {
-  "name": "next-js-boilerplate",
+  "name": "hurado-frontend",
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
@@ -62,6 +62,5 @@
     "rimraf": "^3.0.2",
     "tailwindcss": "^3.0.18",
     "typescript": "^4.5.5"
-  },
-  "license": "ISC"
+  }
 }
