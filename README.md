@@ -27,7 +27,7 @@ $ git clone git@github.com:your_username/hurado.git
 
 #### Setup Docker
 
-Download the [installer for Docker](https://docs.docker.com/desktop/release-notes/#docker-desktop-430) and install it. If you're using WSL 2, enable the following options: ![Docker WSL Settings](readme-docker-wsl-settings.png)
+Download the [installer for Docker](https://docs.docker.com/desktop/release-notes/#docker-desktop-430) and install it. If you're using WSL 2, enable the following options: ![Docker WSL Settings](./docs/readme-docker-wsl-settings.png)
 
 ## Running the Web Server
 

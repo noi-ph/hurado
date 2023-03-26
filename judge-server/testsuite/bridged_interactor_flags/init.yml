@@ -1,3 +1,0 @@
-interactive: {files: interactor.c, flags: [-DFLAG]}
-test_cases:
-- points: 20

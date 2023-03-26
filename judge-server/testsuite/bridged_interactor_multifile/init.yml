@@ -1,3 +1,0 @@
-interactive: {files: [interactor.c, header.h]}
-test_cases:
-- points: 20

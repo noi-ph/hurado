@@ -1,7 +1,0 @@
-============================
-A Message for the Organizers
-============================
-
-Thank you for the opportunity to learn git! :>
-Sincerely,
-RedBlazerFlame

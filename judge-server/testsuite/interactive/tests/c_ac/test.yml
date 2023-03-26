@@ -1,5 +1,0 @@
-language: C
-time: 2
-memory: 65536
-source: ac.c
-expect: AC

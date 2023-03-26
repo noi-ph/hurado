@@ -1,0 +1,18 @@
+.idea/
+.vscode/
+.DS_Store
+
+node_modules/
+build/
+out/
+dist/
+tmp/
+temp/
+
+log/*
+!log/.gitkeep 
+*.log
+
+# keep config folder with env files ONLY for demo purposes
+# config/
+# .env

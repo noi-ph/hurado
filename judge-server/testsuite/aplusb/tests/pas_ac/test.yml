@@ -1,5 +1,0 @@
-language: PAS
-time: 2
-memory: 65536
-source: aplusb.pas
-expect: AC
