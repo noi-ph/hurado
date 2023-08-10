@@ -46,7 +46,7 @@ if [[ $# -eq 0 ]] || [[ $1 == 'help' ]]; then
     echo "    seed [file-name].................................Seed the database in accordance to the specified file"
     echo "    openapi-generate.................................Generate OpenAPI specification"
 elif [[ $1 == 'sql' ]]; then
-    docker exec -it hurado_db_1 psql -U noi.ph hurado
+    docker exec -it hurado_postgres psql -U noi.ph hurado
 elif [[ $1 == 'down' ]]; then
     docker-compose -f docker-compose.yml down
 elif [[ $1 == 'frontend' ]] || [[ $1 == 'backend' ]]; then
@@ -58,29 +58,29 @@ elif [[ $1 == 'frontend' ]] || [[ $1 == 'backend' ]]; then
         fi
     elif [[ $2 == 'lint' ]]; then
         if [[ $1 == 'frontend' ]]; then
-            docker exec -it hurado_client_1 npx prettier --write /app/src/
-            docker exec -it hurado_client_1 npx eslint --ext .js,.jsx,.ts,.tsx /app/src/ --fix
+            docker exec -it hurado_frontend npx prettier --write /app/src/
+            docker exec -it hurado_frontend npx eslint --ext .js,.jsx,.ts,.tsx /app/src/ --fix
         elif [[ $1 == 'backend' ]]; then
-            docker exec -it hurado_server_1 npx prettier --write /app/src/
-            docker exec -it hurado_server_1 npx eslint --ext .js,.jsx,.ts /app/src/ --fix
+            docker exec -it hurado_backend npx prettier --write /app/src/
+            docker exec -it hurado_backend npx eslint --ext .js,.jsx,.ts /app/src/ --fix
         fi
     elif [[ $2 == 'bash' ]]; then
         if [[ $1 == 'frontend' ]]; then
-            docker exec -it hurado_client_1 bash
+            docker exec -it hurado_frontend bash
         elif [[ $1 == 'backend' ]]; then
-            docker exec -it hurado_server_1 bash
+            docker exec -it hurado_backend bash
         fi
     elif [[ $1 == 'backend' ]]; then
         if [[ $2 == 'migration-generate' ]]; then
-            docker exec -it hurado_server_1 npx ts-node ./node_modules/.bin/typeorm migration:generate ./src/orm/migrations/migration-$3 --pretty --dataSource ./src/orm/data-source.ts
+            docker exec -it hurado_backend npx ts-node ./node_modules/.bin/typeorm migration:generate ./src/orm/migrations/migration-$3 --pretty --dataSource ./src/orm/data-source.ts
         elif [[ $2 == 'migration-run' ]]; then
-            docker exec -it hurado_server_1 npx ts-node ./node_modules/typeorm/cli.js migration:run --dataSource ./src/orm/data-source.ts
+            docker exec -it hurado_backend npx ts-node ./node_modules/typeorm/cli.js migration:run --dataSource ./src/orm/data-source.ts
         elif [[ $2 == 'migration-revert' ]]; then
-            docker exec -it hurado_server_1 npx ts-node ./node_modules/typeorm/cli.js migration:revert --dataSource ./src/orm/data-source.ts
+            docker exec -it hurado_backend npx ts-node ./node_modules/typeorm/cli.js migration:revert --dataSource ./src/orm/data-source.ts
         elif [[ $2 == 'seed' ]]; then
-            docker exec -it hurado_server_1 npx ts-node ./src/orm/seeds/$3.ts
+            docker exec -it hurado_backend npx ts-node ./src/orm/seeds/$3.ts
         elif [[ $2 == 'openapi-generate' ]]; then
-            docker exec -it hurado_server_1 sh scripts/generate-openapi.sh
+            docker exec -it hurado_backend sh scripts/generate-openapi.sh
             cp "backend/src/types/openapi-generated.ts" "frontend/src/types/openapi-generated.ts"
         fi
     fi
