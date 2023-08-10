@@ -48,13 +48,13 @@ if [[ $# -eq 0 ]] || [[ $1 == 'help' ]]; then
 elif [[ $1 == 'sql' ]]; then
     docker exec -it hurado_db_1 psql -U noi.ph hurado
 elif [[ $1 == 'down' ]]; then
-    docker-compose -f docker-compose.dev.yml down
+    docker-compose -f docker-compose.yml down
 elif [[ $1 == 'frontend' ]] || [[ $1 == 'backend' ]]; then
     if [[ $# -eq 1 ]] || [[ $2 == 'dev-up' ]]; then
         if [[ $1 == 'frontend' ]]; then
-            docker-compose -f docker-compose.dev.yml --profile frontend up
+            docker-compose -f docker-compose.yml --profile frontend up
         elif [[ $1 == 'backend' ]]; then
-            docker-compose -f docker-compose.dev.yml --profile backend up
+            docker-compose -f docker-compose.yml --profile backend up
         fi
     elif [[ $2 == 'lint' ]]; then
         if [[ $1 == 'frontend' ]]; then
