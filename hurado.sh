@@ -1,5 +1,7 @@
 #!/bin/bash
 
+original_directory="$(pwd)"
+
 script_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$script_directory"
 
@@ -79,7 +81,9 @@ elif [[ $1 == 'frontend' ]] || [[ $1 == 'backend' ]]; then
             docker exec -it hurado_server_1 npx ts-node ./src/orm/seeds/$3.ts
         elif [[ $2 == 'openapi-generate' ]]; then
             docker exec -it hurado_server_1 sh scripts/generate-openapi.sh
-            cp "web-server/src/types/openapi-generated.ts" "web-client/src/types/openapi-generated.ts"
+            cp "backend/src/types/openapi-generated.ts" "frontend/src/types/openapi-generated.ts"
         fi
     fi
 fi
+
+cd "$original_directory"
