@@ -1,30 +1,46 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"git.ignoreLimitWarning": true,
-		"typescript.tsdk": "web-client/node_modules/typescript/lib",
-		"typescript.preferences.quoteStyle": "single",
-		"js/ts.implicitProjectConfig.experimentalDecorators": true,
-		"editor.tabSize": 4,
-		"[css]": {
-			"editor.tabSize": 2,
-			"editor.suggest.insertMode": "insert"
-		},
-		"[typescript]": {
-			"editor.tabSize": 2,
-			"editor.suggest.insertMode": "insert",
-		},
-		"[typescriptreact]": {
-			"editor.tabSize": 2,
-			"editor.suggest.insertMode": "insert"
-		},
-		"editor.insertSpaces": true,
-		"editor.codeActionsOnSave": {
-			"source.fixAll.eslint": true,
-		}
-	}
+    "folders": [
+        {
+            "name": "hurado-backend",
+            "path": "./backend"
+        },
+        {
+            "name": "hurado-frontend",
+            "path": "./frontend"
+        }
+    ],
+    "settings": {
+        "git.ignoreLimitWarning": true,
+
+        "typescript.preferences.quoteStyle": "single",
+
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.suggest.insertMode": "insert",
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.fixAll.eslint": true,
+            "source.addMissingImports": true,
+        },
+
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/bower_components": true,
+            "**/*.code-search": true,
+            "**/package-lock.json": true,
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "clinyong.vscode-css-modules",
+            "dbaeumer.vscode-eslint",
+            "GitHub.copilot",
+            "VisualStudioExptTeam.vscodeintellicode",
+            "yzhang.markdown-all-in-one",
+            "blanu.vscode-styled-jsx"
+        ]
+    },
 }
