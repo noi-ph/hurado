@@ -1,0 +1,49 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ESNext"
+        ],
+        "jsx": "preserve",
+
+        "paths": {
+            "@images/*": [ "public/images/*" ],
+            "@gifs/*": [ "public/gifs/*" ],
+            "@root/*": [ "app/*" ],
+            "@v1/*": [ "app/api/v1/*" ],
+            
+            "@icons": [ "app/__icons/index.ts" ],
+            "@components": [ "app/__components/index.ts" ],
+            "@hooks": [ "app/__hooks/index.ts" ],
+        },
+        "baseUrl": ".",
+
+        "strict": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "incremental": true,
+        "allowJs": true,
+        "skipLibCheck": true,
+
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ]
+    },
+    "include": [
+        "app/**/*.ts",
+        "app/**/*.d.ts",
+        "app/**/*.tsx",
+        "next-env.d.ts",
+        ".next/types/**/*.ts",
+        "app/**/*.module.css",
+    ],
+    "exclude": []
+}
