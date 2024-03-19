@@ -1,0 +1,35 @@
+{
+  "name": "algurado.com.ph",
+  "version": "2.0.0",
+  "description": "NOI.PH's online judge",
+  "scripts": {
+    "build": "next build",
+    "start": "next start -- -p 10000",
+    "dev": "next dev -p 10000",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noiph/hurado.git"
+  },
+  "keywords": [
+    "online-judge"
+  ],
+  "author": "NOI.PH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noiph/hurado/issues"
+  },
+  "homepage": "https://github.com/noiph/hurado#readme",
+  "dependencies": {
+    "next": "^14.1.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sharp": "^0.33.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.24",
+    "@types/react": "^18.2.61",
+    "typescript": "5.3.3"
+  }
+}
