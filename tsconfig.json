@@ -18,7 +18,7 @@
             
             "@icons": [ "app/__icons/index.ts" ],
             "@components": [ "app/__components/index.ts" ],
-            "@hooks": [ "app/__hooks/index.ts" ],
+            "@hooks": [ "app/__hooks/index.ts" ]
         },
         "baseUrl": ".",
 
@@ -35,6 +35,16 @@
             {
                 "name": "next"
             }
+        ]
+    },
+    "ts-node": {
+        "transpileOnly": true,
+        "compilerOptions": {
+            "module": "CommonJS",
+            "moduleResolution": "Node"
+        },
+        "include": [
+            "knex/**/*.ts"
         ]
     },
     "include": [
