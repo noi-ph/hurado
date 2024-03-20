@@ -38,16 +38,6 @@
             }
         ]
     },
-    "ts-node": {
-        "transpileOnly": true,
-        "compilerOptions": {
-            "module": "CommonJS",
-            "moduleResolution": "Node"
-        },
-        "include": [
-            "knex/**/*.ts"
-        ]
-    },
     "include": [
         "app/**/*.ts",
         "app/**/*.d.ts",
