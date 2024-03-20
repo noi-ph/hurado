@@ -18,7 +18,8 @@
             
             "@icons": [ "app/__icons/index.ts" ],
             "@components": [ "app/__components/index.ts" ],
-            "@hooks": [ "app/__hooks/index.ts" ]
+            "@hooks": [ "app/__hooks/index.ts" ],
+            "@knex": [ "knex/index.ts" ],
         },
         "baseUrl": ".",
 
@@ -53,7 +54,7 @@
         "app/**/*.tsx",
         "next-env.d.ts",
         ".next/types/**/*.ts",
-        "app/**/*.module.css",
+        "app/**/*.module.css"
     ],
     "exclude": []
 }
