@@ -7,8 +7,6 @@ import { useEffect, useState } from 'react'
 
 import styles from './page.module.css'
 
-import { https } from '@root/https'
-
 const Page: FunctionComponent = () => {
     const [ throttle, setThrottle ] = useState<boolean>(false)
 
@@ -27,9 +25,15 @@ const Page: FunctionComponent = () => {
 
     const login = async () => {
         try {
-            await https.post('v1/auth/login', {
-                username,
-                password,
+            await fetch('api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                })
             })
 
             router.push('/dashboard')
