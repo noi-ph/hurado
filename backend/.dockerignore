@@ -1,7 +1,0 @@
-config
-database
-dist
-node_modules
-scripts
-.git
-.env
