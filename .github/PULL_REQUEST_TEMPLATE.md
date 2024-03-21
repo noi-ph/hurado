@@ -1,7 +1,9 @@
-Fixes #
+# Title
 
-## Proposed Changes
+Brief description of the pull request (PR).
 
-  -
-  -
-  -
+## Proposed changes
+
+- ...
+- ...
+- ...
