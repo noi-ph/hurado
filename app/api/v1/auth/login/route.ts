@@ -5,6 +5,8 @@ import { compareSync } from 'bcryptjs'
 
 import knex from '@knex'
 
+import { tokenize } from '../route'
+
 export async function POST (request: NextRequest) {
     const {
         username,
@@ -15,7 +17,13 @@ export async function POST (request: NextRequest) {
         const user: User = await knex('users').where({ username }).first()
 
         if (user && compareSync(password, user.hashed_password)) {
-            return NextResponse.json({}, { status: 200 })
+            return NextResponse.json({}, {
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${tokenize({ user })}`
+                },
+            })
         }
     } catch (error) {}
 
