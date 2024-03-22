@@ -18,7 +18,7 @@ export async function POST (request: NextRequest) {
             .then((user: any) => user) // TODO: use knex interface builder
         
         if (user) {
-            return NextResponse.json({}, { status: 500 })
+            return NextResponse.json({}, { status: 409 })
         }
     } catch (error) {}
 
@@ -29,12 +29,12 @@ export async function POST (request: NextRequest) {
             .then((user: any) => user) // TODO: use knex interface builder
         
         if (user) {
-            return NextResponse.json({}, { status: 500 })
+            return NextResponse.json({}, { status: 409 })
         }
     } catch (error) {}
 
     if (password !== confirmPassword) {
-        return NextResponse.json({}, { status: 500 })
+        return NextResponse.json({}, { status: 400 })
     }
 
     await knex('users').insert({
