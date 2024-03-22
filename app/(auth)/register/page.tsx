@@ -3,7 +3,7 @@
 import type { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 
 import styles from './page.module.css'
 
@@ -50,6 +50,19 @@ const Page: FunctionComponent = () => {
         setThrottle(false)
     }
 
+    const throttledRegister = useCallback(async () => {
+        if (throttle) {
+            return
+        }
+
+        try {
+            setThrottle(true)
+            await register()
+        } finally {
+            setThrottle(false)
+        }
+    }, [ register ])
+
     return (
         <form id={ styles.registerform }>
             <h1>Register</h1>
@@ -84,14 +97,8 @@ const Page: FunctionComponent = () => {
             <button
                 type='button'
                 ref={ submit }
-                onClick={() => {
-                    if (throttle) {
-                        return
-                    }
-
-                    register()
-                    setThrottle(true)
-            }}>Submit</button>
+                onClick={ throttledRegister }
+            >Submit</button>
         </form>
     )
 }

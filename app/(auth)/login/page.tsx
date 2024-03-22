@@ -3,7 +3,7 @@
 import type { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { cookies } from 'next/headers'
 
 import styles from './page.module.css'
@@ -48,9 +48,20 @@ const Page: FunctionComponent = () => {
             storage.set('algurado/token', token)
             router.push('/dashboard')
         } catch (error) {}
-
-        setThrottle(false)
     }
+
+    const throttledLogin = useCallback(async () => {
+        if (throttle) {
+            return
+        }
+
+        try {
+            setThrottle(true)
+            await login()
+        } finally {
+            setThrottle(false)
+        }
+    }, [ login ])
 
     return (
         <form id={ styles.loginform }>
@@ -72,14 +83,8 @@ const Page: FunctionComponent = () => {
             <button
                 type='button'
                 ref={ submit }
-                onClick={() => {
-                    if (throttle) {
-                        return
-                    }
-
-                    login()
-                    setThrottle(true)
-            }}>Submit</button>
+                onClick={ throttledLogin }
+            >Submit</button>
         </form>
     )
 }
