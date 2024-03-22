@@ -10,3 +10,33 @@
 a:hover, button:hover {
     cursor: pointer;
 }
+
+body {
+    display: flex;
+    flex-direction: column;
+    
+    width: 100%;
+    height: fit-content;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    width: 100%;
+    height: fit-content;
+    gap: 15px;
+}
+
+footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: fit-content;
+    padding: 5px 20px;
+}

@@ -28,57 +28,18 @@ const worksans = Work_Sans({
 
 const RootLayout: FunctionComponent<props> = ({ children }) => (
     <html lang='en'>
-        <body className={ worksans.className } style={{
-            width: '100%',
-            height: 'fit-content',
-
-            display: 'flex',
-            flexDirection: 'column',
-        }}>
+        <body className={ worksans.className }>
             <header id={ styles.navbar }>
-                <div className={ styles.desktoplinks } style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-
-                    width: 'fit-content',
-                    height: 'fit-content',
-                    gap: '20px',
-                }}>
+                <div className={ styles.desktoplinks }>
                     <Link href='/'>Home</Link>
                     <Link href='/login'>Login</Link>
                     <Link href='/register'>Register</Link>
                 </div>
                 <Link href='/sitemap'>Sitemap</Link>
             </header>
-            <main style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-
-                width: '100%',
-                height: 'fit-content',
-                gap: '15px',
-            }}>{ children }</main>
-            <footer style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-
-                width: '100%',
-                height: 'fit-content',
-                padding: '5px 20px',
-            }}>
-                <p style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-
-                    width: '100%',
-                    height: 'fit-content',
-                }}>© 2024 NOI.PH</p>
+            <main>{ children }</main>
+            <footer>
+                <p className={ styles.copyright }>© 2024 NOI.PH</p>
             </footer>
         </body>
     </html>
