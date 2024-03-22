@@ -53,19 +53,16 @@ const Page: FunctionComponent = () => {
                 <label htmlFor={ styles.username }>Username:</label>
                 <input
                     type="text"
-                    id={ styles.username }
                     onChange={ (e) => setUsername(e.target.value) } />
             </div>
             <div className={ styles.row }>
                 <label htmlFor={ styles.password }>Password:</label>
                 <input 
                     type="password"
-                    id={ styles.password }
                     onChange={ (e) => setPassword(e.target.value) } />
             </div>
             <button
                 type='button'
-                id={ styles.submit }
                 ref={ submit }
                 onClick={() => {
                     if (throttle) {

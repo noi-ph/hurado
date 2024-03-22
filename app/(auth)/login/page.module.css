@@ -18,25 +18,7 @@
     font-size: xx-large;
 }
 
-.row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-
-    width: 100%;
-    height: fit-content;
-    gap: 10px;
-}
-
-#username,
-#password {
-    width: 100%;
-    max-width: 300px;
-    border-bottom: 1px solid grey;
-}
-
-#submit {
+#loginform button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -49,6 +31,23 @@
     border-radius: 20px;
 
     background-color: var(--purple);
+}
+
+#loginform input {
+    width: 100%;
+    max-width: 300px;
+    border-bottom: 1px solid grey;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    height: fit-content;
+    gap: 10px;
 }
 
 @media (max-width: 540px) {
