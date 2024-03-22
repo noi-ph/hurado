@@ -1,4 +1,15 @@
 {
+    "ts-node": {
+        "transpileOnly": true,
+        "compilerOptions": {
+            "target": "ES6",
+            "module": "Node16",
+            "moduleResolution": "Node16"
+        },
+        "include": [
+            "**/*.ts"
+        ]
+    },
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",

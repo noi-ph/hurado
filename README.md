@@ -40,6 +40,12 @@ nvm install --lts
 nvm use --lts
 ```
 
+Install the required packages:
+
+```bash
+npm ci
+```
+
 ## Running the application
 
 Go to the repository directory by running the following command:
@@ -48,10 +54,21 @@ Go to the repository directory by running the following command:
 cd hurado
 ```
 
-Run the `run.sh` script as well by running:
+Run the development environment by using:
 
 ```bash
-./scripts/run start
+npm run dev
+```
+
+You should be seeing the following:
+
+```bash
+> algurado.com.ph@2.0.0 dev
+> next dev -p 10000
+
+   ▲ Next.js 14.1.3
+   - Local:        http://localhost:10000
+   - Environments: .env
 ```
 
 ## Contribution Workflow
