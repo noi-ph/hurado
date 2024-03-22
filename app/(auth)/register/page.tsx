@@ -97,6 +97,7 @@ const Page: FunctionComponent = () => {
             <button
                 type='button'
                 ref={ submit }
+                disabled={ throttle }
                 onClick={ throttledRegister }
             >Submit</button>
         </form>
