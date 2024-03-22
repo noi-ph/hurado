@@ -4,7 +4,6 @@ import type { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { cookies } from 'next/headers'
 
 import styles from './page.module.css'
 
@@ -14,28 +13,30 @@ const Page: FunctionComponent = () => {
     const submit = useRef<HTMLButtonElement>(null)
 
     useEffect(() => {
-        submit.current!.style.backgroundColor = throttle 
-            ? 'var(--purple-light)' 
+        submit.current!.style.backgroundColor = throttle
+            ? 'var(--purple-light)'
             : 'var(--purple)'
     }, [ throttle ])
 
     const router = useRouter()
 
+    const [ email, setEmail ] = useState<string>('')
     const [ username, setUsername ] = useState<string>('')
     const [ password, setPassword ] = useState<string>('')
+    const [ confirmPassword, setConfirmPassword ] = useState<string>('')
 
-    const storage = cookies()
-
-    const login = async () => {
+    const register = async () => {
         try {
-            const response = await fetch('api/v1/auth/login', {
+            const response = await fetch('api/v1/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    email,
                     username,
                     password,
+                    confirmPassword,
                 })
             })
 
@@ -43,29 +44,35 @@ const Page: FunctionComponent = () => {
                 throw new Error('')
             }
 
-            const token = response.headers.get('Authorization')!.split(' ')[1]
-
-            storage.set('algurado/token', token)
-            router.push('/dashboard')
+            router.push('/login')
         } catch (error) {}
+
+        setThrottle(false)
     }
 
-    const throttledLogin = useCallback(async () => {
+    const throttledRegister = useCallback(async () => {
         if (throttle) {
             return
         }
 
         try {
             setThrottle(true)
-            await login()
+            await register()
         } finally {
             setThrottle(false)
         }
-    }, [ login ])
+    }, [ register ])
 
     return (
-        <form id={ styles.loginform }>
-            <h1>Login</h1>
+        <form id={ styles.registerform }>
+            <h1>Register</h1>
+            <div className={ styles.row }>
+                <label htmlFor='email'>Email:</label>
+                <input
+                    type='email'
+                    id='email'
+                    onChange={ (e) => setEmail(e.target.value) } />
+            </div>
             <div className={ styles.row }>
                 <label htmlFor='username'>Username:</label>
                 <input
@@ -75,16 +82,23 @@ const Page: FunctionComponent = () => {
             </div>
             <div className={ styles.row }>
                 <label htmlFor='password'>Password:</label>
-                <input 
+                <input
                     type='password'
                     id='password'
                     onChange={ (e) => setPassword(e.target.value) } />
+            </div>
+            <div className={ styles.row }>
+                <label htmlFor='confirmPassword'>Confirm Password:</label>
+                <input
+                    type='password'
+                    id='confirmPassword'
+                    onChange={ (e) => setConfirmPassword(e.target.value) } />
             </div>
             <button
                 type='button'
                 ref={ submit }
                 disabled={ throttle }
-                onClick={ throttledLogin }
+                onClick={ throttledRegister }
             >Submit</button>
         </form>
     )
