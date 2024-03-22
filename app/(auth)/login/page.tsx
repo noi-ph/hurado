@@ -3,17 +3,17 @@
 import type { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 import styles from './page.module.css'
 
 const Page: FunctionComponent = () => {
     const [ throttle, setThrottle ] = useState<boolean>(false)
 
-    useEffect(() => {
-        const submit = document.getElementById(styles.submit)!
+    const submit = useRef<HTMLButtonElement>(null)
 
-        submit.style.backgroundColor = throttle 
+    useEffect(() => {
+        submit.current!.style.backgroundColor = throttle 
             ? 'var(--purple-light)' 
             : 'var(--purple)'
     }, [ throttle ])
@@ -59,13 +59,17 @@ const Page: FunctionComponent = () => {
                     id={ styles.password }
                     onChange={ (e) => setPassword(e.target.value) } />
             </div>
-            <button type='button' id={ styles.submit } onClick={() => {
-                if (throttle) {
-                    return
-                }
+            <button
+                type='button'
+                id={ styles.submit }
+                ref={ submit }
+                onClick={() => {
+                    if (throttle) {
+                        return
+                    }
 
-                login()
-                setThrottle(true)
+                    login()
+                    setThrottle(true)
             }}>Submit</button>
         </form>
     )
