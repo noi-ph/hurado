@@ -25,7 +25,7 @@ const Page: FunctionComponent = () => {
 
     const login = async () => {
         try {
-            await fetch('api/v1/auth/login', {
+            const response = await fetch('api/v1/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,6 +35,10 @@ const Page: FunctionComponent = () => {
                     password,
                 })
             })
+
+            if (!response.ok) {
+                throw new Error('')
+            }
 
             router.push('/dashboard')
         } catch (error) {}

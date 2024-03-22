@@ -10,14 +10,15 @@ export async function POST (request: NextRequest) {
     } = await request.json()
 
     try {
-        const user = await knex('users').where({ username }).first()
+        const user = await knex('users')
+            .where({ username })
+            .first()
+            .then((user: any) => user) // TODO: use knex interface builder
 
         if (user && compareSync(password, user.hashed_password)) {
-            return NextResponse.json({ status: 200 })
+            return NextResponse.json({}, { status: 200 })
         }
-    } catch (error) {
-        console.error(error)
-    }
+    } catch (error) {}
 
-    return NextResponse.error()
+    return NextResponse.json({}, { status: 401 })
 }
