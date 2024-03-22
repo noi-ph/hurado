@@ -12,10 +12,7 @@ export async function POST (request: NextRequest) {
     } = await request.json()
 
     try {
-        const user = await knex('users')
-            .where({ email })
-            .first()
-            .then((user: any) => user) // TODO: use knex interface builder
+        const user = await knex('users').where({ email }).first()
         
         if (user) {
             return NextResponse.json({}, { status: 409 })
@@ -23,10 +20,7 @@ export async function POST (request: NextRequest) {
     } catch (error) {}
 
     try {
-        const user = await knex('users')
-            .where({ username })
-            .first()
-            .then((user: any) => user) // TODO: use knex interface builder
+        const user = await knex('users').where({ username }).first()
         
         if (user) {
             return NextResponse.json({}, { status: 409 })
