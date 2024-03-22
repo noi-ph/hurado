@@ -50,13 +50,13 @@ const Page: FunctionComponent = () => {
         <form id={ styles.loginform }>
             <h1>Login</h1>
             <div className={ styles.row }>
-                <label htmlFor={ styles.username }>Username:</label>
+                <label>Username:</label>
                 <input
                     type="text"
                     onChange={ (e) => setUsername(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label htmlFor={ styles.password }>Password:</label>
+                <label>Password:</label>
                 <input 
                     type="password"
                     onChange={ (e) => setPassword(e.target.value) } />
