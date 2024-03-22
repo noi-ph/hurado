@@ -1,0 +1,42 @@
+:root {
+    --purple: rgb(109, 117, 254);
+    --purple-light: rgb(197, 195, 255);
+    --purple-white: rgb(237, 235, 255);
+
+    --yellow: rgb(234, 233, 126);
+    --yellow-light: rgb(243, 243, 215);
+}
+
+a:hover, button:hover {
+    cursor: pointer;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    
+    width: 100%;
+    height: fit-content;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    width: 100%;
+    height: fit-content;
+    gap: 15px;
+}
+
+footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: fit-content;
+    padding: 5px 20px;
+}

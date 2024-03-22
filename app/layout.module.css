@@ -1,0 +1,38 @@
+#navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    height: fit-content;
+    padding: 5px 40px;
+}
+
+.desktoplinks {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    width: fit-content;
+    height: fit-content;
+    gap: 20px;
+}
+
+.copyright {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 100%;
+    height: fit-content;
+}
+
+@media (max-width: 540px) {
+    #navbar { padding: 5px 20px; }
+}
+
+@media (max-width: 768px) {
+    .desktoplinks { display: none; }
+}
