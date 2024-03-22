@@ -7,6 +7,11 @@ import { useEffect, useState, useRef } from 'react'
 
 import styles from './page.module.css'
 
+const labelnames = {
+    username: 'Username',
+    password: 'Password',
+}
+
 const Page: FunctionComponent = () => {
     const [ throttle, setThrottle ] = useState<boolean>(false)
 
@@ -50,15 +55,19 @@ const Page: FunctionComponent = () => {
         <form id={ styles.loginform }>
             <h1>Login</h1>
             <div className={ styles.row }>
-                <label>Username:</label>
+                <label htmlFor={ labelnames.username }>Username:</label>
                 <input
                     type="text"
+                    id={ labelnames.username }
+                    name={ labelnames.username }
                     onChange={ (e) => setUsername(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label>Password:</label>
+                <label htmlFor={ labelnames.password }>Password:</label>
                 <input 
                     type="password"
+                    id={ labelnames.password }
+                    name={ labelnames.password }
                     onChange={ (e) => setPassword(e.target.value) } />
             </div>
             <button

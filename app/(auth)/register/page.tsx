@@ -7,6 +7,13 @@ import { useEffect, useState, useRef } from 'react'
 
 import styles from './page.module.css'
 
+const labelnames = {
+    email: 'Email',
+    username: 'Username',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+}
+
 const Page: FunctionComponent = () => {
     const [ throttle, setThrottle ] = useState<boolean>(false)
 
@@ -54,27 +61,37 @@ const Page: FunctionComponent = () => {
         <form id={ styles.registerform }>
             <h1>Register</h1>
             <div className={ styles.row }>
-                <label>Email:</label>
+                <label htmlFor={ labelnames.email }>Email:</label>
                 <input
                     type='email'
+                    id={ labelnames.email }
+                    name={ labelnames.email }
                     onChange={ (e) => setEmail(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label>Username:</label>
+                <label htmlFor={ labelnames.username }>Username:</label>
                 <input
                     type='text'
+                    id={ labelnames.username }
+                    name={ labelnames.username }
                     onChange={ (e) => setUsername(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label>Password:</label>
+                <label htmlFor={ labelnames.password }>Password:</label>
                 <input
                     type='password'
+                    id={ labelnames.password }
+                    name={ labelnames.password }
                     onChange={ (e) => setPassword(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label>Confirm Password:</label>
+                <label htmlFor={
+                    labelnames.confirmPassword
+                }>Confirm Password:</label>
                 <input
                     type='password'
+                    id={ labelnames.confirmPassword }
+                    name={ labelnames.confirmPassword }
                     onChange={ (e) => setConfirmPassword(e.target.value) } />
             </div>
             <button
