@@ -31,6 +31,7 @@
             "@components": [ "app/__components/index.ts" ],
             "@hooks": [ "app/__hooks/index.ts" ],
             "@knex": [ "knex/index.ts" ],
+            "@models": [ "knex/@types/index.ts" ]
         },
         "baseUrl": ".",
 
