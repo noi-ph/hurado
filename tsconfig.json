@@ -28,8 +28,8 @@
             "@v1/*": [ "app/api/v1/*" ],
             
             "@icons": [ "app/__icons/index.ts" ],
-            "@components": [ "app/__components/index.ts" ],
-            "@hooks": [ "app/__hooks/index.ts" ],
+            "@components": [ "app/_components/index.ts" ],
+            "@hooks": [ "app/_hooks/index.ts" ],
             "@knex": [ "knex/index.ts" ],
             "@models": [ "knex/@types/index.ts" ]
         },
