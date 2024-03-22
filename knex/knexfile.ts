@@ -3,8 +3,16 @@ import type { Knex } from 'knex'
 import fs from 'fs'
 import dotenv from 'dotenv'
 
-const PWD: string = process.cwd()
-const ENV_PATH = fs.realpathSync(`${PWD}/../.env`)
+let currentPath = process.cwd()
+
+while (!fs.existsSync(`${currentPath}/.env`)) {
+    currentPath = `${currentPath}/..`
+    if (currentPath === '/') {
+        console.error('Could not find .env file')
+        process.exit(1)
+    }
+}
+const ENV_PATH = fs.realpathSync(`${currentPath}/.env`)
 
 console.log(`Loading environment from ${ENV_PATH}`)
 dotenv.config({ path: ENV_PATH })
@@ -19,10 +27,10 @@ const defaults = {
     `.replace(/\s+/g, '').trim(),
     migrations: {
         tableName: 'knex_migrations',
-        directory: fs.realpathSync(`${PWD}/migrations`),
+        directory: fs.realpathSync(`${currentPath}/knex/migrations`),
     },
     seeds: {
-        directory: fs.realpathSync(`${PWD}/seeds`),
+        directory: fs.realpathSync(`${currentPath}/knex/seeds`),
         recursive: true,
     },
 }
