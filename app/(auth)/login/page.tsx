@@ -4,6 +4,7 @@ import type { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
+import { cookies } from 'next/headers'
 
 import styles from './page.module.css'
 
@@ -23,6 +24,8 @@ const Page: FunctionComponent = () => {
     const [ username, setUsername ] = useState<string>('')
     const [ password, setPassword ] = useState<string>('')
 
+    const storage = cookies()
+
     const login = async () => {
         try {
             const response = await fetch('api/v1/auth/login', {
@@ -40,6 +43,9 @@ const Page: FunctionComponent = () => {
                 throw new Error('')
             }
 
+            const token = response.headers.get('Authorization')!.split(' ')[1]
+
+            storage.set('algurado/token', token)
             router.push('/dashboard')
         } catch (error) {}
 
