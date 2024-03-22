@@ -7,13 +7,6 @@ import { useEffect, useState, useRef } from 'react'
 
 import styles from './page.module.css'
 
-const labelnames = {
-    email: 'Email',
-    username: 'Username',
-    password: 'Password',
-    confirmPassword: 'Confirm Password',
-}
-
 const Page: FunctionComponent = () => {
     const [ throttle, setThrottle ] = useState<boolean>(false)
 
@@ -61,37 +54,31 @@ const Page: FunctionComponent = () => {
         <form id={ styles.registerform }>
             <h1>Register</h1>
             <div className={ styles.row }>
-                <label htmlFor={ labelnames.email }>Email:</label>
+                <label htmlFor={ 'email' }>Email:</label>
                 <input
                     type='email'
-                    id={ labelnames.email }
-                    name={ labelnames.email }
+                    id={ 'email' }
                     onChange={ (e) => setEmail(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label htmlFor={ labelnames.username }>Username:</label>
+                <label htmlFor={ 'username' }>Username:</label>
                 <input
                     type='text'
-                    id={ labelnames.username }
-                    name={ labelnames.username }
+                    id={ 'username' }
                     onChange={ (e) => setUsername(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label htmlFor={ labelnames.password }>Password:</label>
+                <label htmlFor={ 'password' }>Password:</label>
                 <input
                     type='password'
-                    id={ labelnames.password }
-                    name={ labelnames.password }
+                    id={ 'password' }
                     onChange={ (e) => setPassword(e.target.value) } />
             </div>
             <div className={ styles.row }>
-                <label htmlFor={
-                    labelnames.confirmPassword
-                }>Confirm Password:</label>
+                <label htmlFor={ 'confirmPassword' }>Confirm Password:</label>
                 <input
                     type='password'
-                    id={ labelnames.confirmPassword }
-                    name={ labelnames.confirmPassword }
+                    id={ 'confirmPassword' }
                     onChange={ (e) => setConfirmPassword(e.target.value) } />
             </div>
             <button
