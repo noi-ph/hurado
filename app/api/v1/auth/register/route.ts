@@ -1,3 +1,5 @@
+import type { User } from '@models'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { hashSync } from 'bcryptjs'
 
@@ -12,7 +14,7 @@ export async function POST (request: NextRequest) {
     } = await request.json()
 
     try {
-        const user = await knex('users').where({ email }).first()
+        const user: User = await knex('users').where({ email }).first()
         
         if (user) {
             return NextResponse.json({}, { status: 409 })
@@ -20,7 +22,7 @@ export async function POST (request: NextRequest) {
     } catch (error) {}
 
     try {
-        const user = await knex('users').where({ username }).first()
+        const user: User = await knex('users').where({ username }).first()
         
         if (user) {
             return NextResponse.json({}, { status: 409 })
