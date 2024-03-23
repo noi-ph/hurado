@@ -76,14 +76,9 @@ export const useAuth = () => {
         validate()
     }, [ token ])
 
-    const getUser = async () => {
-        await validate()
-
-        return user
-    }
-
     return {
-        getUser,
+        user,
+        validate,
         setToken,
     }
 }
