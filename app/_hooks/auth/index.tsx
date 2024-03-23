@@ -6,9 +6,11 @@ import { useState, useEffect } from 'react'
 import { getCookie, setCookie, deleteCookie, hasCookie } from 'cookies-next'
 
 const useToken = () => {
-    const [ token, setToken ] = useState<string | null>(
-        hasCookie('algurado/token') ? getCookie('algurado/token')! : null
-    )
+    const data = hasCookie('algurado/token')
+        ? getCookie('algurado/token')!
+        : null
+
+    const [ token, setToken ] = useState<string | null>(data)
 
     useEffect(() => {
         if (token === null) {
@@ -22,11 +24,11 @@ const useToken = () => {
 }
 
 const useUser = () => {
-    const [ user, setUser ] = useState<User | null>(
-        hasCookie('algurado/user') 
+    const data = hasCookie('algurado/user') 
         ? JSON.parse(getCookie('algurado/user')!)
         : null
-    )
+
+    const [ user, setUser ] = useState<User | null>(data)
 
     useEffect(() => {
         if (user === null) {
