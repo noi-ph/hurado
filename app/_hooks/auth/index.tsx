@@ -3,11 +3,12 @@
 import type { User } from '@models'
 
 import { useState, useEffect } from 'react'
-import { getCookie, setCookie, deleteCookie } from 'cookies-next'
+import { getCookie, setCookie, deleteCookie, hasCookie } from 'cookies-next'
 
 const useToken = () => {
-    const data = getCookie('algurado/token')
-    const [ token, setToken ] = useState<string | null>(data ?? null)
+    const [ token, setToken ] = useState<string | null>(
+        hasCookie('algurado/token') ? getCookie('algurado/token')! : null
+    )
 
     useEffect(() => {
         if (token === null) {
@@ -21,9 +22,10 @@ const useToken = () => {
 }
 
 const useUser = () => {
-    const data = getCookie('algurado/user')
     const [ user, setUser ] = useState<User | null>(
-        data ? JSON.parse(data) : null
+        hasCookie('algurado/user') 
+        ? JSON.parse(getCookie('algurado/user')!)
+        : null
     )
 
     useEffect(() => {
