@@ -2,7 +2,7 @@
 
 import type { User } from '@models'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { getCookie, setCookie, deleteCookie } from 'cookies-next'
 
 const useToken = () => {
@@ -68,22 +68,18 @@ const validate = async () => {
     return
 }
 
-const useValidate = useCallback(async () => {
-    await validate()
-}, [ validate ])
-
 export const useAuth = () => {
     const { user } = useUser()
     const { token, setToken } = useToken()
     const [ shouldCheck, setShouldCheck ] = useState<boolean>(false)
 
     useEffect(() => {
-        useValidate()
+        validate()
     }, [ token ])
 
     useEffect(() => {
         if (shouldCheck) {
-            useValidate()
+            validate()
             setShouldCheck(false)
         }
     }, [ shouldCheck ])
