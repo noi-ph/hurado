@@ -2,15 +2,13 @@
 
 import type { User } from '@models'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { getCookie, setCookie, deleteCookie, hasCookie } from 'cookies-next'
 
-const useToken = () => {
-    const data = hasCookie('algurado/token')
-        ? getCookie('algurado/token')!
-        : null
-
-    const [ token, setToken ] = useState<string | null>(data)
+export const useToken = () => {
+    const [ token, setToken ] = useState<string | null>(
+        hasCookie('algurado/token') ? getCookie('algurado/token')! : null
+    )
 
     useEffect(() => {
         if (token === null) {
@@ -23,12 +21,12 @@ const useToken = () => {
     return { token, setToken }
 }
 
-const useUser = () => {
-    const data = hasCookie('algurado/user') 
+export const useUser = () => {
+    const [ user, setUser ] = useState<User | null>(
+        hasCookie('algurado/user') 
         ? JSON.parse(getCookie('algurado/user')!)
         : null
-
-    const [ user, setUser ] = useState<User | null>(data)
+    )
 
     useEffect(() => {
         if (user === null) {
@@ -41,7 +39,7 @@ const useUser = () => {
     return { user, setUser }
 }
 
-const validate = async () => {
+export const useValidate = async () => {
     const { setUser } = useUser()
     const { token, setToken } = useToken()
 
@@ -70,19 +68,4 @@ const validate = async () => {
     setToken(null)
 
     return
-}
-
-export const useAuth = () => {
-    const { user } = useUser()
-    const { token, setToken } = useToken()
-
-    useEffect(() => {
-        validate()
-    }, [ token ])
-
-    return {
-        user,
-        validate,
-        setToken,
-    }
 }
