@@ -71,23 +71,19 @@ const validate = async () => {
 export const useAuth = () => {
     const { user } = useUser()
     const { token, setToken } = useToken()
-    const [ shouldCheck, setShouldCheck ] = useState<boolean>(false)
 
     useEffect(() => {
         validate()
     }, [ token ])
 
-    useEffect(() => {
-        if (shouldCheck) {
-            validate()
-            setShouldCheck(false)
-        }
-    }, [ shouldCheck ])
+    const getUser = async () => {
+        await validate()
+
+        return user
+    }
 
     return {
-        user,
-        token,
+        getUser,
         setToken,
-        checkAuth: () => setShouldCheck(true),
     }
 }
