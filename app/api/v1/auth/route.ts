@@ -23,12 +23,13 @@ export async function GET (request: NextRequest) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as payload
+        const payload = { user: decoded.user }
 
-        return NextResponse.json({ user: decoded.user }, { 
+        return NextResponse.json(payload, { 
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${tokenize(decoded)}`
+                'Authorization': `Bearer ${tokenize(payload)}`
             },
         })
     } catch (error) {}
