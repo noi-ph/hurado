@@ -69,5 +69,5 @@ export const useValidate = async () => {
 
         setUser(newUser)
         setToken(newToken)
-    }, [ token ])
+    }, [ setUser, setToken ])
 }
