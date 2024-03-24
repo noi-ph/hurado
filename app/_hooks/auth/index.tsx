@@ -2,7 +2,7 @@
 
 import type { User } from '@models'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { getCookie, setCookie, deleteCookie, hasCookie } from 'cookies-next'
 
 export const useToken = () => {
@@ -43,29 +43,31 @@ export const useValidate = async () => {
     const { setUser } = useUser()
     const { token, setToken } = useToken()
 
-    try {
-        const response = await fetch('api/v1/auth', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-        })
+    return useCallback(async () => {
+        let newUser: User | null = null
+        let newToken: string | null = null
 
-        if (response.ok) {
-            const data = await response.json()
+        try {
+            const response = await fetch('api/v1/auth', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
 
-            setUser(data.user as User)
-            setToken(
-                response.headers.get('Authorization')?.split(' ')[1] ?? null
-            )
+            if (response.ok) {
+                const data = await response.json()
 
-            return
-        }
-    } catch (error) {}
+                newUser = data.user as User
+                newToken = response.headers
+                    .get('Authorization')
+                    ?.split(' ')[1]
+                    ?? null
+            }
+        } catch (error) {}
 
-    setUser(null)
-    setToken(null)
-
-    return
+        setUser(newUser)
+        setToken(newToken)
+    }, [ token ])
 }
