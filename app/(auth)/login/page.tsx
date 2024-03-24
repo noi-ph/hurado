@@ -7,7 +7,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 
 import styles from './page.module.css'
 
-import { useToken } from '@hooks'
+import { useToken, useUser } from '@hooks'
 
 const Page: FunctionComponent = () => {
     const [ throttle, setThrottle ] = useState<boolean>(false)
@@ -25,6 +25,7 @@ const Page: FunctionComponent = () => {
     const [ username, setUsername ] = useState<string>('')
     const [ password, setPassword ] = useState<string>('')
 
+    const { setUser } = useUser()
     const { setToken } = useToken()
 
     const login = async () => {
@@ -45,6 +46,7 @@ const Page: FunctionComponent = () => {
             }
             
             setToken(response.headers.get('Authorization')!.split(' ')[1])
+            setUser(await response.json())
             router.push('/dashboard')
         } catch (error) {}
     }
