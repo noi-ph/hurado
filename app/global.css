@@ -5,6 +5,9 @@
 
     --yellow: rgb(234, 233, 126);
     --yellow-light: rgb(243, 243, 215);
+
+    --darken: rgb(0, 0, 0, 0.10);
+    --lighten: rgb(255, 255, 255, 0.10);
 }
 
 a:hover, button:hover {

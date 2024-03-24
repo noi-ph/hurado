@@ -26,6 +26,10 @@ export const Navbar: FunctionComponent = () => {
         <Fragment>
             <div className={ styles.row }>
                 <Link href='/'>Home</Link>
+                <Link
+                    href='/tasks'
+                    className={ styles.desktoplinks }
+                >Tasks</Link>
                 { links }
             </div>
             <Link href='/sitemap'>Sitemap</Link>
