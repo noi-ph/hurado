@@ -17,7 +17,7 @@ export async function POST (request: NextRequest) {
         const user: User = await knex('users').where({ username }).first()
 
         if (user && compareSync(password, user.hashed_password)) {
-            return NextResponse.json({}, {
+            return NextResponse.json({ user }, {
                 status: 200,
                 headers: {
                     'Content-Type': 'application/json',

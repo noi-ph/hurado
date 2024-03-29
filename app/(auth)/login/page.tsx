@@ -4,9 +4,10 @@ import type { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { cookies } from 'next/headers'
 
 import styles from './page.module.css'
+
+import { useToken, useUser } from '@hooks'
 
 const Page: FunctionComponent = () => {
     const [ throttle, setThrottle ] = useState<boolean>(false)
@@ -24,7 +25,8 @@ const Page: FunctionComponent = () => {
     const [ username, setUsername ] = useState<string>('')
     const [ password, setPassword ] = useState<string>('')
 
-    const storage = cookies()
+    const { setUser } = useUser()
+    const { setToken } = useToken()
 
     const login = async () => {
         try {
@@ -42,10 +44,9 @@ const Page: FunctionComponent = () => {
             if (!response.ok) {
                 throw new Error('')
             }
-
-            const token = response.headers.get('Authorization')!.split(' ')[1]
-
-            storage.set('algurado/token', token)
+            
+            setToken(response.headers.get('Authorization')!.split(' ')[1])
+            setUser(await response.json())
             router.push('/dashboard')
         } catch (error) {}
     }
