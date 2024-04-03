@@ -2,16 +2,16 @@ version: '3.3'
  
 services:
   hurado-server:
-    container_name: hurado-server
-    image: node:20-bullseye
     profiles:
       - server
+    container_name: hurado-dev
+    image: node:20-bullseye
     working_dir: /app
-    command: npm start
-    env_file:
-      - .env
+    command: npm run dev
+    environment:
+      - IS_UNDER_DOCKER=true
     ports:
-      - 10001:10001
+      - 10000:10000
     restart: always
     stdin_open: true
     tty: true
@@ -24,6 +24,7 @@ services:
   hurado-postgres:
     container_name: hurado-postgres
     image: postgres:14-bullseye
+    command: ["postgres", "-c", "log_statement=all"]
     restart: always
     env_file:
       - .env

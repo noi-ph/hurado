@@ -17,12 +17,16 @@ const ENV_PATH = fs.realpathSync(`${currentPath}/.env`)
 console.log(`Loading environment from ${ENV_PATH}`)
 dotenv.config({ path: ENV_PATH })
 
+const POSTGRES_HOSTNAME = process.env.IS_UNDER_DOCKER == 'true'
+    ? process.env.DOCKER_POSTGRES_HOSTNAME
+    : process.env.POSTGRES_HOSTNAME;
+
 const defaults = {
     client: 'pg',
     connection: `
         postgresql://${ process.env.POSTGRES_USER }
         :${ process.env.POSTGRES_PASSWORD }
-        @${ process.env.POSTGRES_HOSTNAME }
+        @${ POSTGRES_HOSTNAME }
         /${ process.env.POSTGRES_DB }
     `.replace(/\s+/g, '').trim(),
     migrations: {
@@ -38,7 +42,7 @@ const defaults = {
 const config: { [key: string]: Knex.Config } = {
     development: {
         ...defaults,
-        debug: true,
+        debug: false,
         useNullAsDefault: true,
         pool: {
             afterCreate: (conn: any, done: any) => {
