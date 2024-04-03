@@ -40,7 +40,7 @@ docker compose up
 
 We recommend using NodeJS 20 when running this application. Kindly go to [this guide](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) to configure which version of NodeJS runs in your environment.
 
-Once NVM has been installed, run the following so that the latest stable release (LTS) of NodeJS is installed:
+Once NVM has been installed, run the following so that NodeJS v20 is installed:
 
 ```bash
 nvm install 20
