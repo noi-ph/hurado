@@ -22,18 +22,10 @@
         "jsx": "preserve",
 
         "paths": {
-            "@images/*": [ "public/images/*" ],
-            "@gifs/*": [ "public/gifs/*" ],
             "@root/*": [ "app/*" ],
             "@v1/*": [ "app/api/v1/*" ],
-            
-            "@icons": [ "app/__icons/index.ts" ],
-            "@components": [ "app/_components/index.ts" ],
-            "@hooks": [ "app/_hooks/index.ts" ],
-            "@knex": [ "knex/index.ts" ],
-            "@models": [ "knex/@types/index.ts" ]
         },
-        "baseUrl": ".",
+        "baseUrl": "src",
 
         "strict": true,
         "noEmit": true,
@@ -51,12 +43,9 @@
         ]
     },
     "include": [
-        "app/**/*.ts",
-        "app/**/*.d.ts",
-        "app/**/*.tsx",
+        "src",
         "next-env.d.ts",
-        ".next/types/**/*.ts",
-        "app/**/*.module.css"
+        ".next/types/**/*.ts"
     ],
     "exclude": []
 }
