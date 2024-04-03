@@ -6,11 +6,12 @@ services:
     image: node:20-bullseye
     profiles:
       - server
-    command: sh scripts/frontend.sh
+    working_dir: /app
+    command: npm start
     env_file:
       - .env
     ports:
-      - 3000:3000
+      - 10001:10001
     restart: always
     stdin_open: true
     tty: true
