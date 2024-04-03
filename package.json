@@ -46,6 +46,9 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "20.11.24",
     "@types/react": "^18.2.61",
+    "eslint": "8.57.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-next": "14.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   }
