@@ -6,6 +6,7 @@
     "build": "next build",
     "start": "next start -- -p 10001",
     "dev": "next dev -p 10000",
+    "migrate": "knex --knexfile knex/knexfile.ts migrate:latest",
     "lint": "next lint"
   },
   "repository": {

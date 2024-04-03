@@ -25,19 +25,26 @@ Before cloning your fork of the repository, make sure that you have added your S
 git clone git@github.com:your_username/hurado.git
 ```
 
-#### Setup PostgreSQL
+#### Setup Docker
 
-We use PostgreSQL as our database management system (DMS). Kindly go to [this guide](https://www.postgresql.org/download/linux/) to install it in your Unix environment.
+We use docker containers for supporting services like postgresql. Follow instructions [here](https://docs.docker.com/engine/install/) to get a new version of docker.
+
+
+Run the containers on a seperate terminal by running the following command in the project directory:
+
+```bash
+docker compose up
+```
 
 #### Setup NodeJS
 
-We recommend using the latest stable release of NodeJS when running this application. Kindly go to [this guide](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) to configure which version of NodeJS runs in your environment.
+We recommend using NodeJS 20 when running this application. Kindly go to [this guide](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) to configure which version of NodeJS runs in your environment.
 
 Once NVM has been installed, run the following so that the latest stable release (LTS) of NodeJS is installed:
 
 ```bash
-nvm install --lts
-nvm use --lts
+nvm install 20
+nvm use 20
 ```
 
 Install the required packages:
@@ -52,6 +59,18 @@ Go to the repository directory by running the following command:
 
 ```bash
 cd hurado
+```
+
+Copy the local environment:
+
+```bash
+cp .env.template .env
+```
+
+Migrate the database to the latest version:
+
+```bash
+npm run migrate
 ```
 
 Run the development environment by using:

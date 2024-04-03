@@ -1,0 +1,32 @@
+version: '3.3'
+ 
+services:
+  hurado-server:
+    container_name: hurado-server
+    image: node:21-bullseye
+    profiles:
+      - server
+    command: sh scripts/frontend.sh
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    restart: always
+    stdin_open: true
+    tty: true
+    depends_on:
+      - hurado-postgres
+    links:
+      - hurado-postgres
+    volumes:
+      - ./:/app/
+  hurado-postgres:
+    container_name: hurado-postgres
+    image: postgres:14-bullseye
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./volumes/postgresql:/var/lib/postgresql/data/
