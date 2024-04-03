@@ -2,8 +2,6 @@ version: '3.3'
  
 services:
   hurado-server:
-    profiles:
-      - server
     container_name: hurado-dev
     image: node:20-bullseye
     working_dir: /app
@@ -21,6 +19,8 @@ services:
       - hurado-postgres
     volumes:
       - ./:/app/
+    profiles:
+      - ''
   hurado-postgres:
     container_name: hurado-postgres
     image: postgres:14-bullseye
@@ -32,3 +32,6 @@ services:
       - 5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
+    profiles:
+      - ''
+      - services
