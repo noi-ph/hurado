@@ -3,4 +3,5 @@ export type Task = {
     title: string
     description?: string
     statement: string
+    max_points: number
 }
