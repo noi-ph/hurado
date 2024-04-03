@@ -1,6 +1,4 @@
-import type { Knex } from 'knex';
-
-import createKnex from 'knex';
+import createKnex, { Knex } from 'knex';
 
 import config from './knexfile';
 

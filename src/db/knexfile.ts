@@ -1,7 +1,6 @@
-import type { Knex } from 'knex';
-
 import fs from 'fs';
 import dotenv from 'dotenv';
+import type { Knex } from 'knex';
 
 let currentPath = process.cwd();
 
@@ -31,10 +30,10 @@ const defaults = {
     `.replace(/\s+/g, '').trim(),
   migrations: {
     tableName: 'knex_migrations',
-    directory: fs.realpathSync(`${currentPath}/knex/migrations`),
+    directory: fs.realpathSync(`${currentPath}/src/db/migrations`),
   },
   seeds: {
-    directory: fs.realpathSync(`${currentPath}/knex/seeds`),
+    directory: fs.realpathSync(`${currentPath}/src/db/seeds`),
     recursive: true,
   },
 };
