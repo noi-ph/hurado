@@ -1,73 +1,75 @@
-'use client'
+'use client';
 
-import type { User } from 'lib/models'
+import type { User } from 'lib/models';
 
-import { useState, useEffect, useCallback } from 'react'
-import { getCookie, setCookie, deleteCookie, hasCookie } from 'cookies-next'
+import { useState, useEffect, useCallback } from 'react';
+import {
+  getCookie, setCookie, deleteCookie, hasCookie,
+} from 'cookies-next';
 
 export const useToken = () => {
-    const [ token, setToken ] = useState<string | null>(
-        hasCookie('algurado/token') ? getCookie('algurado/token')! : null
-    )
+  const [token, setToken] = useState<string | null>(
+    hasCookie('algurado/token') ? getCookie('algurado/token')! : null,
+  );
 
-    useEffect(() => {
-        if (token === null) {
-            return deleteCookie('algurado/token')
-        }
+  useEffect(() => {
+    if (token === null) {
+      return deleteCookie('algurado/token');
+    }
 
-        setCookie('algurado/token', token)
-    }, [ token ])
+    setCookie('algurado/token', token);
+  }, [token]);
 
-    return { token, setToken }
-}
+  return { token, setToken };
+};
 
 export const useUser = () => {
-    const [ user, setUser ] = useState<User | null>(
-        hasCookie('algurado/user') 
-        ? JSON.parse(getCookie('algurado/user')!)
-        : null
-    )
+  const [user, setUser] = useState<User | null>(
+    hasCookie('algurado/user')
+      ? JSON.parse(getCookie('algurado/user')!)
+      : null,
+  );
 
-    useEffect(() => {
-        if (user === null) {
-            return deleteCookie('algurado/user')
-        }
+  useEffect(() => {
+    if (user === null) {
+      return deleteCookie('algurado/user');
+    }
 
-        setCookie('algurado/user', user)
-    }, [ user ])
+    setCookie('algurado/user', user);
+  }, [user]);
 
-    return { user, setUser }
-}
+  return { user, setUser };
+};
 
 export const useValidate = async () => {
-    const { setUser } = useUser()
-    const { token, setToken } = useToken()
+  const { setUser } = useUser();
+  const { token, setToken } = useToken();
 
-    return useCallback(async () => {
-        let newUser: User | null = null
-        let newToken: string | null = null
+  return useCallback(async () => {
+    let newUser: User | null = null;
+    let newToken: string | null = null;
 
-        try {
-            const response = await fetch('api/v1/auth', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            })
+    try {
+      const response = await fetch('api/v1/auth', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-            if (response.ok) {
-                const data = await response.json()
+      if (response.ok) {
+        const data = await response.json();
 
-                newUser = data.user as User
-                newToken = response.headers
-                    .get('Authorization')
-                    ?.split(' ')[1]
-                    ?? null
-            }
-        } catch (error) {}
+        newUser = data.user as User;
+        newToken = response.headers
+          .get('Authorization')
+          ?.split(' ')[1]
+                    ?? null;
+      }
+    } catch (error) {}
 
-        setUser(newUser)
-        setToken(newToken)
-    }, [ setUser, setToken ])
-}
+    setUser(newUser);
+    setToken(newToken);
+  }, [setUser, token, setToken]);
+};

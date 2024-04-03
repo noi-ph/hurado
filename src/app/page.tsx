@@ -1,7 +1,7 @@
-import type { FunctionComponent } from 'react'
+import type { FunctionComponent } from 'react';
 
 const Page: FunctionComponent = () => (
-    <p>Hello, world!</p>
-)
+  <p>Hello, world!</p>
+);
 
-export default Page
+export default Page;

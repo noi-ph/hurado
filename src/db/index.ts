@@ -1,9 +1,9 @@
-import type { Knex } from 'knex'
+import type { Knex } from 'knex';
 
-import createKnex from 'knex'
+import createKnex from 'knex';
 
-import config from './knexfile'
+import config from './knexfile';
 
-const knex: Knex = createKnex(config.development)
+const knex: Knex = createKnex(config.development);
 
-export default knex
+export default knex;

@@ -1,38 +1,34 @@
-'use client'
+'use client';
 
 import {
-    Fragment,
-    useEffect,
-    useState,
-    FunctionComponent,
-    ReactNode,
-} from 'react'
-import type { Task } from 'lib/models'
-import { TaskCard } from 'lib/components'
-
+  useEffect,
+  useState,
+  FunctionComponent,
+  ReactNode,
+} from 'react';
+import type { Task } from 'lib/models';
+import { TaskCard } from 'lib/components';
 
 const Page: FunctionComponent = () => {
-    const [ tasks, setTasks ] = useState<Task[]>([])
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-    useEffect(() => {
-        (async () => {
-            const response = await fetch('/api/v1/tasks')
+  useEffect(() => {
+    (async () => {
+      const response = await fetch('/api/v1/tasks');
 
-            setTasks(await response.json())
-        })()
-    }, [])
+      setTasks(await response.json());
+    })();
+  }, []);
 
-    const [ taskNodes, setTaskNodes ] = useState<ReactNode[]>([])
+  const [taskNodes, setTaskNodes] = useState<ReactNode[]>([]);
 
-    useEffect(() => {
-        setTaskNodes(tasks.map(task => <TaskCard task={ task } />))
-    }, [ tasks ])
+  useEffect(() => {
+    setTaskNodes(tasks.map((task) => <TaskCard task={task} />));
+  }, [tasks]);
 
-    return (
-        <Fragment>
-            { ...taskNodes }
-        </Fragment>
-    )
-}
+  return (
+    { ...taskNodes }
+  );
+};
 
-export default Page
+export default Page;
