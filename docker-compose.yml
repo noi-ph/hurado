@@ -3,7 +3,7 @@ version: '3.3'
 services:
   hurado-server:
     container_name: hurado-server
-    image: node:21-bullseye
+    image: node:20-bullseye
     profiles:
       - server
     command: sh scripts/frontend.sh
