@@ -38,7 +38,7 @@ const defaults = {
 const config: { [key: string]: Knex.Config } = {
     development: {
         ...defaults,
-        debug: true,
+        debug: false,
         useNullAsDefault: true,
         pool: {
             afterCreate: (conn: any, done: any) => {

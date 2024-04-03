@@ -25,7 +25,8 @@ export async function POST (request: NextRequest) {
                 },
             })
         }
-    } catch (error) {}
+    } catch (error) {
+    }
 
     return NextResponse.json({}, { status: 401 })
 }

@@ -7,11 +7,13 @@ services:
     profiles:
       - server
     working_dir: /app
-    command: npm start
+    command: npm run dev
     env_file:
       - .env
+    environment:
+      - POSTGRES_HOSTNAME=hurado-postgres
     ports:
-      - 10001:10001
+      - 10000:10000
     restart: always
     stdin_open: true
     tty: true
@@ -24,6 +26,7 @@ services:
   hurado-postgres:
     container_name: hurado-postgres
     image: postgres:14-bullseye
+    command: ["postgres", "-c", "log_statement=all"]
     restart: always
     env_file:
       - .env
