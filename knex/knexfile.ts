@@ -20,10 +20,10 @@ dotenv.config({ path: ENV_PATH })
 const defaults = {
     client: 'pg',
     connection: `
-        postgresql://${ process.env.DB_USER }
-        :${ process.env.DB_PASS }
-        @${ process.env.DB_HOST }
-        /${ process.env.DB_NAME }
+        postgresql://${ process.env.POSTGRES_USER }
+        :${ process.env.POSTGRES_PASSWORD }
+        @${ process.env.POSTGRES_HOSTNAME }
+        /${ process.env.POSTGRES_DB }
     `.replace(/\s+/g, '').trim(),
     migrations: {
         tableName: 'knex_migrations',
