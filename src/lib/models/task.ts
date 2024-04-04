@@ -3,7 +3,7 @@ export type Task = {
   title: string;
   description?: string;
   statement: string;
-  max_points: number;
+  score_max: number;
 };
 
 export type File = {
