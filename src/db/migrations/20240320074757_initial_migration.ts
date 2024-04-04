@@ -10,6 +10,7 @@ export async function up(knex: Knex): Promise<void> {
         table.text("hashed_password").notNullable();
         table.timestamp("created_at").defaultTo(knex.fn.now());
         // TODO: Implement user roles (e.g., admin, user, etc.)
+        table.enum("permission_level", ["admin", "user"]).defaultTo("user");
         table.text("school");
         table.text("name");
         table.text("country");
