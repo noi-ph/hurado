@@ -74,6 +74,16 @@ export async function up(knex: Knex): Promise<void> {
         table.integer("compile_memory_byte");
         table.index(["submission_id", "created_at"]);
       })
+      .createTable("contests", (table) => {
+        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
+        table.text("slug").notNullable().unique();
+        table.text("title").notNullable();
+        table.text("description");
+        table.uuid("owner_id").notNullable().references("id").inTable("users");
+        table.timestamp("start_time").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("end_time");
+        table.index("slug");
+      })
       .alterTable("submissions", (table) => {
         table
           .uuid("official_result_id")
@@ -96,6 +106,7 @@ export async function down(knex: Knex): Promise<void> {
       .dropTable("scripts")
       .dropTable("files")
       .dropTable("users")
-      .dropTable("tasks");
+      .dropTable("tasks")
+      .dropTable("contests");
   });
 }
