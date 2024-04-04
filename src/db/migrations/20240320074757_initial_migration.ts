@@ -24,14 +24,14 @@ export async function up(knex: Knex): Promise<void> {
         table.text("statement").notNullable();
         table.decimal("score_max", 10, 4).notNullable().defaultTo(100.0);
         table.text("mvp_output"); // Delete this later. It's just for making progress
-        table.float("time_limit").defaultTo(2.0); // in seconds
+        table.float("time_limit").checkPositive("tasks_time_limit_checkPositive").defaultTo(2.0); // in seconds
         table.integer("memory_limit").unsigned().defaultTo(100000); // in bytes
         table.index("slug");
       })
       .createTable("files", (table) => {
         table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
         table.text("name").notNullable();
-        table.integer("size").notNullable();
+        table.integer("size").unsigned().notNullable();
         table.text("url");
       })
       .createTable("scripts", (table) => {
@@ -70,10 +70,10 @@ export async function up(knex: Knex): Promise<void> {
         table.timestamp("created_at").defaultTo(knex.fn.now());
         table.text("verdict");
         table.integer("raw_score");
-        table.integer("running_time_ms");
-        table.integer("running_memory_byte");
-        table.integer("compile_time_ms");
-        table.integer("compile_memory_byte");
+        table.integer("running_time_ms").unsigned();
+        table.integer("running_memory_byte").unsigned();
+        table.integer("compile_time_ms").unsigned();
+        table.integer("compile_memory_byte").unsigned();
         table.index(["submission_id", "created_at"]);
       })
       .createTable("contests", (table) => {
