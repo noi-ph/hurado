@@ -1,19 +1,19 @@
-import type { User } from 'lib/models';
+import jwt from "jsonwebtoken";
 
-import jwt from 'jsonwebtoken';
-
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
+import type { User } from "lib/models";
 
 type ServerPayload = {
-    user: User
-}
+  user: User;
+};
 
-export const tokenize = (load: ServerPayload) => jwt.sign(load, process.env.JWT_SECRET!, {
-  expiresIn: process.env.JWT_EXPIRE!,
-});
+export const tokenize = (load: ServerPayload) =>
+  jwt.sign(load, process.env.JWT_SECRET!, {
+    expiresIn: process.env.JWT_EXPIRE!,
+  });
 
 export async function GET(request: NextRequest) {
-  const token = request.headers.get('Authorization')?.split(' ')[1];
+  const token = request.headers.get("Authorization")?.split(" ")[1];
 
   if (!token) {
     return NextResponse.json({}, { status: 401 });
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(payload, {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${tokenize(payload)}`,
       },
     });

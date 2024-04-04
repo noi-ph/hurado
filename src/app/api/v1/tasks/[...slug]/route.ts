@@ -1,13 +1,13 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from "next/server";
 
-import knex from 'db';
+import knex from "db";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.nextUrl);
-  const slug = url.pathname.split('/').pop();
+  const slug = url.pathname.split("/").pop();
 
   try {
-    const task = await knex('tasks').where({ slug }).first();
+    const task = await knex("tasks").where({ slug }).first();
 
     if (task) {
       return NextResponse.json(task, { status: 200 });

@@ -11,7 +11,9 @@
     "knex:up": "knex --knexfile knex/knexfile.ts migrate:up",
     "knex:down": "knex --knexfile knex/knexfile.ts migrate:down",
     "knex:rollback": "knex --knexfile knex/knexfile.ts migrate:rollback",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix && prettier src --write",
+    "format": "prettier src --write"
   },
   "repository": {
     "type": "git",
@@ -49,6 +51,8 @@
     "eslint": "8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "14.1.4",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   }

@@ -1,14 +1,12 @@
-'use client';
+"use client";
 
-import type { FunctionComponent } from 'react';
+import type { FunctionComponent } from "react";
 
-import { useRouter } from 'next/navigation';
-import {
-  useEffect, useState, useRef, useCallback,
-} from 'react';
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef, useCallback } from "react";
 
-import { useToken, useUser } from 'lib/hooks';
-import styles from './page.module.css';
+import { useToken, useUser } from "lib/hooks";
+import styles from "./page.module.css";
 
 const Page: FunctionComponent = () => {
   const [throttle, setThrottle] = useState<boolean>(false);
@@ -16,25 +14,25 @@ const Page: FunctionComponent = () => {
   const submit = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-        submit.current!.style.backgroundColor = throttle
-          ? 'var(--purple-light)'
-          : 'var(--purple)';
+    submit.current!.style.backgroundColor = throttle
+      ? "var(--purple-light)"
+      : "var(--purple)";
   }, [throttle]);
 
   const router = useRouter();
 
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const { setUser } = useUser();
   const { setToken } = useToken();
 
   const login = useCallback(async () => {
     try {
-      const response = await fetch('api/v1/auth/login', {
-        method: 'POST',
+      const response = await fetch("api/v1/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username,
@@ -43,12 +41,12 @@ const Page: FunctionComponent = () => {
       });
 
       if (!response.ok) {
-        throw new Error('');
+        throw new Error("");
       }
 
-      setToken(response.headers.get('Authorization')!.split(' ')[1]);
+      setToken(response.headers.get("Authorization")!.split(" ")[1]);
       setUser(await response.json());
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (error) {}
   }, [router, username, password, setToken, setUser]);
 

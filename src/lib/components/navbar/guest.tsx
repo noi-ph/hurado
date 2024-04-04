@@ -1,8 +1,8 @@
-import type { FunctionComponent } from 'react';
+import type { FunctionComponent } from "react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import styles from './index.module.css';
+import styles from "./index.module.css";
 
 export const Guest: FunctionComponent = () => (
   <div className={`${styles.row} ${styles.desktoplinks}`}>

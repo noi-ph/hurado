@@ -1,23 +1,20 @@
-'use client';
+"use client";
 
-import type { User } from 'lib/models';
-
-import { useState, useEffect, useCallback } from 'react';
-import {
-  getCookie, setCookie, deleteCookie, hasCookie,
-} from 'cookies-next';
+import { useState, useEffect, useCallback } from "react";
+import { getCookie, setCookie, deleteCookie, hasCookie } from "cookies-next";
+import type { User } from "lib/models";
 
 export const useToken = () => {
   const [token, setToken] = useState<string | null>(
-    hasCookie('algurado/token') ? getCookie('algurado/token')! : null,
+    hasCookie("algurado/token") ? getCookie("algurado/token")! : null
   );
 
   useEffect(() => {
     if (token === null) {
-      return deleteCookie('algurado/token');
+      return deleteCookie("algurado/token");
     }
 
-    setCookie('algurado/token', token);
+    setCookie("algurado/token", token);
   }, [token]);
 
   return { token, setToken };
@@ -25,17 +22,15 @@ export const useToken = () => {
 
 export const useUser = () => {
   const [user, setUser] = useState<User | null>(
-    hasCookie('algurado/user')
-      ? JSON.parse(getCookie('algurado/user')!)
-      : null,
+    hasCookie("algurado/user") ? JSON.parse(getCookie("algurado/user")!) : null
   );
 
   useEffect(() => {
     if (user === null) {
-      return deleteCookie('algurado/user');
+      return deleteCookie("algurado/user");
     }
 
-    setCookie('algurado/user', user);
+    setCookie("algurado/user", user);
   }, [user]);
 
   return { user, setUser };
@@ -50,10 +45,10 @@ export const useValidate = async () => {
     let newToken: string | null = null;
 
     try {
-      const response = await fetch('api/v1/auth', {
-        method: 'GET',
+      const response = await fetch("api/v1/auth", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
@@ -62,10 +57,7 @@ export const useValidate = async () => {
         const data = await response.json();
 
         newUser = data.user as User;
-        newToken = response.headers
-          .get('Authorization')
-          ?.split(' ')[1]
-                    ?? null;
+        newToken = response.headers.get("Authorization")?.split(" ")[1] ?? null;
       }
     } catch (error) {}
 

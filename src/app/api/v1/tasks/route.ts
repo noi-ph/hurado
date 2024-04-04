@@ -1,12 +1,11 @@
-import type { Task } from 'lib/models';
+import { NextResponse } from "next/server";
+import type { Task } from "lib/models";
 
-import { NextResponse } from 'next/server';
-
-import knex from 'db';
+import knex from "db";
 
 export async function GET() {
   try {
-    const tasks: Task[] = await knex('tasks').select();
+    const tasks: Task[] = await knex("tasks").select();
 
     return NextResponse.json(tasks, { status: 200 });
   } catch (error) {}

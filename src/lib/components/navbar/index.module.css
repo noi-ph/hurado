@@ -1,14 +1,16 @@
 .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 
-    width: fit-content;
-    height: fit-content;
-    gap: 20px;
+  width: fit-content;
+  height: fit-content;
+  gap: 20px;
 }
 
 @media (max-width: 768px) {
-    .desktoplinks { display: none; }
+  .desktoplinks {
+    display: none;
+  }
 }
