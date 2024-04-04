@@ -24,6 +24,7 @@ export const Navbar: FunctionComponent = () => {
     <>
       <div className={styles.row}>
         <Link href="/">Home</Link>
+        <Link href="/tasks">Tasks</Link>
         {links}
       </div>
       <Link href="/sitemap">Sitemap</Link>

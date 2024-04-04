@@ -1,27 +1,26 @@
-"use client";
-
-import { useEffect, useState, FunctionComponent, ReactNode } from "react";
-import type { Task } from "lib/models";
+import knex from "db";
+import { Task } from "lib/models";
 import { TaskCard } from "lib/components";
 
-const Page: FunctionComponent = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+async function getTasksData(): Promise<Task[]> {
+  const tasks = await knex
+    .table("tasks")
+    .select(["title", "slug", "description"])
+    .limit(1000);
 
-  useEffect(() => {
-    (async () => {
-      const response = await fetch("/api/v1/tasks");
+  return tasks;
+}
 
-      setTasks(await response.json());
-    })();
-  }, []);
+async function Page() {
+  const tasks = await getTasksData();
 
-  const [taskNodes, setTaskNodes] = useState<ReactNode[]>([]);
-
-  useEffect(() => {
-    setTaskNodes(tasks.map((task) => <TaskCard key={task.slug} task={task} />));
-  }, [tasks]);
-
-  return { ...taskNodes };
-};
+  return (
+    <>
+      {tasks.map((task) => (
+        <TaskCard key={task.slug} task={task} />
+      ))}
+    </>
+  );
+}
 
 export default Page;
