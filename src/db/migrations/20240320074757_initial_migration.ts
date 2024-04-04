@@ -20,7 +20,7 @@ export async function up(knex: Knex): Promise<void> {
         table.text("title").notNullable();
         table.text("description");
         table.text("statement").notNullable();
-        table.decimal("score_max", 10, 4).notNullable();
+        table.decimal("score_max", 10, 4).notNullable().defaultTo(100.0);
         table.text("mvp_output"); // Delete this later. It's just for making progress
       })
       .createTable("files", (table) => {
