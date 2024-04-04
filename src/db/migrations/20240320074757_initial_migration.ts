@@ -13,6 +13,8 @@ export async function up(knex: Knex): Promise<void> {
         table.text("school");
         table.text("name");
         table.text("country");
+        table.index("username");
+        table.index("email");
       })
       .createTable("tasks", (table) => {
         table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
@@ -22,6 +24,7 @@ export async function up(knex: Knex): Promise<void> {
         table.text("statement").notNullable();
         table.decimal("score_max", 10, 4).notNullable().defaultTo(100.0);
         table.text("mvp_output"); // Delete this later. It's just for making progress
+        table.index("slug");
       })
       .createTable("files", (table) => {
         table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
