@@ -1,11 +1,7 @@
 import type { FunctionComponent } from "react";
 
 const Page: FunctionComponent = () => {
-  return (
-    <p>
-      <div>Hello, world!</div>
-    </p>
-  );
+  return <div>Hello, world!</div>;
 };
 
 export default Page;

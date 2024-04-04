@@ -1,3 +1,5 @@
+"use client";
+
 import { FunctionComponent } from "react";
 import Link from "next/link";
 import { Task } from "lib/models";
