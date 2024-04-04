@@ -48,7 +48,6 @@ const config: { [key: string]: Knex.Config } = {
     useNullAsDefault: true,
     pool: {
       afterCreate: (conn: any, done: any) => {
-        console.debug("Pool created");
         done(false, conn);
       },
     },

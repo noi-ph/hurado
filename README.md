@@ -70,7 +70,7 @@ cp .env.template .env
 Migrate the database to the latest version:
 
 ```bash
-npm run migrate
+npm run db:migrate
 ```
 
 Run the development environment by using:
@@ -93,7 +93,8 @@ You should be seeing the following:
 ## Contribution Workflow
 
 1. Follow the above instructions regarding forking, cloning, and running this repository.
-2. Add and commit your changes to the repository. Don't forget to add your name to the [contributors](#contributors) section below.
+2. Read the [contributor's guide](contributor-guide.md) for useful tips to improve your experience
+3. Add and commit your changes to the repository. Don't forget to add your name to the [contributors](#contributors) section below.
 4. Submit a pull request (PR) and tag one of the contributors to review your code.
 5. Wait for the review and address the comments.
 6. Wait for the reviewer to approve your PR.
