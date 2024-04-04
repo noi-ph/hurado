@@ -1,13 +1,11 @@
-'use client';
+"use client";
 
-import type { FunctionComponent } from 'react';
+import type { FunctionComponent } from "react";
 
-import { useRouter } from 'next/navigation';
-import {
-  useEffect, useState, useRef, useCallback,
-} from 'react';
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef, useCallback } from "react";
 
-import styles from './page.module.css';
+import styles from "./page.module.css";
 
 const Page: FunctionComponent = () => {
   const [throttle, setThrottle] = useState<boolean>(false);
@@ -15,24 +13,24 @@ const Page: FunctionComponent = () => {
   const submit = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-        submit.current!.style.backgroundColor = throttle
-          ? 'var(--purple-light)'
-          : 'var(--purple)';
+    submit.current!.style.backgroundColor = throttle
+      ? "var(--purple-light)"
+      : "var(--purple)";
   }, [throttle]);
 
   const router = useRouter();
 
-  const [email, setEmail] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
   const register = useCallback(async () => {
     try {
-      const response = await fetch('api/v1/auth/register', {
-        method: 'POST',
+      const response = await fetch("api/v1/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email,
@@ -43,10 +41,10 @@ const Page: FunctionComponent = () => {
       });
 
       if (!response.ok) {
-        throw new Error('');
+        throw new Error("");
       }
 
-      router.push('/login');
+      router.push("/login");
     } catch (error) {}
 
     setThrottle(false);

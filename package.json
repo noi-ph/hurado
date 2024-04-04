@@ -11,7 +11,9 @@
     "knex:up": "knex --knexfile knex/knexfile.ts migrate:up",
     "knex:down": "knex --knexfile knex/knexfile.ts migrate:down",
     "knex:rollback": "knex --knexfile knex/knexfile.ts migrate:rollback",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix && prettier src --write",
+    "format": "prettier src --write"
   },
   "repository": {
     "type": "git",

@@ -1,23 +1,25 @@
 #navbar {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 
-    width: 100%;
-    height: fit-content;
-    padding: 5px 40px;
+  width: 100%;
+  height: fit-content;
+  padding: 5px 40px;
 }
 
 .copyright {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    width: 100%;
-    height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: fit-content;
 }
 
 @media (max-width: 540px) {
-    #navbar { padding: 5px 20px; }
+  #navbar {
+    padding: 5px 20px;
+  }
 }

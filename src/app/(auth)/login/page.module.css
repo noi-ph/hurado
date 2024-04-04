@@ -1,55 +1,57 @@
 #loginform {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 
-    width: 80%;
-    max-width: 500px;
-    height: fit-content;
-    gap: 20px;
-    padding: 15px 40px;
+  width: 80%;
+  max-width: 500px;
+  height: fit-content;
+  gap: 20px;
+  padding: 15px 40px;
 
-    border: 1px solid black;
-    border-radius: 20px;
+  border: 1px solid black;
+  border-radius: 20px;
 }
 
 #loginform h1 {
-    font-size: xx-large;
+  font-size: xx-large;
 }
 
 #loginform button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    width: 100%;
-    height: fit-content;
-    padding: 10px;
+  width: 100%;
+  height: fit-content;
+  padding: 10px;
 
-    border: 1px solid black;
-    border-radius: 20px;
+  border: 1px solid black;
+  border-radius: 20px;
 
-    background-color: var(--purple);
+  background-color: var(--purple);
 }
 
 #loginform input {
-    width: 100%;
-    max-width: 300px;
-    border-bottom: 1px solid grey;
+  width: 100%;
+  max-width: 300px;
+  border-bottom: 1px solid grey;
 }
 
 .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 
-    width: 100%;
-    height: fit-content;
-    gap: 10px;
+  width: 100%;
+  height: fit-content;
+  gap: 10px;
 }
 
 @media (max-width: 540px) {
-    #loginform { width: 95%; }
+  #loginform {
+    width: 95%;
+  }
 }
