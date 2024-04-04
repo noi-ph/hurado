@@ -24,6 +24,8 @@ export async function up(knex: Knex): Promise<void> {
         table.text("statement").notNullable();
         table.decimal("score_max", 10, 4).notNullable().defaultTo(100.0);
         table.text("mvp_output"); // Delete this later. It's just for making progress
+        table.float("time_limit").defaultTo(2.0); // in seconds
+        table.integer("memory_limit").unsigned().defaultTo(100000); // in bytes
         table.index("slug");
       })
       .createTable("files", (table) => {
