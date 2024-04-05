@@ -10,9 +10,12 @@ export async function up(knex: Knex): Promise<void> {
         table.text("hashed_password").notNullable();
         table.timestamp("created_at").defaultTo(knex.fn.now());
         // TODO: Implement user roles (e.g., admin, user, etc.)
+        table.enum("permission_level", ["admin", "user"]).defaultTo("user");
         table.text("school");
         table.text("name");
         table.text("country");
+        table.index("username");
+        table.index("email");
       })
       .createTable("tasks", (table) => {
         table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
@@ -22,11 +25,14 @@ export async function up(knex: Knex): Promise<void> {
         table.text("statement").notNullable();
         table.decimal("score_max", 10, 4).notNullable();
         table.text("mvp_output"); // Delete this later. It's just for making progress
+        table.float("time_limit_s").checkPositive("tasks_time_limit_s_check_positive");
+        table.integer("memory_limit_bytes").checkPositive("tasks_memory_limit_bytes_check_positive");
+        table.index("slug");
       })
       .createTable("files", (table) => {
         table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
         table.text("name").notNullable();
-        table.integer("size").notNullable();
+        table.integer("size").notNullable().checkPositive("files_size_check_positive");
         table.text("url");
       })
       .createTable("scripts", (table) => {
@@ -65,11 +71,21 @@ export async function up(knex: Knex): Promise<void> {
         table.timestamp("created_at").defaultTo(knex.fn.now());
         table.text("verdict");
         table.integer("raw_score");
-        table.integer("running_time_ms");
-        table.integer("running_memory_byte");
-        table.integer("compile_time_ms");
-        table.integer("compile_memory_byte");
+        table.integer("running_time_ms").checkPositive("results_running_time_ms_check_positive");
+        table.integer("running_memory_byte").checkPositive("results_running_memory_byte_check_positive");
+        table.integer("compile_time_ms").checkPositive("results_compile_time_ms_check_positive");
+        table.integer("compile_memory_byte").checkPositive("results_compile_memory_byte_check_positive");
         table.index(["submission_id", "created_at"]);
+      })
+      .createTable("contests", (table) => {
+        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
+        table.text("slug").notNullable().unique();
+        table.text("title").notNullable();
+        table.text("description");
+        table.uuid("owner_id").notNullable().references("id").inTable("users");
+        table.timestamp("start_time");
+        table.timestamp("end_time");
+        table.index("slug");
       })
       .alterTable("submissions", (table) => {
         table
@@ -93,6 +109,7 @@ export async function down(knex: Knex): Promise<void> {
       .dropTable("scripts")
       .dropTable("files")
       .dropTable("users")
-      .dropTable("tasks");
+      .dropTable("tasks")
+      .dropTable("contests");
   });
 }

@@ -111,3 +111,4 @@ You should be seeing the following:
 - [Angelu Garcia](https://github.com/devByGelu)
 - [The Boy (alias)](https://github.com/RedBlazerFlame)
 - [Davis Magpantay](https://github.com/dexva)
+- [Clyde Jallorina](https://github.com/clydejallorina)
