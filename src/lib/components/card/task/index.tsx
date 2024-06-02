@@ -2,11 +2,11 @@
 
 import { FunctionComponent } from "react";
 import Link from "next/link";
-import { Task } from "lib/models";
+import { TaskSummary } from "lib/models";
 import styles from "./index.module.css";
 
 type TaskCardProps = {
-  task: Task;
+  task: TaskSummary;
 };
 
 export const TaskCard: FunctionComponent<TaskCardProps> = ({ task }) => (

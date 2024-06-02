@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
-import knex from "db";
-import type { Task } from "lib/models";
+import { Task } from "db/types";
+import { db } from "db";
 
 async function getTaskData(slug: string): Promise<Task | undefined> {
-  const task = await knex
-    .table("tasks")
-    .select(["title", "description", "statement"])
-    .where({ slug })
-    .first();
+  const task: Task | undefined = await db
+    .selectFrom("tasks")
+    .selectAll()
+    .where("slug", "=", slug)
+    .executeTakeFirst();
 
   return task;
 }

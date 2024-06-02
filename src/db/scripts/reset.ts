@@ -1,16 +1,16 @@
-import createKnex, { Knex } from "knex";
+import { Kysely, sql } from "kysely";
+import { db } from "../index";
 
-import config from "../knexfile";
+reset_database(db);
 
-const knex: Knex = createKnex(config.development);
-reset_database(knex);
-
-export async function reset_database(knex: Knex): Promise<void> {
+async function reset_database(db: Kysely<any>): Promise<void> {
   if (process.env.ENVIRONMENT === "development") {
     try {
-      await knex.raw(`DROP SCHEMA public CASCADE`);
-      await knex.raw(`CREATE SCHEMA public`);
-      process.exit(0);
+      db.transaction().execute(async (trx) => {
+        await sql`DROP SCHEMA public CASCADE`.execute(trx);
+        await sql`CREATE SCHEMA public`.execute(trx);
+      });
+      console.info("Wiped the database");
     } catch (err) {
       console.error(err);
       process.exit(1);

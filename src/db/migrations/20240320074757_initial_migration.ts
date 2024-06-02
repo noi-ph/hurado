@@ -1,115 +1,160 @@
-import type { Knex } from "knex";
+import { Kysely, sql } from "kysely";
 
-export async function up(knex: Knex): Promise<void> {
-  return knex.transaction(async (trx) => {
-    return trx.schema
-      .createTable("users", (table) => {
-        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
-        table.text("email").notNullable().unique();
-        table.text("username").notNullable().unique();
-        table.text("hashed_password").notNullable();
-        table.timestamp("created_at").defaultTo(knex.fn.now());
-        // TODO: Implement user roles (e.g., admin, user, etc.)
-        table.enum("permission_level", ["admin", "user"]).defaultTo("user");
-        table.text("school");
-        table.text("name");
-        table.text("country");
-        table.index("username");
-        table.index("email");
-      })
-      .createTable("tasks", (table) => {
-        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
-        table.text("slug").notNullable().unique();
-        table.text("title").notNullable();
-        table.text("description");
-        table.text("statement").notNullable();
-        table.decimal("score_max", 10, 4).notNullable();
-        table.text("mvp_output"); // Delete this later. It's just for making progress
-        table.float("time_limit_s").checkPositive("tasks_time_limit_s_check_positive");
-        table.integer("memory_limit_bytes").checkPositive("tasks_memory_limit_bytes_check_positive");
-        table.index("slug");
-      })
-      .createTable("files", (table) => {
-        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
-        table.text("name").notNullable();
-        table.integer("size").notNullable().checkPositive("files_size_check_positive");
-        table.text("url");
-      })
-      .createTable("scripts", (table) => {
-        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
-        table.uuid("file_id").notNullable().references("id").inTable("files");
-        table.text("language_code").notNullable();
-        table.text("runtime_args");
-      })
-      .createTable("submissions", (table) => {
-        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
-        table.uuid("user_id").notNullable().references("id").inTable("users");
-        table.uuid("task_id").notNullable().references("id").inTable("tasks");
-        table.text("language_code").notNullable();
-        table.timestamp("created_at").defaultTo(knex.fn.now());
-        table.text("runtime_args");
-        table.uuid("official_result_id");
-        table.index(["created_at", "user_id", "task_id"]);
-        table.index(["created_at", "task_id"]);
-      })
-      .createTable("submission_files", (table) => {
-        table
-          .uuid("submission_id")
-          .notNullable()
-          .references("id")
-          .inTable("submissions");
-        table.uuid("file_id").notNullable().references("id").inTable("files");
-        table.primary(["submission_id", "file_id"]);
-      })
-      .createTable("results", (table) => {
-        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
-        table
-          .uuid("submission_id")
-          .notNullable()
-          .references("id")
-          .inTable("submissions");
-        table.timestamp("created_at").defaultTo(knex.fn.now());
-        table.text("verdict");
-        table.integer("raw_score");
-        table.integer("running_time_ms").checkPositive("results_running_time_ms_check_positive");
-        table.integer("running_memory_byte").checkPositive("results_running_memory_byte_check_positive");
-        table.integer("compile_time_ms").checkPositive("results_compile_time_ms_check_positive");
-        table.integer("compile_memory_byte").checkPositive("results_compile_memory_byte_check_positive");
-        table.index(["submission_id", "created_at"]);
-      })
-      .createTable("contests", (table) => {
-        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
-        table.text("slug").notNullable().unique();
-        table.text("title").notNullable();
-        table.text("description");
-        table.uuid("owner_id").notNullable().references("id").inTable("users");
-        table.timestamp("start_time");
-        table.timestamp("end_time");
-        table.index("slug");
-      })
-      .alterTable("submissions", (table) => {
-        table
-          .uuid("official_result_id")
-          .alter()
-          .references("id")
-          .inTable("results");
-      });
-  });
+export async function up(db: Kysely<any>): Promise<void> {
+  await db.schema
+    .createTable("users")
+    .addColumn("id", "uuid", (col) =>
+      col
+        .primaryKey()
+        .defaultTo(sql`uuid_generate_v4()`)
+        .notNull()
+    )
+    .addColumn("email", "text", (col) => col.notNull().unique())
+    .addColumn("username", "text", (col) => col.notNull().unique())
+    .addColumn("hashed_password", "text", (col) => col.notNull())
+    .addColumn("created_at", "timestamp", (col) =>
+      col.defaultTo(sql`now()`).notNull()
+    )
+    .addColumn("school", "text")
+    .addColumn("name", "text")
+    .addColumn("country", "text")
+    .execute();
+
+  await db.schema
+    .createTable("tasks")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
+    )
+    .addColumn("slug", "text", (col) => col.notNull().unique())
+    .addColumn("title", "text", (col) => col.notNull())
+    .addColumn("description", "text", (col) => col)
+    .addColumn("statement", "text", (col) => col.notNull())
+    .addColumn("score_max", "decimal", (col) => col.notNull())
+    .addColumn("mvp_output", "text") // Delete this later. It's just for making progress
+    .execute();
+
+  await db.schema
+    .createTable("files")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
+    )
+    .addColumn("name", "text", (col) => col.notNull())
+    .addColumn("size", "integer", (col) => col.notNull())
+    .addColumn("url", "text")
+    .execute();
+
+  await db.schema
+    .createTable("scripts")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
+    )
+    .addColumn("file_id", "uuid", (col) => col.notNull().references("files.id"))
+    .addColumn("language_code", "text", (col) => col.notNull())
+    .addColumn("runtime_args", "text")
+    .execute();
+
+  await db.schema
+    .createTable("submissions")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
+    )
+    .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id"))
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
+    .addColumn("language_code", "text", (col) => col.notNull())
+    .addColumn("created_at", "timestamp", (col) =>
+      col.defaultTo(sql`now()`).notNull()
+    )
+    .addColumn("runtime_args", "text")
+    .addColumn("official_result_id", "uuid")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_submissions_created_at_user_id_task_id")
+    .on("submissions")
+    .columns(["created_at", "user_id", "task_id"])
+    .execute();
+
+  await db.schema
+    .createIndex("idx_submissions_created_at_task_id")
+    .on("submissions")
+    .columns(["created_at", "task_id"])
+    .execute();
+
+  await db.schema
+    .createTable("submission_files")
+    .addColumn("submission_id", "uuid", (col) =>
+      col.notNull().references("submissions.id")
+    )
+    .addColumn("file_id", "uuid", (col) => col.notNull().references("files.id"))
+    .addPrimaryKeyConstraint("pk_submission_files", [
+      "submission_id",
+      "file_id",
+    ])
+    .execute();
+
+  await db.schema
+    .createTable("results")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
+    )
+    .addColumn("submission_id", "uuid", (col) =>
+      col.notNull().references("submissions.id")
+    )
+    .addColumn("created_at", "timestamp", (col) =>
+      col.defaultTo(sql`now()`).notNull()
+    )
+    .addColumn("verdict", "text")
+    .addColumn("raw_score", "integer")
+    .addColumn("running_time_ms", "integer")
+    .addColumn("running_memory_byte", "integer")
+    .addColumn("compile_time_ms", "integer")
+    .addColumn("compile_memory_byte", "integer")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_results_submission_id_created_at")
+    .on("results")
+    .columns(["submission_id", "created_at"])
+    .execute();
+
+  await db.schema
+    .createTable("contests")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
+    )
+    .addColumn("slug", "text", (col) => col.notNull().unique())
+    .addColumn("title", "text", (col) => col.notNull())
+    .addColumn("description", "text")
+    .addColumn("owner_id", "uuid", (col) =>
+      col.notNull().references("users.id")
+    )
+    .addColumn("start_time", "timestamp")
+    .addColumn("end_time", "timestamp")
+    .execute();
+
+  await db.schema
+    .alterTable("submissions")
+    .addForeignKeyConstraint(
+      "fk_submissions_official_result_id",
+      ["official_result_id"],
+      "results",
+      ["id"]
+    )
+    .execute();
 }
 
-export async function down(knex: Knex): Promise<void> {
-  return knex.transaction(async (trx) => {
-    return trx.schema
-      .alterTable("submissions", (table) => {
-        table.dropForeign(["official_result_id"]);
-      })
-      .dropTable("results")
-      .dropTable("submission_files")
-      .dropTable("submissions")
-      .dropTable("scripts")
-      .dropTable("files")
-      .dropTable("users")
-      .dropTable("tasks")
-      .dropTable("contests");
-  });
+export async function down(db: Kysely<any>): Promise<void> {
+  await db.schema
+    .alterTable("submissions")
+    .dropConstraint("fk_submissions_official_result_id")
+    .execute();
+
+  await db.schema.dropTable("contests").execute();
+  await db.schema.dropTable("results").execute();
+  await db.schema.dropTable("submission_files").execute();
+  await db.schema.dropTable("submissions").execute();
+  await db.schema.dropTable("scripts").execute();
+  await db.schema.dropTable("files").execute();
+  await db.schema.dropTable("tasks").execute();
+  await db.schema.dropTable("users").execute();
 }
