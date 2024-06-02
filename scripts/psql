@@ -1,0 +1,4 @@
+#!/bin/bash
+# Local development helper script to access postgres directly
+
+docker exec -it hurado-postgres sh -c 'PGPASSWORD=password psql -U hurado hurado'

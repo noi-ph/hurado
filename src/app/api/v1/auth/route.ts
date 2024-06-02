@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 import { NextRequest, NextResponse } from "next/server";
-import type { User } from "lib/models";
+import { User } from "db/types";
 
 type ServerPayload = {
   user: User;

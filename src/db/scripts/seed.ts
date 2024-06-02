@@ -1,13 +1,28 @@
-import { Knex } from "knex";
 import { hashSync } from "bcryptjs";
-import { Task, User } from "lib/models";
+import { Kysely } from "kysely";
+import { Models, TaskCreate, UserCreate } from "db/types";
+import { db } from "../index";
 
 const hash = (password: string) => hashSync(password, 10);
 
-type SeedUser = Omit<User, "created_at">;
+seed_database(db);
 
-export async function seed(knex: Knex): Promise<void> {
-  const users: SeedUser[] = [
+async function seed_database(db: Kysely<Models>): Promise<void> {
+  if (process.env.ENVIRONMENT === "development") {
+    try {
+      actually_seed_database(db);
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  } else {
+    console.error("Resetting the database only works on development");
+    process.exit(2);
+  }
+}
+
+async function actually_seed_database(db: Kysely<Models>) {
+  const users: UserCreate[] = [
     {
       email: "user-4b018dd0-8316@mailinator.com",
       username: "user-4b018dd0-8316",
@@ -16,7 +31,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: "User 4b018dd0-8316",
     },
   ];
-  const tasks: Task[] = [
+  const tasks: TaskCreate[] = [
     {
       slug: "who-is-the-oldest",
       title: "Who is the oldest?",
@@ -28,8 +43,9 @@ export async function seed(knex: Knex): Promise<void> {
       score_max: 100,
     },
   ];
-  return knex.transaction(async (trx) => {
-    await trx.table("users").insert(users);
-    await trx.table("tasks").insert(tasks);
+
+  return db.transaction().execute(async (trx) => {
+    await trx.insertInto("users").values(users).execute();
+    await trx.insertInto("tasks").values(tasks).execute();
   });
 }

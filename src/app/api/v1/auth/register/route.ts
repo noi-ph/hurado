@@ -1,37 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hashSync } from "bcryptjs";
-import type { User } from "lib/models";
 
-import knex from "db";
+import { db } from "db";
+import { User } from "db/types";
 
 export async function POST(request: NextRequest) {
   const { email, username, password, confirmPassword } = await request.json();
-
-  try {
-    const user: User = await knex("users").where({ email }).first();
-
-    if (user) {
-      return NextResponse.json({}, { status: 409 });
-    }
-  } catch (error) {}
-
-  try {
-    const user: User = await knex("users").where({ username }).first();
-
-    if (user) {
-      return NextResponse.json({}, { status: 409 });
-    }
-  } catch (error) {}
 
   if (password !== confirmPassword) {
     return NextResponse.json({}, { status: 400 });
   }
 
-  await knex("users").insert({
-    email,
-    username,
-    hashed_password: hashSync(password, 10),
-  });
+  db.transaction().execute(async (trx) => {
+    {
+      const user: User | undefined = await trx
+        .selectFrom("users")
+        .selectAll()
+        .where("email", "=", email)
+        .executeTakeFirst();
 
-  return NextResponse.json({}, { status: 200 });
+      if (user) {
+        return NextResponse.json({}, { status: 409 });
+      }
+    }
+
+    {
+      const user: User | undefined = await trx
+        .selectFrom("users")
+        .selectAll()
+        .where("username", "=", username)
+        .executeTakeFirstOrThrow();
+
+      if (user) {
+        return NextResponse.json({}, { status: 409 });
+      }
+    }
+
+    await trx
+      .insertInto("users")
+      .values({
+        email,
+        username,
+        hashed_password: hashSync(password, 10),
+      })
+      .execute();
+
+    return NextResponse.json({}, { status: 200 });
+  });
 }

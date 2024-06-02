@@ -1,12 +1,13 @@
-import knex from "db";
-import { Task } from "lib/models";
+import { db } from "db";
 import { TaskCard } from "lib/components";
+import { TaskSummary } from "lib/models";
 
-async function getTasksData(): Promise<Task[]> {
-  const tasks = await knex
-    .table("tasks")
+async function getTasksData(): Promise<TaskSummary[]> {
+  const tasks = await db
+    .selectFrom("tasks")
     .select(["title", "slug", "description"])
-    .limit(1000);
+    .limit(1000)
+    .execute();
 
   return tasks;
 }
