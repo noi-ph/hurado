@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { Fragment, useEffect, useState } from "react";
 
-import { useUser } from "lib/hooks";
+import { useUser } from "client/sessions";
 import styles from "./index.module.css";
 
 import { Member } from "./member";

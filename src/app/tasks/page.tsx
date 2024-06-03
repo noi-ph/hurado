@@ -1,6 +1,6 @@
 import { db } from "db";
-import { TaskCard } from "lib/components";
-import { TaskSummary } from "lib/models";
+import { TaskCard } from "client/components";
+import { TaskSummary } from "common/types";
 
 async function getTasksData(): Promise<TaskSummary[]> {
   const tasks = await db

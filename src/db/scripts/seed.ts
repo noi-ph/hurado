@@ -1,6 +1,6 @@
 import { hashSync } from "bcryptjs";
 import { Insertable, Kysely } from "kysely";
-import { Models, TaskTable, UserTable } from "db/types";
+import { Models, TaskTable, UserTable } from "common/types";
 import { db } from "../index";
 
 const hash = (password: string) => hashSync(password, 10);
@@ -24,11 +24,11 @@ async function seed_database(db: Kysely<Models>): Promise<void> {
 async function actually_seed_database(db: Kysely<Models>) {
   const users: Insertable<UserTable>[] = [
     {
-      email: "user-4b018dd0-8316@mailinator.com",
-      username: "user-4b018dd0-8316",
+      email: "kevin@example.com",
+      username: "kevin",
       hashed_password: hash("password"),
       school: "University of the Philippines - Diliman",
-      name: "User 4b018dd0-8316",
+      name: "Kevin Sogo",
     },
   ];
   const tasks: Insertable<TaskTable>[] = [

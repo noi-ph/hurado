@@ -1,36 +1,17 @@
-import jwt from "jsonwebtoken";
-
 import { NextRequest, NextResponse } from "next/server";
-import { UserPublic } from "db/types";
-
-type ServerPayload = {
-  user: UserPublic;
-};
-
-export const tokenize = (load: ServerPayload) =>
-  jwt.sign(load, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRE!,
-  });
+import { getSession, tokenizeSession } from "server/sessions";
 
 export async function GET(request: NextRequest) {
-  const token = request.headers.get("Authorization")?.split(" ")[1];
-
-  if (!token) {
+  const session = getSession(request);
+  if (session == null) {
     return NextResponse.json({}, { status: 401 });
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as ServerPayload;
-    const payload = { user: decoded.user };
-
-    return NextResponse.json(payload, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${tokenize(payload)}`,
-      },
-    });
-  } catch (error) {}
-
-  return NextResponse.json({}, { status: 401 });
+  return NextResponse.json(session, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${tokenizeSession(session)}`,
+    },
+  });
 }

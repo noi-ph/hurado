@@ -5,7 +5,7 @@ import type { FunctionComponent } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef, useCallback } from "react";
 
-import { useToken, useUser } from "lib/hooks";
+import { useToken, useUser } from "client/sessions";
 import styles from "./page.module.css";
 
 const Page: FunctionComponent = () => {
@@ -14,9 +14,7 @@ const Page: FunctionComponent = () => {
   const submit = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    submit.current!.style.backgroundColor = throttle
-      ? "var(--purple-light)"
-      : "var(--purple)";
+    submit.current!.style.backgroundColor = throttle ? "var(--purple-light)" : "var(--purple)";
   }, [throttle]);
 
   const router = useRouter();
@@ -68,26 +66,13 @@ const Page: FunctionComponent = () => {
       <h1>Login</h1>
       <div className={styles.row}>
         <label htmlFor="username">Username:</label>
-        <input
-          type="text"
-          id="username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <input type="text" id="username" onChange={(e) => setUsername(e.target.value)} />
       </div>
       <div className={styles.row}>
         <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} />
       </div>
-      <button
-        type="button"
-        ref={submit}
-        disabled={throttle}
-        onClick={throttledLogin}
-      >
+      <button type="button" ref={submit} disabled={throttle} onClick={throttledLogin}>
         Submit
       </button>
     </form>

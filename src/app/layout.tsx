@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 // eslint-disable-next-line camelcase
 import { Work_Sans } from "next/font/google";
 
-import { Navbar } from "lib/components";
+import { Navbar } from "client/components";
 import styles from "./layout.module.css";
 
 export const metadata: Metadata = {

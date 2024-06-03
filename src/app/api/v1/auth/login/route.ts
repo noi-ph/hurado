@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { compareSync } from "bcryptjs";
 
 import { db } from "db";
-
-import { UserPublic } from "db/types";
-import { tokenize } from "../route";
+import { UserPublic } from "common/types";
+import { tokenizeSession } from "server/sessions";
+import { SessionData } from "common/types/auth";
 
 export async function POST(request: NextRequest) {
   const { username, password } = await request.json();
-
   const secret = await db
     .selectFrom("users")
     .select(["id", "email", "username", "name", "hashed_password"])
@@ -22,16 +21,15 @@ export async function POST(request: NextRequest) {
       username: secret.username,
       name: secret.name,
     };
-    return NextResponse.json(
-      { user },
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenize({ user })}`,
-        },
-      }
-    );
+    const session: SessionData = { user };
+
+    return NextResponse.json(session, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenizeSession(session)}`,
+      },
+    });
   }
 
   return NextResponse.json({}, { status: 401 });
