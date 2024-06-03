@@ -8,7 +8,7 @@ module.exports = {
    * printWidth: <int>
    * default: 80
    */
-  printWidth: 80,
+  printWidth: 100,
 
   /**
    * Tab Width

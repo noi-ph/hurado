@@ -1,6 +1,6 @@
 import { hashSync } from "bcryptjs";
-import { Kysely } from "kysely";
-import { Models, TaskCreate, UserCreate } from "db/types";
+import { Insertable, Kysely } from "kysely";
+import { Models, TaskTable, UserTable } from "db/types";
 import { db } from "../index";
 
 const hash = (password: string) => hashSync(password, 10);
@@ -22,7 +22,7 @@ async function seed_database(db: Kysely<Models>): Promise<void> {
 }
 
 async function actually_seed_database(db: Kysely<Models>) {
-  const users: UserCreate[] = [
+  const users: Insertable<UserTable>[] = [
     {
       email: "user-4b018dd0-8316@mailinator.com",
       username: "user-4b018dd0-8316",
@@ -31,7 +31,7 @@ async function actually_seed_database(db: Kysely<Models>) {
       name: "User 4b018dd0-8316",
     },
   ];
-  const tasks: TaskCreate[] = [
+  const tasks: Insertable<TaskTable>[] = [
     {
       slug: "who-is-the-oldest",
       title: "Who is the oldest?",

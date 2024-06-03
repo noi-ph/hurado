@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 
 import { NextRequest, NextResponse } from "next/server";
-import { User } from "db/types";
+import { UserPublic } from "db/types";
 
 type ServerPayload = {
-  user: User;
+  user: UserPublic;
 };
 
 export const tokenize = (load: ServerPayload) =>

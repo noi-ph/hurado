@@ -1,10 +1,4 @@
-import {
-  ColumnType,
-  Generated,
-  Insertable,
-  Selectable,
-  Updateable,
-} from "kysely";
+import { ColumnType, Generated, Insertable, Selectable, Updateable } from "kysely";
 
 export interface Models {
   users: UserTable;
@@ -46,7 +40,8 @@ export type ScriptTable = {
 };
 
 export type User = Selectable<UserTable>;
-export type UserCreate = Insertable<UserTable>;
+export type UserPublic = Pick<User, "id" | "email" | "username" | "name">;
+export type UserCreate = Pick<Insertable<UserTable>, "email" | "username" | "hashed_password">;
 export type UserUpdate = Updateable<UserTable>;
 
 export type Task = Selectable<TaskTable>;

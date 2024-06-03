@@ -3,19 +3,25 @@ import { compareSync } from "bcryptjs";
 
 import { db } from "db";
 
-import { User } from "db/types";
+import { UserPublic } from "db/types";
 import { tokenize } from "../route";
 
 export async function POST(request: NextRequest) {
   const { username, password } = await request.json();
 
-  const user: User | undefined = await db
+  const secret = await db
     .selectFrom("users")
-    .selectAll()
+    .select(["id", "email", "username", "name", "hashed_password"])
     .where("username", "=", username)
     .executeTakeFirst();
 
-  if (user && compareSync(password, user.hashed_password)) {
+  if (secret && compareSync(password, secret.hashed_password)) {
+    const user: UserPublic = {
+      id: secret.id,
+      email: secret.email,
+      username: secret.username,
+      name: secret.name,
+    };
     return NextResponse.json(
       { user },
       {
