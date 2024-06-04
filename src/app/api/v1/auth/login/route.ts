@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { compareSync } from "bcryptjs";
 
+import { cookies } from "next/headers";
 import { db } from "db";
 import { UserPublic } from "common/types";
 import { tokenizeSession } from "server/sessions";
@@ -22,14 +23,8 @@ export async function POST(request: NextRequest) {
       name: secret.name,
     };
     const session: SessionData = { user };
-
-    return NextResponse.json(session, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${tokenizeSession(session)}`,
-      },
-    });
+    cookies().set("session", tokenizeSession(session));
+    return NextResponse.json(session);
   }
 
   return NextResponse.json({}, { status: 401 });

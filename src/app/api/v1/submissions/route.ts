@@ -6,5 +6,5 @@ export async function POST(request: NextRequest) {
   if (session == null) {
     return NextResponse.json({}, { status: 401 });
   }
-  return NextResponse.json({ message: "nothing yet" }, { status: 200 });
+  return NextResponse.json({ message: "nothing yet" });
 }

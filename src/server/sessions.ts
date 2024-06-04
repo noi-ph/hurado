@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
+import { cookies } from "next/headers";
 import { SessionData } from "common/types/auth";
 import { JWT_EXPIRE, JWT_SECRET } from "server/secrets";
 
@@ -11,19 +12,24 @@ export const tokenizeSession = (load: SessionData) => {
   });
 };
 
-export const getSession = (request: NextRequest): SessionData => {
-  const token = request.headers.get("Authorization")?.split(" ")[1];
+export const getSessionFromToken = (token: string | undefined): SessionData | null => {
   if (!token) {
-    throw new InvalidSessionException();
+    return null;
   }
 
   try {
     return jwt.verify(token, JWT_SECRET) as SessionData;
   } catch (e) {
-    if (e instanceof Error) {
-      throw new InvalidSessionException((e as Error).message);
-    } else {
-      throw new InvalidSessionException();
-    }
+    return null;
+  }
+};
+
+export const getSession = (request?: NextRequest): SessionData | null => {
+  if (request != null) {
+    const token = request.cookies.get("session")?.value;
+    return getSessionFromToken(token);
+  } else {
+    const token = cookies().get("session")?.value;
+    return getSessionFromToken(token);
   }
 };

@@ -1,37 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getCookie, setCookie, deleteCookie, hasCookie } from "cookies-next";
-import { UserPublic } from "common/types";
+import React, {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from "react";
+import { SessionData } from "common/types";
 
-export const useToken = () => {
-  const [token, setToken] = useState<string | null>(
-    hasCookie("hurado/token") ? getCookie("hurado/token")! : null
-  );
-
-  useEffect(() => {
-    if (token === null) {
-      return deleteCookie("hurado/token");
-    }
-
-    setCookie("hurado/token", token);
-  }, [token]);
-
-  return { token, setToken };
+type SessionContextValue = {
+  session: SessionData | null;
+  setSession: Dispatch<SetStateAction<SessionData | null>>;
 };
 
-export const useUser = () => {
-  const [user, setUser] = useState<UserPublic | null>(
-    hasCookie("hurado/user") ? JSON.parse(getCookie("hurado/user")!) : null
-  );
+export const SessionContext = createContext<SessionContextValue | null>(null);
 
-  useEffect(() => {
-    if (user === null) {
-      return deleteCookie("hurado/user");
-    }
-
-    setCookie("hurado/user", user);
-  }, [user]);
-
-  return { user, setUser };
+type SessionProviderProps = {
+  initial: SessionData | null;
+  children?: ReactNode;
 };
+
+export function SessionProvider({ initial, children }: SessionProviderProps) {
+  const [session, setSession] = useState<SessionData | null>(initial);
+
+  const value: SessionContextValue = {
+    session,
+    setSession,
+  };
+  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+}
+
+export function useSession(): SessionData | null {
+  const value = useContext(SessionContext);
+  if (value == null) {
+    throw new Error("Must have an ancestor SessionProvider to for 'useSession'");
+  }
+  return value.session;
+}
+
+export function useSessionWithUpdate(): SessionContextValue {
+  const value = useContext(SessionContext);
+  if (value == null) {
+    throw new Error("Must have an ancestor SessionProvider to for 'useSession'");
+  }
+  return value;
+}
