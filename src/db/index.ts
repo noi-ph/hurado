@@ -2,7 +2,14 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
-import { Models } from "./types"; // this is the Database interface we defined earlier
+import {
+  POSTGRES_DB,
+  POSTGRES_HOSTNAME,
+  POSTGRES_PASSWORD,
+  POSTGRES_PORT,
+  POSTGRES_USER,
+} from "server/secrets";
+import { Models } from "common/types"; // this is the Database interface we defined earlier
 
 let currentPath = process.cwd();
 
@@ -18,19 +25,14 @@ const ENV_PATH = fs.realpathSync(`${currentPath}/.env`);
 console.info(`Loading environment from ${ENV_PATH}`);
 dotenv.config({ path: ENV_PATH });
 
-const POSTGRES_HOSTNAME =
-  process.env.IS_UNDER_DOCKER === "true"
-    ? process.env.DOCKER_POSTGRES_HOSTNAME
-    : process.env.POSTGRES_HOSTNAME;
-
 const dialect = new PostgresDialect({
   pool: new Pool({
-    database: process.env.POSTGRES_DB,
+    database: POSTGRES_DB,
     host: POSTGRES_HOSTNAME,
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    port: +process.env.POSTGRES_PORT!,
-    max: 10,
+    user: POSTGRES_USER,
+    password: POSTGRES_PASSWORD,
+    port: POSTGRES_PORT,
+    max: 2,
   }),
 });
 

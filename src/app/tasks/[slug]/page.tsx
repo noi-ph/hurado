@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { Task } from "db/types";
+import { SubmitComponent } from "client/components/submit";
+import { Task } from "common/types";
 import { db } from "db";
 
 async function getTaskData(slug: string): Promise<Task | undefined> {
@@ -30,6 +31,7 @@ async function Page(props: TaskPageProps) {
       <h1>{task.title}</h1>
       <p>{task.description}</p>
       <p>{task.statement}</p>
+      <SubmitComponent />
     </>
   );
 }

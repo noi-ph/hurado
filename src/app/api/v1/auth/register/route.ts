@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { hashSync } from "bcryptjs";
 
 import { db } from "db";
-import { User } from "db/types";
+import { SessionData, UserPublic } from "common/types";
+import { tokenizeSession } from "server/sessions";
 
 export async function POST(request: NextRequest) {
   const { email, username, password, confirmPassword } = await request.json();
@@ -13,9 +14,9 @@ export async function POST(request: NextRequest) {
 
   db.transaction().execute(async (trx) => {
     {
-      const user: User | undefined = await trx
+      const user = await trx
         .selectFrom("users")
-        .selectAll()
+        .select("id")
         .where("email", "=", email)
         .executeTakeFirst();
 
@@ -25,18 +26,18 @@ export async function POST(request: NextRequest) {
     }
 
     {
-      const user: User | undefined = await trx
+      const user = await trx
         .selectFrom("users")
-        .selectAll()
+        .select("id")
         .where("username", "=", username)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
 
       if (user) {
         return NextResponse.json({}, { status: 409 });
       }
     }
 
-    await trx
+    const result = await trx
       .insertInto("users")
       .values({
         email,
@@ -45,6 +46,20 @@ export async function POST(request: NextRequest) {
       })
       .execute();
 
-    return NextResponse.json({}, { status: 200 });
+    const user: UserPublic = {
+      id: result[0].insertId as unknown as string,
+      email,
+      username,
+      name: "Unknown User",
+    };
+
+    const session: SessionData = { user };
+    return NextResponse.json(session, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenizeSession(session)}`,
+      },
+    });
   });
 }
