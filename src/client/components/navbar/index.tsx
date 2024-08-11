@@ -4,7 +4,7 @@ import type { FunctionComponent, ReactNode } from "react";
 
 import Link from "next/link";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSession } from "client/sessions";
 import styles from "./index.module.css";

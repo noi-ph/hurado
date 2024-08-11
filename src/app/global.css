@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --purple: rgb(109, 117, 254);
   --purple-light: rgb(197, 195, 255);
@@ -13,25 +17,6 @@
 a:hover,
 button:hover {
   cursor: pointer;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-
-  width: 100%;
-  height: fit-content;
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-  height: fit-content;
-  gap: 15px;
 }
 
 footer {

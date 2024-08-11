@@ -1,6 +1,7 @@
 import { Insertable, Selectable, Updateable } from "kysely";
 
 export type TaskTable = {
+  id: string;
   slug: string;
   title: string;
   description?: string;
