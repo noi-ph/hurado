@@ -1,19 +1,19 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
-import { Task } from "common/types";
-import { TaskEditorStatement } from "./task_editor_statement";
-import { useParams } from "next/navigation";
 import { MathJaxContext } from "better-react-mathjax";
-import { MathJaxConfig } from "../mathjax";
-import { Navbar } from "client/components/navbar";
 import classNames from "classnames";
-import styles from "./task_editor.module.css";
+import { memo, ReactNode, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Navbar } from "client/components/navbar";
 import layoutStyles from "client/components/layouts/layout.module.css";
+import { MathJaxConfig } from "client/components/mathjax";
+import { TaskEditorTask } from "common/types";
+import { TaskEditorStatement } from "./task_editor_statement";
+import styles from "./task_editor.module.css";
 import { coerceTaskEditorTab, TaskEditorTab, TaskEditorTabComponent } from "./task_editor_tabs";
-
+import { TaskEditorDetails } from "./task_editor_details";
 
 type TaskEditorProps = {
-  task: Task;
+  task: TaskEditorTask;
 };
 
 export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
@@ -33,24 +33,29 @@ export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
     case TaskEditorTab.Statement:
       content = <TaskEditorStatement task={task} setTask={setTask} />;
       break;
+    case TaskEditorTab.Details:
+      content = <TaskEditorDetails task={task} setTask={setTask} />;
+      break;
     default:
       content = null;
   }
 
+  // Unfortunately, this thing has to make its own header because it needs to put it in the
+  // CSS grid in order to handle overflow scrolling properly in the lower-right corner
+  // with OverlayScrollbars. Yeah. The code is scuffed. It's the only place in the world
+  // that does this!
   return (
     <MathJaxContext config={MathJaxConfig}>
-      <body className={styles.page}>
-        <div
-          className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
-        >
-          <header className={classNames(styles.header, layoutStyles.header)}>
-            <Navbar />
-          </header>
-          <TaskTitleDisplay title={task.title} slug={task.slug}/>
-          <TaskEditorTabComponent className={styles.tabs} tab={tab} />
-          {content}
-        </div>
-      </body>
+      <div
+        className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
+      >
+        <header className={classNames(styles.header, layoutStyles.header)}>
+          <Navbar />
+        </header>
+        <TaskTitleDisplay title={task.title} slug={task.slug} />
+        <TaskEditorTabComponent className={styles.tabs} tab={tab} />
+        {content}
+      </div>
     </MathJaxContext>
   );
 };
@@ -60,11 +65,15 @@ type TaskTitleDisplayProps = {
   slug: string;
 };
 
-function TaskTitleDisplay({ title, slug }: TaskTitleDisplayProps) {
+const TaskTitleDisplay = memo(({ title, slug }: TaskTitleDisplayProps) => {
   return (
     <div className={classNames(styles.title, "flex flex-row justify-between mx-4")}>
-      <div className={classNames("font-sans text-2xl", title ? 'text-black' : 'text-gray-200')}>{title}</div>
-      <div className={classNames("font-mono text-2xl", slug ? 'text-gray-500' : 'text-gray-200')}>{slug}</div>
+      <div className={classNames("font-sans text-2xl", title ? "text-black" : "text-gray-300")}>
+        {title || 'Title'}
+      </div>
+      <div className={classNames("font-mono text-2xl", slug ? "text-gray-500" : "text-gray-300")}>
+        {slug || 'Slug'}
+      </div>
     </div>
   );
-}
+});

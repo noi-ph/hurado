@@ -4,8 +4,9 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     fontFamily: {
-      sans: ["Montserrat", "sans-serif"],
-      mono: ["Space Mono", "monospace"],
+      sans: ["var(--font-montserrat)", "sans-serif"],
+      mono: ["var(--font-space-mono)", "monospace"],
+      roboto: ["var(--font-roboto)", "sans-serif"],
     },
     colors: {
       white: colors.white,
@@ -16,6 +17,12 @@ module.exports = {
         200: "#A7BDFF",
         300: "#85A4FF",
         500: "#4B11F1",
+      },
+      gray: {
+        200: '#EEEEEE',
+        300: '#C8CCD0',
+        500: '#75715E',
+        800: '#333333',
       },
     },
   },

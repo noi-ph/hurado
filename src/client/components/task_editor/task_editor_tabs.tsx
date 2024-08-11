@@ -5,6 +5,7 @@ import { memo } from "react";
 export enum TaskEditorTab {
   Statement = "statement",
   Details = "details",
+  Judging = "judging",
   Submissions = "submissions",
 }
 
@@ -33,6 +34,7 @@ export const TaskEditorTabComponent = memo(({ tab, className }: TaskEditorTabPro
     <div className={classNames(className, "flex flex-row justify-start flex-none mb-1 mx-3 gap-2")}>
       <TabItem tab={TaskEditorTab.Statement} current={tab} label="Statement"/>
       <TabItem tab={TaskEditorTab.Details} current={tab} label="Details"/>
+      <TabItem tab={TaskEditorTab.Judging} current={tab} label="Judging"/>
       <TabItem tab={TaskEditorTab.Submissions} current={tab} label="Submissions"/>
     </div>
   );
@@ -44,6 +46,7 @@ export function coerceTaskEditorTab(hash: string): TaskEditorTab {
   switch (real) {
     case TaskEditorTab.Statement:
     case TaskEditorTab.Details:
+    case TaskEditorTab.Judging:
     case TaskEditorTab.Submissions:
       return real;
     default:

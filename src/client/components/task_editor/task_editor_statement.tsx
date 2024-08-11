@@ -1,22 +1,21 @@
-import { useCallback } from "react";
-import { MathJax } from "better-react-mathjax";
-import { Task } from "common/types";
-import { editor } from "monaco-editor";
 import MonacoEditor from "@monaco-editor/react";
-import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
-import "overlayscrollbars/overlayscrollbars.css";
-import styles from "./task_editor.module.css";
+import { MathJax } from "better-react-mathjax";
 import classNames from "classnames";
+import { useCallback } from "react";
+import { TaskEditorTask } from "common/types";
+import { Scrollable } from "client/components/scrollable";
+import styles from "./task_editor.module.css";
 
-const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
+const MonacoOptions = {
+  defaultLanguage: 'latex',
   minimap: {
     enabled: false,
   },
 };
 
 type TaskEditorStatementProps = {
-  task: Task;
-  setTask(task: Task): void;
+  task: TaskEditorTask;
+  setTask(task: TaskEditorTask): void;
 };
 
 export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps) => {
@@ -40,11 +39,11 @@ export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps)
           theme="vs-dark"
         />
       </div>
-      <OverlayScrollbarsComponent className={styles.statementPreview} defer>
+      <Scrollable className={styles.statementPreview} defer>
         <div className='p-3 bg-white flex-auto min-h-full'>
-          <MathJax inline={true}>{task.statement}</MathJax>
+          <MathJax>{task.statement}</MathJax>
         </div>
-      </OverlayScrollbarsComponent>
+      </Scrollable>
     </>
   );
 };

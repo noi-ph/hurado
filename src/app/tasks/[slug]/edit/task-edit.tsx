@@ -1,10 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "db";
-import { Task } from "common/types";
+import { Task, TaskEditorAttachmentKind, TaskEditorTask } from "common/types";
 import { checkUUIDv4 } from "common/utils/uuid";
 import { TaskEditor } from "client/components/task_editor/task_editor";
 
-async function getTaskEditorData(slug: string): Promise<Task | undefined> {
+async function getTaskEditorData(slug: string): Promise<TaskEditorTask | null> {
   const task: Task | undefined = await db
     .selectFrom("tasks")
     .selectAll()
@@ -14,7 +14,28 @@ async function getTaskEditorData(slug: string): Promise<Task | undefined> {
     ]))
     .executeTakeFirst();
 
-  return task;
+  if (task == null) {
+    return null;
+  }
+
+  const editor: TaskEditorTask = {
+    ...task,
+    credits: [
+      {
+        name: 'Tim',
+        role: 'Enchanter',
+      },
+    ],
+    attachments: [
+      {
+        kind: TaskEditorAttachmentKind.Saved,
+        id: 'fake-id',
+        path: 'some-saved-path',
+      },
+    ],
+  };
+
+  return editor;
 }
 
 type TaskEditPageProps = {
