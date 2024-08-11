@@ -1,6 +1,18 @@
 import { useCallback } from "react";
+import { MathJax } from "better-react-mathjax";
 import { Task } from "common/types";
-import { TextAreaChangeEvent } from "common/types/events";
+import { editor } from "monaco-editor";
+import MonacoEditor from "@monaco-editor/react";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import "overlayscrollbars/overlayscrollbars.css";
+import styles from "./task_editor.module.css";
+import classNames from "classnames";
+
+const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
+  minimap: {
+    enabled: false,
+  },
+};
 
 type TaskEditorStatementProps = {
   task: Task;
@@ -9,19 +21,30 @@ type TaskEditorStatementProps = {
 
 export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps) => {
   const onChangeStatement = useCallback(
-    (event: TextAreaChangeEvent) => {
+    (value: string | undefined) => {
       setTask({
         ...task,
-        statement: event.target.value,
+        statement: value ?? "",
       });
     },
     [task, setTask]
   );
 
   return (
-    <div className="flex flex-row justify-between">
-      <textarea value={task.statement} onChange={onChangeStatement} />
-      <div>{task.statement}</div>
-    </div>
+    <>
+      <div className={classNames(styles.statementEditor, 'pt-3 bg-gray-200')}>
+        <MonacoEditor
+          defaultValue={task.statement}
+          onChange={onChangeStatement}
+          options={MonacoOptions}
+          theme="vs-dark"
+        />
+      </div>
+      <OverlayScrollbarsComponent className={styles.statementPreview} defer>
+        <div className='p-3 bg-white flex-auto min-h-full'>
+          <MathJax inline={true}>{task.statement}</MathJax>
+        </div>
+      </OverlayScrollbarsComponent>
+    </>
   );
 };

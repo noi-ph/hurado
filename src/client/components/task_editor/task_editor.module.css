@@ -1,4 +1,52 @@
+.page {
+  height: 100%;
+}
+
+.main {
+  display: grid;
+  grid-template-areas:
+    'header header'
+    'title title'
+    'tabs tabs'
+    'content content';
+  grid-template-rows: auto auto auto 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+.main.isStatement {
+  height: 100%;
+  grid-template-areas:
+    'header header'
+    'title title'
+    'tabs tabs'
+    'content-left content-right';
+}
+
+.header {
+  grid-area: header;
+}
+
 .tabs {
+  grid-area: tabs;
   display: flex;
   flex-direction: row;
+}
+
+.title {
+  grid-area: title;
+}
+
+.statementEditor {
+  grid-area: content-left;
+  padding-top: .75rem;
+  background-color: var(--color-gray-200);
+}
+
+.statementPreview {
+  grid-area: content-right;
+  padding: .5rem;
+  padding-top: .75rem;
+  background-color: var(--color-gray-200);
+  display: flex;
+  flex-direction: column;
 }

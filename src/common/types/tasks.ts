@@ -1,7 +1,7 @@
-import { Insertable, Selectable, Updateable } from "kysely";
+import { Generated, Insertable, Selectable, Updateable } from "kysely";
 
 export type TaskTable = {
-  id: string;
+  id: Generated<string>;
   slug: string;
   title: string;
   description?: string;

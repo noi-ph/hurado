@@ -1,21 +1,20 @@
 "use client";
-import { MouseEvent, ReactNode, useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { ReactNode, useEffect, useState } from "react";
 import { Task } from "common/types";
-import styles from "./task_editor.module.css";
 import { TaskEditorStatement } from "./task_editor_statement";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
+import { MathJaxContext } from "better-react-mathjax";
+import { MathJaxConfig } from "../mathjax";
+import { Navbar } from "client/components/navbar";
+import classNames from "classnames";
+import styles from "./task_editor.module.css";
+import layoutStyles from "client/components/layouts/layout.module.css";
+import { coerceTaskEditorTab, TaskEditorTab, TaskEditorTabComponent } from "./task_editor_tabs";
+
 
 type TaskEditorProps = {
   task: Task;
 };
-
-enum TaskEditorTab {
-  Statement = "statement",
-  Files = "files",
-  Contributors = "contributors",
-  Submissions = "submissions",
-}
 
 export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
   const [tab, setTab] = useState(coerceTaskEditorTab(window.location.hash));
@@ -39,40 +38,33 @@ export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
   }
 
   return (
-    <div>
-      <div className="flex flex-row justify-between">
-        <div className="">{task.title}</div>
-        <div className="">{task.slug}</div>
-      </div>
-      <div className="flex flex-row justify-start">
-        <Link href={`#${TaskEditorTab.Statement}`}>
-          Statement
-        </Link>
-        <Link href={`#${TaskEditorTab.Files}`}>
-          Files
-        </Link>
-        <Link href={`#${TaskEditorTab.Contributors}`}>
-          Contributors
-        </Link>
-        <Link href={`#${TaskEditorTab.Submissions}`}>
-          Submissions
-        </Link>
-      </div>
-      <div className="content">{content}</div>
-    </div>
+    <MathJaxContext config={MathJaxConfig}>
+      <body className={styles.page}>
+        <div
+          className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
+        >
+          <header className={classNames(styles.header, layoutStyles.header)}>
+            <Navbar />
+          </header>
+          <TaskTitleDisplay title={task.title} slug={task.slug}/>
+          <TaskEditorTabComponent className={styles.tabs} tab={tab} />
+          {content}
+        </div>
+      </body>
+    </MathJaxContext>
   );
 };
 
-function coerceTaskEditorTab(hash: string): TaskEditorTab {
-  const split = hash.split("#");
-  const real = split.length >= 2 ? split[1] : "";
-  switch (real) {
-    case TaskEditorTab.Statement:
-    case TaskEditorTab.Files:
-    case TaskEditorTab.Contributors:
-    case TaskEditorTab.Submissions:
-      return real;
-    default:
-      return TaskEditorTab.Statement;
-  }
+type TaskTitleDisplayProps = {
+  title: string;
+  slug: string;
+};
+
+function TaskTitleDisplay({ title, slug }: TaskTitleDisplayProps) {
+  return (
+    <div className={classNames(styles.title, "flex flex-row justify-between mx-4")}>
+      <div className={classNames("font-sans text-2xl", title ? 'text-black' : 'text-gray-200')}>{title}</div>
+      <div className={classNames("font-mono text-2xl", slug ? 'text-gray-500' : 'text-gray-200')}>{slug}</div>
+    </div>
+  );
 }
