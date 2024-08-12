@@ -11,6 +11,7 @@ import styles from "./task_editor.module.css";
 import { InputChangeEvent, TextAreaChangeEvent } from "common/types/events";
 import { UnreachableError } from "common/errors";
 import BoxIcon from "../box_icon";
+import { Scrollable } from "../scrollable";
 
 type TaskEditorDetailsProps = {
   task: TaskEditorTask;
@@ -23,23 +24,25 @@ export const TaskEditorDetails = ({ task, setTask }: TaskEditorDetailsProps) => 
   const onChangeDescription = useTaskUpdaterText(task, setTask, "description");
 
   return (
-    <div className={classNames(styles.detailEditor, "p-4 gap-12")}>
-      <TaskDetailProperty name="Title" />
-      <TaskDetailInput type="text" value={task.title} onChange={onChangeTitle} />
-      <TaskDetailProperty name="Slug" />
-      <TaskDetailInput type="text" value={task.slug} onChange={onChangeSlug} />
-      <TaskDetailProperty name="Description" />
-      <TaskDetailInput
-        type="textarea"
-        value={task.description ?? ""}
-        onChange={onChangeDescription}
-        placeholder="Write a short summary about the task"
-      />
-      <TaskDetailProperty name="Attachments" />
-      <TaskEditorAttachments task={task} setTask={setTask} />
-      <TaskDetailProperty name="Developer Credits" />
-      <TaskEditorCredits task={task} setTask={setTask} />
-    </div>
+    <Scrollable className={styles.content}>
+      <div className={classNames(styles.detailEditor, "p-4 gap-12")}>
+        <TaskDetailProperty name="Title" />
+        <TaskDetailInput type="text" value={task.title} onChange={onChangeTitle} />
+        <TaskDetailProperty name="Slug" />
+        <TaskDetailInput type="text" value={task.slug} onChange={onChangeSlug} />
+        <TaskDetailProperty name="Description" />
+        <TaskDetailInput
+          type="textarea"
+          value={task.description ?? ""}
+          onChange={onChangeDescription}
+          placeholder="Write a short summary about the task"
+        />
+        <TaskDetailProperty name="Attachments" />
+        <TaskEditorAttachments task={task} setTask={setTask} />
+        <TaskDetailProperty name="Developer Credits" />
+        <TaskEditorCredits task={task} setTask={setTask} />
+      </div>
+    </Scrollable>
   );
 };
 

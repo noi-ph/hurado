@@ -55,6 +55,7 @@ export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
         <TaskTitleDisplay title={task.title} slug={task.slug} />
         <TaskEditorTabComponent className={styles.tabs} tab={tab} />
         {content}
+        <TaskEditorFooter task={task} setTask={setTask} initial={initialTask} />
       </div>
     </MathJaxContext>
   );
@@ -69,11 +70,35 @@ const TaskTitleDisplay = memo(({ title, slug }: TaskTitleDisplayProps) => {
   return (
     <div className={classNames(styles.title, "flex flex-row justify-between mx-4")}>
       <div className={classNames("font-sans text-2xl", title ? "text-black" : "text-gray-300")}>
-        {title || 'Title'}
+        {title || "Title"}
       </div>
       <div className={classNames("font-mono text-2xl", slug ? "text-gray-500" : "text-gray-300")}>
-        {slug || 'Slug'}
+        {slug || "Slug"}
       </div>
+    </div>
+  );
+});
+
+type TaskEditorFooterProps = {
+  initial: TaskEditorTask;
+  task: TaskEditorTask;
+  setTask(task: TaskEditorTask): void;
+};
+
+const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps) => {
+  return (
+    <div
+      className={classNames(
+        styles.footer,
+        "flex flex-row justify-end px-4 py-2 border-t border-gray-300"
+      )}
+    >
+      <button
+        disabled={task === initial}
+        className="py-2 px-4 rounded font-bold text-white bg-blue-300 enabled:hover:bg-blue-500 disabled:bg-gray-300 disabled:cursor-default"
+      >
+        Save Changes
+      </button>
     </div>
   );
 });
