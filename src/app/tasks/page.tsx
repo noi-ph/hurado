@@ -1,6 +1,7 @@
 import { db } from "db";
 import { TaskCard } from "client/components";
 import { TaskSummary } from "common/types";
+import { DefaultLayout } from "client/components/layouts/default_layout";
 
 async function getTasksData(): Promise<TaskSummary[]> {
   const tasks = await db
@@ -16,11 +17,11 @@ async function Page() {
   const tasks = await getTasksData();
 
   return (
-    <>
+    <DefaultLayout>
       {tasks.map((task) => (
         <TaskCard key={task.slug} task={task} />
       ))}
-    </>
+    </DefaultLayout>
   );
 }
 

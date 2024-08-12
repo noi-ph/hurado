@@ -4,6 +4,7 @@ module.exports = {
     project: "./tsconfig.json",
     tsconfigRootDir: __dirname,
   },
+  plugins: ["@typescript-eslint"],
   extends: ["eslint:recommended", "next/core-web-vitals", "prettier"],
   rules: {
     "no-console": [
@@ -12,7 +13,7 @@ module.exports = {
         allow: ["info", "warn", "error"],
       },
     ],
-    "no-empty": "off",
+    "no-unused-vars": "off",
     "consistent-return": "off",
     "import/extensions": ["error", "never"],
     "import/no-unresolved": "off", // Let the typescript compiler handle module resolution
@@ -42,5 +43,6 @@ module.exports = {
       },
     ],
     "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-unused-vars": "error",
   },
 };

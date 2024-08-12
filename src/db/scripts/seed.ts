@@ -1,6 +1,6 @@
 import { hashSync } from "bcryptjs";
 import { Insertable, Kysely } from "kysely";
-import { Models, TaskTable, UserTable } from "common/types";
+import { Models, TaskCreate, TaskTable, UserTable } from "common/types";
 import { db } from "../index";
 
 const hash = (password: string) => hashSync(password, 10);
@@ -31,7 +31,7 @@ async function actually_seed_database(db: Kysely<Models>) {
       name: "Kevin Sogo",
     },
   ];
-  const tasks: Insertable<TaskTable>[] = [
+  const tasks: TaskCreate[] = [
     {
       slug: "who-is-the-oldest",
       title: "Who is the oldest?",

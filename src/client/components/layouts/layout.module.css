@@ -1,4 +1,4 @@
-#navbar {
+.header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -7,6 +7,12 @@
   width: 100%;
   height: fit-content;
   padding: 5px 40px;
+}
+
+@media (max-width: 540px) {
+  .header {
+    padding: 5px 20px;
+  }
 }
 
 .copyright {
@@ -18,8 +24,16 @@
   height: fit-content;
 }
 
-@media (max-width: 540px) {
-  #navbar {
-    padding: 5px 20px;
-  }
+.admin {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin > .header {
+  flex: none;
+}
+
+.admin > .main {
+  flex: auto;
 }
