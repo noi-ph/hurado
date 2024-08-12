@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { SubmitComponent } from "client/components/submit";
 import { Task } from "common/types";
 import { db } from "db";
+import { DefaultLayout } from "client/components/layouts/default_layout";
 
 async function getTaskData(slug: string): Promise<Task | undefined> {
   const task: Task | undefined = await db
@@ -27,12 +28,12 @@ async function Page(props: TaskPageProps) {
   }
 
   return (
-    <>
+    <DefaultLayout>
       <h1>{task.title}</h1>
       <p>{task.description}</p>
       <p>{task.statement}</p>
       <SubmitComponent />
-    </>
+    </DefaultLayout>
   );
 }
 
