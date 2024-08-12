@@ -8,6 +8,8 @@ services:
     command: npm run dev
     environment:
       - IS_UNDER_DOCKER=true
+    env_file:
+      - .env
     ports:
       - 10000:10000
     restart: always

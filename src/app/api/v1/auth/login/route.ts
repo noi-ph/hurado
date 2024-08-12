@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   const { username, password } = await request.json();
   const secret = await db
     .selectFrom("users")
-    .select(["id", "email", "username", "name", "hashed_password"])
+    .select(["id", "email", "username", "name", "role", "hashed_password"])
     .where("username", "=", username)
     .executeTakeFirst();
 
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       email: secret.email,
       username: secret.username,
       name: secret.name,
+      role: secret.role,
     };
     const session: SessionData = { user };
     cookies().set("session", tokenizeSession(session));

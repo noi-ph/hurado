@@ -25,16 +25,7 @@ Before cloning your fork of the repository, make sure that you have added your S
 git clone git@github.com:your_username/hurado.git
 ```
 
-#### Setup Docker
-
-We use docker containers for supporting services like postgresql. Follow instructions [here](https://docs.docker.com/engine/install/) to get a new version of docker.
-
-
-Run the containers on a seperate terminal by running the following command in the project directory:
-
-```bash
-docker compose up
-```
+### Installing dependencies
 
 #### Setup NodeJS
 
@@ -53,7 +44,16 @@ Install the required packages:
 npm ci
 ```
 
-## Running the application
+Manually installing packages is done because this can be slow and humans know when to do this best.
+
+
+#### Setup Docker
+
+We use docker containers for supporting services like postgresql. Follow instructions [here](https://docs.docker.com/engine/install/) to get a new version of docker.
+
+### Running the server
+
+#### Set up local environment variables
 
 Go to the repository directory by running the following command:
 
@@ -67,28 +67,46 @@ Copy the local environment:
 cp .env.template .env
 ```
 
+#### Run docker compose
+
+On a seperate terminal window, run the containers by running the following command in the project directory:
+
+```bash
+docker compose up
+```
+
+This will automatically load the environment variables into the containers.
+
+
+#### Database setup
+
+These commands will have to be run from within the hurado-dev contaner. Get into the container by running
+
+
+```bash
+./scripts/bash
+```
+
 Migrate the database to the latest version:
 
 ```bash
 npm run db:migrate
 ```
 
-Run the development environment by using:
+Seed some initial data:
 
 ```bash
-npm run dev
+npm run db:seed
 ```
 
-You should be seeing the following:
+#### Visiting the local website
 
-```bash
-> algurado.com.ph@2.0.0 dev
-> next dev -p 10000
+Now open your browser and go to http://localhost:10000/
 
-   ▲ Next.js 14.1.3
-   - Local:        http://localhost:10000
-   - Environments: .env
-```
+You should also be able to see the debug logs on the terminal window where you ran `docker compose up`
+
+Congrats! The setup is now done!
+
 
 ## Contribution Workflow
 
