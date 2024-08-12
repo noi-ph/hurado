@@ -17,14 +17,14 @@ type TaskEditorProps = {
 };
 
 export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
-  const [tab, setTab] = useState(coerceTaskEditorTab(window.location.hash));
+  const [tab, setTab] = useState(coerceTaskEditorTab(getLocationHash()));
   const [task, setTask] = useState(initialTask);
 
   // NextJS hack to detect when hash changes and run some code
   // https://github.com/vercel/next.js/discussions/49465#discussioncomment-5845312
   const params = useParams();
   useEffect(() => {
-    const currentTab = coerceTaskEditorTab(window.location.hash);
+    const currentTab = coerceTaskEditorTab(getLocationHash());
     setTab(currentTab);
   }, [params]);
 
@@ -102,3 +102,7 @@ const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps
     </div>
   );
 });
+
+function getLocationHash(): string {
+  return typeof window !== "undefined" ? window.location.hash : '';
+}

@@ -1,9 +1,9 @@
 import * as path from "path";
 import { promises as fs } from "fs";
 import { Migrator, FileMigrationProvider, Kysely } from "kysely";
-import { db } from "../index";
+import { SCRIPTS_ONLY_DATABASE } from "./do-not-import-this";
 
-migrate_database(db);
+migrate_database(SCRIPTS_ONLY_DATABASE);
 
 async function migrate_database(db: Kysely<any>) {
   const migrator = new Migrator({

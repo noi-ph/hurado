@@ -1,7 +1,7 @@
 import { Kysely, sql } from "kysely";
-import { db } from "../index";
+import { SCRIPTS_ONLY_DATABASE } from "./do-not-import-this";
 
-reset_database(db);
+reset_database(SCRIPTS_ONLY_DATABASE);
 
 async function reset_database(db: Kysely<any>): Promise<void> {
   if (process.env.ENVIRONMENT === "development") {

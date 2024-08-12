@@ -1,11 +1,11 @@
 import { hashSync } from "bcryptjs";
 import { Insertable, Kysely } from "kysely";
 import { Models, TaskCreate, TaskTable, UserTable } from "common/types";
-import { db } from "../index";
+import { SCRIPTS_ONLY_DATABASE } from "./do-not-import-this";
 
 const hash = (password: string) => hashSync(password, 10);
 
-seed_database(db);
+seed_database(SCRIPTS_ONLY_DATABASE);
 
 async function seed_database(db: Kysely<Models>): Promise<void> {
   if (process.env.ENVIRONMENT === "development") {
@@ -29,6 +29,7 @@ async function actually_seed_database(db: Kysely<Models>) {
       hashed_password: hash("password"),
       school: "University of the Philippines - Diliman",
       name: "Kevin Sogo",
+      role: "admin",
     },
   ];
   const tasks: TaskCreate[] = [
