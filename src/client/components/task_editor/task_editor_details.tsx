@@ -153,12 +153,7 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
         })}
       </div>
       <div className="flex justify-center mt-2">
-        <button
-          onClick={onFileSelectStart}
-          className="py-1 px-3 rounded-lg border border-gray-300 font-roboto font-light text-gray-500 hover:text-gray-800 hover:border-gray-500"
-        >
-          Add New
-        </button>
+        <DetailTableAdd onClick={onFileSelectStart} label="Add New" />
         <input
           type="file"
           className="hidden"
@@ -296,12 +291,7 @@ const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
         ))}
       </div>
       <div className="flex justify-center mt-2">
-        <button
-          onClick={onAddCredit}
-          className="py-1 px-3 rounded-lg border border-gray-300 font-roboto font-light text-gray-500 hover:text-gray-800 hover:border-gray-500"
-        >
-          Add New
-        </button>
+        <DetailTableAdd onClick={onAddCredit} label="Add New" />
       </div>
     </div>
   );
@@ -388,6 +378,23 @@ const DetailTableEntry = ({ deleted, children }: DetailTableEntryProps) => {
     <div className={classNames("font-roboto font-light text-gray-500", deleted && "line-through")}>
       {children}
     </div>
+  );
+};
+
+type DetailTableAddProps = {
+  label: string;
+  onClick(): void;
+};
+
+const DetailTableAdd = ({ onClick, label }: DetailTableAddProps) => {
+  return (
+    <button
+      onClick={onClick}
+      className="py-1 px-3 rounded-lg border border-gray-300 font-roboto font-light text-gray-500 hover:text-gray-800 hover:border-gray-500"
+    >
+      <BoxIcon name="bx-plus" className="bx-xs mt-1" />
+      {label}
+    </button>
   );
 };
 
