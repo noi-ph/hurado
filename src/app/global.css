@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("boxicons/css/boxicons.min.css");
 
 :root {
   --purple: rgb(109, 117, 254);

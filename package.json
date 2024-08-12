@@ -33,6 +33,7 @@
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "better-react-mathjax": "^2.0.3",
+    "boxicons": "^2.1.4",
     "classnames": "^2.5.1",
     "cookies-next": "^4.1.1",
     "dotenv": "^16.4.5",

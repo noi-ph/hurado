@@ -1,15 +1,16 @@
 import classNames from "classnames";
-import { useCallback, useRef } from "react";
+import { MouseEvent, useCallback, useRef } from "react";
 import {
-  TaskCredit,
-  TaskEditorAttachment,
+  TaskEditorCredit,
   TaskEditorAttachmentKind,
   TaskEditorAttachmentPending,
+  TaskEditorAttachmentSaved,
   TaskEditorTask,
 } from "common/types";
 import styles from "./task_editor.module.css";
 import { InputChangeEvent, TextAreaChangeEvent } from "common/types/events";
 import { UnreachableError } from "common/errors";
+import BoxIcon from "../box_icon";
 
 type TaskEditorDetailsProps = {
   task: TaskEditorTask;
@@ -115,19 +116,38 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
 
   return (
     <div>
-      <div className={classNames(styles.attachments, "border border-gray-300 rounded-lg text-center")}>
+      <div
+        className={classNames(styles.attachments, "border border-gray-300 rounded-lg text-center")}
+      >
         <div className="text-gray-500 font-roboto font-medium">File Name</div>
         <div className="text-gray-500 font-roboto font-medium">Path</div>
-        <div/> {/* Actions header placeholder */}
-        {task.attachments.map((attachment, idx) => (
-          <TaskEditorAttachmentSingle
-            key={idx}
-            task={task}
-            attachment={attachment}
-            setTask={setTask}
-            index={idx}
-          />
-        ))}
+        <div /> {/* Actions header placeholder */}
+        {task.attachments.map((attachment, idx) => {
+          switch (attachment.kind) {
+            case TaskEditorAttachmentKind.Saved:
+              return (
+                <TaskEditorAttachmentSavedX
+                  key={idx}
+                  task={task}
+                  attachment={attachment}
+                  setTask={setTask}
+                  index={idx}
+                />
+              );
+            case TaskEditorAttachmentKind.Pending:
+              return (
+                <TaskEditorAttachmentPendingX
+                  key={idx}
+                  task={task}
+                  attachment={attachment}
+                  setTask={setTask}
+                  index={idx}
+                />
+              );
+            default:
+              throw new UnreachableError(attachment);
+          }
+        })}
       </div>
       <div className="flex justify-center mt-2">
         <button
@@ -136,25 +156,71 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
         >
           Add New
         </button>
-        <input type="file" className="hidden" ref={pickerRef} onChange={onFileSelected} multiple={true}/>
+        <input
+          type="file"
+          className="hidden"
+          ref={pickerRef}
+          onChange={onFileSelected}
+          multiple={true}
+        />
       </div>
     </div>
   );
 };
 
-type TaskEditorAttachmentSingleProps = {
+type TaskEditorAttachmentSavedProps = {
   index: number;
-  attachment: TaskEditorAttachment;
+  attachment: TaskEditorAttachmentSaved;
   task: TaskEditorTask;
   setTask(task: TaskEditorTask): void;
 };
 
-const TaskEditorAttachmentSingle = ({
+const TaskEditorAttachmentSavedX = ({
   index,
   attachment,
   task,
   setTask,
-}: TaskEditorAttachmentSingleProps) => {
+}: TaskEditorAttachmentSavedProps) => {
+  const onClickDelete = useCallback(() => {
+    setTask({
+      ...task,
+      attachments: replaceNth(task.attachments, index, {
+        ...attachment,
+        deleted: !attachment.deleted,
+      }),
+    });
+  }, [task, attachment, index]);
+
+  const filename = attachment.path.split("/").pop();
+  return (
+    <>
+      <DetailTableEntry deleted={attachment.deleted}>{filename}</DetailTableEntry>
+      <DetailTableEntry deleted={attachment.deleted}>{attachment.path}</DetailTableEntry>
+      <div className="flex flex-row justify-end items-center px-3 gap-2">
+        <a href={getAttachmentURL(attachment)}>
+          <BoxIcon name="bx-download" className="bx-sm text-blue-300 hover:text-blue-500" />
+        </a>
+        <button type="button" onClick={onClickDelete}>
+          <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
+        </button>
+      </div>
+    </>
+  );
+};
+
+type TaskEditorAttachmentPendingProps = {
+  index: number;
+  attachment: TaskEditorAttachmentPending;
+  task: TaskEditorTask;
+  setTask(task: TaskEditorTask): void;
+};
+
+const TaskEditorAttachmentPendingX = ({
+  index,
+  attachment,
+  task,
+  setTask,
+}: TaskEditorAttachmentPendingProps) => {
   const onChangePath = useCallback(
     (event: InputChangeEvent) => {
       setTask({
@@ -168,33 +234,26 @@ const TaskEditorAttachmentSingle = ({
     [task, attachment, index]
   );
 
-  if (attachment.kind === TaskEditorAttachmentKind.Saved) {
-    const filename = attachment.path.split('/').pop();
-    return (
-      <>
-        <div className="font-roboto font-light text-gray-500">{filename}</div>
-        <div className="font-roboto font-light text-gray-500">{attachment.path}</div>
-        <div className=""/>
-      </>
-    );
-  } else if (attachment.kind === TaskEditorAttachmentKind.Pending) {
-    return (
-      <>
-        <div className="font-roboto font-light text-gray-500">{attachment.file.name}</div>
-        <div>
-          <input
-            type="text"
-            value={attachment.path}
-            onChange={onChangePath}
-            className="w-full font-roboto font-light text-gray-500"
-          />
-        </div>
-        <div className=""></div>
-      </>
-    );
-  } else {
-    throw new UnreachableError(attachment);
-  }
+  const onClickDelete = useCallback(() => {
+    setTask({
+      ...task,
+      attachments: [...task.attachments.slice(0, index), ...task.attachments.slice(index + 1)],
+    });
+  }, [task, attachment, index]);
+
+  return (
+    <>
+      <DetailTableEntry deleted={false}>{attachment.file.name}</DetailTableEntry>
+      <DetailTableEntry deleted={false}>
+        <input type="text" value={attachment.path} onChange={onChangePath} className="w-full" />
+      </DetailTableEntry>
+      <div className="flex flex-row justify-end items-center px-3 gap-2">
+        <button type="button" onClick={onClickDelete}>
+          <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
+        </button>
+      </div>
+    </>
+  );
 };
 
 type TaskEditorCreditsProps = {
@@ -211,6 +270,7 @@ const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
         {
           name: "Kevin",
           role: "Author",
+          deleted: false,
         },
       ],
     });
@@ -221,6 +281,7 @@ const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
       <div className={classNames(styles.credits, "border border-gray-300 rounded-lg text-center")}>
         <div className="text-gray-500 font-roboto font-medium">Name</div>
         <div className="text-gray-500 font-roboto font-medium">Role</div>
+        <div /> {/* Actions header placeholder */}
         {task.credits.map((credit, idx) => (
           <TaskEditorCreditSingle
             key={idx}
@@ -245,7 +306,7 @@ const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
 
 type TaskEditorCreditSingleProps = {
   index: number;
-  credit: TaskCredit;
+  credit: TaskEditorCredit;
   task: TaskEditorTask;
   setTask(task: TaskEditorTask): void;
 };
@@ -277,25 +338,53 @@ const TaskEditorCreditSingle = ({ index, credit, task, setTask }: TaskEditorCred
     [task, credit, index]
   );
 
+  const onClickDelete = useCallback(() => {
+    setTask({
+      ...task,
+      credits: replaceNth(task.credits, index, {
+        ...credit,
+        deleted: !credit.deleted,
+      }),
+    });
+  }, [task, credit, index]);
+
   return (
     <>
-      <div>
+      <DetailTableEntry deleted={credit.deleted}>
         <input
           type="text"
           value={credit.name}
           onChange={onChangeName}
-          className="w-full font-roboto font-light text-gray-500"
+          className={classNames("w-full", credit.deleted && "line-through")}
         />
-      </div>
-      <div>
+      </DetailTableEntry>
+      <DetailTableEntry deleted={credit.deleted}>
         <input
           type="text"
           value={credit.role}
           onChange={onChangeRole}
-          className="w-full font-roboto font-light text-gray-500"
+          className={classNames("w-full", credit.deleted && "line-through")}
         />
+      </DetailTableEntry>
+      <div className="flex flex-row justify-end items-center px-3 gap-2">
+        <button type="button" onClick={onClickDelete}>
+          <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
+        </button>
       </div>
     </>
+  );
+};
+
+type DetailTableEntryProps = {
+  children: React.ReactNode;
+  deleted: boolean;
+};
+
+const DetailTableEntry = ({ deleted, children }: DetailTableEntryProps) => {
+  return (
+    <div className={classNames("font-roboto font-light text-gray-500", deleted && "line-through")}>
+      {children}
+    </div>
   );
 };
 
@@ -317,4 +406,9 @@ function useTaskUpdaterText(
 
 function replaceNth<T>(arr: T[], index: number, value: T) {
   return arr.slice(0, index).concat(value, ...arr.slice(index + 1));
+}
+
+function getAttachmentURL(attachment: TaskEditorAttachmentSaved) {
+  // TODO: Implement this when file uploads actually work
+  return `#${attachment.path}`;
 }

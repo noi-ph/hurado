@@ -34,7 +34,13 @@ export type TaskCreate = Insertable<TaskTable>;
 export type TaskUpdate = Updateable<TaskTable>;
 export type TaskSummary = Pick<Task, "title" | "slug" | "description">;
 
-export type TaskCredit = Omit<TaskCreditTable, "id">;
+export type TaskCredit = Selectable<TaskCreditTable>;
+
+export type TaskEditorCredit = {
+  name: string;
+  role: string;
+  deleted: boolean;
+}
 
 export enum TaskEditorAttachmentKind {
   Saved = "Saved",
@@ -47,6 +53,7 @@ export type TaskEditorAttachmentSaved = {
   kind: TaskEditorAttachmentKind.Saved;
   id: string;
   path: string;
+  deleted: boolean;
 };
 
 export type TaskEditorAttachmentPending = {
@@ -61,6 +68,6 @@ export type TaskEditorTask = {
   title: string;
   description?: string;
   statement: string;
-  credits: TaskCredit[];
+  credits: TaskEditorCredit[];
   attachments: TaskEditorAttachment[];
 };

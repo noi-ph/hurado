@@ -24,6 +24,7 @@ async function getTaskEditorData(slug: string): Promise<TaskEditorTask | null> {
       {
         name: 'Tim',
         role: 'Enchanter',
+        deleted: false,
       },
     ],
     attachments: [
@@ -31,6 +32,7 @@ async function getTaskEditorData(slug: string): Promise<TaskEditorTask | null> {
         kind: TaskEditorAttachmentKind.Saved,
         id: 'fake-id',
         path: 'some-saved-path',
+        deleted: false,
       },
     ],
   };
