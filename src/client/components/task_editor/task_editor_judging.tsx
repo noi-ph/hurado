@@ -12,6 +12,7 @@ import {
   TaskTestDataLocal,
 } from "./types";
 import {
+  destructivelyComputeSHA1,
   TaskEditorActionButton,
   TaskEditorActionLink,
   TaskEditorAddButton,
@@ -375,6 +376,7 @@ const TestDataFileEditor = (props: TestDataFileEditor) => {
         file: curr,
         hash: "",
       };
+      destructivelyComputeSHA1(newFile);
       onFileChange(newFile, curr.name);
     }
   }, [file, filename, onFileChange]);

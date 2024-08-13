@@ -77,13 +77,11 @@ export type TaskSubtaskED = TaskSubtaskSaved | TaskSubtaskLocal;
 export type TaskFileSaved = {
   kind: EditorKind.Saved;
   id: string;
-  eid: number;
   hash: string;
 };
 
 export type TaskFileLocal = {
   kind: EditorKind.Local;
-  eid: number;
   file: File;
   hash: string;
 };

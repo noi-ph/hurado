@@ -136,3 +136,8 @@ export type TaskDTO = {
   attachments: TaskAttachmentDTO[];
   subtasks: TaskSubtaskDTO[];
 };
+
+export type TaskFileUploadRequest = {
+  task_id: string;
+  mime_type: string;
+};

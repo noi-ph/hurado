@@ -31,6 +31,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
     "@types/bcryptjs": "^2.4.6",
+    "aws-sdk": "^2.1673.0",
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "better-react-mathjax": "^2.0.3",

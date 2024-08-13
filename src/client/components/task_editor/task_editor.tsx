@@ -14,7 +14,7 @@ import { TaskSSR } from "common/types";
 import { coerceTaskED } from "./coercion";
 import { TaskED } from "./types";
 import { TaskEditorJudging } from "./task_editor_judging";
-import { saveTask } from "./task_editor_saving";
+import { IncompleteHashesException, saveTask } from "./task_editor_saving";
 
 type TaskEditorProps = {
   ssr: TaskSSR;
@@ -109,7 +109,12 @@ const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps
     try {
       const newTask = await saveTask(task);
       setTask(newTask);
-      alert('We did it!');
+    } catch (e) {
+      if (e instanceof IncompleteHashesException) {
+        alert(`Try again in a few seconds. Error: ${e.message}.`);
+      } else {
+        throw e;
+      }
     } finally {
       setSaving(false);
     }

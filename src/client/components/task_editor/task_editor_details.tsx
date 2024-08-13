@@ -16,6 +16,7 @@ import {
 } from "./types";
 import { nextEID } from "./coercion";
 import {
+  destructivelyComputeSHA1,
   TaskEditorAddButton,
   TaskEditorInput,
   TaskEditorLabel,
@@ -64,7 +65,7 @@ type TaskEditorAttachmentsProps = {
 
 const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) => {
   const pickerRef = useRef<HTMLInputElement>(null);
-  const onFileSelected = useCallback(() => {
+  const onFileSelect = useCallback(() => {
     if (pickerRef.current?.files == null) {
       return;
     }
@@ -76,7 +77,7 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
         file,
         hash: "",
       };
-
+      destructivelyComputeSHA1(newFile);
       const newAttachment: TaskAttachmentLocal = {
         kind: EditorKind.Local,
         file: newFile,
@@ -143,7 +144,7 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
           type="file"
           className="hidden"
           ref={pickerRef}
-          onChange={onFileSelected}
+          onChange={onFileSelect}
           multiple={true}
         />
       </div>

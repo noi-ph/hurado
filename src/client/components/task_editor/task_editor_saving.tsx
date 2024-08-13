@@ -3,6 +3,7 @@ import {
   TaskAttachmentDTO,
   TaskCreditDTO,
   TaskDTO,
+  TaskFileUploadRequest,
   TaskSubtaskDTO,
   TaskTestDataDTO,
 } from "common/types";
@@ -19,15 +20,27 @@ import {
 } from "./types";
 import { notNull } from "common/utils/guards";
 
-class UnsavedFileException extends Error {
+export class IncompleteHashesException extends Error {
   constructor() {
-    super("Tried saving task with file");
+    super("Not all hashes have completed hashing");
+  }
+}
+
+export class UnsavedFileException extends Error {
+  constructor() {
+    super("Tried saving task with unsaved file");
   }
 }
 
 export async function saveTask(task: TaskED): Promise<TaskED> {
   const unsavedFiles = extractLocalFiles(task);
-  const savedFiles = await Promise.all(saveLocalFiles(unsavedFiles));
+  for (const unsaved of unsavedFiles) {
+    if (unsaved.hash == '') {
+      throw new IncompleteHashesException();
+    }
+  }
+
+  const savedFiles = await Promise.all(saveLocalFiles(task, unsavedFiles));
   const updatedTask = applySavedFileChanges(task, savedFiles);
   const dto = coerceTaskDTO(updatedTask);
   const response = await http.put("", dto);
@@ -63,7 +76,7 @@ function applySavedFileChanges(ed: TaskED, changes: TaskFileSaveResult[]): TaskE
       return file;
     }
     for (const change of changes) {
-      if (change.local.eid === file.eid) {
+      if (change.local.hash === file.hash) {
         return change.saved;
       }
     }
@@ -99,16 +112,27 @@ type TaskFileSaveResult = {
   saved: TaskFileSaved;
 };
 
-export function saveLocalFiles(locals: TaskFileLocal[]): Promise<TaskFileSaveResult>[] {
+function saveLocalFiles(task: TaskED, locals: TaskFileLocal[]): Promise<TaskFileSaveResult>[] {
   return locals.map((local) => {
     return new Promise(async (resolve, reject) => {
-      const saved: TaskFileSaved = await http.post("somewhere", local);
-      resolve({ local, saved });
+      try {
+        const saved = await saveLocalFileSingle(task, local);
+        resolve({ local, saved });  
+      } catch (e) {
+        reject(e);
+      }
     });
   });
 }
 
-export function coerceTaskDTO(ed: TaskED): TaskDTO {
+async function saveLocalFileSingle(task: TaskED, local: TaskFileLocal): Promise<TaskFileSaved> {
+  console.log('Trying one file', local.file);
+  const response = await http.post(`/api/v1/tasks/${task.id}/files`);
+  const saved: TaskFileSaved = await http.post(`/api/v1/tasks/files`, local);
+  return saved;
+}
+
+function coerceTaskDTO(ed: TaskED): TaskDTO {
   const locals = extractLocalFiles(ed);
   if (locals.length > 0) {
     throw new UnsavedFileException();
@@ -135,7 +159,7 @@ export function coerceTaskDTO(ed: TaskED): TaskDTO {
   return dto;
 }
 
-export function coerceTaskCreditDTO(ed: TaskCreditED): TaskCreditDTO | null {
+function coerceTaskCreditDTO(ed: TaskCreditED): TaskCreditDTO | null {
   if (ed.deleted) {
     return null;
   }
