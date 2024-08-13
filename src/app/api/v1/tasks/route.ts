@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "server/sessions";
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   const session = getSession(request);
-  if (session == null) {
+  if (session == null || session.user.role != 'admin') {
     return NextResponse.json({}, { status: 401 });
   }
+
+  const data = await request.json();
+  console.log(data);
   return NextResponse.json({ message: "nothing yet" });
 }

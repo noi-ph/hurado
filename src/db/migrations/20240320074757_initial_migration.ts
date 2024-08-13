@@ -35,6 +35,18 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
+    .createTable("task_attachment")
+    .addColumn("path", "uuid", (col) => col.notNull().references("tasks.id"))
+    .addColumn("file_id", "uuid", (col) => col.notNull().references("files.id"))
+    .execute();  
+
+  await db.schema
+    .createTable("task_files")
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
+    .addColumn("file_id", "uuid", (col) => col.notNull().references("files.id"))
+    .execute();
+
+  await db.schema
     .createTable("files")
     .addColumn("id", "uuid", (col) =>
       col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
@@ -67,6 +79,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn("runtime_args", "text")
     .addColumn("official_result_id", "uuid")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_task_files_task_id_file_id")
+    .on("task_files")
+    .columns(["task_id", "file_id"])
     .execute();
 
   await db.schema

@@ -2,9 +2,9 @@ import MonacoEditor from "@monaco-editor/react";
 import { MathJax } from "better-react-mathjax";
 import classNames from "classnames";
 import { useCallback } from "react";
-import { TaskEditorTask } from "common/types";
 import { Scrollable } from "client/components/scrollable";
 import styles from "./task_editor.module.css";
+import { TaskED } from "./types";
 
 const MonacoOptions = {
   defaultLanguage: 'latex',
@@ -14,8 +14,8 @@ const MonacoOptions = {
 };
 
 type TaskEditorStatementProps = {
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
 export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps) => {

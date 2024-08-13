@@ -1,13 +1,21 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "db";
-import { Task, TaskEditorAttachmentKind, TaskEditorTask } from "common/types";
+import { Task, TaskSSR } from "common/types";
 import { checkUUIDv4 } from "common/utils/uuid";
 import { TaskEditor } from "client/components/task_editor/task_editor";
+import { getSession } from "server/sessions";
 
-async function getTaskEditorData(slug: string): Promise<TaskEditorTask | null> {
-  const task: Task | undefined = await db
+export async function getServerSideProps() {
+  const session = getSession();
+  if (session == null || session.user.role != 'admin') {
+    return { errorCode: 403 };
+  }
+}
+
+async function getTaskEditorData(slug: string): Promise<TaskSSR | null> {
+  const task = await db
     .selectFrom("tasks")
-    .selectAll()
+    .select(['id', 'title', 'slug', 'description', 'statement'])
     .where((eb) => eb.or([
       eb('slug', '=', slug),
       eb('id', '=', checkUUIDv4(slug)),
@@ -18,21 +26,58 @@ async function getTaskEditorData(slug: string): Promise<TaskEditorTask | null> {
     return null;
   }
 
-  const editor: TaskEditorTask = {
+  const editor: TaskSSR = {
     ...task,
+    checker: 'dummy',
     credits: [
       {
+        id: 'fake-id',
         name: 'Tim',
         role: 'Enchanter',
-        deleted: false,
       },
     ],
     attachments: [
       {
-        kind: TaskEditorAttachmentKind.Saved,
         id: 'fake-id',
         path: 'some-saved-path',
-        deleted: false,
+        mime_type: 'fake-mimetype',
+        file_id: 'fake-file-id',
+      },
+    ],
+    subtasks: [
+      {
+        id: 'fake-id',
+        name: 'Subtask 1',
+        order: 0,
+        score_max: 100,
+        test_data: [
+          {
+            id: 'fake-id',
+            name: 'data-1a',
+            order: 0,
+            input_file_id: 'fake-input-id',
+            input_file_name: 'Fake Input File',
+            output_file_id: 'fake-output-id',
+            output_file_name: 'Fake Output File',
+            judge_file_id: null,
+            judge_file_name: null,
+            is_sample: false,
+          }
+        ],
+      },
+    ],
+    files: [
+      {
+        id: 'fake-file-id',
+        hash: 'fake-hash',
+      },
+      {
+        id: 'fake-input-id',
+        hash: 'fake-input-hash',
+      },
+      {
+        id: 'fake-output-id',
+        hash: 'fake-output-hash',
       },
     ],
   };
@@ -55,5 +100,5 @@ export async function TaskEditPage(props: TaskEditPageProps) {
     return redirect(`/tasks/${task.id}/edit`);
   }
 
-  return <TaskEditor task={task}/>;
+  return <TaskEditor ssr={task}/>;
 }

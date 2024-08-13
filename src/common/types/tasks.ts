@@ -17,7 +17,9 @@ export type TaskCreditTable = {
 
 export type FileTable = {
   id: string;
-  name: string;
+  owner: string;
+  owner_id: string;
+  hash: string;
   size: number;
   blob_url: string;
 };
@@ -33,41 +35,104 @@ export type Task = Selectable<TaskTable>;
 export type TaskCreate = Insertable<TaskTable>;
 export type TaskUpdate = Updateable<TaskTable>;
 export type TaskSummary = Pick<Task, "title" | "slug" | "description">;
-
 export type TaskCredit = Selectable<TaskCreditTable>;
 
-export type TaskEditorCredit = {
-  name: string;
-  role: string;
-  deleted: boolean;
-}
-
-export enum TaskEditorAttachmentKind {
-  Saved = "Saved",
-  Pending = "Pending",
-}
-
-export type TaskEditorAttachment = TaskEditorAttachmentSaved | TaskEditorAttachmentPending;
-
-export type TaskEditorAttachmentSaved = {
-  kind: TaskEditorAttachmentKind.Saved;
-  id: string;
-  path: string;
-  deleted: boolean;
-};
-
-export type TaskEditorAttachmentPending = {
-  kind: TaskEditorAttachmentKind.Pending;
-  file: File;
-  path: string;
-};
-
-export type TaskEditorTask = {
+// These SSR (Server-Side Rendered) types are expected to be passed in directly from NextJS
+// into server components. Minimize the load size and let the client do the computing.
+export type TaskSSR = {
   id: string;
   slug: string;
   title: string;
   description?: string;
   statement: string;
-  credits: TaskEditorCredit[];
-  attachments: TaskEditorAttachment[];
+  checker: string;
+  credits: TaskCreditSSR[];
+  attachments: TaskAttachmentSSR[];
+  subtasks: TaskSubtaskSSR[];
+  files: TaskFileSSR[];
+};
+
+export type TaskCreditSSR = {
+  id: string;
+  name: string;
+  role: string;
+};
+
+export type TaskAttachmentSSR = {
+  id: string;
+  path: string;
+  file_id: string;
+  mime_type: string;
+};
+
+export type TaskFileSSR = {
+  id: string;
+  hash: string;
+};
+
+export type TaskSubtaskSSR = {
+  id: string;
+  name: string;
+  order: number;
+  score_max: number;
+  test_data: TestDataSSR[];
+};
+
+export type TestDataSSR = {
+  id: string;
+  name: string;
+  order: number;
+  input_file_id: string;
+  input_file_name: string;
+  output_file_id: string;
+  output_file_name: string;
+  judge_file_id: string | null;
+  judge_file_name: string | null;
+  is_sample: boolean;
+};
+
+export type TaskCreditDTO = {
+  id?: string;
+  name: string;
+  role: string;
+};
+
+export type TaskAttachmentDTO = {
+  id?: string;
+  path: string;
+  file_id: string;
+  mime_type: string;
+};
+
+export type TaskSubtaskDTO = {
+  id?: string;
+  name: string;
+  order: number;
+  score_max: number;
+  test_data: TaskTestDataDTO[];
+};
+
+export type TaskTestDataDTO = {
+  id?: string;
+  name: string;
+  order: number;
+  input_file_id: string;
+  input_file_name: string;
+  output_file_id: string;
+  output_file_name: string;
+  judge_file_id: string | null;
+  judge_file_name: string | null;
+  is_sample: boolean;
+}
+
+export type TaskDTO = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  statement: string;
+  checker: string;
+  credits: TaskCreditDTO[];
+  attachments: TaskAttachmentDTO[];
+  subtasks: TaskSubtaskDTO[];
 };
