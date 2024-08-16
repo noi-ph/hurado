@@ -8,8 +8,8 @@ import {
   TaskFileED,
   TaskFileLocal,
   TaskSubtaskED,
-  TaskTestDataED,
-  TaskTestDataLocal,
+  TaskDataED,
+  TaskDataLocal,
 } from "./types";
 import {
   destructivelyComputeSHA1,
@@ -24,7 +24,6 @@ import {
 } from "./task_editor_utils";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
-import { nextEID } from "./coercion";
 
 type TaskEditorJudgingProps = {
   task: TaskED;
@@ -42,7 +41,7 @@ export const TaskEditorJudging = ({ task, setTask }: TaskEditorJudgingProps) => 
           kind: EditorKind.Local,
           name: "New Subtask",
           score_max: 0,
-          test_data: [],
+          data: [],
           deleted: false,
         },
       ],
@@ -117,8 +116,8 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
     [subtask, replaceThisSubtask]
   );
 
-  const onAddTestData = useCallback(() => {
-    const newTestData: TaskTestDataLocal = {
+  const onAddTaskData = useCallback(() => {
+    const newTaskData: TaskDataLocal = {
       kind: EditorKind.Local,
       name: "Data",
       input_file_name: "",
@@ -131,7 +130,7 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
     };
     replaceThisSubtask({
       ...subtask,
-      test_data: [...subtask.test_data, newTestData],
+      data: [...subtask.data, newTaskData],
     });
   }, [subtask, replaceThisSubtask]);
 
@@ -157,8 +156,8 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
         <div className="text-gray-500 font-roboto font-medium">Output</div>
         <div className="text-gray-500 font-roboto font-medium">Judge</div>
         <div className="text-gray-500 font-roboto font-medium">Actions</div>
-        {subtask.test_data.map((data, dataIndex) => (
-          <TestDataEditor
+        {subtask.data.map((data, dataIndex) => (
+          <TaskDataEditor
             key={dataIndex}
             data={data}
             dataIndex={dataIndex}
@@ -170,14 +169,14 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
         ))}
       </div>
       <div className="flex justify-center mt-2">
-        <TaskEditorAddButton onClick={onAddTestData} label="Add Test Data" />
+        <TaskEditorAddButton onClick={onAddTaskData} label="Add Test Data" />
       </div>
     </div>
   );
 };
 
-type TestDataEditorProps = {
-  data: TaskTestDataED;
+type TaskDataEditorProps = {
+  data: TaskDataED;
   dataIndex: number;
   subtask: TaskSubtaskED;
   subtaskIndex: number;
@@ -185,136 +184,136 @@ type TestDataEditorProps = {
   setTask(task: TaskED): void;
 };
 
-const TestDataEditor = (props: TestDataEditorProps) => {
+const TaskDataEditor = (props: TaskDataEditorProps) => {
   const { data, dataIndex, subtask, subtaskIndex, task, setTask } = props;
 
   // Simple utility to replace the test data object with a new one
-  const replaceThisTestData = useCallback(
-    (newData: TaskTestDataED) => {
+  const replaceThisTaskData = useCallback(
+    (newData: TaskDataED) => {
       setTask({
         ...task,
         subtasks: Arrays.replaceNth(task.subtasks, subtaskIndex, {
           ...subtask,
-          test_data: Arrays.replaceNth(subtask.test_data, dataIndex, newData),
+          data: Arrays.replaceNth(subtask.data, dataIndex, newData),
         }),
       });
     },
     [task, subtask, subtaskIndex, dataIndex]
   );
 
-  const onTestDataNameChange = useCallback(
+  const onTaskDataNameChange = useCallback(
     (event: InputChangeEvent) => {
-      replaceThisTestData({
+      replaceThisTaskData({
         ...data,
         name: event.target.value,
       });
     },
-    [data, replaceThisTestData]
+    [data, replaceThisTaskData]
   );
 
   const onInputFilenameChange = useCallback(
     (filename: string) => {
-      replaceThisTestData({
+      replaceThisTaskData({
         ...data,
         input_file_name: filename,
       });
     },
-    [data, replaceThisTestData]
+    [data, replaceThisTaskData]
   );
 
   const onOutputFilenameChange = useCallback(
     (filename: string) => {
-      replaceThisTestData({
+      replaceThisTaskData({
         ...data,
         output_file_name: filename,
       });
     },
-    [data, replaceThisTestData]
+    [data, replaceThisTaskData]
   );
 
   const onJudgeFilenameChange = useCallback(
     (filename: string) => {
-      replaceThisTestData({
+      replaceThisTaskData({
         ...data,
         judge_file_name: filename,
       });
     },
-    [data, replaceThisTestData]
+    [data, replaceThisTaskData]
   );
 
   const onInputFileChange = useCallback(
     (file: TaskFileED | null, filename: string) => {
-      replaceThisTestData({
+      replaceThisTaskData({
         ...data,
         input_file_name: filename,
         input_file: file,
       });
     },
-    [data, replaceThisTestData]
+    [data, replaceThisTaskData]
   );
 
   const onOutputFileChange = useCallback(
     (file: TaskFileED | null, filename: string) => {
-      replaceThisTestData({
+      replaceThisTaskData({
         ...data,
         output_file_name: filename,
         output_file: file,
       });
     },
-    [data, replaceThisTestData]
+    [data, replaceThisTaskData]
   );
 
   const onJudgeFileChange = useCallback(
     (file: TaskFileED | null, filename: string) => {
-      replaceThisTestData({
+      replaceThisTaskData({
         ...data,
         judge_file_name: filename,
         judge_file: file,
       });
     },
-    [data, replaceThisTestData]
+    [data, replaceThisTaskData]
   );
 
-  const onTestDataMoveUp = useCallback(() => {
+  const onTaskDataMoveUp = useCallback(() => {
     setTask({
       ...task,
       subtasks: Arrays.replaceNth(task.subtasks, subtaskIndex, {
         ...subtask,
-        test_data: Arrays.moveUp(subtask.test_data, dataIndex),
+        data: Arrays.moveUp(subtask.data, dataIndex),
       }),
     });
-  }, [data, replaceThisTestData]);
+  }, [data, replaceThisTaskData]);
 
-  const onTestDataMoveDown = useCallback(() => {
+  const onTaskDataMoveDown = useCallback(() => {
     setTask({
       ...task,
       subtasks: Arrays.replaceNth(task.subtasks, subtaskIndex, {
         ...subtask,
-        test_data: Arrays.moveDown(subtask.test_data, dataIndex),
+        data: Arrays.moveDown(subtask.data, dataIndex),
       }),
     });
-  }, [data, replaceThisTestData]);
+  }, [data, replaceThisTaskData]);
 
-  const onTestDataRemove = useCallback(() => {
-    replaceThisTestData({
+  const onTaskDataRemove = useCallback(() => {
+    replaceThisTaskData({
       ...data,
       deleted: !data.deleted,
     });
-  }, [data, replaceThisTestData]);
+  }, [data, replaceThisTaskData]);
 
   return (
     <>
       <TaskEditorTableCell>
         <TaskEditorInputSubtle
           value={data.name}
-          onChange={onTestDataNameChange}
+          onChange={onTaskDataNameChange}
           placeholder={`Test #${dataIndex + 1}`}
           className="w-full"
           disabled={data.deleted}
         />
       </TaskEditorTableCell>
       <TaskEditorTableCell deleted={false}>
-        <TestDataFileEditor
+        <TaskDataFileEditor
           file={data.input_file}
           onFileChange={onInputFileChange}
           filename={data.input_file_name}
@@ -323,7 +322,7 @@ const TestDataEditor = (props: TestDataEditorProps) => {
         />
       </TaskEditorTableCell>
       <TaskEditorTableCell>
-        <TestDataFileEditor
+        <TaskDataFileEditor
           file={data.output_file}
           onFileChange={onOutputFileChange}
           filename={data.output_file_name}
@@ -332,7 +331,7 @@ const TestDataEditor = (props: TestDataEditorProps) => {
         />
       </TaskEditorTableCell>
       <TaskEditorTableCell deleted={false}>
-        <TestDataFileEditor
+        <TaskDataFileEditor
           file={data.judge_file}
           onFileChange={onJudgeFileChange}
           filename={data.judge_file_name}
@@ -341,15 +340,15 @@ const TestDataEditor = (props: TestDataEditorProps) => {
         />
       </TaskEditorTableCell>
       <TaskEditorTableCell>
-        <TaskEditorActionButton size="bx-sm" icon="bx-chevron-up" onClick={onTestDataMoveUp} />
-        <TaskEditorActionButton size="bx-sm" icon="bx-chevron-down" onClick={onTestDataMoveDown} />
-        <TaskEditorActionButton size="bx-sm" icon="bx-x" onClick={onTestDataRemove} />
+        <TaskEditorActionButton size="bx-sm" icon="bx-chevron-up" onClick={onTaskDataMoveUp} />
+        <TaskEditorActionButton size="bx-sm" icon="bx-chevron-down" onClick={onTaskDataMoveDown} />
+        <TaskEditorActionButton size="bx-sm" icon="bx-x" onClick={onTaskDataRemove} />
       </TaskEditorTableCell>
     </>
   );
 };
 
-type TestDataFileEditor = {
+type TaskDataFileEditor = {
   file: TaskFileED | null;
   onFileChange(file: TaskFileED | null, filename: string): void;
   filename: string | null;
@@ -357,7 +356,7 @@ type TestDataFileEditor = {
   disabled: boolean;
 };
 
-const TestDataFileEditor = (props: TestDataFileEditor) => {
+const TaskDataFileEditor = (props: TaskDataFileEditor) => {
   const { filename, file, onFilenameChange, onFileChange, disabled } = props;
   const pickerRef = useRef<HTMLInputElement>(null);
 
@@ -372,7 +371,6 @@ const TestDataFileEditor = (props: TestDataFileEditor) => {
       const curr = pickerRef.current.files[0];
       const newFile: TaskFileLocal = {
         kind: EditorKind.Local,
-        eid: nextEID(),
         file: curr,
         hash: "",
       };

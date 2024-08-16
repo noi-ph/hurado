@@ -3,7 +3,7 @@ import { InputChangeEvent, TextAreaChangeEvent } from "common/types/events";
 import BoxIcon from "client/components/box_icon";
 import { TaskED, TaskFileLocal } from "./types";
 import classNames from "classnames";
-import { computeSHA1 } from "common/utils/hashing";
+import { sha256 } from "common/utils/hashing";
 
 export function useTaskStringPropUpdater(
   task: TaskED,
@@ -158,6 +158,7 @@ export const TaskEditorTableCell = ({ deleted, children }: TaskEditorTableCellPr
 export async function destructivelyComputeSHA1(local: TaskFileLocal) {
   // This mutates the TaskFileLocal but that's okay. As long as we don't save before
   // all of the destructivelyComputeSHA1s complete, it's fine.
-  const sha1 = await computeSHA1(local.file);
+  const buffer = await local.file.arrayBuffer();
+  const sha1 = await sha256(buffer);
   local.hash = sha1;
 }

@@ -8,13 +8,12 @@ export type TaskED = {
   id: string;
   slug: string;
   title: string;
-  description?: string;
+  description: string | null;
   statement: string;
   checker: string;
   credits: TaskCreditED[];
   attachments: TaskAttachmentED[];
   subtasks: TaskSubtaskED[];
-  files: TaskFileSaved[];
 };
 
 
@@ -60,7 +59,7 @@ export type TaskSubtaskSaved = {
   id: string;
   name: string;
   score_max: number;
-  test_data: TaskTestDataED[];
+  data: TaskDataED[];
   deleted: boolean;
 };
 
@@ -68,7 +67,7 @@ export type TaskSubtaskLocal = {
   kind: EditorKind.Local;
   name: string;
   score_max: number;
-  test_data: TaskTestDataED[];
+  data: TaskDataED[];
   deleted: boolean;
 };
 
@@ -76,7 +75,6 @@ export type TaskSubtaskED = TaskSubtaskSaved | TaskSubtaskLocal;
 
 export type TaskFileSaved = {
   kind: EditorKind.Saved;
-  id: string;
   hash: string;
 };
 
@@ -88,7 +86,7 @@ export type TaskFileLocal = {
 
 export type TaskFileED = TaskFileSaved | TaskFileLocal;
 
-export type TaskTestDataSaved = {
+export type TaskDataSaved = {
   kind: EditorKind.Saved;
   id: string;
   name: string;
@@ -102,7 +100,7 @@ export type TaskTestDataSaved = {
   deleted: boolean;
 };
 
-export type TaskTestDataLocal = {
+export type TaskDataLocal = {
   kind: EditorKind.Local;
   name: string;
   input_file_name: string;
@@ -115,4 +113,4 @@ export type TaskTestDataLocal = {
   deleted: boolean;
 };
 
-export type TaskTestDataED = TaskTestDataSaved | TaskTestDataLocal;
+export type TaskDataED = TaskDataSaved | TaskDataLocal;

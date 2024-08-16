@@ -1,13 +1,5 @@
 import http from "client/http";
 import {
-  TaskAttachmentDTO,
-  TaskCreditDTO,
-  TaskDTO,
-  TaskFileUploadRequest,
-  TaskSubtaskDTO,
-  TaskTestDataDTO,
-} from "common/types";
-import {
   EditorKind,
   TaskAttachmentED,
   TaskCreditED,
@@ -16,9 +8,19 @@ import {
   TaskFileLocal,
   TaskFileSaved,
   TaskSubtaskED,
-  TaskTestDataED,
+  TaskDataED,
 } from "./types";
 import { notNull } from "common/utils/guards";
+import { APIPath, getAPIPath } from "client/paths";
+import { AxiosResponse } from "axios";
+import { FileHashesResponse, FileUploadResponse } from "common/types/files";
+import {
+  TaskAttachmentDTO,
+  TaskCreditDTO,
+  TaskDataDTO,
+  TaskDTO,
+  TaskSubtaskDTO,
+} from "server/logic/tasks/update_editor_task_validation";
 
 export class IncompleteHashesException extends Error {
   constructor() {
@@ -35,15 +37,18 @@ export class UnsavedFileException extends Error {
 export async function saveTask(task: TaskED): Promise<TaskED> {
   const unsavedFiles = extractLocalFiles(task);
   for (const unsaved of unsavedFiles) {
-    if (unsaved.hash == '') {
+    if (unsaved.hash == "") {
       throw new IncompleteHashesException();
     }
   }
 
-  const savedFiles = await Promise.all(saveLocalFiles(task, unsavedFiles));
+  const savedHashesList = await getExistingHashes(unsavedFiles);
+  const savedHashes = new Set(savedHashesList);
+  const savedFiles = await Promise.all(saveLocalFiles(unsavedFiles, savedHashes));
   const updatedTask = applySavedFileChanges(task, savedFiles);
   const dto = coerceTaskDTO(updatedTask);
-  const response = await http.put("", dto);
+  const taskUpdateURL = getAPIPath({ kind: APIPath.TaskUpdate, id: task.id });
+  const response = await http.put(taskUpdateURL, dto);
   return response.data;
 }
 
@@ -60,7 +65,7 @@ function extractLocalFiles(task: TaskED): TaskFileLocal[] {
   }
 
   for (const subtask of task.subtasks) {
-    for (const data of subtask.test_data) {
+    for (const data of subtask.data) {
       maybeAddFile(data.input_file);
       maybeAddFile(data.output_file);
       maybeAddFile(data.judge_file);
@@ -74,6 +79,8 @@ function applySavedFileChanges(ed: TaskED, changes: TaskFileSaveResult[]): TaskE
   function maybeReplaceFile(file: TaskFileED | null): TaskFileSaved | null {
     if (file == null) {
       return file;
+    } else if (file.kind === EditorKind.Saved) {
+      return file;
     }
     for (const change of changes) {
       if (change.local.hash === file.hash) {
@@ -85,23 +92,27 @@ function applySavedFileChanges(ed: TaskED, changes: TaskFileSaveResult[]): TaskE
 
   return {
     ...ed,
-    attachments: ed.attachments.map((att) => {
-      return {
-        ...att,
-        file: maybeReplaceFile(att.file),
-      };
-    }),
+    attachments: ed.attachments
+      .filter((att) => !att.deleted)
+      .map((att) => {
+        return {
+          ...att,
+          file: maybeReplaceFile(att.file),
+        };
+      }),
     subtasks: ed.subtasks.map((sub) => {
       return {
         ...sub,
-        test_data: sub.test_data.map((data) => {
-          return {
-            ...data,
-            input_file: maybeReplaceFile(data.input_file),
-            output_file: maybeReplaceFile(data.output_file),
-            judge_file: maybeReplaceFile(data.judge_file),
-          };
-        }),
+        data: sub.data
+          .filter((data) => !data.deleted)
+          .map((data) => {
+            return {
+              ...data,
+              input_file: maybeReplaceFile(data.input_file),
+              output_file: maybeReplaceFile(data.output_file),
+              judge_file: maybeReplaceFile(data.judge_file),
+            };
+          }),
       };
     }),
   };
@@ -112,24 +123,52 @@ type TaskFileSaveResult = {
   saved: TaskFileSaved;
 };
 
-function saveLocalFiles(task: TaskED, locals: TaskFileLocal[]): Promise<TaskFileSaveResult>[] {
+function saveLocalFiles(
+  locals: TaskFileLocal[],
+  savedHashes: Set<string>
+): Promise<TaskFileSaveResult>[] {
   return locals.map((local) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const saved = await saveLocalFileSingle(task, local);
-        resolve({ local, saved });  
-      } catch (e) {
-        reject(e);
-      }
-    });
+    if (savedHashes.has(local.hash)) {
+      return Promise.resolve<TaskFileSaveResult>({
+        local,
+        saved: {
+          kind: EditorKind.Saved,
+          hash: local.hash,
+        },
+      });
+    } else {
+      return new Promise<TaskFileSaveResult>(async (resolve, reject) => {
+        try {
+          const saved = await saveLocalFileSingle(local);
+          resolve({ local, saved });
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
   });
 }
 
-async function saveLocalFileSingle(task: TaskED, local: TaskFileLocal): Promise<TaskFileSaved> {
-  console.log('Trying one file', local.file);
-  const response = await http.post(`/api/v1/tasks/${task.id}/files`);
-  const saved: TaskFileSaved = await http.post(`/api/v1/tasks/files`, local);
-  return saved;
+async function getExistingHashes(locals: TaskFileLocal[]): Promise<string[]> {
+  const localHashes = locals.map((f) => f.hash);
+  const fileHashesURL = getAPIPath({ kind: APIPath.FileHashes });
+  const response: AxiosResponse<FileHashesResponse> = await http.post(fileHashesURL, localHashes, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data.saved;
+}
+
+async function saveLocalFileSingle(local: TaskFileLocal): Promise<TaskFileSaved> {
+  const fileUploadURL = getAPIPath({ kind: APIPath.FileUpload });
+  const response: AxiosResponse<FileUploadResponse> = await http.post(fileUploadURL, local.file);
+
+  return {
+    kind: EditorKind.Saved,
+    hash: response.data.hash,
+  };
 }
 
 function coerceTaskDTO(ed: TaskED): TaskDTO {
@@ -143,6 +182,7 @@ function coerceTaskDTO(ed: TaskED): TaskDTO {
     slug: ed.slug,
     title: ed.title,
     description: ed.description ?? null,
+    score_max: ed.subtasks.reduce((acc, subtask) => acc + subtask.score_max, 0),
     statement: ed.statement,
     checker: ed.checker,
     credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
@@ -150,16 +190,20 @@ function coerceTaskDTO(ed: TaskED): TaskDTO {
     subtasks: ed.subtasks.map(coerceSubtaskDTO).filter(notNull),
   };
 
+  dto.credits.forEach((credit, creditIndex) => {
+    credit.order = creditIndex;
+  });
+
   dto.subtasks.forEach((subtask, subtaskIndex) => {
     subtask.order = subtaskIndex;
-    subtask.test_data.forEach((data, dataIndex) => {
+    subtask.data.forEach((data, dataIndex) => {
       data.order = dataIndex;
     });
   });
   return dto;
 }
 
-function coerceTaskCreditDTO(ed: TaskCreditED): TaskCreditDTO | null {
+function coerceTaskCreditDTO(ed: TaskCreditED, idx: number): TaskCreditDTO | null {
   if (ed.deleted) {
     return null;
   }
@@ -168,12 +212,14 @@ function coerceTaskCreditDTO(ed: TaskCreditED): TaskCreditDTO | null {
     return {
       name: ed.name,
       role: ed.role,
+      order: idx,
     };
   } else {
     return {
       id: ed.id,
       name: ed.name,
       role: ed.role,
+      order: idx,
     };
   }
 }
@@ -189,14 +235,14 @@ function coerceTaskAttachmentDTO(ed: TaskAttachmentED): TaskAttachmentDTO | null
     return {
       path: ed.path,
       mime_type: ed.mime_type,
-      file_id: ed.file.id,
+      file_hash: ed.file.hash,
     };
   } else {
     return {
       id: ed.id,
       path: ed.path,
       mime_type: ed.mime_type,
-      file_id: ed.file.id,
+      file_hash: ed.file.hash,
     };
   }
 }
@@ -211,7 +257,7 @@ function coerceSubtaskDTO(ed: TaskSubtaskED, index: number): TaskSubtaskDTO | nu
       name: ed.name,
       order: index,
       score_max: ed.score_max,
-      test_data: ed.test_data.map(coerceTestDataDTO).filter(notNull),
+      data: ed.data.map(coerceTaskDataDTO).filter(notNull),
     };
   } else {
     return {
@@ -219,12 +265,12 @@ function coerceSubtaskDTO(ed: TaskSubtaskED, index: number): TaskSubtaskDTO | nu
       name: ed.name,
       order: index,
       score_max: ed.score_max,
-      test_data: ed.test_data.map(coerceTestDataDTO).filter(notNull),
+      data: ed.data.map(coerceTaskDataDTO).filter(notNull),
     };
   }
 }
 
-function coerceTestDataDTO(ed: TaskTestDataED, index: number): TaskTestDataDTO | null {
+function coerceTaskDataDTO(ed: TaskDataED, index: number): TaskDataDTO | null {
   if (ed.deleted) {
     return null;
   } else if (ed.input_file == null || ed.input_file.kind === EditorKind.Local) {
@@ -240,11 +286,11 @@ function coerceTestDataDTO(ed: TaskTestDataED, index: number): TaskTestDataDTO |
       name: ed.name,
       order: index,
       input_file_name: ed.input_file_name,
-      input_file_id: ed.input_file.id,
+      input_file_hash: ed.input_file.hash,
       output_file_name: ed.output_file_name,
-      output_file_id: ed.output_file.id,
+      output_file_hash: ed.output_file.hash,
       judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
-      judge_file_id: ed.judge_file != null ? ed.judge_file.id : null,
+      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
       is_sample: ed.is_sample,
     };
   } else {
@@ -253,11 +299,11 @@ function coerceTestDataDTO(ed: TaskTestDataED, index: number): TaskTestDataDTO |
       name: ed.name,
       order: index,
       input_file_name: ed.input_file_name,
-      input_file_id: ed.input_file.id,
+      input_file_hash: ed.input_file.hash,
       output_file_name: ed.output_file_name,
-      output_file_id: ed.output_file.id,
+      output_file_hash: ed.output_file.hash,
       judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
-      judge_file_id: ed.judge_file != null ? ed.judge_file.id : null,
+      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
       is_sample: ed.is_sample,
     };
   }

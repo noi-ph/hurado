@@ -10,20 +10,20 @@ import { TaskEditorStatement } from "./task_editor_statement";
 import styles from "./task_editor.module.css";
 import { coerceTaskEditorTab, TaskEditorTab, TaskEditorTabComponent } from "./task_editor_tabs";
 import { TaskEditorDetails } from "./task_editor_details";
-import { TaskSSR } from "common/types";
 import { coerceTaskED } from "./coercion";
 import { TaskED } from "./types";
 import { TaskEditorJudging } from "./task_editor_judging";
 import { IncompleteHashesException, saveTask } from "./task_editor_saving";
+import { TaskDTO } from "server/logic/tasks/update_editor_task_validation";
 
 type TaskEditorProps = {
-  ssr: TaskSSR;
+  dto: TaskDTO;
 };
 
-export const TaskEditor = ({ ssr }: TaskEditorProps) => {
+export const TaskEditor = ({ dto }: TaskEditorProps) => {
   const initialTask = useMemo(() => {
-    return coerceTaskED(ssr);
-  }, [ssr])
+    return coerceTaskED(dto);
+  }, [dto])
   const [tab, setTab] = useState(coerceTaskEditorTab(getLocationHash()));
   const [task, setTask] = useState<TaskED>(initialTask);
   const [isMounted, setIsMounted] = useState(false);
@@ -108,7 +108,7 @@ const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps
     setSaving(true);
     try {
       const newTask = await saveTask(task);
-      setTask(newTask);
+      // setTask(newTask);
     } catch (e) {
       if (e instanceof IncompleteHashesException) {
         alert(`Try again in a few seconds. Error: ${e.message}.`);

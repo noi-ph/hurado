@@ -1,6 +1,6 @@
-export enum FileStorageKind {
-  S3 = 'S3',
-}
+export type FileHashesResponse = {
+  saved: string[];
+};
 
 export type FileUploadResponse = {
   hash: string;

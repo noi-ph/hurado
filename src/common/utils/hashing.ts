@@ -1,8 +1,5 @@
-export async function sha256(blob: Blob): Promise<string> {
-  // This mutates the TaskFileLocal but that's okay. As long as we don't save before
-  // all of the destructivelyComputeSHA1s complete, it's fine.
-  const arrayBuffer = await blob.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+export async function sha256(array: ArrayBuffer): Promise<string> {
+  const hashBuffer = await crypto.subtle.digest('SHA-256', array);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
   return hashHex;

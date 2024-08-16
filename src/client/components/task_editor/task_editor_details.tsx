@@ -14,7 +14,6 @@ import {
   TaskED,
   TaskFileLocal,
 } from "./types";
-import { nextEID } from "./coercion";
 import {
   destructivelyComputeSHA1,
   TaskEditorAddButton,
@@ -73,7 +72,6 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
     for (const file of pickerRef.current.files) {
       const newFile: TaskFileLocal = {
         kind: EditorKind.Local,
-        eid: nextEID(),
         file,
         hash: "",
       };

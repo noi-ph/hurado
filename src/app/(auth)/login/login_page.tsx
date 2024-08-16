@@ -26,13 +26,10 @@ const LoginPage: FunctionComponent = () => {
   const { setSession } = useSessionWithUpdate();
 
   const login = useCallback(async () => {
-    const response = await http.post(
-      "api/v1/auth/login",
-      JSON.stringify({
-        username,
-        password,
-      })
-    );
+    const response = await http.post("api/v1/auth/login", {
+      username,
+      password,
+    });
     if (response.status >= 300) {
       throw new Error(response.data);
     }
