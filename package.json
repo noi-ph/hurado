@@ -11,6 +11,7 @@
     "db:migrate": "ts-node src/db/scripts/migrate.ts",
     "db:seed": "ts-node src/db/scripts/seed.ts",
     "db:sql": "docker exec -it hurado-postgres psql -U hurado",
+    "azure:init": "ts-node src/db/scripts/azure.ts",
     "lint": "next lint",
     "lint:fix": "next lint --fix && prettier src --write",
     "format": "prettier src --write"
@@ -29,6 +30,7 @@
   },
   "homepage": "https://github.com/noiph/hurado#readme",
   "dependencies": {
+    "@azure/storage-blob": "^12.24.0",
     "@monaco-editor/react": "^4.6.0",
     "@types/bcryptjs": "^2.4.6",
     "aws-sdk": "^2.1673.0",
@@ -48,7 +50,8 @@
     "pg-query-stream": "^4.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sharp": "^0.33.2"
+    "sharp": "^0.33.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

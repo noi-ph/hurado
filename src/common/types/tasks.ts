@@ -16,17 +16,21 @@ export type TaskCreditTable = {
 };
 
 export type FileTable = {
-  id: string;
-  owner: string;
-  owner_id: string;
+  id: Generated<string>;
   hash: string;
   size: number;
-  blob_url: string;
+};
+
+export type TaskAttachmentTable = {
+  id: Generated<string>;
+  path: string;
+  mime_type: string;
+  file_hash: string;
 };
 
 export type ScriptTable = {
   id: string;
-  file_id: string;
+  file_hash: string;
   language_code: string;
   runtime_args: string;
 };
@@ -61,7 +65,7 @@ export type TaskCreditSSR = {
 export type TaskAttachmentSSR = {
   id: string;
   path: string;
-  file_id: string;
+  file_hash: string;
   mime_type: string;
 };
 
@@ -82,11 +86,11 @@ export type TestDataSSR = {
   id: string;
   name: string;
   order: number;
-  input_file_id: string;
+  input_file_hash: string;
   input_file_name: string;
-  output_file_id: string;
+  output_file_hash: string;
   output_file_name: string;
-  judge_file_id: string | null;
+  judge_file_hash: string | null;
   judge_file_name: string | null;
   is_sample: boolean;
 };
@@ -100,7 +104,7 @@ export type TaskCreditDTO = {
 export type TaskAttachmentDTO = {
   id?: string;
   path: string;
-  file_id: string;
+  file_hash: string;
   mime_type: string;
 };
 
@@ -116,11 +120,11 @@ export type TaskTestDataDTO = {
   id?: string;
   name: string;
   order: number;
-  input_file_id: string;
+  input_file_hash: string;
   input_file_name: string;
-  output_file_id: string;
+  output_file_hash: string;
   output_file_name: string;
-  judge_file_id: string | null;
+  judge_file_hash: string | null;
   judge_file_name: string | null;
   is_sample: boolean;
 }

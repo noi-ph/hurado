@@ -3,6 +3,5 @@ export enum FileStorageKind {
 }
 
 export type FileUploadResponse = {
-  store: FileStorageKind;
-  url: string;
+  hash: string;
 };

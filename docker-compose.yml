@@ -37,3 +37,13 @@ services:
     profiles:
       - ''
       - services
+  hurado-azurite:
+    container_name: hurado-azurite
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000"  # Blob service
+    environment:
+      - AZURITE_ACCOUNTS=hurado:password
+    volumes:
+      - ./volumes/azurite:/data
+    command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000"
