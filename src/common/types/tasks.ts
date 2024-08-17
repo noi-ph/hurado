@@ -66,3 +66,17 @@ export type TaskUpdate = Updateable<TaskTable>;
 export type TaskSummary = Pick<Task, "title" | "slug" | "description">;
 export type TaskCredit = Selectable<TaskCreditTable>;
 
+export type TaskViewerDTO = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  statement: string;
+  score_max: number;
+  credits: TaskViewerCreditDTO[];
+}
+
+export type TaskViewerCreditDTO = {
+  name: string;
+  role: string;
+}
