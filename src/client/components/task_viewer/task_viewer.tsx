@@ -1,7 +1,6 @@
 "use client";
 import { MathJaxContext } from "better-react-mathjax";
-import classNames from "classnames";
-import { memo, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { MathJaxConfig } from "client/components/mathjax";
 import { TaskViewerDTO } from "common/types";
@@ -13,9 +12,10 @@ import { TaskSubmissionsCache, TaskViewerTitle } from "./task_viewer_utils";
 
 type TaskViewerProps = {
   task: TaskViewerDTO;
+  canEdit: boolean;
 };
 
-export const TaskViewer = ({ task }: TaskViewerProps) => {
+export const TaskViewer = ({ task, canEdit }: TaskViewerProps) => {
   const [tab, setTab] = useState(coerceTaskViewerTab(getLocationHash()));
   const [submissions, setSubmissions] = useState<TaskSubmissionsCache>(
     TaskSubmissionsCache.empty()
@@ -64,7 +64,12 @@ export const TaskViewer = ({ task }: TaskViewerProps) => {
   return (
     <MathJaxContext config={MathJaxConfig}>
       <div className="max-w-[64rem] mx-auto mt-4">
-        <TaskViewerTabComponent className="flex gap-2" tab={tab} />
+        <TaskViewerTabComponent
+          className="flex gap-2"
+          tab={tab}
+          taskId={task.id}
+          canEdit={canEdit}
+        />
         {content}
       </div>
     </MathJaxContext>

@@ -70,7 +70,7 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
           <Navbar />
         </header>
         <TaskTitleDisplay title={task.title} slug={task.slug} />
-        <TaskEditorTabComponent className={styles.tabs} tab={tab} />
+        <TaskEditorTabComponent className={styles.tabs} tab={tab} slug={task.slug}/>
         {content}
         <TaskEditorFooter task={task} setTask={setTask} initial={initialTask} />
       </div>
