@@ -1,7 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { Language } from "common/types/languages";
+import { Language } from "common/types/constants";
 import { JudgeSubmission, JudgeTask } from "./judge_types";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
 
@@ -15,7 +15,7 @@ export class JudgeFiles {
   }
 
   static async cleanDirectory(path: string): Promise<void> {
-    await fs.promises.rmdir(path, { recursive: true });
+    await fs.promises.rm(path, { recursive: true });
   }
 
   static async setupTask(task: JudgeTask, dir: string): Promise<unknown> {

@@ -1,4 +1,4 @@
-import { Language } from "common/types/languages";
+import { Language } from "common/types/constants";
 import { SubmissionSummaryDTO } from "common/types/submissions";
 import { db } from "db";
 import { NextRequest, NextResponse } from "next/server";

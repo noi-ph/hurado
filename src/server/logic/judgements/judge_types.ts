@@ -1,3 +1,5 @@
+import { Language, Verdict } from "common/types/constants";
+
 export type JudgeTask = {
   subtasks: JudgeSubtask[];
 };
@@ -5,10 +7,11 @@ export type JudgeTask = {
 export type JudgeSubtask = {
   id: string;
   score_max: number;
-  data: JudgeData[];
+  data: JudgeTaskData[];
 };
 
-export type JudgeData = {
+export type JudgeTaskData = {
+  id: string;
   input_file_name: string;
   input_file_hash: string;
   output_file_name: string;
@@ -27,12 +30,34 @@ export type JudgeSubmission = {
 
 
 export type JudgeVerdict = {
+  id: string;
+  submission_id: string;
+  created_at: Date;
+  is_official: boolean;
+  verdict: Verdict;
   raw_score: number;
+  running_time_ms: number;
+  running_memory_byte: number;
   subtasks: JudgeVerdictSubtask[];
 };
 
 export type JudgeVerdictSubtask = {
+  id: string;
   subtask_id: string;
-  score: number;
+  created_at: Date;
+  verdict: Verdict;
+  raw_score: number;
+  running_time_ms: number;
+  running_memory_byte: number;
+  data: JudgeVerdictTaskData[];
 };
 
+export type JudgeVerdictTaskData = {
+  id: string;
+  task_data_id: string;
+  created_at: Date;
+  verdict: Verdict;
+  raw_score: number;
+  running_time_ms: number;
+  running_memory_byte: number;
+};

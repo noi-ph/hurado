@@ -20,7 +20,7 @@ export async function createSubmission(
     'id',
     'file_hash',
     'created_at',
-  ]).execute();
+  ]).executeTakeFirstOrThrow();
   return submission;
 }
 

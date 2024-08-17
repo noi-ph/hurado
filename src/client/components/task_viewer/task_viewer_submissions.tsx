@@ -73,7 +73,7 @@ const SubmissionRow = memo(({ submission }: SubmissionRowProps) => {
       </SubmissionCell>
       <SubmissionCell>{humanizeTimeAgo(submission.created_at)}</SubmissionCell>
       <SubmissionCell>{submission.language}</SubmissionCell>
-      <SubmissionCell>In Queue</SubmissionCell>
+      <SubmissionCell>In Queue {submission.verdict}</SubmissionCell>
       <SubmissionCell></SubmissionCell>
       <SubmissionCell></SubmissionCell>
     </>

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "db";
 import { SubmissionSummaryDTO } from "common/types/submissions";
-import { Language } from "common/types/languages";
+import { Language } from "common/types/constants";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { checkUUIDv4, huradoIDToUUID } from "common/utils/uuid";
 
