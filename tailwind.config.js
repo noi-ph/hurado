@@ -16,25 +16,28 @@ module.exports = {
       blue: {
         200: "#A7BDFF",
         300: "#85A4FF",
+        400: "#7879F1",
         500: "#4B11F1",
       },
       gray: {
-        200: '#EEEEEE',
-        300: '#C8CCD0',
-        500: '#75715E',
-        800: '#333333',
+        200: "#EEEEEE",
+        300: "#C8CCD0",
+        500: "#75715E",
+        700: "#333333",
+        800: "#2C2C2C",
+        900: "#0E0E2C",
       },
     },
   },
   plugins: [
-    function({ addBase, theme }) {
+    function ({ addBase, theme }) {
       // Expose colors as css variables
-      function extractColorVars(colorObj, colorGroup = '') {
+      function extractColorVars(colorObj, colorGroup = "") {
         return Object.keys(colorObj).reduce((vars, colorKey) => {
           const value = colorObj[colorKey];
 
           const newVars =
-            typeof value === 'string'
+            typeof value === "string"
               ? { [`--color${colorGroup}-${colorKey}`]: value }
               : extractColorVars(value, `-${colorKey}`);
 
@@ -43,7 +46,7 @@ module.exports = {
       }
 
       addBase({
-        ':root': extractColorVars(theme('colors')),
+        ":root": extractColorVars(theme("colors")),
       });
     },
   ],

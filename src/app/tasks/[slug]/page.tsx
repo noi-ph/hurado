@@ -1,17 +1,30 @@
 import { notFound } from "next/navigation";
-import { SubmitComponent } from "client/components/submit";
-import { Task } from "common/types";
+import { TaskViewerDTO } from "common/types";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
+import { TaskViewer } from "client/components/task_viewer/task_viewer";
 
-async function getTaskData(slug: string): Promise<Task | undefined> {
-  const task: Task | undefined = await db
+async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
+  const task = await db
     .selectFrom("tasks")
-    .selectAll()
+    .select(["id", "slug", "title", "description", "statement", "score_max"])
     .where("slug", "=", slug)
     .executeTakeFirst();
 
-  return task;
+  if (task == null) {
+    return null;
+  }
+  const credits = await db
+    .selectFrom("task_credits")
+    .select(["name", "role"])
+    .orderBy("order")
+    .where("task_id", "=", task.id)
+    .execute();
+
+  return {
+    ...task,
+    credits: credits,
+  };
 }
 
 type TaskPageProps = {
@@ -29,10 +42,7 @@ async function Page(props: TaskPageProps) {
 
   return (
     <DefaultLayout>
-      <h1>{task.title}</h1>
-      <p>{task.description}</p>
-      <p>{task.statement}</p>
-      <SubmitComponent />
+      <TaskViewer task={task} />
     </DefaultLayout>
   );
 }
