@@ -8,6 +8,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import http from "client/http";
 import { useSessionWithUpdate } from "client/sessions";
 import styles from "./page.module.css";
+import { APIPath, getAPIPath } from "client/paths";
 
 const LoginPage: FunctionComponent = () => {
   const [throttle, setThrottle] = useState<boolean>(false);
@@ -26,7 +27,8 @@ const LoginPage: FunctionComponent = () => {
   const { setSession } = useSessionWithUpdate();
 
   const login = useCallback(async () => {
-    const response = await http.post("api/v1/auth/login", {
+    const loginURL = getAPIPath({ kind: APIPath.Login });
+    const response = await http.post(loginURL, {
       username,
       password,
     });
