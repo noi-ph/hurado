@@ -9,7 +9,7 @@ import { coerceTaskViewerTab, TaskViewerTab, TaskViewerTabComponent } from "./ta
 import { TaskViewerStatement } from "./task_viewer_statement";
 import { TaskViewerEditorial } from "./task_viewer_editorial";
 import { TaskViewerSubmissions } from "./task_viewer_submissions";
-import { TaskViewerTitle } from "./task_viewer_utils";
+import { TaskSubmissionsCache, TaskViewerTitle } from "./task_viewer_utils";
 
 type TaskViewerProps = {
   task: TaskViewerDTO;
@@ -17,6 +17,9 @@ type TaskViewerProps = {
 
 export const TaskViewer = ({ task }: TaskViewerProps) => {
   const [tab, setTab] = useState(coerceTaskViewerTab(getLocationHash()));
+  const [submissions, setSubmissions] = useState<TaskSubmissionsCache>(
+    TaskSubmissionsCache.empty()
+  );
   const [isMounted, setIsMounted] = useState(false);
 
   // NextJS hack to detect when hash changes and run some code
@@ -39,7 +42,13 @@ export const TaskViewer = ({ task }: TaskViewerProps) => {
       content = <TaskViewerStatement task={task} />;
       break;
     case TaskViewerTab.Submissions:
-      content = <TaskViewerSubmissions task={task} />;
+      content = (
+        <TaskViewerSubmissions
+          task={task}
+          submissions={submissions}
+          setSubmissions={setSubmissions}
+        />
+      );
       break;
     case TaskViewerTab.Editorial:
       content = <TaskViewerEditorial task={task} />;
@@ -61,7 +70,6 @@ export const TaskViewer = ({ task }: TaskViewerProps) => {
     </MathJaxContext>
   );
 };
-
 
 function getLocationHash(): string {
   return typeof window !== "undefined" ? window.location.hash : "";

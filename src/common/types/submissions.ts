@@ -1,4 +1,5 @@
 import { ColumnType, Generated } from "kysely";
+import { Language } from "./languages";
 
 export type SubmissionTable = {
   id: Generated<string>;
@@ -8,5 +9,15 @@ export type SubmissionTable = {
   language: string;
   runtime_args: string | null;
   created_at: ColumnType<Date, never, never>;
-  official_result_id: string | null;
+  official_verdict_id: string | null;
 };
+
+export type SubmissionSummaryDTO = {
+  id: string;
+  language: Language;
+  created_at: Date;
+  verdict: string | null;
+  score: number | null;
+  running_time_ms: number | null;
+  running_memory_byte: number | null;
+}

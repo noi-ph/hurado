@@ -10,6 +10,11 @@ import {
 import {
   SubmissionTable,
 } from "./submissions";
+import {
+  VerdictSubtaskTable,
+  VerdictTable,
+  VerdictTaskDataTable,
+} from "./verdicts";
 import { UserTable } from "./users";
 
 export interface Models {
@@ -22,6 +27,9 @@ export interface Models {
   task_files: TaskFileTable;
   scripts: ScriptTable;
   submissions: SubmissionTable;
+  verdicts: VerdictTable;
+  verdict_subtasks: VerdictSubtaskTable;
+  verdict_task_data: VerdictTaskDataTable;
 }
 
 export * from "./users";
