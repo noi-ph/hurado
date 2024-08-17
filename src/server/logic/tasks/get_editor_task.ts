@@ -1,12 +1,13 @@
 import { db } from "db";
-import { checkUUIDv4 } from "common/utils/uuid";
-import { TaskDataDTO, TaskDTO } from "./update_editor_task_validation";
+import { huradoIDToUUID } from "common/utils/uuid";
+import { TaskDataDTO, TaskDTO } from "common/validation/task_validation";
 
 export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
+  const uuid = huradoIDToUUID(idOrSlug);
   const task = await db
     .selectFrom("tasks")
     .select(["id", "title", "slug", "description", "statement", "score_max"])
-    .where((eb) => eb.or([eb("slug", "=", idOrSlug), eb("id", "=", checkUUIDv4(idOrSlug))]))
+    .where((eb) => eb.or([eb("slug", "=", idOrSlug), eb("id", "=", uuid)]))
     .executeTakeFirst();
 
   if (task == null) {

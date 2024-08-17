@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { TaskEditor } from "client/components/task_editor/task_editor";
 import { getSession } from "server/sessions";
 import { getEditorTask } from "server/logic/tasks/get_editor_task";
+import { uuidToHuradoID } from "common/utils/uuid";
 
 
 type TaskEditPageProps = {
@@ -20,8 +21,10 @@ export default async function TaskEditPage(props: TaskEditPageProps) {
 
   if (task == null) {
     return notFound();
-  } else if (task.id !== props.params.slug) {
-    return redirect(`/tasks/${task.id}/edit`);
+  }
+  const hid = uuidToHuradoID(task.id);
+  if (hid !== props.params.slug) {
+    return redirect(`/tasks/${hid}/edit`);
   }
 
   return <TaskEditor dto={task} />;

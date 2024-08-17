@@ -1,5 +1,5 @@
 import {
-  FileTable,
+  TaskFileTable,
   ScriptTable,
   TaskAttachmentTable,
   TaskCreditTable,
@@ -7,6 +7,14 @@ import {
   TaskSubtaskTable,
   TaskTable,
 } from "./tasks";
+import {
+  SubmissionTable,
+} from "./submissions";
+import {
+  VerdictSubtaskTable,
+  VerdictTable,
+  VerdictTaskDataTable,
+} from "./verdicts";
 import { UserTable } from "./users";
 
 export interface Models {
@@ -16,8 +24,12 @@ export interface Models {
   task_attachments: TaskAttachmentTable;
   task_subtasks: TaskSubtaskTable;
   task_data: TaskDataTable;
-  files: FileTable;
+  task_files: TaskFileTable;
   scripts: ScriptTable;
+  submissions: SubmissionTable;
+  verdicts: VerdictTable;
+  verdict_subtasks: VerdictSubtaskTable;
+  verdict_task_data: VerdictTaskDataTable;
 }
 
 export * from "./users";
