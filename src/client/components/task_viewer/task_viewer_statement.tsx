@@ -14,7 +14,7 @@ export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
       <div className='my-4'>
         <MathJax>{task.statement}</MathJax>
       </div>
-      <SubmitComponent/>
+      <SubmitComponent taskId={task.id}/>
     </>
   );
 };

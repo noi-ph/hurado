@@ -17,6 +17,8 @@ export function getPath(args: PathArguments) {
 
 export enum APIPath {
   Login = "Login",
+  AttachmentFile = "AttachmentFile",
+  SubmissionCreate = "SubmissionCreate",
   FileHashes = "FileHashes",
   FileUpload = "FileUpload",
   TaskCreate = "TaskCreate",
@@ -25,6 +27,8 @@ export enum APIPath {
 
 export type APIPathArguments =
   | { kind: APIPath.Login }
+  | { kind: APIPath.AttachmentFile; taskId: string; path: string }
+  | { kind: APIPath.SubmissionCreate }
   | { kind: APIPath.FileHashes }
   | { kind: APIPath.FileUpload }
   | { kind: APIPath.TaskCreate }
@@ -34,6 +38,10 @@ export function getAPIPath(args: APIPathArguments) {
   switch (args.kind) {
     case APIPath.Login:
       return "/api/v1/auth/login";
+    case APIPath.AttachmentFile:
+      return `/api/v1/tasks/${args.taskId}/attachments/${args.path}`;
+    case APIPath.SubmissionCreate:
+      return "/api/v1/submissions";
     case APIPath.TaskCreate:
       return "/api/v1/tasks";
     case APIPath.TaskUpdate:

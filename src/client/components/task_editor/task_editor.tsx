@@ -14,7 +14,7 @@ import { coerceTaskED } from "./coercion";
 import { TaskED } from "./types";
 import { TaskEditorJudging } from "./task_editor_judging";
 import { IncompleteHashesException, saveTask } from "./task_editor_saving";
-import { TaskDTO } from "server/logic/tasks/update_editor_task_validation";
+import { TaskDTO } from "common/validation/task_validation";
 
 type TaskEditorProps = {
   dto: TaskDTO;

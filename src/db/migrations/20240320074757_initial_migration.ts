@@ -102,7 +102,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createIndex("idx_task_data_subtask_task_id")
-    .on("task_attachment")
+    .on("task_data")
     .columns(["subtask_id"])
     .execute();
 
@@ -123,7 +123,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("language", "text", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("runtime_args", "text")
-    .addColumn("official_result_id", "uuid")
+    .addColumn("official_verdict_id", "uuid")
     .execute();
 
   await db.schema
@@ -139,12 +139,13 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("results")
+    .createTable("verdicts")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("verdict", "text")
-    .addColumn("raw_score", "integer")
+    .addColumn("raw_score", "real")
+    .addColumn("is_official", "boolean")
     .addColumn("running_time_ms", "integer")
     .addColumn("running_memory_byte", "integer")
     .addColumn("compile_time_ms", "integer")
@@ -152,9 +153,57 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createIndex("idx_results_submission_id_created_at")
-    .on("results")
-    .columns(["submission_id", "created_at"])
+    .createTable("verdict_subtasks")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("verdict_id", "uuid", (col) => col.notNull().references("verdicts.id"))
+    .addColumn("subtask_id", "uuid", (col) => col.notNull().references("task_subtasks.id"))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn("verdict", "text")
+    .addColumn("raw_score", "real")
+    .addColumn("running_time_ms", "integer")
+    .addColumn("running_memory_byte", "integer")
+    .execute();
+
+  await db.schema
+    .createTable("verdict_task_data")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("verdict_subtask_id", "uuid", (col) =>
+      col.notNull().references("verdict_subtasks.id")
+    )
+    .addColumn("task_data_id", "uuid", (col) => col.notNull().references("task_data.id"))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn("verdict", "text")
+    .addColumn("raw_score", "real")
+    .addColumn("running_time_ms", "integer")
+    .addColumn("running_memory_byte", "integer")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_verdicts_submission_id")
+    .on("verdicts")
+    .columns(["submission_id"])
+    .execute();
+
+  await db.schema
+    .createIndex("idx_verdict_subtasks_verdict_id")
+    .on("verdict_subtasks")
+    .columns(["verdict_id"])
+    .execute();
+
+  await db.schema
+    .createIndex("idx_verdict_task_data_verdict_subtask_id")
+    .on("verdict_task_data")
+    .columns(["verdict_subtask_id"])
+    .execute();
+
+  await db.schema
+    .alterTable("submissions")
+    .addForeignKeyConstraint(
+      "fk_submissions_official_verdict_id",
+      ["official_verdict_id"],
+      "verdicts",
+      ["id"]
+    )
     .execute();
 
   await db.schema
@@ -167,16 +216,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("start_time", "timestamp")
     .addColumn("end_time", "timestamp")
     .execute();
-
-  await db.schema
-    .alterTable("submissions")
-    .addForeignKeyConstraint(
-      "fk_submissions_official_result_id",
-      ["official_result_id"],
-      "results",
-      ["id"]
-    )
-    .execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
@@ -186,7 +225,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema.dropTable("contests").execute();
-  await db.schema.dropTable("results").execute();
+  await db.schema.dropTable("verdicts").execute();
   await db.schema.dropTable("submissions").execute();
   await db.schema.dropTable("scripts").execute();
   await db.schema.dropTable("task_files").execute();

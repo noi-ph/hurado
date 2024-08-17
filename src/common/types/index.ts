@@ -7,6 +7,9 @@ import {
   TaskSubtaskTable,
   TaskTable,
 } from "./tasks";
+import {
+  SubmissionTable,
+} from "./submissions";
 import { UserTable } from "./users";
 
 export interface Models {
@@ -18,6 +21,7 @@ export interface Models {
   task_data: TaskDataTable;
   task_files: TaskFileTable;
   scripts: ScriptTable;
+  submissions: SubmissionTable;
 }
 
 export * from "./users";

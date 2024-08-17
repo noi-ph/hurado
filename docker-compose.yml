@@ -47,3 +47,10 @@ services:
     volumes:
       - ./volumes/azurite:/data
     command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000"
+  hurado-redis:
+    container_name: hurado-redis
+    image: redis:7.4-bookworm
+    ports:
+      - "6379"  # Blob service
+    volumes:
+      - ./volumes/redis:/data
