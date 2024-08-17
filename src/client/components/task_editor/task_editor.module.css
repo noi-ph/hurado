@@ -71,3 +71,8 @@
   display: grid;
   grid-template-columns: 1fr 2fr auto;
 }
+
+.testData {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr auto;
+}

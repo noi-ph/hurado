@@ -1,24 +1,32 @@
 "use client";
 import { MathJaxContext } from "better-react-mathjax";
 import classNames from "classnames";
-import { memo, ReactNode, useEffect, useState } from "react";
+import { memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Navbar } from "client/components/navbar";
 import layoutStyles from "client/components/layouts/layout.module.css";
 import { MathJaxConfig } from "client/components/mathjax";
-import { TaskEditorTask } from "common/types";
 import { TaskEditorStatement } from "./task_editor_statement";
 import styles from "./task_editor.module.css";
 import { coerceTaskEditorTab, TaskEditorTab, TaskEditorTabComponent } from "./task_editor_tabs";
 import { TaskEditorDetails } from "./task_editor_details";
+import { coerceTaskED } from "./coercion";
+import { TaskED } from "./types";
+import { TaskEditorJudging } from "./task_editor_judging";
+import { IncompleteHashesException, saveTask } from "./task_editor_saving";
+import { TaskDTO } from "server/logic/tasks/update_editor_task_validation";
 
 type TaskEditorProps = {
-  task: TaskEditorTask;
+  dto: TaskDTO;
 };
 
-export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
+export const TaskEditor = ({ dto }: TaskEditorProps) => {
+  const initialTask = useMemo(() => {
+    return coerceTaskED(dto);
+  }, [dto])
   const [tab, setTab] = useState(coerceTaskEditorTab(getLocationHash()));
-  const [task, setTask] = useState(initialTask);
+  const [task, setTask] = useState<TaskED>(initialTask);
+  const [isMounted, setIsMounted] = useState(false);
 
   // NextJS hack to detect when hash changes and run some code
   // https://github.com/vercel/next.js/discussions/49465#discussioncomment-5845312
@@ -26,7 +34,13 @@ export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
   useEffect(() => {
     const currentTab = coerceTaskEditorTab(getLocationHash());
     setTab(currentTab);
+    setIsMounted(true);
   }, [params]);
+
+  // Hack to skip the hydration error
+  if (!isMounted) {
+    return null;
+  }
 
   let content: ReactNode = null;
   switch (tab) {
@@ -35,6 +49,9 @@ export const TaskEditor = ({ task: initialTask }: TaskEditorProps) => {
       break;
     case TaskEditorTab.Details:
       content = <TaskEditorDetails task={task} setTask={setTask} />;
+      break;
+    case TaskEditorTab.Judging:
+      content = <TaskEditorJudging task={task} setTask={setTask} />;
       break;
     default:
       content = null;
@@ -80,12 +97,29 @@ const TaskTitleDisplay = memo(({ title, slug }: TaskTitleDisplayProps) => {
 });
 
 type TaskEditorFooterProps = {
-  initial: TaskEditorTask;
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  initial: TaskED;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
 const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps) => {
+  const [saving, setSaving] = useState(false);
+  const handleSave = useCallback(async () => {
+    setSaving(true);
+    try {
+      const newTask = await saveTask(task);
+      // setTask(newTask);
+    } catch (e) {
+      if (e instanceof IncompleteHashesException) {
+        alert(`Try again in a few seconds. Error: ${e.message}.`);
+      } else {
+        throw e;
+      }
+    } finally {
+      setSaving(false);
+    }
+  }, [task]);
+
   return (
     <div
       className={classNames(
@@ -94,7 +128,8 @@ const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps
       )}
     >
       <button
-        disabled={task === initial}
+        disabled={task === initial || saving}
+        onClick={handleSave}
         className="py-2 px-4 rounded font-bold text-white bg-blue-300 enabled:hover:bg-blue-500 disabled:bg-gray-300 disabled:cursor-default"
       >
         Save Changes

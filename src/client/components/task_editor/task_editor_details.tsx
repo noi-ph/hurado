@@ -1,107 +1,91 @@
 import classNames from "classnames";
-import { MouseEvent, useCallback, useRef } from "react";
-import {
-  TaskEditorCredit,
-  TaskEditorAttachmentKind,
-  TaskEditorAttachmentPending,
-  TaskEditorAttachmentSaved,
-  TaskEditorTask,
-} from "common/types";
+import { useCallback, useRef } from "react";
 import styles from "./task_editor.module.css";
 import { InputChangeEvent, TextAreaChangeEvent } from "common/types/events";
 import { UnreachableError } from "common/errors";
 import BoxIcon from "../box_icon";
 import { Scrollable } from "../scrollable";
+import {
+  EditorKind,
+  TaskAttachmentLocal,
+  TaskAttachmentSaved,
+  TaskCreditLocal,
+  TaskCreditSaved,
+  TaskED,
+  TaskFileLocal,
+} from "./types";
+import {
+  destructivelyComputeSHA1,
+  TaskEditorAddButton,
+  TaskEditorInput,
+  TaskEditorLabel,
+  TaskEditorTableCell,
+  useTaskStringPropUpdater,
+} from "./task_editor_utils";
+import { Arrays } from "common/utils/arrays";
 
 type TaskEditorDetailsProps = {
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
 export const TaskEditorDetails = ({ task, setTask }: TaskEditorDetailsProps) => {
-  const onChangeTitle = useTaskUpdaterText(task, setTask, "title");
-  const onChangeSlug = useTaskUpdaterText(task, setTask, "slug");
-  const onChangeDescription = useTaskUpdaterText(task, setTask, "description");
+  const onChangeTitle = useTaskStringPropUpdater(task, setTask, "title");
+  const onChangeSlug = useTaskStringPropUpdater(task, setTask, "slug");
+  const onChangeDescription = useTaskStringPropUpdater(task, setTask, "description");
 
   return (
     <Scrollable className={styles.content}>
       <div className={classNames(styles.detailEditor, "p-4 gap-12")}>
-        <TaskDetailProperty name="Title" />
-        <TaskDetailInput type="text" value={task.title} onChange={onChangeTitle} />
-        <TaskDetailProperty name="Slug" />
-        <TaskDetailInput type="text" value={task.slug} onChange={onChangeSlug} />
-        <TaskDetailProperty name="Description" />
-        <TaskDetailInput
+        <TaskEditorLabel label="Title" />
+        <TaskEditorInput type="text" value={task.title} onChange={onChangeTitle} />
+        <TaskEditorLabel label="Slug" />
+        <TaskEditorInput type="text" value={task.slug} onChange={onChangeSlug} />
+        <TaskEditorLabel label="Description" />
+        <TaskEditorInput
           type="textarea"
           value={task.description ?? ""}
           onChange={onChangeDescription}
           placeholder="Write a short summary about the task"
         />
-        <TaskDetailProperty name="Attachments" />
+        <TaskEditorLabel label="Attachments" />
         <TaskEditorAttachments task={task} setTask={setTask} />
-        <TaskDetailProperty name="Developer Credits" />
+        <TaskEditorLabel label="Developer Credits" />
         <TaskEditorCredits task={task} setTask={setTask} />
       </div>
     </Scrollable>
   );
 };
 
-type TaskDetailPropertyProps = {
-  name: string;
-};
-
-const TaskDetailProperty = ({ name }: TaskDetailPropertyProps) => {
-  return <div className="text-lg text-gray-500">{name}</div>;
-};
-
-type TaskDetailInputProps = {
-  value: string;
-  onChange(event: InputChangeEvent | TextAreaChangeEvent): void;
-  placeholder?: string;
-  type: "text" | "textarea";
-};
-
-const TaskDetailInput = ({ type, value, onChange, placeholder }: TaskDetailInputProps) => {
-  if (type == "text") {
-    return (
-      <input
-        className="font-mono p-2 border border-gray-300 rounded-lg"
-        type="text"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-      />
-    );
-  } else {
-    return (
-      <textarea
-        className="font-mono p-2 border border-gray-300 rounded-lg h-24"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-      />
-    );
-  }
-};
-
 type TaskEditorAttachmentsProps = {
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
 const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) => {
   const pickerRef = useRef<HTMLInputElement>(null);
-  const onFileSelected = useCallback(() => {
+  const onFileSelect = useCallback(() => {
     if (pickerRef.current?.files == null) {
       return;
     }
-    const newAttachments: TaskEditorAttachmentPending[] = [];
+    const newAttachments: TaskAttachmentLocal[] = [];
     for (const file of pickerRef.current.files) {
-      newAttachments.push({
-        kind: TaskEditorAttachmentKind.Pending,
+      const newFile: TaskFileLocal = {
+        kind: EditorKind.Local,
         file,
+        hash: "",
+      };
+      destructivelyComputeSHA1(newFile);
+      const newAttachment: TaskAttachmentLocal = {
+        kind: EditorKind.Local,
+        file: newFile,
         path: file.name,
-      });
+        filename: file.name,
+        mime_type: "",
+        deleted: false,
+      };
+
+      newAttachments.push(newAttachment);
     }
 
     setTask({
@@ -127,9 +111,9 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
         <div /> {/* Actions header placeholder */}
         {task.attachments.map((attachment, idx) => {
           switch (attachment.kind) {
-            case TaskEditorAttachmentKind.Saved:
+            case EditorKind.Saved:
               return (
-                <TaskEditorAttachmentSavedX
+                <TaskAttachmentSavedX
                   key={idx}
                   task={task}
                   attachment={attachment}
@@ -137,9 +121,9 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
                   index={idx}
                 />
               );
-            case TaskEditorAttachmentKind.Pending:
+            case EditorKind.Local:
               return (
-                <TaskEditorAttachmentPendingX
+                <TaskAttachmentLocalX
                   key={idx}
                   task={task}
                   attachment={attachment}
@@ -153,12 +137,12 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
         })}
       </div>
       <div className="flex justify-center mt-2">
-        <DetailTableAdd onClick={onFileSelectStart} label="Add New" />
+        <TaskEditorAddButton onClick={onFileSelectStart} label="Add New" />
         <input
           type="file"
           className="hidden"
           ref={pickerRef}
-          onChange={onFileSelected}
+          onChange={onFileSelect}
           multiple={true}
         />
       </div>
@@ -166,23 +150,18 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
   );
 };
 
-type TaskEditorAttachmentSavedProps = {
+type TaskAttachmentSavedProps = {
   index: number;
-  attachment: TaskEditorAttachmentSaved;
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  attachment: TaskAttachmentSaved;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
-const TaskEditorAttachmentSavedX = ({
-  index,
-  attachment,
-  task,
-  setTask,
-}: TaskEditorAttachmentSavedProps) => {
+const TaskAttachmentSavedX = ({ index, attachment, task, setTask }: TaskAttachmentSavedProps) => {
   const onClickDelete = useCallback(() => {
     setTask({
       ...task,
-      attachments: replaceNth(task.attachments, index, {
+      attachments: Arrays.replaceNth(task.attachments, index, {
         ...attachment,
         deleted: !attachment.deleted,
       }),
@@ -192,8 +171,8 @@ const TaskEditorAttachmentSavedX = ({
   const filename = attachment.path.split("/").pop();
   return (
     <>
-      <DetailTableEntry deleted={attachment.deleted}>{filename}</DetailTableEntry>
-      <DetailTableEntry deleted={attachment.deleted}>{attachment.path}</DetailTableEntry>
+      <TaskEditorTableCell deleted={attachment.deleted}>{filename}</TaskEditorTableCell>
+      <TaskEditorTableCell deleted={attachment.deleted}>{attachment.path}</TaskEditorTableCell>
       <div className="flex flex-row justify-end items-center px-3 gap-2">
         <a href={getAttachmentURL(attachment)}>
           <BoxIcon name="bx-download" className="bx-sm text-blue-300 hover:text-blue-500" />
@@ -206,24 +185,19 @@ const TaskEditorAttachmentSavedX = ({
   );
 };
 
-type TaskEditorAttachmentPendingProps = {
+type TaskAttachmentLocalProps = {
   index: number;
-  attachment: TaskEditorAttachmentPending;
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  attachment: TaskAttachmentLocal;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
-const TaskEditorAttachmentPendingX = ({
-  index,
-  attachment,
-  task,
-  setTask,
-}: TaskEditorAttachmentPendingProps) => {
+const TaskAttachmentLocalX = ({ index, attachment, task, setTask }: TaskAttachmentLocalProps) => {
   const onChangePath = useCallback(
     (event: InputChangeEvent) => {
       setTask({
         ...task,
-        attachments: replaceNth(task.attachments, index, {
+        attachments: Arrays.replaceNth(task.attachments, index, {
           ...attachment,
           path: event.target.value,
         }),
@@ -241,10 +215,10 @@ const TaskEditorAttachmentPendingX = ({
 
   return (
     <>
-      <DetailTableEntry deleted={false}>{attachment.file.name}</DetailTableEntry>
-      <DetailTableEntry deleted={false}>
+      <TaskEditorTableCell deleted={false}>{attachment.filename}</TaskEditorTableCell>
+      <TaskEditorTableCell deleted={false}>
         <input type="text" value={attachment.path} onChange={onChangePath} className="w-full" />
-      </DetailTableEntry>
+      </TaskEditorTableCell>
       <div className="flex flex-row justify-end items-center px-3 gap-2">
         <button type="button" onClick={onClickDelete}>
           <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
@@ -255,8 +229,8 @@ const TaskEditorAttachmentPendingX = ({
 };
 
 type TaskEditorCreditsProps = {
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
 const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
@@ -266,9 +240,9 @@ const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
       credits: [
         ...task.credits,
         {
+          kind: EditorKind.Local,
           name: "Kevin",
           role: "Author",
-          deleted: false,
         },
       ],
     });
@@ -280,36 +254,46 @@ const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
         <div className="text-gray-500 font-roboto font-medium">Name</div>
         <div className="text-gray-500 font-roboto font-medium">Role</div>
         <div /> {/* Actions header placeholder */}
-        {task.credits.map((credit, idx) => (
-          <TaskEditorCreditSingle
-            key={idx}
-            task={task}
-            credit={credit}
-            setTask={setTask}
-            index={idx}
-          />
-        ))}
+        {task.credits.map((credit, idx) =>
+          credit.kind === EditorKind.Saved ? (
+            <TaskEditorCreditSavedX
+              key={idx}
+              task={task}
+              credit={credit}
+              setTask={setTask}
+              index={idx}
+            />
+          ) : (
+            <TaskEditorCreditLocalX
+              key={idx}
+              task={task}
+              credit={credit}
+              setTask={setTask}
+              index={idx}
+            />
+          )
+        )}
       </div>
       <div className="flex justify-center mt-2">
-        <DetailTableAdd onClick={onAddCredit} label="Add New" />
+        <TaskEditorAddButton onClick={onAddCredit} label="Add New" />
       </div>
     </div>
   );
 };
 
-type TaskEditorCreditSingleProps = {
+type TaskEditorCreditSavedProps = {
   index: number;
-  credit: TaskEditorCredit;
-  task: TaskEditorTask;
-  setTask(task: TaskEditorTask): void;
+  credit: TaskCreditSaved;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
-const TaskEditorCreditSingle = ({ index, credit, task, setTask }: TaskEditorCreditSingleProps) => {
+const TaskEditorCreditSavedX = ({ index, credit, task, setTask }: TaskEditorCreditSavedProps) => {
   const onChangeName = useCallback(
     (event: InputChangeEvent) => {
       setTask({
         ...task,
-        credits: replaceNth(task.credits, index, {
+        credits: Arrays.replaceNth(task.credits, index, {
           ...credit,
           name: event.target.value,
         }),
@@ -322,7 +306,7 @@ const TaskEditorCreditSingle = ({ index, credit, task, setTask }: TaskEditorCred
     (event: InputChangeEvent) => {
       setTask({
         ...task,
-        credits: replaceNth(task.credits, index, {
+        credits: Arrays.replaceNth(task.credits, index, {
           ...credit,
           role: event.target.value,
         }),
@@ -334,7 +318,7 @@ const TaskEditorCreditSingle = ({ index, credit, task, setTask }: TaskEditorCred
   const onClickDelete = useCallback(() => {
     setTask({
       ...task,
-      credits: replaceNth(task.credits, index, {
+      credits: Arrays.replaceNth(task.credits, index, {
         ...credit,
         deleted: !credit.deleted,
       }),
@@ -343,22 +327,22 @@ const TaskEditorCreditSingle = ({ index, credit, task, setTask }: TaskEditorCred
 
   return (
     <>
-      <DetailTableEntry deleted={credit.deleted}>
+      <TaskEditorTableCell deleted={credit.deleted}>
         <input
           type="text"
           value={credit.name}
           onChange={onChangeName}
           className={classNames("w-full", credit.deleted && "line-through")}
         />
-      </DetailTableEntry>
-      <DetailTableEntry deleted={credit.deleted}>
+      </TaskEditorTableCell>
+      <TaskEditorTableCell deleted={credit.deleted}>
         <input
           type="text"
           value={credit.role}
           onChange={onChangeRole}
           className={classNames("w-full", credit.deleted && "line-through")}
         />
-      </DetailTableEntry>
+      </TaskEditorTableCell>
       <div className="flex flex-row justify-end items-center px-3 gap-2">
         <button type="button" onClick={onClickDelete}>
           <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
@@ -368,57 +352,65 @@ const TaskEditorCreditSingle = ({ index, credit, task, setTask }: TaskEditorCred
   );
 };
 
-type DetailTableEntryProps = {
-  children: React.ReactNode;
-  deleted: boolean;
+type TaskEditorCreditLocalProps = {
+  index: number;
+  credit: TaskCreditLocal;
+  task: TaskED;
+  setTask(task: TaskED): void;
 };
 
-const DetailTableEntry = ({ deleted, children }: DetailTableEntryProps) => {
-  return (
-    <div className={classNames("font-roboto font-light text-gray-500", deleted && "line-through")}>
-      {children}
-    </div>
-  );
-};
-
-type DetailTableAddProps = {
-  label: string;
-  onClick(): void;
-};
-
-const DetailTableAdd = ({ onClick, label }: DetailTableAddProps) => {
-  return (
-    <button
-      onClick={onClick}
-      className="py-1 px-3 rounded-lg border border-gray-300 font-roboto font-light text-gray-500 hover:text-gray-800 hover:border-gray-500"
-    >
-      <BoxIcon name="bx-plus" className="bx-xs mt-1" />
-      {label}
-    </button>
-  );
-};
-
-function useTaskUpdaterText(
-  task: TaskEditorTask,
-  setTask: (t: TaskEditorTask) => void,
-  key: keyof TaskEditorTask
-) {
-  return useCallback(
+const TaskEditorCreditLocalX = ({ index, credit, task, setTask }: TaskEditorCreditLocalProps) => {
+  const onChangeName = useCallback(
     (event: InputChangeEvent) => {
       setTask({
         ...task,
-        [key as string]: event.target.value,
+        credits: Arrays.replaceNth(task.credits, index, {
+          ...credit,
+          name: event.target.value,
+        }),
       });
     },
-    [task, setTask]
+    [task, credit, index]
   );
-}
 
-function replaceNth<T>(arr: T[], index: number, value: T) {
-  return arr.slice(0, index).concat(value, ...arr.slice(index + 1));
-}
+  const onChangeRole = useCallback(
+    (event: InputChangeEvent) => {
+      setTask({
+        ...task,
+        credits: Arrays.replaceNth(task.credits, index, {
+          ...credit,
+          role: event.target.value,
+        }),
+      });
+    },
+    [task, credit, index]
+  );
 
-function getAttachmentURL(attachment: TaskEditorAttachmentSaved) {
+  const onClickDelete = useCallback(() => {
+    setTask({
+      ...task,
+      credits: [...task.credits.slice(0, index), ...task.credits.slice(index + 1)],
+    });
+  }, [task, credit, index]);
+
+  return (
+    <>
+      <TaskEditorTableCell deleted={false}>
+        <input type="text" value={credit.name} onChange={onChangeName} className={"w-full"} />
+      </TaskEditorTableCell>
+      <TaskEditorTableCell deleted={false}>
+        <input type="text" value={credit.role} onChange={onChangeRole} className={"w-full"} />
+      </TaskEditorTableCell>
+      <div className="flex flex-row justify-end items-center px-3 gap-2">
+        <button type="button" onClick={onClickDelete}>
+          <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
+        </button>
+      </div>
+    </>
+  );
+};
+
+function getAttachmentURL(attachment: TaskAttachmentSaved) {
   // TODO: Implement this when file uploads actually work
   return `#${attachment.path}`;
 }

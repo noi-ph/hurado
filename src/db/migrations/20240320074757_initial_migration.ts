@@ -2,6 +2,12 @@ import { Kysely, sql } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
+    .createTable("files")
+    .addColumn("hash", "text", (col) => col.primaryKey())
+    .addColumn("size", "bigint", (col) => col.notNull())
+    .execute();
+
+  await db.schema
     .createTable("users")
     .addColumn("id", "uuid", (col) =>
       col
@@ -12,9 +18,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("email", "text", (col) => col.notNull().unique())
     .addColumn("username", "text", (col) => col.notNull().unique())
     .addColumn("hashed_password", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`now()`).notNull()
-    )
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("school", "text")
     .addColumn("name", "text")
     .addColumn("country", "text")
@@ -23,9 +27,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("tasks")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
-    )
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("slug", "text", (col) => col.notNull().unique())
     .addColumn("title", "text", (col) => col.notNull())
     .addColumn("description", "text", (col) => col)
@@ -35,38 +37,70 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("files")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
-    )
+    .createTable("task_credits")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("name", "text", (col) => col.notNull())
-    .addColumn("size", "integer", (col) => col.notNull())
-    .addColumn("url", "text")
+    .addColumn("role", "text", (col) => col.notNull())
+    .addColumn("order", "integer", (col) => col.notNull())
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
+    .execute();
+
+  await db.schema
+    .createTable("task_attachments")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("path", "text", (col) => col.notNull())
+    .addColumn("mime_type", "text", (col) => col.notNull())
+    .addColumn("file_hash", "text", (col) => col.notNull().references("files.hash"))
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
+    .execute();
+  
+  await db.schema
+    .createTable("task_subtasks")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("name", "text", (col) => col.notNull())
+    .addColumn("order", "integer", (col) => col.notNull())
+    .addColumn("score_max", "real", (col) => col.notNull())
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
+    .execute();
+  
+  await db.schema
+    .createTable("task_data")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("name", "text", (col) => col.notNull())
+    .addColumn("order", "integer", (col) => col.notNull())
+    .addColumn("is_sample", "boolean", (col) => col.notNull())
+    .addColumn("input_file_name", "text", (col) => col.notNull())
+    .addColumn("input_file_hash", "text", (col) => col.notNull().references("files.hash"))
+    .addColumn("output_file_name", "text", (col) => col.notNull())
+    .addColumn("output_file_hash", "text", (col) => col.notNull().references("files.hash"))
+    .addColumn("judge_file_name", "text")
+    .addColumn("judge_file_hash", "text", (col) => col.references("files.hash"))
+    .addColumn("subtask_id", "uuid", (col) => col.notNull().references("task_subtasks.id"))
     .execute();
 
   await db.schema
     .createTable("scripts")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
-    )
-    .addColumn("file_id", "uuid", (col) => col.notNull().references("files.id"))
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("file_hash", "text", (col) => col.notNull().references("files.hash"))
     .addColumn("language_code", "text", (col) => col.notNull())
     .addColumn("runtime_args", "text")
     .execute();
 
   await db.schema
     .createTable("submissions")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
-    )
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id"))
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
     .addColumn("language_code", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`now()`).notNull()
-    )
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("runtime_args", "text")
     .addColumn("official_result_id", "uuid")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_task_attachment_task_id_file_hash")
+    .on("task_attachments")
+    .columns(["task_id", "file_hash"])
     .execute();
 
   await db.schema
@@ -83,27 +117,16 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("submission_files")
-    .addColumn("submission_id", "uuid", (col) =>
-      col.notNull().references("submissions.id")
-    )
-    .addColumn("file_id", "uuid", (col) => col.notNull().references("files.id"))
-    .addPrimaryKeyConstraint("pk_submission_files", [
-      "submission_id",
-      "file_id",
-    ])
+    .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
+    .addColumn("file_hash", "text", (col) => col.notNull().references("files.hash"))
+    .addPrimaryKeyConstraint("pk_submission_files", ["submission_id", "file_hash"])
     .execute();
 
   await db.schema
     .createTable("results")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
-    )
-    .addColumn("submission_id", "uuid", (col) =>
-      col.notNull().references("submissions.id")
-    )
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`now()`).notNull()
-    )
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("verdict", "text")
     .addColumn("raw_score", "integer")
     .addColumn("running_time_ms", "integer")
@@ -120,15 +143,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("contests")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`uuid_generate_v4()`)
-    )
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("slug", "text", (col) => col.notNull().unique())
     .addColumn("title", "text", (col) => col.notNull())
     .addColumn("description", "text")
-    .addColumn("owner_id", "uuid", (col) =>
-      col.notNull().references("users.id")
-    )
+    .addColumn("owner_id", "uuid", (col) => col.notNull().references("users.id"))
     .addColumn("start_time", "timestamp")
     .addColumn("end_time", "timestamp")
     .execute();

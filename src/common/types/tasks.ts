@@ -1,30 +1,61 @@
 import { Generated, Insertable, Selectable, Updateable } from "kysely";
 
+export type FileTable = {
+  id: Generated<string>;
+  hash: string;
+  size: number;
+};
+
 export type TaskTable = {
   id: Generated<string>;
   slug: string;
   title: string;
-  description?: string;
+  description: string | null;
   statement: string;
   score_max: number;
 };
 
 export type TaskCreditTable = {
-  id: string;
+  id: Generated<string>;
+  task_id: string;
   name: string;
   role: string;
+  order: number;
 };
 
-export type FileTable = {
-  id: string;
+export type TaskAttachmentTable = {
+  id: Generated<string>;
+  task_id: string;
+  path: string;
+  mime_type: string;
+  file_hash: string;
+};
+
+export type TaskSubtaskTable = {
+  id: Generated<string>;
+  task_id: string;
   name: string;
-  size: number;
-  blob_url: string;
+  order: number;
+  score_max: number;
+};
+
+export type TaskDataTable = {
+  id: Generated<string>;
+  subtask_id: string;
+  name: string;
+  order: number;
+  is_sample: boolean;
+  input_file_name: string;
+  input_file_hash: string;
+  output_file_name: string;
+  output_file_hash: string;
+  judge_file_name: string | null;
+  judge_file_hash: string | null;
 };
 
 export type ScriptTable = {
   id: string;
-  file_id: string;
+  file_hash: string;
   language_code: string;
   runtime_args: string;
 };
@@ -33,41 +64,5 @@ export type Task = Selectable<TaskTable>;
 export type TaskCreate = Insertable<TaskTable>;
 export type TaskUpdate = Updateable<TaskTable>;
 export type TaskSummary = Pick<Task, "title" | "slug" | "description">;
-
 export type TaskCredit = Selectable<TaskCreditTable>;
 
-export type TaskEditorCredit = {
-  name: string;
-  role: string;
-  deleted: boolean;
-}
-
-export enum TaskEditorAttachmentKind {
-  Saved = "Saved",
-  Pending = "Pending",
-}
-
-export type TaskEditorAttachment = TaskEditorAttachmentSaved | TaskEditorAttachmentPending;
-
-export type TaskEditorAttachmentSaved = {
-  kind: TaskEditorAttachmentKind.Saved;
-  id: string;
-  path: string;
-  deleted: boolean;
-};
-
-export type TaskEditorAttachmentPending = {
-  kind: TaskEditorAttachmentKind.Pending;
-  file: File;
-  path: string;
-};
-
-export type TaskEditorTask = {
-  id: string;
-  slug: string;
-  title: string;
-  description?: string;
-  statement: string;
-  credits: TaskEditorCredit[];
-  attachments: TaskEditorAttachment[];
-};
