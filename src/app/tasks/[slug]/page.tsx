@@ -3,6 +3,8 @@ import { TaskViewerDTO } from "common/types";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { TaskViewer } from "client/components/task_viewer/task_viewer";
+import { canManageTasks } from "server/authorization";
+import { getSession } from "server/sessions";
 
 async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
   const task = await db
@@ -40,9 +42,11 @@ async function Page(props: TaskPageProps) {
     return notFound();
   }
 
+  const session = getSession();
+  const canEdit = canManageTasks(session);
   return (
     <DefaultLayout>
-      <TaskViewer task={task} />
+      <TaskViewer task={task} canEdit={canEdit}/>
     </DefaultLayout>
   );
 }

@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import Link from "next/link";
 import { memo } from "react";
+import { getPath, Path } from "client/paths";
 
 export enum TaskEditorTab {
   Statement = "statement",
@@ -8,6 +9,20 @@ export enum TaskEditorTab {
   Judging = "judging",
   Submissions = "submissions",
 }
+
+type TaskViewLinkProps = {
+  slug: string;
+  label: string;
+};
+
+const TaskViewLink = ({ slug, label }: TaskViewLinkProps) => {
+  const url = getPath({ kind: Path.TaskView, slug: slug });
+  return (
+    <Link href={url} className="text-lg px-1 text-blue-300 border-b-2 border-b-transparent ml-auto">
+      {label}
+    </Link>
+  );
+};
 
 type TabItemProps = {
   tab: TaskEditorTab;
@@ -25,17 +40,19 @@ const TabItem = ({ tab, current, label }: TabItemProps) => {
 };
 
 type TaskEditorTabProps = {
-  tab: TaskEditorTab;
   className?: string;
+  tab: TaskEditorTab;
+  slug: string;
 };
 
-export const TaskEditorTabComponent = memo(({ tab, className }: TaskEditorTabProps) => {
+export const TaskEditorTabComponent = memo(({ className, tab, slug }: TaskEditorTabProps) => {
   return (
     <div className={classNames(className, "flex flex-row justify-start flex-none mb-1 mx-3 gap-2")}>
       <TabItem tab={TaskEditorTab.Statement} current={tab} label="Statement"/>
       <TabItem tab={TaskEditorTab.Details} current={tab} label="Details"/>
       <TabItem tab={TaskEditorTab.Judging} current={tab} label="Judging"/>
       <TabItem tab={TaskEditorTab.Submissions} current={tab} label="Submissions"/>
+      <TaskViewLink slug={slug} label="View"/>
     </div>
   );
 });

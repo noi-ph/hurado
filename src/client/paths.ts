@@ -4,9 +4,15 @@ import { uuidToHuradoID } from "common/utils/uuid";
 export enum Path {
   Home = "Home",
   Submission = "Submission",
+  TaskView = "TaskView",
+  TaskEdit = "TaskEdit",
 }
 
-export type PathArguments = { kind: Path.Home } | { kind: Path.Submission; uuid: string };
+export type PathArguments =
+  | { kind: Path.Home }
+  | { kind: Path.Submission; uuid: string }
+  | { kind: Path.TaskView; slug: string }
+  | { kind: Path.TaskEdit; uuid: string };
 
 export function getPath(args: PathArguments) {
   switch (args.kind) {
@@ -14,6 +20,10 @@ export function getPath(args: PathArguments) {
       return "/";
     case Path.Submission:
       return `/submissions/${uuidToHuradoID(args.uuid)}`;
+    case Path.TaskView:
+      return `/tasks/${args.slug}`;
+    case Path.TaskEdit:
+      return `/tasks/${uuidToHuradoID(args.uuid)}/edit`;
     default:
       throw new UnreachableError(args);
   }
