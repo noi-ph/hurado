@@ -1,6 +1,6 @@
 import { Generated, Insertable, Selectable, Updateable } from "kysely";
 
-export type FileTable = {
+export type TaskFileTable = {
   id: Generated<string>;
   hash: string;
   size: number;

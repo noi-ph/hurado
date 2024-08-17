@@ -1,5 +1,5 @@
 import {
-  FileTable,
+  TaskFileTable,
   ScriptTable,
   TaskAttachmentTable,
   TaskCreditTable,
@@ -16,7 +16,7 @@ export interface Models {
   task_attachments: TaskAttachmentTable;
   task_subtasks: TaskSubtaskTable;
   task_data: TaskDataTable;
-  files: FileTable;
+  task_files: TaskFileTable;
   scripts: ScriptTable;
 }
 

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   const parsed = await schema.parse(await request.json());
   let hashes: string[];
   if (parsed.length > 0) {
-    const rows = await db.selectFrom("files").select("hash").where("hash", "in", parsed).execute();
+    const rows = await db.selectFrom("task_files").select("hash").where("hash", "in", parsed).execute();
     hashes = rows.map((f) => f.hash);
   } else {
     hashes = [];

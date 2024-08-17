@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { zTaskSchema } from "common/validation/task_validation";
 import { canManageTasks } from "server/authorization";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
-import { zTaskSchema } from "server/logic/tasks/update_editor_task_validation";
 import { getSession } from "server/sessions";
 
 export async function PUT(request: NextRequest) {

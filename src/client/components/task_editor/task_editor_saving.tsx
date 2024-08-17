@@ -1,4 +1,14 @@
+import { AxiosResponse } from "axios";
 import http from "client/http";
+import { notNull } from "common/utils/guards";
+import {
+  TaskAttachmentDTO,
+  TaskCreditDTO,
+  TaskDataDTO,
+  TaskDTO,
+  TaskSubtaskDTO,
+} from "common/validation/task_validation";
+import { FileHashesResponse, FileUploadResponse } from "common/types/files";
 import {
   EditorKind,
   TaskAttachmentED,
@@ -10,17 +20,8 @@ import {
   TaskSubtaskED,
   TaskDataED,
 } from "./types";
-import { notNull } from "common/utils/guards";
 import { APIPath, getAPIPath } from "client/paths";
-import { AxiosResponse } from "axios";
-import { FileHashesResponse, FileUploadResponse } from "common/types/files";
-import {
-  TaskAttachmentDTO,
-  TaskCreditDTO,
-  TaskDataDTO,
-  TaskDTO,
-  TaskSubtaskDTO,
-} from "server/logic/tasks/update_editor_task_validation";
+
 
 export class IncompleteHashesException extends Error {
   constructor() {

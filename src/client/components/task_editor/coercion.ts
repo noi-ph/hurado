@@ -4,7 +4,7 @@ import {
   TaskDTO,
   TaskSubtaskDTO,
   TaskDataDTO,
-} from "server/logic/tasks/update_editor_task_validation";
+} from "common/validation/task_validation";
 import {
   EditorKind,
   TaskAttachmentED,

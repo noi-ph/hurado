@@ -1,6 +1,6 @@
 import { db } from "db";
 import { checkUUIDv4 } from "common/utils/uuid";
-import { TaskDataDTO, TaskDTO } from "./update_editor_task_validation";
+import { TaskDataDTO, TaskDTO } from "common/validation/task_validation";
 
 export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
   const task = await db

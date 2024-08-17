@@ -1,12 +1,5 @@
-import { db } from "db";
-import {
-  TaskAttachmentDTO,
-  TaskCreditDTO,
-  TaskDataDTO,
-  TaskDTO,
-  TaskSubtaskDTO,
-} from "./update_editor_task_validation";
 import { Selectable, Transaction } from "kysely";
+import { db } from "db";
 import {
   Models,
   TaskAttachmentTable,
@@ -14,6 +7,13 @@ import {
   TaskDataTable,
   TaskSubtaskTable,
 } from "common/types";
+import {
+  TaskAttachmentDTO,
+  TaskCreditDTO,
+  TaskDataDTO,
+  TaskDTO,
+  TaskSubtaskDTO,
+} from "common/validation/task_validation";
 
 type Ordered<T> = T & {
   order: number;
