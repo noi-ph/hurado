@@ -52,8 +52,8 @@ export const SubmitComponent = ({ taskId }: SubmitComponentProps) => {
           defaultValue={code}
           onChange={onChangeStatement}
           options={MonacoOptions}
-          theme="vs-dark"
           language={language}
+          theme="light"
         />
       </div>
       <button type="submit" onClick={submit}>
