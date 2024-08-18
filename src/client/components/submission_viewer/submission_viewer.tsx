@@ -28,7 +28,6 @@ const MonacoOptions: editor.IEditorConstructionOptions = Object.freeze({
 const CodeEditorMinimumHeight = 72;
 
 export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
-  console.log(submission);
   return (
     <>
       <SubmissionVerdictSummary submission={submission} />
