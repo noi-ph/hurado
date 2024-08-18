@@ -3,7 +3,7 @@ version: '3.3'
 services:
   hurado-server:
     container_name: hurado-dev
-    image: node:20-bullseye
+    image: noiph/hurado:latest
     working_dir: /app
     command: npm run dev
     environment:
@@ -13,8 +13,6 @@ services:
     ports:
       - 10000:10000
     restart: always
-    stdin_open: true
-    tty: true
     depends_on:
       - hurado-postgres
     links:
@@ -23,7 +21,8 @@ services:
       - ./:/app/
   hurado-judge:
     container_name: hurado-judge
-    image: node:20-bullseye
+    image: noiph/hurado:latest
+    privileged: true
     working_dir: /app
     command: npm run dev:worker
     environment:

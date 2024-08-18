@@ -1,4 +1,4 @@
 #!/bin/bash
 # Local development helper script to access the dev container
 
-docker exec -it hurado-dev bash
+docker exec -it hurado-judge bash
