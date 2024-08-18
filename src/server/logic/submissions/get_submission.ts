@@ -1,5 +1,10 @@
 import { db } from "db";
-import { SubmissionViewerDTO, VerdictSubtaskViewerDTO, VerdictTaskDataViewerDTO, VerdictViewerDTO } from "common/types";
+import {
+  SubmissionViewerDTO,
+  VerdictSubtaskViewerDTO,
+  VerdictTaskDataViewerDTO,
+  VerdictViewerDTO,
+} from "common/types";
 import { checkUUIDv4 } from "common/utils/uuid";
 import { SubmissionFileStorage } from "server/files";
 import { Language, Verdict } from "common/types/constants";
@@ -56,6 +61,7 @@ async function getSubmissionVerdict(
 
   const verdict = await db
     .selectFrom("verdicts")
+    .where("id", "=", verdict_id)
     .select([
       "id",
       "verdict",
@@ -65,7 +71,12 @@ async function getSubmissionVerdict(
       "compile_time_ms",
       "compile_memory_byte",
     ])
-    .where("id", "=", verdict_id)
+    .executeTakeFirstOrThrow();
+
+  const task = await db
+    .selectFrom("tasks")
+    .where("id", "=", task_id)
+    .select(["score_max"])
     .executeTakeFirstOrThrow();
 
   const subverdicts = await db
@@ -75,6 +86,7 @@ async function getSubmissionVerdict(
     .where("verdict_subtasks.verdict_id", "=", verdict.id)
     .select([
       "task_subtasks.id as subtask_id",
+      "task_subtasks.score_max",
       "verdict_subtasks.id as verdict_subtask_id",
       "verdict_subtasks.verdict",
       "verdict_subtasks.raw_score",
@@ -107,7 +119,7 @@ async function getSubmissionVerdict(
       ? await dataVerdictsQuery.execute()
       : [];
 
-  function toVerdictTaskData(dv: typeof dataVerdicts[number]): VerdictTaskDataViewerDTO {
+  function toVerdictTaskData(dv: (typeof dataVerdicts)[number]): VerdictTaskDataViewerDTO {
     return {
       verdict: dv.verdict as Verdict,
       raw_score: dv.raw_score,
@@ -116,19 +128,21 @@ async function getSubmissionVerdict(
     };
   }
 
-  function toVerdictSubtask(sv: typeof subverdicts[number]): VerdictSubtaskViewerDTO {
+  function toVerdictSubtask(sv: (typeof subverdicts)[number]): VerdictSubtaskViewerDTO {
     return {
       verdict: sv.verdict,
       raw_score: sv.raw_score,
+      max_score: sv.score_max,
       running_time_ms: sv.running_time_ms,
       running_memory_byte: sv.running_memory_byte,
-      data: dataVerdicts.filter(dv => dv.subtask_id === sv.subtask_id).map(toVerdictTaskData),
+      data: dataVerdicts.filter((dv) => dv.subtask_id === sv.subtask_id).map(toVerdictTaskData),
     };
   }
 
   return {
     verdict: verdict.verdict as Verdict,
     raw_score: verdict.raw_score,
+    max_score: task.score_max,
     running_time_ms: verdict.running_time_ms,
     running_memory_byte: verdict.running_memory_byte,
     compile_time_ms: verdict.compile_time_ms,

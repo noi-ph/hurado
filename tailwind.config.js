@@ -12,7 +12,12 @@ module.exports = {
       white: colors.white,
       black: colors.black,
       transparent: colors.transparent,
-      gray: colors.gray,
+      red: {
+        500: "#CC3333",
+      },
+      green: {
+        500: "#008800",
+      },
       blue: {
         200: "#A7BDFF",
         300: "#85A4FF",

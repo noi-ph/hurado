@@ -9,7 +9,7 @@ export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
   return (
     <>
       <Navbar />
-      <div className="max-w-[64rem] mx-auto my-4">
+      <div className="max-w-[64rem] px-4 mx-auto my-4">
         <main>{children}</main>
       </div>
       <footer>

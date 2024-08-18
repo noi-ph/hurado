@@ -12,7 +12,7 @@ type NavbarProps = {
 export const Navbar = memo(({ className }: NavbarProps) => {
   return (
     <div className={classNames("flex bg-blue-400 text-white", className)}>
-      <div className="flex items-center gap-2 w-full max-w-[64rem] mx-auto">
+      <div className="flex items-center gap-2 w-full max-w-[64rem] px-4 mx-auto">
         <NavbarLink href="/">Home</NavbarLink>
         <NavbarLink href="/tasks">Tasks</NavbarLink>
         <NavbarAccount />
