@@ -18,9 +18,11 @@ async function Page() {
 
   return (
     <DefaultLayout>
-      {tasks.map((task) => (
-        <TaskCard key={task.slug} task={task} />
-      ))}
+      <div className="flex flex-col items-center">
+        {tasks.map((task) => (
+          <TaskCard key={task.slug} task={task} />
+        ))}
+      </div>
     </DefaultLayout>
   );
 }

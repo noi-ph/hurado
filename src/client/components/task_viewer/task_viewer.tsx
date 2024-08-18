@@ -63,15 +63,13 @@ export const TaskViewer = ({ task, canEdit }: TaskViewerProps) => {
   // that does this!
   return (
     <MathJaxContext config={MathJaxConfig}>
-      <div className="max-w-[64rem] mx-auto mt-4">
-        <TaskViewerTabComponent
-          className="flex gap-2"
-          tab={tab}
-          taskId={task.id}
-          canEdit={canEdit}
-        />
-        {content}
-      </div>
+      <TaskViewerTabComponent
+        className="flex gap-2"
+        tab={tab}
+        taskId={task.id}
+        canEdit={canEdit}
+      />
+      {content}
     </MathJaxContext>
   );
 };

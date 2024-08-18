@@ -8,9 +8,7 @@ type AdminLayoutProps = {
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   return (
     <>
-      <header className={styles.header}>
-        <Navbar />
-      </header>
+      <Navbar />
       <main>{children}</main>
     </>
   );

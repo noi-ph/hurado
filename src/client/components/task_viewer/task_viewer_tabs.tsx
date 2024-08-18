@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { getPath, Path } from "client/paths";
+import { useSession } from "client/sessions";
 import Link from "next/link";
 import { memo } from "react";
 
@@ -55,10 +56,14 @@ type TaskViewerTabProps = {
 
 export const TaskViewerTabComponent = memo(
   ({ className, tab, taskId, canEdit }: TaskViewerTabProps) => {
+    const session = useSession();
+    const isLoggedIn = session != null && session.user != null;
     return (
       <div className={classNames(className, "flex flex-row justify-start flex-none mb-1gap-2")}>
         <TabItem tab={TaskViewerTab.Statement} current={tab} label="Statement" />
-        <TabItem tab={TaskViewerTab.Submissions} current={tab} label="Submissions" />
+        {isLoggedIn && (
+          <TabItem tab={TaskViewerTab.Submissions} current={tab} label="Submissions" />
+        )}
         <TabItem tab={TaskViewerTab.Editorial} current={tab} label="Editorial" />
         {canEdit && <TaskEditLink taskId={taskId} label="Edit" />}
       </div>
