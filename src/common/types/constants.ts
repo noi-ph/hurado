@@ -7,6 +7,7 @@ export enum Language {
 export enum Verdict {
   Accepted = 'ac',
   WrongAnswer = 'wa',
+  RuntimeError = 're',
   TimeLimitExceeded = 'tle',
   MemoryLimitExceeded = 'mle',
 }

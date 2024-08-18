@@ -19,10 +19,7 @@ export async function judgeSubmission(submissionId: string) {
       JudgeFiles.setupTask(task, taskDir),
       JudgeFiles.setupSubmission(submission, subDir),
     ]);
-    const verdict = await JudgeRunner.evaluate(task, submission, taskDir, subDir);
-    saveResults(submission, verdict);
-  } catch(e) {
-    throw e;
+    await JudgeRunner.evaluate(task, submission, taskDir, subDir);
   } finally {
     await Promise.all([JudgeFiles.cleanDirectory(taskDir), JudgeFiles.cleanDirectory(subDir)]);
   }
@@ -76,7 +73,4 @@ async function loadTask(taskId: string): Promise<JudgeTask> {
   return {
     subtasks: subtasks,
   };
-}
-
-async function saveResults(submission: JudgeSubmission, result: JudgeVerdict): Promise<void> {
 }

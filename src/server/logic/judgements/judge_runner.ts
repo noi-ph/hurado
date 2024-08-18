@@ -1,7 +1,5 @@
-import fs from "fs";
 import path from "path";
 import { Language, Verdict } from "common/types/constants";
-import { getLanguageFilename } from "./judge_files";
 import {
   JudgeSubmission,
   JudgeSubtask,
@@ -10,8 +8,14 @@ import {
   JudgeVerdict,
   JudgeVerdictSubtask,
   JudgeVerdictTaskData,
-} from "./judge_types";
+} from "common/types/judge";
 import { db } from "db";
+import {
+  CompilationResult,
+  compileSubmission,
+  evaluateTaskData,
+  EvaluationContext,
+} from "server/evaluation";
 
 export class JudgeRunner {
   static async evaluate(
@@ -20,28 +24,25 @@ export class JudgeRunner {
     taskDir: string,
     submissionDir: string
   ): Promise<JudgeVerdict> {
-    const mainFilename = getLanguageFilename(submission.language as Language);
-    const context: JudgeContext = {
-      executable: path.join(submissionDir, mainFilename),
-      submission_root: submissionDir,
-      judge_root: taskDir,
-    };
-    const verdict = await runTask(context, task, submission);
+    const compilation = await compileSubmission(task, submission, taskDir, submissionDir);
+    const verdict = await runTask(compilation, task, submission);
     return verdict;
   }
 }
 
 async function runTask(
-  context: JudgeContext,
+  compilation: CompilationResult,
   task: JudgeTask,
   submission: JudgeSubmission
 ): Promise<JudgeVerdict> {
   const dbVerdict = await db.transaction().execute(async (trx) => {
-    const verd = await trx
+    const trxVerdict = await trx
       .insertInto("verdicts")
       .values({
         submission_id: submission.id,
         is_official: true,
+        compile_memory_byte: compilation.compile_memory_byte,
+        compile_time_ms: compilation.compile_time_ms,
       })
       .returning(["id", "created_at"])
       .executeTakeFirstOrThrow();
@@ -49,12 +50,12 @@ async function runTask(
     await trx
       .updateTable("submissions")
       .set({
-        official_verdict_id: verd.id,
+        official_verdict_id: trxVerdict.id,
       })
       .where("id", "=", submission.id)
       .execute();
 
-    return verd;
+    return trxVerdict;
   });
 
   const allVerdictSubtasks: JudgeVerdictSubtask[] = [];
@@ -64,7 +65,7 @@ async function runTask(
   let running_memory_byte = 0;
 
   for (const subtask of task.subtasks) {
-    const child = await runSubtask(context, dbVerdict.id, subtask);
+    const child = await runSubtask(compilation.context, dbVerdict.id, subtask);
     allVerdictSubtasks.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -102,7 +103,7 @@ async function runTask(
 }
 
 async function runSubtask(
-  context: JudgeContext,
+  context: EvaluationContext,
   verdict_id: string,
   subtask: JudgeSubtask
 ): Promise<JudgeVerdictSubtask> {
@@ -159,11 +160,11 @@ async function runSubtask(
 }
 
 async function runTestData(
-  context: JudgeContext,
+  context: EvaluationContext,
   verdict_subtask_id: string,
   task_data: JudgeTaskData
 ): Promise<JudgeVerdictTaskData> {
-  const result = await actuallyRunTestData(context, task_data);
+  const result = await evaluateTaskData(context, task_data);
 
   const dbTaskData = await db
     .insertInto("verdict_task_data")
@@ -188,38 +189,3 @@ async function runTestData(
     running_memory_byte: result.running_memory_byte,
   };
 }
-
-async function actuallyRunTestData(context: JudgeContext, data: JudgeTaskData): Promise<RunResult> {
-  let verdict: Verdict = Verdict.Accepted;
-  let raw_score = 1;
-  let running_time_ms = 0;
-  let running_memory_byte = 0;
-
-  const fileContent = await fs.promises.readFile(context.executable, "utf8");
-  if (!fileContent.includes("please")) {
-    verdict = Verdict.WrongAnswer;
-    raw_score = 0;
-    running_time_ms = 1234;
-    running_memory_byte = 5678;
-  }
-
-  return {
-    verdict,
-    raw_score,
-    running_time_ms,
-    running_memory_byte,
-  };
-}
-
-type JudgeContext = {
-  executable: string;
-  submission_root: string;
-  judge_root: string;
-};
-
-type RunResult = {
-  verdict: Verdict;
-  raw_score: number;
-  running_time_ms: number;
-  running_memory_byte: number;
-};

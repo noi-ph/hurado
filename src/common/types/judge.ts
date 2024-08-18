@@ -1,4 +1,4 @@
-import { Language, Verdict } from "common/types/constants";
+import { Language, Verdict } from "./constants";
 
 export type JudgeTask = {
   subtasks: JudgeSubtask[];
@@ -27,7 +27,6 @@ export type JudgeSubmission = {
   language: string;
   runtime_args: string | null;
 };
-
 
 export type JudgeVerdict = {
   id: string;
