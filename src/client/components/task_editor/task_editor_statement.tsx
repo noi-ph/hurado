@@ -36,7 +36,7 @@ export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps)
           defaultValue={task.statement}
           onChange={onChangeStatement}
           options={MonacoOptions}
-          theme="vs-dark"
+          theme="light"
         />
       </div>
       <Scrollable className={styles.statementPreview} defer>
