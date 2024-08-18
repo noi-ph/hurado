@@ -51,6 +51,7 @@ async function runTask(
       .set({
         official_verdict_id: verd.id,
       })
+      .where("id", "=", submission.id)
       .execute();
 
     return verd;

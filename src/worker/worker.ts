@@ -32,16 +32,13 @@ async function handleIncomingJob(job: Job) {
   const name: JobName = job.name as JobName;
   switch(name) {
     case JobName.SubmissionJudgement:
-      return handleSubmissionJudgment(job.data);
-    case JobName.Debug:
-      console.debug(`Debug job: ${job.id} ${JSON.stringify(job.data)}`);
-      return;
+      return handleSubmissionJudgement(job.data);
     default:
       console.error(`Invalid job name: ${UnreachableDefault(name)} -- ${JSON.stringify(job.data)}`);
       return;
   }
 }
 
-async function handleSubmissionJudgment(data: SubmissionJudgementData) {
+async function handleSubmissionJudgement(data: SubmissionJudgementData) {
   return judgeSubmission(data.id);
 }

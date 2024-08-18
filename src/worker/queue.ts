@@ -13,7 +13,3 @@ export const JobQueue = new Queue(__MAIN_QUEUE_NAME__, { connection });
 export async function enqueueSubmissionJudgement(data: SubmissionJudgementData) {
   return await JobQueue.add(JobName.SubmissionJudgement, data);
 }
-
-export async function enqueueDebug(data: unknown) {
-  return await JobQueue.add(JobName.Debug, data);
-}
