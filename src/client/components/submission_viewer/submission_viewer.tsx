@@ -127,7 +127,7 @@ const SubtaskVerdictViewer = ({ subtask, subtaskIndex }: SubtaskVerdictViewerPro
 
   return (
     <div className="mt-4 first:mt-0">
-      <div className="flex px-4 py-2 rounded-t-lg bg-blue-300">
+      <div className="flex items-center px-4 py-2 rounded-t-lg bg-blue-300">
         <div className="text-lg">Subtask #{subtaskIndex + 1}</div>
         <div className="ml-auto">Score: {score}</div>
       </div>
