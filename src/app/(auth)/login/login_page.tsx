@@ -8,7 +8,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import http from "client/http";
 import { useSessionWithUpdate } from "client/sessions";
 import styles from "./page.module.css";
-import { APIPath, getAPIPath } from "client/paths";
+import { APIPath, getAPIPath, getPath, Path } from "client/paths";
 
 const LoginPage: FunctionComponent = () => {
   const [throttle, setThrottle] = useState<boolean>(false);
@@ -35,7 +35,8 @@ const LoginPage: FunctionComponent = () => {
     if (response.status >= 300) {
       throw new Error(response.data);
     }
-    router.push("/dashboard");
+    const homeURL = getPath({ kind: Path.Home });
+    router.push(homeURL);
     setSession(response.data);
   }, [router, username, password, setSession]);
 

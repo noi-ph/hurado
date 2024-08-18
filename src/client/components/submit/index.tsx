@@ -5,7 +5,7 @@ import MonacoEditor from "@monaco-editor/react";
 import http from "client/http";
 import { APIPath, getAPIPath } from "client/paths";
 import { SubmissionRequestDTO } from "common/validation/submission_validation";
-import { Language } from "common/types/languages";
+import { Language } from "common/types/constants";
 
 const MonacoOptions = {
   defaultLanguage: Language.Python3,

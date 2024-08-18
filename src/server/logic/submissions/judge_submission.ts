@@ -19,8 +19,7 @@ export async function judgeSubmission(submissionId: string) {
       JudgeFiles.setupTask(task, taskDir),
       JudgeFiles.setupSubmission(submission, subDir),
     ]);
-    const verdict = await JudgeRunner.evaluate(task, submission, taskDir, subDir);
-    saveResults(submission, verdict);
+    await JudgeRunner.evaluate(task, submission, taskDir, subDir);
   } finally {
     await Promise.all([JudgeFiles.cleanDirectory(taskDir), JudgeFiles.cleanDirectory(subDir)]);
   }
@@ -42,6 +41,7 @@ async function loadTask(taskId: string): Promise<JudgeTask> {
         : await trx
             .selectFrom("task_data")
             .select([
+              "id",
               "subtask_id",
               "input_file_name",
               "input_file_hash",
@@ -59,6 +59,7 @@ async function loadTask(taskId: string): Promise<JudgeTask> {
       data: rawData
         .filter((d) => d.subtask_id == subtask.id)
         .map((d) => ({
+          id: d.id,
           input_file_name: d.input_file_name,
           input_file_hash: d.input_file_hash,
           output_file_name: d.output_file_name,
@@ -72,7 +73,4 @@ async function loadTask(taskId: string): Promise<JudgeTask> {
   return {
     subtasks: subtasks,
   };
-}
-
-async function saveResults(submission: JudgeSubmission, result: JudgeVerdict): Promise<void> {
 }

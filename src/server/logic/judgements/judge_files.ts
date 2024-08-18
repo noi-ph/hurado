@@ -1,9 +1,10 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { Language } from "common/types/languages";
-import { JudgeSubmission, JudgeTask } from "./judge_types";
+import { Language } from "common/types/constants";
+import { JudgeSubmission, JudgeTask } from "common/types/judge";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
+import { getLanguageFilename } from "server/evaluation";
 
 // TODO: Setup some sort of caching for task data so hundreds of megabytes
 // aren't downloaded every time someone submits code
@@ -15,7 +16,7 @@ export class JudgeFiles {
   }
 
   static async cleanDirectory(path: string): Promise<void> {
-    await fs.promises.rmdir(path, { recursive: true });
+    await fs.promises.rm(path, { recursive: true });
   }
 
   static async setupTask(task: JudgeTask, dir: string): Promise<unknown> {
@@ -60,15 +61,3 @@ async function downloadSubmissionFile(directory: string, filename: string, hash:
   await client.downloadToFile(path.join(directory, filename));
 }
 
-export function getLanguageFilename(language: Language) {
-  switch (language) {
-    case Language.CPP:
-      return "main.cpp";
-    case Language.Java:
-      return "main.java";
-    case Language.Python3:
-      return "main.py";
-    default:
-      return "main.txt";
-  }
-}

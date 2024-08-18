@@ -1,17 +1,17 @@
 import { ColumnType, Generated } from "kysely";
-import { Language } from "./languages";
+import { Verdict } from "./constants";
 
 export type VerdictTable = {
   id: Generated<string>;
   submission_id: string;
   created_at: ColumnType<Date, never, never>;
-  verdict: string;
-  raw_score: number;
   is_official: boolean;
-  running_time_ms: number;
-  running_memory_byte: number;
-  compile_time_ms: number;
-  compile_memory_byte: number;
+  verdict: string | null;
+  raw_score: number | null;
+  running_time_ms: number | null;
+  running_memory_byte: number | null;
+  compile_time_ms: number | null;
+  compile_memory_byte: number | null;
 };
 
 export type VerdictSubtaskTable = {
@@ -19,10 +19,10 @@ export type VerdictSubtaskTable = {
   verdict_id: string;
   subtask_id: string;
   created_at: ColumnType<Date, never, never>;
-  verdict: string;
-  raw_score: number;
-  running_time_ms: number;
-  running_memory_byte: number;
+  verdict: Verdict | null;
+  raw_score: number | null;
+  running_time_ms: number | null;
+  running_memory_byte: number | null;
 };
 
 

@@ -6,6 +6,7 @@
             "module": "Node16",
             "moduleResolution": "Node16"
         },
+        "require": ["tsconfig-paths/register"],
         "include": [
             "**/*.ts"
         ]

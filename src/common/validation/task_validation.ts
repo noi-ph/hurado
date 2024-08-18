@@ -47,7 +47,7 @@ export const zTaskSchema = z.object({
   statement: z.string(),
   score_max: z.number(),
   checker: z.string(),
-  credits: z.array(zTaskCredit),
   attachments: z.array(zTaskAttachment),
+  credits: z.array(zTaskCredit),
   subtasks: z.array(zTaskSubtask),
 });

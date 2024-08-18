@@ -21,8 +21,22 @@ services:
       - hurado-postgres
     volumes:
       - ./:/app/
-    profiles:
-      - ''
+  hurado-judge:
+    container_name: hurado-judge
+    image: node:20-bullseye
+    working_dir: /app
+    command: npm run dev:worker
+    environment:
+      - IS_UNDER_DOCKER=true
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - hurado-postgres
+    links:
+      - hurado-postgres
+    volumes:
+      - ./:/app/
   hurado-postgres:
     container_name: hurado-postgres
     image: postgres:14-bullseye
@@ -34,9 +48,6 @@ services:
       - 5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
-    profiles:
-      - ''
-      - services
   hurado-azurite:
     container_name: hurado-azurite
     image: mcr.microsoft.com/azure-storage/azurite
@@ -46,7 +57,7 @@ services:
       - AZURITE_ACCOUNTS=hurado:password
     volumes:
       - ./volumes/azurite:/data
-    command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000"
+    command: "azurite-blob -l /data --blobHost 0.0.0.0 --blobPort 10000"
   hurado-redis:
     container_name: hurado-redis
     image: redis:7.4-bookworm
