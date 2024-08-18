@@ -11,11 +11,18 @@ import { SubmissionFileStorage } from "server/files";
 import { Language, Verdict } from "common/types/constants";
 import { notNull } from "common/utils/guards";
 
-export async function getSubmissionViewerDTO(id: string, user: UserPublic): Promise<SubmissionViewerDTO | null> {
-  const sub = await db
-    .selectFrom("submissions")
-    .where("submissions.id", "=", checkUUIDv4(id))
-    .where("submissions.user_id", "=", user.id)
+export async function getSubmissionViewerDTO(
+  id: string,
+  user: UserPublic,
+  isTaskManager: boolean
+): Promise<SubmissionViewerDTO | null> {
+  let query = db.selectFrom("submissions").where("submissions.id", "=", checkUUIDv4(id));
+
+  if (!isTaskManager) {
+    query = query.where("submissions.user_id", "=", user.id);
+  }
+
+  const sub = await query
     .leftJoin("tasks", "tasks.id", "submissions.task_id")
     .select([
       "submissions.id",
