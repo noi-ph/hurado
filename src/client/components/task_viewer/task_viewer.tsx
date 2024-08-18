@@ -2,13 +2,13 @@
 import { MathJaxContext } from "better-react-mathjax";
 import { ReactNode, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { MathJaxConfig } from "client/components/mathjax";
 import { TaskViewerDTO } from "common/types";
+import { MathJaxConfig } from "client/components/mathjax";
+import { TaskSubmissionsCache } from "client/submissions";
 import { coerceTaskViewerTab, TaskViewerTab, TaskViewerTabComponent } from "./task_viewer_tabs";
 import { TaskViewerStatement } from "./task_viewer_statement";
 import { TaskViewerEditorial } from "./task_viewer_editorial";
 import { TaskViewerSubmissions } from "./task_viewer_submissions";
-import { TaskSubmissionsCache, TaskViewerTitle } from "./task_viewer_utils";
 
 type TaskViewerProps = {
   task: TaskViewerDTO;
@@ -45,8 +45,8 @@ export const TaskViewer = ({ task, canEdit }: TaskViewerProps) => {
       content = (
         <TaskViewerSubmissions
           task={task}
-          submissions={submissions}
-          setSubmissions={setSubmissions}
+          cache={submissions}
+          setCache={setSubmissions}
         />
       );
       break;

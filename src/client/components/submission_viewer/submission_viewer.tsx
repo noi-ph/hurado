@@ -16,6 +16,7 @@ import { notNull } from "common/utils/guards";
 import Link from "next/link";
 import { getPath, Path } from "client/paths";
 import { uuidToHuradoID } from "common/utils/uuid";
+import { getVerdictColorClass } from "client/verdicts";
 
 type SubmissionViewerProps = {
   submission: SubmissionViewerDTO;
@@ -32,7 +33,9 @@ const MonacoOptions: editor.IEditorConstructionOptions = Object.freeze({
 const CodeEditorMinimumHeight = 72;
 
 export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
-  const taskURL = getPath({ kind: Path.TaskView, slug: submission.task_slug });
+  const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task_slug });
+  const taskURL = `${baseTaskURL}#submissions`;
+
   return (
     <>
       <div className="flex items-end mt-2 mb-4">
@@ -252,22 +255,6 @@ function getScoreClassName(raw: number, max: number): string | undefined {
     return "text-blue-500";
   } else {
     return undefined;
-  }
-}
-
-export function getVerdictColorClass(verdict: Verdict | null): string | undefined {
-  switch (verdict) {
-    case Verdict.Accepted:
-      return "text-green-500";
-    case Verdict.WrongAnswer:
-    case Verdict.RuntimeError:
-    case Verdict.TimeLimitExceeded:
-    case Verdict.MemoryLimitExceeded:
-      return "text-red-500";
-    case Verdict.Skipped:
-      return "text-blue-500";
-    default:
-      return undefined;
   }
 }
 

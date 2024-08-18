@@ -1,6 +1,7 @@
 import { db } from "db";
 import {
   SubmissionViewerDTO,
+  UserPublic,
   VerdictSubtaskViewerDTO,
   VerdictTaskDataViewerDTO,
   VerdictViewerDTO,
@@ -10,10 +11,11 @@ import { SubmissionFileStorage } from "server/files";
 import { Language, Verdict } from "common/types/constants";
 import { notNull } from "common/utils/guards";
 
-export async function getSubmissionViewerDTO(id: string): Promise<SubmissionViewerDTO> {
+export async function getSubmissionViewerDTO(id: string, user: UserPublic): Promise<SubmissionViewerDTO> {
   const sub = await db
     .selectFrom("submissions")
     .where("submissions.id", "=", checkUUIDv4(id))
+    .where("submissions.user_id", "=", user.id)
     .leftJoin("tasks", "tasks.id", "submissions.task_id")
     .select([
       "submissions.id",
