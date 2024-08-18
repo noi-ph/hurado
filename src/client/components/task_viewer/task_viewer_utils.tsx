@@ -40,6 +40,7 @@ export class TaskSubmissionsCache {
       id: json.id,
       language: json.language,
       created_at: new Date(json.created_at),
+      verdict_id: json.verdict_id,
       verdict: json.verdict,
       score: json.score,
       running_time_ms: json.running_time_ms,

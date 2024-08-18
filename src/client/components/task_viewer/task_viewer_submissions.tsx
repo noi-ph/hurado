@@ -8,7 +8,8 @@ import { humanizeTimeAgo } from "common/utils/dates";
 import { uuidToHuradoID } from "common/utils/uuid";
 import { TaskSubmissionsCache, TaskViewerTitle } from "./task_viewer_utils";
 import styles from "./task_viewer.module.css";
-
+import { humanizeLanguage, humanizeVerdict } from "common/types/constants";
+import { getVerdictColorClass } from "../submission_viewer/submission_viewer";
 
 type TaskViewerSubmissionsProps = {
   task: TaskViewerDTO;
@@ -49,8 +50,6 @@ const SubmissionsTable = ({ task, submissions, setSubmissions }: TaskViewerSubmi
       <SubmissionHeader>When</SubmissionHeader>
       <SubmissionHeader>Language</SubmissionHeader>
       <SubmissionHeader>Score</SubmissionHeader>
-      <SubmissionHeader>Time</SubmissionHeader>
-      <SubmissionHeader>Memory</SubmissionHeader>
       {submissions.submissions.map((sub) => (
         <SubmissionRow key={sub.id} submission={sub} />
       ))}
@@ -63,6 +62,13 @@ type SubmissionRowProps = {
 };
 
 const SubmissionRow = memo(({ submission }: SubmissionRowProps) => {
+  const textVerdict =
+    submission.verdict_id == null
+      ? "In Queue"
+      : submission.verdict == null
+        ? "In Progress"
+        : humanizeVerdict(submission.verdict);
+
   return (
     <>
       <SubmissionCell className="whitespace-nowrap">
@@ -76,10 +82,12 @@ const SubmissionRow = memo(({ submission }: SubmissionRowProps) => {
       <SubmissionCell className="whitespace-nowrap">
         {humanizeTimeAgo(submission.created_at)}
       </SubmissionCell>
-      <SubmissionCell>{submission.language}</SubmissionCell>
-      <SubmissionCell>In Queue {submission.verdict}</SubmissionCell>
-      <SubmissionCell></SubmissionCell>
-      <SubmissionCell></SubmissionCell>
+      <SubmissionCell>{humanizeLanguage(submission.language)}</SubmissionCell>
+      <SubmissionCell
+        className={classNames("whitespace-nowrap", getVerdictColorClass(submission.verdict))}
+      >
+        {textVerdict}
+      </SubmissionCell>
     </>
   );
 });

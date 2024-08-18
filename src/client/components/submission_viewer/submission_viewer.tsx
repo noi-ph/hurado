@@ -12,6 +12,10 @@ import {
 import { humanizeLanguage, humanizeVerdict, Verdict } from "common/types/constants";
 import { formatDateTime, humanizeTimeAgo } from "common/utils/dates";
 import BoxIcon from "client/components/box_icon";
+import { notNull } from "common/utils/guards";
+import Link from "next/link";
+import { getPath, Path } from "client/paths";
+import { uuidToHuradoID } from "common/utils/uuid";
 
 type SubmissionViewerProps = {
   submission: SubmissionViewerDTO;
@@ -28,8 +32,21 @@ const MonacoOptions: editor.IEditorConstructionOptions = Object.freeze({
 const CodeEditorMinimumHeight = 72;
 
 export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
+  const taskURL = getPath({ kind: Path.TaskView, slug: submission.task_slug });
   return (
     <>
+      <div className="flex items-end mt-2 mb-4">
+        <Link
+          href={taskURL}
+          className="flex items-center font-sans font-bold text-4xl text-blue-400"
+        >
+          <BoxIcon name="bx-chevron-left" className="bx-lg" />
+          {submission.task_title}
+        </Link>
+        <div className="ml-auto text-gray-300 whitespace-nowrap">
+          {uuidToHuradoID(submission.id)}
+        </div>
+      </div>
       <SubmissionVerdictSummary submission={submission} />
       {submission.verdict != null ? (
         <>
@@ -53,11 +70,11 @@ const SubmissionVerdictSummary = ({ submission }: SubmissionViewerProps) => {
   if (submission.verdict == null) {
     status = <span className="font-semibold">In Queue</span>;
   } else if (submission.verdict.verdict == null) {
-    status = <span className="font-semibold text-blue-500">Running</span>;
+    status = <span className="font-semibold text-blue-500">In Progress</span>;
   } else {
     status = (
       <span
-        className={classNames("font-semibold", getVerdictClassName(submission.verdict.verdict))}
+        className={classNames("font-semibold", getVerdictColorClass(submission.verdict.verdict))}
       >
         {humanizeVerdict(submission.verdict.verdict)}
       </span>
@@ -170,17 +187,17 @@ const TaskDataVerdictViewer = ({ data, dataIndex }: TaskDataVerdictViewerProps) 
       break;
   }
 
-  const verdictText = data.verdict != null ? humanizeVerdict(data.verdict) : "Pending";
-  const runtimeText = `Time: ${data.running_time_ms}ms`;
-  const memoryText = `Memory: ${data.running_memory_byte}b`;
-  const hoverText = `${verdictText}\n${runtimeText}\n${memoryText}`;
+  const hVerdict = data.verdict != null ? humanizeVerdict(data.verdict) : "Pending";
+  const hRuntime = data.running_time_ms != null ? `Time: ${data.running_time_ms}ms` : null;
+  const hMemory = data.running_memory_byte != null ? `Memory: ${data.running_memory_byte}b` : null;
+  const hoverText = [hVerdict, hRuntime, hMemory].filter(notNull).join("\n");
 
   return (
     <div className="flex items-center">
       <span className="inline-flex items-center cursor-pointer" title={hoverText}>
         <BoxIcon
           name={iconName}
-          className={classNames("bx-sm", getVerdictClassName(data.verdict))}
+          className={getVerdictIconClassName(data.verdict)}
         />
         Test Case #{dataIndex + 1}
       </span>
@@ -238,7 +255,7 @@ function getScoreClassName(raw: number, max: number): string | undefined {
   }
 }
 
-function getVerdictClassName(verdict: Verdict | null): string | undefined {
+export function getVerdictColorClass(verdict: Verdict | null): string | undefined {
   switch (verdict) {
     case Verdict.Accepted:
       return "text-green-500";
@@ -251,5 +268,21 @@ function getVerdictClassName(verdict: Verdict | null): string | undefined {
       return "text-blue-500";
     default:
       return undefined;
+  }
+}
+
+function getVerdictIconClassName(verdict: Verdict | null): string | undefined {
+  switch (verdict) {
+    case Verdict.Accepted:
+      return "bx-sm text-green-500";
+    case Verdict.WrongAnswer:
+    case Verdict.RuntimeError:
+    case Verdict.TimeLimitExceeded:
+    case Verdict.MemoryLimitExceeded:
+      return "bx-sm text-red-500";
+    case Verdict.Skipped:
+      return "bx-sm text-blue-500";
+    default:
+      return "bx-xs text-gray-500 mr-2";
   }
 }

@@ -1,4 +1,4 @@
-import { Language } from "common/types/constants";
+import { Language, Verdict } from "common/types/constants";
 import { SubmissionSummaryDTO } from "common/types/submissions";
 import { db } from "db";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
       "submissions.id",
       "submissions.language",
       "submissions.created_at",
+      "submissions.official_verdict_id",
       "verdicts.verdict",
       "verdicts.raw_score",
       "verdicts.running_time_ms",
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest) {
     id: sub.id,
     language: sub.language as Language,
     created_at: sub.created_at,
-    verdict: sub.verdict,
+    verdict_id: sub.official_verdict_id,
+    verdict: sub.verdict as Verdict | null,
     score: sub.raw_score,
     running_time_ms: sub.running_time_ms,
     running_memory_byte: sub.running_memory_byte,
