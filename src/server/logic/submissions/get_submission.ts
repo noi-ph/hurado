@@ -11,7 +11,7 @@ import { SubmissionFileStorage } from "server/files";
 import { Language, Verdict } from "common/types/constants";
 import { notNull } from "common/utils/guards";
 
-export async function getSubmissionViewerDTO(id: string, user: UserPublic): Promise<SubmissionViewerDTO> {
+export async function getSubmissionViewerDTO(id: string, user: UserPublic): Promise<SubmissionViewerDTO | null> {
   const sub = await db
     .selectFrom("submissions")
     .where("submissions.id", "=", checkUUIDv4(id))
@@ -28,7 +28,11 @@ export async function getSubmissionViewerDTO(id: string, user: UserPublic): Prom
       "tasks.title",
     ])
     .orderBy("submissions.created_at", "desc")
-    .executeTakeFirstOrThrow();
+    .executeTakeFirst();
+
+  if (sub == null) {
+    return null;
+  }
 
   const [code, verdict] = await Promise.all([
     getSubmissionCode(sub.file_hash),

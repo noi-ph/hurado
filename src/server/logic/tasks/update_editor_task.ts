@@ -354,6 +354,7 @@ export async function updateEditorTask(task: TaskDTO) {
         statement: task.statement,
         score_max: task.score_max,
       })
+      .where("id", "=", task.id)
       .execute();
 
     const dbTaskCredits = await upsertTaskCredits(trx, task.id, task.credits);

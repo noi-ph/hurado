@@ -12,11 +12,27 @@ import { updateEditorTask } from "server/logic/tasks/update_editor_task";
 const users: Insertable<UserTable>[] = [
   {
     email: "kevin@example.com",
-    username: "kevin",
+    username: "kevinsogo",
     hashed_password: hashPassword("password"),
     school: "University of the Philippines - Diliman",
     name: "Kevin Sogo",
     role: "admin",
+  },
+  {
+    email: "vernon@example.com",
+    username: "verngutz",
+    hashed_password: hashPassword("password"),
+    school: "Ateneo de Manila University",
+    name: "Vernon Sago",
+    role: "admin",
+  },
+  {
+    email: "cisco@example.com",
+    username: "shisuko",
+    hashed_password: hashPassword("password"),
+    school: "Ateneo de Manila University",
+    name: "Cisco Sugoi",
+    role: "user",
   },
 ];
 
@@ -33,6 +49,20 @@ const filenames = [
   "who-is-the-oldest-2a.out",
   "who-is-the-oldest-2b.out",
   "who-is-the-oldest-2c.out",
+  "sharing-chocolates-1a.in",
+  "sharing-chocolates-1b.in",
+  "sharing-chocolates-1c.in",
+  "sharing-chocolates-1d.in",
+  "sharing-chocolates-1e.in",
+  "sharing-chocolates-1f.in",
+  "sharing-chocolates-2a.in",
+  "sharing-chocolates-1a.out",
+  "sharing-chocolates-1b.out",
+  "sharing-chocolates-1c.out",
+  "sharing-chocolates-1d.out",
+  "sharing-chocolates-1e.out",
+  "sharing-chocolates-1f.out",
+  "sharing-chocolates-2a.out",
 ];
 
 function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
@@ -143,6 +173,126 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         },
       ],
     },
+    {
+      id: getOrThrow(ids, "sharing-chocolates"),
+      slug: "sharing-chocolates",
+      title: "Sharing Chocolates",
+      statement: [
+        "Alvin and Berto are best of friends, and just won a programming contest together. " +
+          "As part of the prize, Alvin was given chocolates, and Berto was given chocolates. " +
+          "But since they're such good friends, they want to split the chocolates fairly between them. ",
+        "Alvin and Berto have enlisted your help in finding out if they can share their chocolates fairly " +
+          "(that is, such that the exact same number of chocolates go to Alvin and to Berto each), " +
+          "without cutting their chocolates into pieces.",
+      ].join("\n"),
+      description: "Can Alvin and Berto share their chocolates fairly?",
+      score_max: 100,
+      checker: "",
+      attachments: [],
+      credits: [
+        {
+          name: "kevinsogo",
+          role: "Problem Idea",
+        },
+        {
+          name: "guissmo",
+          role: "Story Author",
+        },
+        {
+          name: "shisuko",
+          role: "Tester",
+        },
+        {
+          name: "verngutz",
+          role: "Tester",
+        },
+      ],
+      subtasks: [
+        {
+          name: "Subtask #1",
+          score_max: 50,
+          data: [
+            {
+              name: "Test Case #1",
+              is_sample: true,
+              input_file_name: "sharing-chocolates-1a.in",
+              input_file_hash: getOrThrow(hashes, "sharing-chocolates-1a.in"),
+              output_file_name: "sharing-chocolates-1a.out",
+              output_file_hash: getOrThrow(hashes, "sharing-chocolates-1a.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+            {
+              name: "Test Case #2",
+              is_sample: true,
+              input_file_name: "sharing-chocolates-1b.in",
+              input_file_hash: getOrThrow(hashes, "sharing-chocolates-1b.in"),
+              output_file_name: "sharing-chocolates-1b.out",
+              output_file_hash: getOrThrow(hashes, "sharing-chocolates-1b.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+            {
+              name: "Test Case #3",
+              is_sample: false,
+              input_file_name: "sharing-chocolates-1c.in",
+              input_file_hash: getOrThrow(hashes, "sharing-chocolates-1c.in"),
+              output_file_name: "sharing-chocolates-1c.out",
+              output_file_hash: getOrThrow(hashes, "sharing-chocolates-1c.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+
+            {
+              name: "Test Case #4",
+              is_sample: false,
+              input_file_name: "sharing-chocolates-1d.in",
+              input_file_hash: getOrThrow(hashes, "sharing-chocolates-1d.in"),
+              output_file_name: "sharing-chocolates-1d.out",
+              output_file_hash: getOrThrow(hashes, "sharing-chocolates-1d.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+            {
+              name: "Test Case #5",
+              is_sample: false,
+              input_file_name: "sharing-chocolates-1e.in",
+              input_file_hash: getOrThrow(hashes, "sharing-chocolates-1e.in"),
+              output_file_name: "sharing-chocolates-1e.out",
+              output_file_hash: getOrThrow(hashes, "sharing-chocolates-1e.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+            {
+              name: "Test Case #6",
+              is_sample: false,
+              input_file_name: "sharing-chocolates-1f.in",
+              input_file_hash: getOrThrow(hashes, "sharing-chocolates-1f.in"),
+              output_file_name: "sharing-chocolates-1f.out",
+              output_file_hash: getOrThrow(hashes, "sharing-chocolates-1f.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+        {
+          name: "Subtask #2",
+          score_max: 50,
+          data: [
+            {
+              name: "Test Case #1",
+              is_sample: false,
+              input_file_name: "sharing-chocolates-2a.in",
+              input_file_hash: getOrThrow(hashes, "sharing-chocolates-2a.in"),
+              output_file_name: "sharing-chocolates-2a.out",
+              output_file_hash: getOrThrow(hashes, "sharing-chocolates-2a.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+      ],
+    },
   ];
   return tasks;
 }
@@ -159,11 +309,17 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           statement: "",
           score_max: 100,
         },
+        {
+          title: "Sharing Chocolates",
+          slug: "sharing-chocolates",
+          statement: "",
+          score_max: 100,
+        },
       ])
-      .returning(["id"])
+      .returning(["id", "slug"])
       .execute();
 
-    const ids = new Map<string, string>([["who-is-the-oldest", dbTasks[0].id]]);
+    const ids = new Map<string, string>(dbTasks.map((t) => [t.slug, t.id]));
     const hashes = new Map<string, string>();
     const hashset = new Set<string>();
     for (const filename of filenames) {
