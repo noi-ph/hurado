@@ -1,12 +1,14 @@
-import { TaskViewerDTO } from "common/types";
-import { TaskSubmissionsCache, TaskViewerTitle } from "./task_viewer_utils";
-import styles from "./task_viewer.module.css";
+import classNames from "classnames";
+import Link from "next/link";
 import { memo, ReactNode, useEffect } from "react";
+import { getPath, Path } from "client/paths";
+import { TaskViewerDTO } from "common/types";
 import { SubmissionSummaryDTO } from "common/types/submissions";
 import { humanizeTimeAgo } from "common/utils/dates";
-import { huradoIDToUUID, uuidToHuradoID } from "common/utils/uuid";
-import { getPath, Path } from "client/paths";
-import Link from "next/link";
+import { uuidToHuradoID } from "common/utils/uuid";
+import { TaskSubmissionsCache, TaskViewerTitle } from "./task_viewer_utils";
+import styles from "./task_viewer.module.css";
+
 
 type TaskViewerSubmissionsProps = {
   task: TaskViewerDTO;
@@ -63,7 +65,7 @@ type SubmissionRowProps = {
 const SubmissionRow = memo(({ submission }: SubmissionRowProps) => {
   return (
     <>
-      <SubmissionCell>
+      <SubmissionCell className="whitespace-nowrap">
         <Link
           className="text-blue-400 hover:text-blue-500"
           href={getPath({ kind: Path.Submission, uuid: submission.id })}
@@ -71,7 +73,9 @@ const SubmissionRow = memo(({ submission }: SubmissionRowProps) => {
           {uuidToHuradoID(submission.id)}
         </Link>
       </SubmissionCell>
-      <SubmissionCell>{humanizeTimeAgo(submission.created_at)}</SubmissionCell>
+      <SubmissionCell className="whitespace-nowrap">
+        {humanizeTimeAgo(submission.created_at)}
+      </SubmissionCell>
       <SubmissionCell>{submission.language}</SubmissionCell>
       <SubmissionCell>In Queue {submission.verdict}</SubmissionCell>
       <SubmissionCell></SubmissionCell>
@@ -80,21 +84,32 @@ const SubmissionRow = memo(({ submission }: SubmissionRowProps) => {
   );
 });
 
-type HasChildrenProps = {
+type SubmissionCellProps = {
+  className?: string;
   children?: ReactNode;
 };
 
-const SubmissionHeader = memo(({ children }: HasChildrenProps) => {
+const SubmissionHeader = memo(({ className, children }: SubmissionCellProps) => {
   return (
-    <div className="font-mono font-medium text-xl text-center w-full px-4 py-3 bg-blue-400 text-white">
+    <div
+      className={classNames(
+        "font-mono font-medium text-xl text-center w-full px-4 py-3 bg-blue-400 text-white",
+        className
+      )}
+    >
       {children}
     </div>
   );
 });
 
-const SubmissionCell = memo(({ children }: HasChildrenProps) => {
+const SubmissionCell = memo(({ className, children }: SubmissionCellProps) => {
   return (
-    <div className="font-mono text-black text-center w-full px-4 py-3 border-b border-b-black">
+    <div
+      className={classNames(
+        "font-mono text-black text-center w-full px-4 py-3 border-b border-b-black",
+        className
+      )}
+    >
       {children}
     </div>
   );
