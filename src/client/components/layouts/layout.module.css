@@ -1,20 +1,3 @@
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
-  width: 100%;
-  height: fit-content;
-  padding: 5px 40px;
-}
-
-@media (max-width: 540px) {
-  .header {
-    padding: 5px 20px;
-  }
-}
-
 .copyright {
   display: flex;
   justify-content: center;

@@ -12,7 +12,6 @@ export const Member: FunctionComponent = () => {
   if (session != null && session.user != null) {
     return (
       <div className={`${styles.row} ${styles.desktoplinks}`}>
-        <Link href="/tasks">Tasks</Link>
         <Link href="/logout">Logout</Link>
         <div>Welcome {session?.user.name}</div>
       </div>

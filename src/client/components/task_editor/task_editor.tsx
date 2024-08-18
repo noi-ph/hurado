@@ -66,9 +66,7 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
       <div
         className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
       >
-        <header className={classNames(styles.header, layoutStyles.header)}>
-          <Navbar />
-        </header>
+        <Navbar className={styles.header}/>
         <TaskTitleDisplay title={task.title} slug={task.slug} />
         <TaskEditorTabComponent className={styles.tabs} tab={tab} slug={task.slug}/>
         {content}

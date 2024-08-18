@@ -1,33 +1,54 @@
 "use client";
 
-import type { FunctionComponent, ReactNode } from "react";
-
+import classNames from "classnames";
 import Link from "next/link";
-
-import { useEffect, useState } from "react";
-
+import { memo } from "react";
 import { useSession } from "client/sessions";
-import styles from "./index.module.css";
 
-import { Member } from "./member";
-import { Guest } from "./guest";
+type NavbarProps = {
+  className?: string;
+};
 
-export const Navbar: FunctionComponent = () => {
+export const Navbar = memo(({ className }: NavbarProps) => {
+  return (
+    <div className={classNames("flex bg-blue-400 text-white", className)}>
+      <div className="flex items-center gap-2 w-full max-w-[64rem] mx-auto">
+        <NavbarLink href="/">Home</NavbarLink>
+        <NavbarLink href="/tasks">Tasks</NavbarLink>
+        <NavbarAccount />
+      </div>
+    </div>
+  );
+});
+
+export const NavbarAccount = memo(() => {
   const session = useSession();
-  const [links, setLinks] = useState<ReactNode>(null);
-
-  useEffect(() => {
-    setLinks(session ? <Member /> : <Guest />);
-  }, [session]);
-
+  if (session == null || session.user == null) {
+    return (
+      <>
+        <NavbarLink href="/login" className="ml-auto">Login</NavbarLink>
+        <NavbarLink href="/register">Register</NavbarLink>
+      </>
+    );
+  }
   return (
     <>
-      <div className={styles.row}>
-        <Link href="/">Home</Link>
-        <Link href="/tasks">Tasks</Link>
-        {links}
-      </div>
-      <Link href="/sitemap">Sitemap</Link>
+      <div className="text-2xl px-1 py-3 ml-auto">{session?.user.name}</div>
+      <NavbarLink href="/logout">Logout</NavbarLink>
     </>
+  );
+});
+
+type NavbarLinkProps = {
+  href: string;
+  className?: string;
+  children?: React.ReactNode;
+};
+
+const NavbarLink = ({ href, className, children }: NavbarLinkProps) => {
+  return (
+    <Link className={classNames("text-2xl px-1 py-3 hover:text-blue-200", className)} href={href}>
+      {children}
+    </Link>
   );
 };

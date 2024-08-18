@@ -8,10 +8,10 @@ type DefaultLayoutProps = {
 export const DefaultLayout = ({ children }: DefaultLayoutProps) => {
   return (
     <>
-      <header className={styles.header}>
-        <Navbar />
-      </header>
-      <main>{children}</main>
+      <Navbar />
+      <div className="max-w-[64rem] mx-auto my-4">
+        <main>{children}</main>
+      </div>
       <footer>
         <p className={styles.copyright}>© 2024 NOI.PH!!!</p>
       </footer>
