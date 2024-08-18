@@ -3,7 +3,6 @@ import fs from "fs";
 import path from "path";
 import { Language, Verdict } from "common/types/constants";
 import { JudgeSubmission, JudgeTask, JudgeTaskData } from "common/types/judge";
-import { sleep } from "common/utils/sleep";
 
 // Pass in anything you need to do the judgments
 export type EvaluationContext = {
