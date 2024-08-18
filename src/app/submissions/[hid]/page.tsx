@@ -4,6 +4,7 @@ import { huradoIDToUUID } from "common/utils/uuid";
 import { SubmissionViewer } from "client/components/submission_viewer/submission_viewer";
 import { getSubmissionViewerDTO } from "server/logic/submissions/get_submission";
 import { getSession } from "server/sessions";
+import { canManageTasks } from "server/authorization";
 
 type SubmissionPageProps = {
   params: {
@@ -21,7 +22,8 @@ async function Page(props: SubmissionPageProps) {
     return notFound();
   }
 
-  const submission = await getSubmissionViewerDTO(uuid, session.user);
+  const isTaskManager = canManageTasks(session);
+  const submission = await getSubmissionViewerDTO(uuid, session.user, isTaskManager);
 
   if (submission == null) {
     return notFound();

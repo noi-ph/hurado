@@ -64,11 +64,6 @@ export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
 };
 
 const SubmissionVerdictSummary = ({ submission }: SubmissionViewerProps) => {
-  const [formattedDate, setFormattedDate] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    setFormattedDate(formatDateTime(submission.created_at));
-  }, [submission.created_at]);
-
   let status: React.ReactNode;
   if (submission.verdict == null) {
     status = <span className="font-semibold">In Queue</span>;
@@ -106,7 +101,10 @@ const SubmissionVerdictSummary = ({ submission }: SubmissionViewerProps) => {
       <div>Status: {status}</div>
       {score}
       <div className="ml-auto">
-        Submitted: <span title={formattedDate}>{humanizeTimeAgo(submission.created_at)}</span>
+        Submitted:{" "}
+        <span title={formatDateTime(submission.created_at)} suppressHydrationWarning>
+          {humanizeTimeAgo(submission.created_at)}
+        </span>
       </div>
     </div>
   );
@@ -198,10 +196,7 @@ const TaskDataVerdictViewer = ({ data, dataIndex }: TaskDataVerdictViewerProps) 
   return (
     <div className="flex items-center">
       <span className="inline-flex items-center cursor-pointer" title={hoverText}>
-        <BoxIcon
-          name={iconName}
-          className={getVerdictIconClassName(data.verdict)}
-        />
+        <BoxIcon name={iconName} className={getVerdictIconClassName(data.verdict)} />
         Test Case #{dataIndex + 1}
       </span>
     </div>
