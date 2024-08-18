@@ -4,17 +4,19 @@ import classNames from "classnames";
 import { memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Navbar } from "client/components/navbar";
-import layoutStyles from "client/components/layouts/layout.module.css";
 import { MathJaxConfig } from "client/components/mathjax";
+import { TaskDTO } from "common/validation/task_validation";
+import { TaskSubmissionsCache } from "client/submissions";
 import { TaskEditorStatement } from "./task_editor_statement";
-import styles from "./task_editor.module.css";
 import { coerceTaskEditorTab, TaskEditorTab, TaskEditorTabComponent } from "./task_editor_tabs";
 import { TaskEditorDetails } from "./task_editor_details";
 import { coerceTaskED } from "./coercion";
 import { TaskED } from "./types";
 import { TaskEditorJudging } from "./task_editor_judging";
 import { IncompleteHashesException, saveTask } from "./task_editor_saving";
-import { TaskDTO } from "common/validation/task_validation";
+import { TaskEditorSubmissions } from "./task_editor_submissions";
+import styles from "./task_editor.module.css";
+
 
 type TaskEditorProps = {
   dto: TaskDTO;
@@ -23,9 +25,13 @@ type TaskEditorProps = {
 export const TaskEditor = ({ dto }: TaskEditorProps) => {
   const initialTask = useMemo(() => {
     return coerceTaskED(dto);
-  }, [dto])
+  }, [dto]);
   const [tab, setTab] = useState(coerceTaskEditorTab(getLocationHash()));
   const [task, setTask] = useState<TaskED>(initialTask);
+  const [submissions, setSubmissions] = useState<TaskSubmissionsCache>(
+    TaskSubmissionsCache.empty()
+  );
+
   const [isMounted, setIsMounted] = useState(false);
 
   // NextJS hack to detect when hash changes and run some code
@@ -53,6 +59,11 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
     case TaskEditorTab.Judging:
       content = <TaskEditorJudging task={task} setTask={setTask} />;
       break;
+    case TaskEditorTab.Submissions:
+      content = (
+        <TaskEditorSubmissions taskId={task.id} cache={submissions} setCache={setSubmissions} />
+      );
+      break;
     default:
       content = null;
   }
@@ -66,9 +77,9 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
       <div
         className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
       >
-        <Navbar className={styles.header}/>
+        <Navbar className={styles.header} />
         <TaskTitleDisplay title={task.title} slug={task.slug} />
-        <TaskEditorTabComponent className={styles.tabs} tab={tab} slug={task.slug}/>
+        <TaskEditorTabComponent className={styles.tabs} tab={tab} slug={task.slug} />
         {content}
         <TaskEditorFooter task={task} setTask={setTask} initial={initialTask} />
       </div>
@@ -137,5 +148,5 @@ const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps
 });
 
 function getLocationHash(): string {
-  return typeof window !== "undefined" ? window.location.hash : '';
+  return typeof window !== "undefined" ? window.location.hash : "";
 }

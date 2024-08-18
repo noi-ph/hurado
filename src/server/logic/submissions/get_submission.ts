@@ -1,6 +1,7 @@
 import { db } from "db";
 import {
   SubmissionViewerDTO,
+  UserPublic,
   VerdictSubtaskViewerDTO,
   VerdictTaskDataViewerDTO,
   VerdictViewerDTO,
@@ -10,10 +11,11 @@ import { SubmissionFileStorage } from "server/files";
 import { Language, Verdict } from "common/types/constants";
 import { notNull } from "common/utils/guards";
 
-export async function getSubmissionViewerDTO(id: string): Promise<SubmissionViewerDTO> {
+export async function getSubmissionViewerDTO(id: string, user: UserPublic): Promise<SubmissionViewerDTO> {
   const sub = await db
     .selectFrom("submissions")
     .where("submissions.id", "=", checkUUIDv4(id))
+    .where("submissions.user_id", "=", user.id)
     .leftJoin("tasks", "tasks.id", "submissions.task_id")
     .select([
       "submissions.id",
@@ -82,8 +84,22 @@ async function getSubmissionVerdict(
   const subverdicts = await db
     .selectFrom("task_subtasks")
     .where("task_id", "=", task_id)
-    .leftJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
-    .where("verdict_subtasks.verdict_id", "=", verdict.id)
+    .leftJoin(
+      (eb) =>
+        eb
+          .selectFrom("verdict_subtasks")
+          .select([
+            "id",
+            "subtask_id",
+            "verdict",
+            "raw_score",
+            "running_time_ms",
+            "running_memory_byte",
+          ])
+          .where("verdict_id", "=", verdict.id)
+          .as("verdict_subtasks"),
+      (join) => join.onRef("verdict_subtasks.subtask_id", "=", "task_subtasks.id")
+    )
     .select([
       "task_subtasks.id as subtask_id",
       "task_subtasks.score_max",
@@ -102,8 +118,26 @@ async function getSubmissionVerdict(
   const dataVerdictsQuery = db
     .selectFrom("task_data")
     .where("task_data.subtask_id", "in", subtaskIds)
-    .leftJoin("verdict_task_data", "verdict_task_data.task_data_id", "task_data.id")
-    .where("verdict_task_data.verdict_subtask_id", "in", verdictSubtaskIds)
+    .leftJoin(
+      (eb) => {
+        const base = eb
+          .selectFrom("verdict_task_data")
+          .select([
+            "id",
+            "task_data_id",
+            "verdict",
+            "raw_score",
+            "running_time_ms",
+            "running_memory_byte",
+          ]);
+        const filtered =
+          verdictSubtaskIds.length > 0
+            ? base.where("verdict_subtask_id", "in", verdictSubtaskIds)
+            : base.where("verdict_subtask_id", "is", null);
+        return filtered.as("verdict_task_data");
+      },
+      (join) => join.onRef("verdict_task_data.task_data_id", "=", "task_data.id")
+    )
     .select([
       "task_data.subtask_id as subtask_id",
       "verdict_task_data.id as verdict_task_data_id",

@@ -38,6 +38,7 @@ export enum APIPath {
   FileUpload = "FileUpload",
   TaskCreate = "TaskCreate",
   TaskUpdate = "TaskUpdate",
+  TaskSubmissions = "TaskSubmissions",
 }
 
 export type APIPathArguments =
@@ -48,7 +49,8 @@ export type APIPathArguments =
   | { kind: APIPath.FileHashes }
   | { kind: APIPath.FileUpload }
   | { kind: APIPath.TaskCreate }
-  | { kind: APIPath.TaskUpdate; id: string };
+  | { kind: APIPath.TaskUpdate; id: string }
+  | { kind: APIPath.TaskSubmissions; id: string };
 
 export function getAPIPath(args: APIPathArguments) {
   switch (args.kind) {
@@ -66,6 +68,8 @@ export function getAPIPath(args: APIPathArguments) {
       return "/api/v1/tasks";
     case APIPath.TaskUpdate:
       return `/api/v1/tasks/${args.id}`;
+    case APIPath.TaskSubmissions:
+      return `/api/v1/tasks/${args.id}/submissions`;
     case APIPath.FileUpload:
       return "/api/v1/tasks/files";
     case APIPath.FileHashes:

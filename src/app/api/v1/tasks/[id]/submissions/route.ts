@@ -2,23 +2,27 @@ import { Language, Verdict } from "common/types/constants";
 import { SubmissionSummaryDTO } from "common/types/submissions";
 import { db } from "db";
 import { NextRequest, NextResponse } from "next/server";
+import { canManageTasks } from "server/authorization";
 import { getSession } from "server/sessions";
+import { NextContext } from "types/nextjs";
 
-export async function GET(request: NextRequest) {
+type RouteParams = {
+  id: string;
+};
+
+export async function GET(request: NextRequest, context: NextContext<RouteParams>) {
   const session = getSession(request);
-  if (session == null) {
+  if (!canManageTasks(session)) {
     return NextResponse.json({}, { status: 401 });
   }
-  const { searchParams } = request.nextUrl;
-  const taskId = searchParams.get("taskId");
-  let query = db.selectFrom("submissions").where("user_id", "=", session.user.id);
 
-  if (taskId) {
-    query = query.where("task_id", "=", taskId);
-  }
+  const taskId = context.params.id;
 
-  const dbResults = await query
+  const dbResults = await db
+    .selectFrom("submissions")
+    .where("task_id", "=", taskId)
     .leftJoin("verdicts", "verdicts.id", "submissions.official_verdict_id")
+    .leftJoin("users", "users.id", "submissions.user_id")
     .select([
       "submissions.id",
       "submissions.language",
@@ -28,6 +32,7 @@ export async function GET(request: NextRequest) {
       "verdicts.raw_score",
       "verdicts.running_time_ms",
       "verdicts.running_memory_byte",
+      "users.username",
     ])
     .orderBy("submissions.created_at", "desc")
     .execute();
@@ -35,7 +40,7 @@ export async function GET(request: NextRequest) {
   const submissions: SubmissionSummaryDTO[] = dbResults.map((sub) => ({
     id: sub.id,
     language: sub.language as Language,
-    username: null,
+    username: sub.username,
     created_at: sub.created_at,
     verdict_id: sub.official_verdict_id,
     verdict: sub.verdict as Verdict | null,

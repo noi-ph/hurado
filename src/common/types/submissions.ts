@@ -15,8 +15,10 @@ export type SubmissionTable = {
 export type SubmissionSummaryDTO = {
   id: string;
   language: Language;
+  username: string | null;
   created_at: Date;
-  verdict: string | null;
+  verdict_id: string | null;
+  verdict: Verdict | null;
   score: number | null;
   running_time_ms: number | null;
   running_memory_byte: number | null;
