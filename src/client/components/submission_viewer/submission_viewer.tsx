@@ -1,9 +1,10 @@
 "use client";
 
 import classNames from "classnames";
-import { editor } from "monaco-editor";
+import type { editor } from "monaco-editor";
 import MonacoEditor, { Monaco } from "@monaco-editor/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
+import Link from "next/link";
 import {
   SubmissionViewerDTO,
   VerdictSubtaskViewerDTO,
@@ -11,18 +12,17 @@ import {
 } from "common/types";
 import { humanizeLanguage, humanizeVerdict, Verdict } from "common/types/constants";
 import { formatDateTime, humanizeTimeAgo } from "common/utils/dates";
-import BoxIcon from "client/components/box_icon";
 import { notNull } from "common/utils/guards";
-import Link from "next/link";
-import { getPath, Path } from "client/paths";
 import { uuidToHuradoID } from "common/utils/uuid";
+import BoxIcon from "client/components/box_icon";
+import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
 
 type SubmissionViewerProps = {
   submission: SubmissionViewerDTO;
 };
 
-const MonacoOptions: editor.IEditorConstructionOptions = Object.freeze({
+const MonacoOptions: editor.IStandaloneEditorConstructionOptions = Object.freeze({
   readOnly: true,
   scrollBeyondLastLine: false,
   minimap: {

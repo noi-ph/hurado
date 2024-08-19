@@ -1,13 +1,15 @@
-import MonacoEditor from "@monaco-editor/react";
 import classNames from "classnames";
+import type { editor } from "monaco-editor"
+import MonacoEditor from "@monaco-editor/react";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
+import { LatexDisplay } from "client/components/latex_display";
 import styles from "./task_editor.module.css";
 import { TaskED } from "./types";
-import { LatexDisplay } from "client/components/latex_display";
 
-const MonacoOptions = {
-  defaultLanguage: 'latex',
+const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
+  language: 'latex',
+  wordWrap: 'on',
   minimap: {
     enabled: false,
   },
