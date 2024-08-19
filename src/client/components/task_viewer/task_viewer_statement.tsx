@@ -1,6 +1,6 @@
-import { MathJax } from "better-react-mathjax";
 import { useSession } from "client/sessions";
 import { TaskViewerDTO } from "common/types";
+import { LatexDisplay } from "client/components/latex_display";
 import { SubmitComponent } from "../submit";
 import { TaskViewerTitle } from "./task_viewer_utils";
 
@@ -16,7 +16,7 @@ export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
     <>
       <TaskViewerTitle title={task.title} />
       <div className="my-4">
-        <MathJax>{task.statement}</MathJax>
+        <LatexDisplay>{task.statement}</LatexDisplay>
       </div>
       {isLoggedIn && <SubmitComponent taskId={task.id} />}
     </>

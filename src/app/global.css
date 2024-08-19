@@ -38,3 +38,7 @@ footer {
   height: fit-content;
   padding: 5px 20px;
 }
+
+.katex-html[aria-hidden="true"] {
+  display: none;
+}

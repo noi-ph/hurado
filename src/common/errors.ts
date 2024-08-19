@@ -6,7 +6,7 @@ export class UnreachableError extends Error {
 }
 
 export function UnreachableDefault(value: never, default_?: unknown): unknown {
-  if (default_ != null) {
+  if (default_ !== undefined) {
     return default_;
   }
   return value;

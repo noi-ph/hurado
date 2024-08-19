@@ -1,9 +1,7 @@
 "use client";
-import { MathJaxContext } from "better-react-mathjax";
 import { ReactNode, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { TaskViewerDTO } from "common/types";
-import { MathJaxConfig } from "client/components/mathjax";
 import { TaskSubmissionsCache } from "client/submissions";
 import { coerceTaskViewerTab, TaskViewerTab, TaskViewerTabComponent } from "./task_viewer_tabs";
 import { TaskViewerStatement } from "./task_viewer_statement";
@@ -57,12 +55,8 @@ export const TaskViewer = ({ task, canEdit }: TaskViewerProps) => {
       content = null;
   }
 
-  // Unfortunately, this thing has to make its own header because it needs to put it in the
-  // CSS grid in order to handle overflow scrolling properly in the lower-right corner
-  // with OverlayScrollbars. Yeah. The code is scuffed. It's the only place in the world
-  // that does this!
   return (
-    <MathJaxContext config={MathJaxConfig}>
+    <>
       <TaskViewerTabComponent
         className="flex gap-2"
         tab={tab}
@@ -70,7 +64,7 @@ export const TaskViewer = ({ task, canEdit }: TaskViewerProps) => {
         canEdit={canEdit}
       />
       {content}
-    </MathJaxContext>
+    </>
   );
 };
 

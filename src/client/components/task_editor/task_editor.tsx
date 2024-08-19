@@ -1,10 +1,8 @@
 "use client";
-import { MathJaxContext } from "better-react-mathjax";
 import classNames from "classnames";
 import { memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Navbar } from "client/components/navbar";
-import { MathJaxConfig } from "client/components/mathjax";
 import { TaskDTO } from "common/validation/task_validation";
 import { TaskSubmissionsCache } from "client/submissions";
 import { TaskEditorStatement } from "./task_editor_statement";
@@ -73,17 +71,15 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
   // with OverlayScrollbars. Yeah. The code is scuffed. It's the only place in the world
   // that does this!
   return (
-    <MathJaxContext config={MathJaxConfig}>
-      <div
-        className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
-      >
-        <Navbar className={styles.header} />
-        <TaskTitleDisplay title={task.title} slug={task.slug} />
-        <TaskEditorTabComponent className={styles.tabs} tab={tab} slug={task.slug} />
-        {content}
-        <TaskEditorFooter task={task} setTask={setTask} initial={initialTask} />
-      </div>
-    </MathJaxContext>
+    <div
+      className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
+    >
+      <Navbar className={styles.header} />
+      <TaskTitleDisplay title={task.title} slug={task.slug} />
+      <TaskEditorTabComponent className={styles.tabs} tab={tab} slug={task.slug} />
+      {content}
+      <TaskEditorFooter task={task} setTask={setTask} initial={initialTask} />
+    </div>
   );
 };
 
