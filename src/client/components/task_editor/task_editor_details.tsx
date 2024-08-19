@@ -138,6 +138,9 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
           }
         })}
       </div>
+      <div className="text-xs text-gray-500 mt-1">
+        Access attachments at <span className="font-mono">/tasks/&#123;slug&#125;/attachments/&#123;...path&#125;</span>
+      </div>
       <div className="flex justify-center mt-2">
         <TaskEditorAddButton onClick={onFileSelectStart} label="Add New" />
         <input
