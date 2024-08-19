@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import classNames from "classnames";
+import { useCallback, useState } from "react";
+import type { editor } from "monaco-editor";
 import MonacoEditor from "@monaco-editor/react";
 import http from "client/http";
 import { APIPath, getAPIPath } from "client/paths";
 import { SubmissionRequestDTO } from "common/validation/submission_validation";
 import { humanizeLanguage, Language } from "common/types/constants";
 import styles from "./submit_panel.module.css";
-import classNames from "classnames";
 import { SelectChangeEvent } from "common/types/events";
 
-const MonacoOptions = {
-  defaultLanguage: Language.Python3,
+const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
+  language: Language.Python3,
   minimap: {
     enabled: false,
   },
@@ -34,7 +35,7 @@ export const SubmitPanel = ({ taskId }: SubmitPanelProps) => {
     setLanguage(event.target.value as Language);
   }, []);
 
-  const submit = React.useCallback(async () => {
+  const submit = useCallback(async () => {
     if (submitting) {
       return;
     }
