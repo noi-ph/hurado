@@ -1,10 +1,10 @@
 import MonacoEditor from "@monaco-editor/react";
-import { MathJax } from "better-react-mathjax";
 import classNames from "classnames";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
 import styles from "./task_editor.module.css";
 import { TaskED } from "./types";
+import { LatexDisplay } from "client/components/latex_display";
 
 const MonacoOptions = {
   defaultLanguage: 'latex',
@@ -41,7 +41,7 @@ export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps)
       </div>
       <Scrollable className={styles.statementPreview} defer>
         <div className='p-3 bg-white flex-auto min-h-full'>
-          <MathJax>{task.statement}</MathJax>
+          <LatexDisplay>{task.statement}</LatexDisplay>
         </div>
       </Scrollable>
     </>
