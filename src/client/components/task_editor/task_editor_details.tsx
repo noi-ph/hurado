@@ -24,6 +24,7 @@ import {
 } from "./task_editor_utils";
 import { Arrays } from "common/utils/arrays";
 import { APIPath, getAPIPath } from "client/paths";
+import { normalizeAttachmentPath } from "common/utils/attachments";
 
 type TaskEditorDetailsProps = {
   task: TaskED;
@@ -82,7 +83,7 @@ const TaskEditorAttachments = ({ task, setTask }: TaskEditorAttachmentsProps) =>
         file: newFile,
         path: file.name,
         filename: file.name,
-        mime_type: "",
+        mime_type: file.type,
         deleted: false,
       };
 
@@ -207,6 +208,19 @@ const TaskAttachmentLocalX = ({ index, attachment, task, setTask }: TaskAttachme
     [task, attachment, index]
   );
 
+  const onBlurPath = useCallback(
+    (event: InputChangeEvent) => {
+      setTask({
+        ...task,
+        attachments: Arrays.replaceNth(task.attachments, index, {
+          ...attachment,
+          path: normalizeAttachmentPath(attachment.path),
+        }),
+      });
+    },
+    [task, attachment, index]
+  );
+
   const onClickDelete = useCallback(() => {
     setTask({
       ...task,
@@ -218,7 +232,7 @@ const TaskAttachmentLocalX = ({ index, attachment, task, setTask }: TaskAttachme
     <>
       <TaskEditorTableCell deleted={false}>{attachment.filename}</TaskEditorTableCell>
       <TaskEditorTableCell deleted={false}>
-        <input type="text" value={attachment.path} onChange={onChangePath} className="w-full" />
+        <input type="text" value={attachment.path} onBlur={onBlurPath} onChange={onChangePath} className="w-full" />
       </TaskEditorTableCell>
       <div className="flex flex-row justify-end items-center px-3 gap-2">
         <button type="button" onClick={onClickDelete}>

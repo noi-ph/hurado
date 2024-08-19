@@ -1,30 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TaskAttachmentTable } from "common/types";
 import { db } from "db";
 import { TaskFileStorage } from "server/files";
 import { NextContext } from "types/nextjs";
+import { normalizeAttachmentPath } from "common/utils/attachments";
 
 type RouteParams = {
   id: string;
-  path: string;
+  path: string[];
 };
 
 export async function GET(_request: NextRequest, context: NextContext<RouteParams>) {
-  // Parse the task id and attachment path from the URL
-  const taskId = context.params.id;
-  const path = context.params.path;
+  // **Note that this is task SLUG and not task id (NextJS problems)**
+  // Parse the task slug and attachment path from the URL
+  const slug = context.params.id;
+  const path = normalizeAttachmentPath(context.params.path.join("/"));
 
   // Look up in the database which attachment it should be
-  let attachment: Pick<TaskAttachmentTable, 'file_hash' | 'mime_type'>;
-  try {
-    attachment = await db
-      .selectFrom("task_attachments")
-      .select(["file_hash", "mime_type"])
-      .where("id", "=", taskId)
-      .where("path", "=", path)
-      .executeTakeFirstOrThrow();
-  } catch {
-    return NextResponse.json({ message: "Not Found" }, { status: 404 })
+  const attachment = await db
+    .selectFrom("tasks")
+    .innerJoin("task_attachments", "task_attachments.task_id", "tasks.id")
+    .where("tasks.slug", "=", slug)
+    .where("task_attachments.path", "=", path)
+    .select(["task_attachments.file_hash", "task_attachments.mime_type"])
+    .executeTakeFirst();
+
+  if (attachment == null) {
+    return NextResponse.json({ message: "Not Found" }, { status: 404 });
   }
 
   // Fetch the blob from TaskFileStorage and load it into memory
@@ -37,8 +38,8 @@ export async function GET(_request: NextRequest, context: NextContext<RouteParam
   return new NextResponse(buffer, {
     status: 200,
     headers: {
-      'Content-Type': attachment.mime_type,
-      'Content-Length': buffer.length.toString(),
+      "Content-Type": attachment.mime_type,
+      "Content-Length": buffer.length.toString(),
     },
   });
 }

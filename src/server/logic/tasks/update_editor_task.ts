@@ -1,3 +1,4 @@
+import path from "path";
 import { Selectable, Transaction } from "kysely";
 import { db } from "db";
 import {
@@ -14,6 +15,7 @@ import {
   TaskDTO,
   TaskSubtaskDTO,
 } from "common/validation/task_validation";
+import { normalizeAttachmentPath } from "common/utils/attachments";
 
 type Ordered<T> = T & {
   order: number;
@@ -116,7 +118,7 @@ async function upsertTaskAttachments(
           .insertInto("task_attachments")
           .values(
             attachmentsNew.map((attach) => ({
-              path: attach.path,
+              path: normalizeAttachmentPath(attach.path),
               mime_type: attach.mime_type,
               file_hash: attach.file_hash,
               task_id: taskId,
@@ -267,7 +269,7 @@ async function upsertTaskData(
   const dataNew = dataAll.filter((d) => d.id == null);
   const dataOld = dataAll.filter((d) => d.id != null);
 
-  const subtaskIds = subtasks.map(subtask => subtask.id);
+  const subtaskIds = subtasks.map((subtask) => subtask.id);
   if (subtaskIds.length > 0) {
     const dataOldIds = dataOld.map((data) => data.id as string);
     if (dataOldIds.length <= 0) {
