@@ -6,13 +6,15 @@ export enum Path {
   Submission = "Submission",
   TaskView = "TaskView",
   TaskEdit = "TaskEdit",
+  TaskAttachment = "TaskAttachment",
 }
 
 export type PathArguments =
   | { kind: Path.Home }
   | { kind: Path.Submission; uuid: string }
   | { kind: Path.TaskView; slug: string }
-  | { kind: Path.TaskEdit; uuid: string };
+  | { kind: Path.TaskEdit; uuid: string }
+  | { kind: Path.TaskAttachment; slug: string; path: string };
 
 export function getPath(args: PathArguments) {
   switch (args.kind) {
@@ -24,6 +26,8 @@ export function getPath(args: PathArguments) {
       return `/tasks/${args.slug}`;
     case Path.TaskEdit:
       return `/tasks/${uuidToHuradoID(args.uuid)}/edit`;
+    case Path.TaskAttachment:
+      return `/tasks/${args.slug}/attachments/${args.path}`;
     default:
       throw new UnreachableError(args);
   }
@@ -43,7 +47,6 @@ export enum APIPath {
 
 export type APIPathArguments =
   | { kind: APIPath.Login }
-  | { kind: APIPath.AttachmentFile; taskId: string; path: string }
   | { kind: APIPath.SubmissionCreate }
   | { kind: APIPath.UserSubmissions; taskId?: string }
   | { kind: APIPath.FileHashes }
@@ -56,8 +59,6 @@ export function getAPIPath(args: APIPathArguments) {
   switch (args.kind) {
     case APIPath.Login:
       return "/api/v1/auth/login";
-    case APIPath.AttachmentFile:
-      return `/api/v1/tasks/${args.taskId}/attachments/${args.path}`;
     case APIPath.SubmissionCreate:
       return "/api/v1/submissions";
     case APIPath.UserSubmissions:

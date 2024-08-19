@@ -23,7 +23,7 @@ import {
   useTaskStringPropUpdater,
 } from "./task_editor_utils";
 import { Arrays } from "common/utils/arrays";
-import { APIPath, getAPIPath } from "client/paths";
+import { getPath, Path } from "client/paths";
 import { normalizeAttachmentPath } from "common/utils/attachments";
 
 type TaskEditorDetailsProps = {
@@ -176,7 +176,7 @@ const TaskAttachmentSavedX = ({ index, attachment, task, setTask }: TaskAttachme
       <TaskEditorTableCell deleted={attachment.deleted}>{filename}</TaskEditorTableCell>
       <TaskEditorTableCell deleted={attachment.deleted}>{attachment.path}</TaskEditorTableCell>
       <div className="flex flex-row justify-end items-center px-3 gap-2">
-        <a href={getAttachmentURL(task, attachment)}>
+        <a target="_blank" href={getAttachmentURL(task, attachment)}>
           <BoxIcon name="bx-download" className="bx-sm text-blue-300 hover:text-blue-500" />
         </a>
         <button type="button" onClick={onClickDelete}>
@@ -427,5 +427,5 @@ const TaskEditorCreditLocalX = ({ index, credit, task, setTask }: TaskEditorCred
 };
 
 function getAttachmentURL(task: TaskED, attachment: TaskAttachmentSaved) {
-  return getAPIPath({ kind: APIPath.AttachmentFile, taskId: task.id, path: attachment.path});
+  return getPath({ kind: Path.TaskAttachment, slug: task.slug, path: attachment.path});
 }

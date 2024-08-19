@@ -5,14 +5,13 @@ import { NextContext } from "types/nextjs";
 import { normalizeAttachmentPath } from "common/utils/attachments";
 
 type RouteParams = {
-  id: string;
+  slug: string;
   path: string[];
 };
 
 export async function GET(_request: NextRequest, context: NextContext<RouteParams>) {
-  // **Note that this is task SLUG and not task id (NextJS problems)**
   // Parse the task slug and attachment path from the URL
-  const slug = context.params.id;
+  const slug = context.params.slug;
   const path = normalizeAttachmentPath(context.params.path.join("/"));
 
   // Look up in the database which attachment it should be
