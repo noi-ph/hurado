@@ -1,7 +1,7 @@
 import { useSession } from "client/sessions";
 import { TaskViewerDTO } from "common/types";
 import { LatexDisplay } from "client/components/latex_display";
-import { SubmitComponent } from "../submit";
+import { SubmitPanel } from "client/components/submit_panel";
 import { TaskViewerTitle } from "./task_viewer_utils";
 
 type TaskViewerStatementProps = {
@@ -18,7 +18,7 @@ export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
       <div className="my-4">
         <LatexDisplay>{task.statement}</LatexDisplay>
       </div>
-      {isLoggedIn && <SubmitComponent taskId={task.id} />}
+      {isLoggedIn && <SubmitPanel taskId={task.id} />}
     </>
   );
 };

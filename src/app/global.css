@@ -39,6 +39,11 @@ footer {
   padding: 5px 20px;
 }
 
+/* .submit-panel is a global class used in global.css to style the monaco editor's line numbers */
+.submit-panel .monaco-editor .margin {
+  border-right: 1px solid var(--color-gray-300);
+}
+
 .katex-html[aria-hidden="true"] {
   display: none;
 }
