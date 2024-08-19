@@ -63,7 +63,6 @@ export type ScriptTable = {
 export type Task = Selectable<TaskTable>;
 export type TaskCreate = Insertable<TaskTable>;
 export type TaskUpdate = Updateable<TaskTable>;
-export type TaskSummary = Pick<Task, "title" | "slug" | "description">;
 export type TaskCredit = Selectable<TaskCreditTable>;
 
 export type TaskViewerDTO = {
@@ -80,3 +79,5 @@ export type TaskViewerCreditDTO = {
   name: string;
   role: string;
 }
+
+export type TaskSummaryDTO = Pick<Task, "title" | "slug" | "description">;

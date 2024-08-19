@@ -1,0 +1,31 @@
+.editor {
+  aspect-ratio: 5 / 2;
+}
+
+.language {
+  margin-left: auto;
+  padding: .5rem 1.5rem .5rem 1rem;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
+  border-radius: .25rem;
+  user-select: none;
+}
+
+.button {
+  margin-left: auto;
+  padding: .5rem 1rem;
+  color: var(--color-white);
+  background: var(--color-blue-300);
+}
+
+.button:hover {
+  background: var(--color-blue-400);
+}
+
+.button[disabled],
+.button:hover[disabled],
+.button:focus[disabled],
+.button:active[disabled] {
+  cursor: default;
+  background: var(--color-blue-200);
+}

@@ -49,7 +49,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = ({ children }) => {
         lang="en"
         className={classNames(fontMontserrat.variable, fontRoboto.variable, fontSpaceMono.variable)}
       >
-        <body>{children}</body>
+        <body className="flex flex-col min-h-full items-stretch">{children}</body>
       </html>
     </SessionProvider>
   );
