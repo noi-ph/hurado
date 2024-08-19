@@ -1,4 +1,3 @@
-import path from "path";
 import { Selectable, Transaction } from "kysely";
 import { db } from "db";
 import {
