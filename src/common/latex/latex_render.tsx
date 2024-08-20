@@ -119,7 +119,7 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       return <strong>{renderArgumentContent(node.args, source)}</strong>;
     case "it":
     case "textit":
-      return <em>{renderArgumentContent(node.args, source)}</em>;
+      return <span className="italic">{renderArgumentContent(node.args, source)}</span>;
     case "tt":
     case "texttt":
       return <span className="font-mono">{renderArgumentContent(node.args, source)}</span>;
