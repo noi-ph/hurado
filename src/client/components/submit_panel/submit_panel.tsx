@@ -8,8 +8,10 @@ import http from "client/http";
 import { APIPath, getAPIPath } from "client/paths";
 import { SubmissionRequestDTO } from "common/validation/submission_validation";
 import { humanizeLanguage, Language } from "common/types/constants";
-import styles from "./submit_panel.module.css";
 import { SelectChangeEvent } from "common/types/events";
+import styles from "./submit_panel.module.css";
+import "./submit_panel.css"; // This is not a mistake
+
 
 const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
   language: Language.Python3,
@@ -64,7 +66,7 @@ export const SubmitPanel = ({ taskId }: SubmitPanelProps) => {
     }
   }, [taskId, submitting, language, code]);
 
-  // .submit-panel is a global class used in global.css to style the monaco editor's line numbers
+  // .submit-panel is a non-module class used to style the monaco editor's line numbers
   return (
     <div className="submit-panel border border-gray-300">
       <div className="flex py-2 pl-4 pr-6 border-b border-gray-300">

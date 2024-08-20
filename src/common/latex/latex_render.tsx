@@ -14,6 +14,7 @@ import {
 } from "./latex_types";
 import { LATEX_ENVIRONMENTS, LATEX_MACROS } from "./latex_macros";
 import { mergeLatexNodeStrings } from "./latex_strings";
+import 'katex/dist/katex.css';
 
 const LatexParser = getParser({
   macros: LATEX_MACROS,
