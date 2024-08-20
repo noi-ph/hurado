@@ -4,7 +4,7 @@ import { TaskDTO } from "common/validation/task_validation";
 import { db } from "db";
 import { Insertable } from "kysely";
 import path from "path";
-import { promises as fs } from "fs";
+import fs from "fs";
 import { sha256 } from "common/utils/hashing";
 import { TaskFileStorage } from "server/files";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
@@ -63,6 +63,9 @@ const filenames = [
   "sharing-chocolates-1e.out",
   "sharing-chocolates-1f.out",
   "sharing-chocolates-2a.out",
+  "crazy-problem-1a.in",
+  "crazy-problem-1a.out",
+  "chocolate-hills.jpg",
 ];
 
 function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
@@ -242,7 +245,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
               judge_file_name: null,
               judge_file_hash: null,
             },
-
             {
               name: "Test Case #4",
               is_sample: false,
@@ -293,6 +295,54 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         },
       ],
     },
+    {
+      id: getOrThrow(ids, "crazy-problem"),
+      slug: "crazy-problem",
+      title: "Crazy Problem",
+      statement: readFileSync("crazy-problem.tex"),
+      description: "Read a crazy statement. Solve a crazy problem.",
+      score_max: 100,
+      checker: "",
+      attachments: [
+        {
+          path: "path/to/chocolate-hills.jpg",
+          mime_type: "image/jpeg",
+          file_hash: getOrThrow(hashes, "chocolate-hills.jpg"),
+        }
+      ],
+      credits: [
+        {
+          name: "jabbawookiees",
+          role: "Problem Idea",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Story Author",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Tester",
+        },
+      ],
+      subtasks: [
+        {
+          name: "Subtask #1",
+          score_max: 100,
+          data: [
+            {
+              name: "Test Case #1",
+              is_sample: false,
+              input_file_name: "crazy-problem-1a.in",
+              input_file_hash: getOrThrow(hashes, "crazy-problem-1a.in"),
+              output_file_name: "crazy-problem-1a.out",
+              output_file_hash: getOrThrow(hashes, "crazy-problem-1a.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+      ],
+    },
   ];
   return tasks;
 }
@@ -312,6 +362,12 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
         {
           title: "Sharing Chocolates",
           slug: "sharing-chocolates",
+          statement: "",
+          score_max: 100,
+        },
+        {
+          title: "Crazy Problem",
+          slug: "crazy-problem",
           statement: "",
           score_max: 100,
         },
@@ -335,8 +391,8 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
 
   private static async uploadFile(filename: string, hashset: Set<string>): Promise<string> {
     const filepath = path.join(__dirname, "data", filename);
-    const stats = await fs.stat(filepath);
-    const file = await fs.open(filepath);
+    const stats = await fs.promises.stat(filepath);
+    const file = await fs.promises.open(filepath);
     const buffer = await file.readFile();
     await file.close();
     const hash = await sha256(buffer);
@@ -374,4 +430,10 @@ function getOrThrow<K, T>(map: Map<K, T>, key: K): T {
 
 function hashPassword(password: string) {
   return hashSync(password, 10);
+}
+
+function readFileSync(filename: string): string {
+  const filepath = path.join(__dirname, "data", filename);
+  const buffer = fs.readFileSync(filepath);
+  return buffer.toString("utf8");
 }
