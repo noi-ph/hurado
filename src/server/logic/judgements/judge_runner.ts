@@ -1,4 +1,3 @@
-import path from "path";
 import { Language, Verdict } from "common/types/constants";
 import {
   JudgeSubmission,
@@ -10,12 +9,12 @@ import {
   JudgeVerdictTaskData,
 } from "common/types/judge";
 import { db } from "db";
+import { CompilationResult, EvaluationContext } from "server/evaluation";
 import {
-  CompilationResult,
   compileSubmission,
   evaluateTaskData,
-  EvaluationContext,
-} from "server/evaluation";
+  GoJudgeEvaluationContext,
+} from "server/evaluation/go-judge";
 
 export class JudgeRunner {
   static async evaluate(
@@ -31,7 +30,7 @@ export class JudgeRunner {
 }
 
 async function runTask(
-  compilation: CompilationResult,
+  compilation: CompilationResult<GoJudgeEvaluationContext>,
   task: JudgeTask,
   submission: JudgeSubmission
 ): Promise<JudgeVerdict> {
@@ -103,7 +102,7 @@ async function runTask(
 }
 
 async function runSubtask(
-  context: EvaluationContext,
+  context: GoJudgeEvaluationContext,
   verdict_id: string,
   subtask: JudgeSubtask
 ): Promise<JudgeVerdictSubtask> {
@@ -160,7 +159,7 @@ async function runSubtask(
 }
 
 async function runTestData(
-  context: EvaluationContext,
+  context: GoJudgeEvaluationContext,
   verdict_subtask_id: string,
   task_data: JudgeTaskData
 ): Promise<JudgeVerdictTaskData> {

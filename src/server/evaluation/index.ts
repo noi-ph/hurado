@@ -1,8 +1,8 @@
 import ChildProcess from "child_process";
-import fs from "fs";
-import path from "path";
 import { Language, Verdict } from "common/types/constants";
 import { JudgeSubmission, JudgeTask, JudgeTaskData } from "common/types/judge";
+import fs from "fs";
+import path from "path";
 
 // Pass in anything you need to do the judgments
 export type EvaluationContext = {
@@ -18,8 +18,8 @@ export type EvaluationResult = {
   running_memory_byte: number;
 };
 
-export type CompilationResult = {
-  context: EvaluationContext;
+export type CompilationResult<Context> = {
+  context: Context;
   compile_time_ms: number;
   compile_memory_byte: number;
 };
@@ -29,7 +29,7 @@ export async function compileSubmission(
   submission: JudgeSubmission,
   taskDir: string,
   submissionDir: string
-): Promise<CompilationResult> {
+): Promise<CompilationResult<EvaluationContext>> {
   const mainFilename = getLanguageFilename(submission.language as Language);
 
   const context: EvaluationContext = {

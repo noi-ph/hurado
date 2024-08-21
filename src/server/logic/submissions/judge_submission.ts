@@ -1,5 +1,5 @@
 import { db } from "db";
-import { JudgeVerdict, JudgeSubmission, JudgeSubtask, JudgeTask } from "server/logic/judgements/judge_types";
+import type { JudgeVerdict, JudgeSubmission, JudgeSubtask, JudgeTask } from "common/types/judge";
 import { JudgeFiles } from "server/logic/judgements/judge_files";
 import { JudgeRunner } from "server/logic/judgements/judge_runner";
 

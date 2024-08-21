@@ -72,6 +72,8 @@ export const SubmitPanel = ({ taskId }: SubmitPanelProps) => {
       <div className="flex py-2 pl-4 pr-6 border-b border-gray-300">
         <select className={styles.language} value={language} onChange={onChangeLanguage}>
           <option value={Language.Python3}>{humanizeLanguage(Language.Python3)}</option>
+          <option value={Language.CPP}>{humanizeLanguage(Language.CPP)}</option>
+          <option value={Language.Java}>{humanizeLanguage(Language.Java)}</option>
         </select>
       </div>
       <div className={classNames(styles.editor, "border-b border-gray-300")}>
