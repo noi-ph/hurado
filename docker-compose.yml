@@ -15,8 +15,10 @@ services:
     restart: always
     depends_on:
       - hurado-postgres
+      - hurado-go-judge
     links:
       - hurado-postgres
+      - hurado-go-judge
     volumes:
       - ./:/app/
   hurado-judge:
@@ -64,3 +66,11 @@ services:
       - "6379"  # Blob service
     volumes:
       - ./volumes/redis:/data
+  hurado-go-judge:
+    container_name: hurado-go-judge
+    build:
+      dockerfile: Dockerfile.go-judge
+    ports:
+      - 5050:5050 # REST API
+      - 5051:5051 # gRPC
+    privileged: true # more efficient
