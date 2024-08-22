@@ -16,6 +16,7 @@
   padding: .5rem 1rem;
   color: var(--color-white);
   background: var(--color-blue-300);
+  border-radius: .25rem;
 }
 
 .button:hover {
