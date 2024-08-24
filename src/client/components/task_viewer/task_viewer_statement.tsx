@@ -18,7 +18,7 @@ export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
       <div className="my-4">
         <LatexDisplay>{task.statement}</LatexDisplay>
       </div>
-      {isLoggedIn && <SubmitPanel taskId={task.id} />}
+      {isLoggedIn && <SubmitPanel task={task} />}
     </>
   );
 };

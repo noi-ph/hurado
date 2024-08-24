@@ -25,7 +25,6 @@ export type JudgeSubmission = {
   task_id: string;
   file_hash: string;
   language: string;
-  runtime_args: string | null;
 };
 
 export type JudgeVerdict = {

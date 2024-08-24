@@ -1,9 +1,16 @@
-import { AnchorHTMLAttributes, ButtonHTMLAttributes, DetailedHTMLProps, useCallback } from "react";
-import { InputChangeEvent, TextAreaChangeEvent } from "common/types/events";
+import {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  ReactNode,
+  useCallback,
+} from "react";
+import { InputChangeEvent, SelectChangeEvent, TextAreaChangeEvent } from "common/types/events";
 import BoxIcon from "client/components/box_icon";
 import { TaskED, TaskFileLocal } from "./types";
 import classNames from "classnames";
 import { sha256 } from "common/utils/hashing";
+import styles from './task_editor.module.css';
 
 export function useTaskStringPropUpdater(
   task: TaskED,
@@ -24,13 +31,15 @@ export function useTaskStringPropUpdater(
 type TaskEditorAddButtonProps = {
   label: string;
   onClick(): void;
+  disabled?: boolean;
 };
 
-export const TaskEditorAddButton = ({ onClick, label }: TaskEditorAddButtonProps) => {
+export const TaskEditorAddButton = ({ onClick, disabled, label }: TaskEditorAddButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className="py-1 px-3 rounded-lg border border-solid border-gray-300 font-roboto font-light text-gray-500 hover:text-gray-700 hover:border-gray-500"
+      disabled={disabled}
+      className={styles.addButton}
     >
       <BoxIcon name="bx-plus" className="bx-xs mt-1" />
       {label}
@@ -139,6 +148,24 @@ export const TaskEditorInputSubtle = ({
       placeholder={placeholder}
       disabled={disabled}
     />
+  );
+};
+
+type TaskEditorSelectProps = {
+  value: string;
+  onChange(event: SelectChangeEvent): void;
+  children: ReactNode;
+};
+
+export const TaskEditorSelect = ({ value, onChange, children }: TaskEditorSelectProps) => {
+  return (
+    <select
+      className="font-mono p-2 border border-gray-300 rounded-lg"
+      value={value}
+      onChange={onChange}
+    >
+      {children}
+    </select>
   );
 };
 

@@ -17,14 +17,15 @@ export default async function TaskEditPage(props: TaskEditPageProps) {
     return { errorCode: 403 };
   }
 
+  const hid = uuidToHuradoID(props.params.slug);
+  if (hid !== props.params.slug) {
+    return redirect(`/tasks/${hid}/edit`);
+  }
+
   const task = await getEditorTask(props.params.slug);
 
   if (task == null) {
     return notFound();
-  }
-  const hid = uuidToHuradoID(task.id);
-  if (hid !== props.params.slug) {
-    return redirect(`/tasks/${hid}/edit`);
   }
 
   return <TaskEditor dto={task} />;

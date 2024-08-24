@@ -6,7 +6,7 @@ import { JudgeRunner } from "server/logic/judgements/judge_runner";
 export async function judgeSubmission(submissionId: string) {
   const submission: JudgeSubmission = await db
     .selectFrom("submissions")
-    .select(["id", "task_id", "file_hash", "language", "runtime_args"])
+    .select(["id", "task_id", "file_hash", "language"])
     .where("id", "=", submissionId)
     .executeTakeFirstOrThrow();
   const task = await loadTask(submission.task_id);

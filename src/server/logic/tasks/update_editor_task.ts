@@ -290,10 +290,10 @@ async function upsertTaskData(
           .values(
             dataNew.map((data, index) => ({
               name: data.name,
-              is_sample: data.is_sample,
+              is_sample: 'is_sample' in data ? data.is_sample : false,
               order: data.order,
-              input_file_hash: data.input_file_hash,
-              input_file_name: data.input_file_name,
+              input_file_hash: 'input_file_hash' in data ? data.input_file_hash : null,
+              input_file_name: 'input_file_name' in data ? data.input_file_name : null,
               output_file_hash: data.output_file_hash,
               output_file_name: data.output_file_name,
               judge_file_hash: data.judge_file_hash,

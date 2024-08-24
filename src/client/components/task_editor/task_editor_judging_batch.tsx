@@ -48,15 +48,12 @@ export const TaskEditorJudging = ({ task, setTask }: TaskEditorJudgingProps) => 
     });
   }, [task]);
 
-  const onChangeTaskType = useCallback(
-    (event: SelectChangeEvent) => {
-      setTask({
-        ...task,
-        type: event.target.value as TaskType,
-      });
-    },
-    [task]
-  );
+  const onChangeTaskType = useCallback((event: SelectChangeEvent) => {
+    setTask({
+      ...task,
+      type: event.target.value as TaskType,
+    });
+  }, [task]);
 
   return (
     <Scrollable className={styles.content}>
@@ -68,7 +65,7 @@ export const TaskEditorJudging = ({ task, setTask }: TaskEditorJudgingProps) => 
           <option value={TaskType.OutputOnly}>Output Only</option>
         </TaskEditorSelect>
         hay{task.type} hoy
-        <TaskCheckerEditor task={task} setTask={setTask} />
+        <TaskCheckerEditor task={task} setTask={setTask}/>
         {task.subtasks.map((subtask, idx) => (
           <TaskSubtaskEditor
             key={idx}
@@ -120,14 +117,6 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
     },
     [task, subtaskIndex]
   );
-
-  const currentDataCount = subtask.data
-    .map((d) => (d.deleted ? 0 : 1))
-    .reduce((total: number, curr: number) => total + curr, 0);
-
-  const maxDataCount = task.type === TaskType.OutputOnly ? 1 : null;
-
-  const addDisabled = maxDataCount == null ? false : currentDataCount >= maxDataCount;
 
   const onSubtaskNameChange = useCallback(
     (event: InputChangeEvent) => {
@@ -204,7 +193,7 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
         ))}
       </div>
       <div className="flex justify-center mt-2">
-        <TaskEditorAddButton onClick={onAddTaskData} disabled={addDisabled} label="Add Test Data" />
+        <TaskEditorAddButton onClick={onAddTaskData} label="Add Test Data" />
       </div>
     </div>
   );

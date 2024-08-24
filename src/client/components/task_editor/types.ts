@@ -1,3 +1,5 @@
+import { CheckerKind, Language, TaskType } from "common/types/constants";
+
 // These ED types represent the internal state of the task editor
 export enum EditorKind {
   Saved = "Saved",
@@ -10,12 +12,39 @@ export type TaskED = {
   title: string;
   description: string | null;
   statement: string;
-  checker: string;
+  type: TaskType;
+  checker: TaskCheckerED;
   credits: TaskCreditED[];
   attachments: TaskAttachmentED[];
   subtasks: TaskSubtaskED[];
 };
 
+type TaskCheckerED = {
+  kind: Exclude<CheckerKind, CheckerKind.Custom>,
+} | {
+  kind: CheckerKind.Custom,
+  script: TaskScriptED;
+}
+
+export type TaskScriptED = TaskScriptSaved | TaskScriptLocal;
+
+type TaskScriptSaved = {
+  kind: EditorKind.Saved;
+  id: string;
+  file_name: string;
+  file_hash: string;
+  language: Language;
+  argv: string[];
+}
+
+type TaskScriptLocal = {
+  kind: EditorKind.Local;
+  id: string;
+  file_name: string;
+  file_hash: string;
+  language: Language;
+  argv: string[];
+}
 
 export type TaskCreditSaved = {
   kind: EditorKind.Saved;

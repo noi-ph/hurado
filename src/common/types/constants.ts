@@ -1,7 +1,19 @@
+export enum TaskType {
+  Batch = "batch",
+  OutputOnly = "output",
+  Communication = "comm",
+}
+
+export enum TaskFlavor {
+  OutputFile = "file",
+  OutputText = "text",
+}
+
 export enum Language {
   Python3 = "python3",
   CPP = "cpp",
   Java = "java",
+  PlainText = "text",
 }
 
 export enum Verdict {
@@ -11,6 +23,16 @@ export enum Verdict {
   TimeLimitExceeded = "tle",
   MemoryLimitExceeded = "mle",
   Skipped = "skip",
+}
+
+export enum CheckerKind {
+  LenientDiff = "ld",
+  Custom = "xx",
+}
+
+export enum ScorerKind {
+  MinData = "min",
+  Custom = "xx",
 }
 
 export function humanizeLanguage(language: Language): string {
