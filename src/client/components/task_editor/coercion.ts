@@ -15,7 +15,7 @@ import {
 } from "./types";
 import { CheckerKind } from "common/types/constants";
 
-export function coerceTaskED(dto: TaskDTO): TaskED {  
+export function coerceTaskED(dto: TaskDTO): TaskED {
   const task: TaskED = {
     type: dto.type,
     id: dto.id,
@@ -23,9 +23,10 @@ export function coerceTaskED(dto: TaskDTO): TaskED {
     title: dto.title,
     description: dto.description,
     statement: dto.statement,
-    checker: dto.checker_kind !== CheckerKind.Custom
-      ? { kind: dto.checker_kind }
-      : { kind: dto.checker_kind, script: dto.checker_script as any },
+    checker:
+      dto.checker_kind !== CheckerKind.Custom
+        ? { kind: dto.checker_kind }
+        : { kind: dto.checker_kind, script: dto.checker_script as any },
     credits: dto.credits.map(coerceTaskCreditED),
     attachments: dto.attachments.map((x) => coerceTaskAttachmentED(x)),
     subtasks: dto.subtasks.map((x) => coerceTaskSubtaskED(x)),
@@ -73,12 +74,15 @@ function coerceTaskDataED(dto: TaskDataDTO): TaskDataED {
     kind: EditorKind.Saved,
     id: dto.id as string,
     name: dto.name,
-    is_sample: dto.is_sample,
-    input_file: {
-      kind: EditorKind.Saved,
-      hash: dto.input_file_hash,
-    },
-    input_file_name: dto.input_file_name,
+    is_sample: "is_sample" in dto ? dto.is_sample : null,
+    input_file:
+      "input_file_hash" in dto
+        ? {
+            kind: EditorKind.Saved,
+            hash: dto.input_file_hash,
+          }
+        : null,
+    input_file_name: "input_file_name" in dto ? dto.input_file_name : null,
     output_file: {
       kind: EditorKind.Saved,
       hash: dto.output_file_hash,

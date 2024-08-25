@@ -77,6 +77,10 @@
   grid-template-columns: 1fr 1fr 1fr 1fr auto;
 }
 
+.testData.outputOnly {
+  grid-template-columns: 1fr 1fr 1fr auto;
+}
+
 .addButton {
   padding: .25rem .75rem;
   border-radius: .5rem;

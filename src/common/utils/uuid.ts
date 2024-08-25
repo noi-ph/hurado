@@ -73,7 +73,7 @@ export function huradoIDToUUID(huradoid: string) {
       hex.substring(20),
     ].join("-");
 
-    return uuid;
+    return checkUUIDv4(uuid);
   } catch {
     return null;
   }

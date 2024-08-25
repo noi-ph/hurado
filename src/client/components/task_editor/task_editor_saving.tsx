@@ -6,12 +6,11 @@ import {
   TaskBatchDTO,
   TaskCreditDTO,
   TaskDataBatchDTO,
-  TaskDataDTO,
+  TaskDataOutputDTO,
   TaskDTO,
   TaskOutputDTO,
   TaskScriptDTO,
   TaskSubtaskBatchDTO,
-  TaskSubtaskDTO,
   TaskSubtaskOutputDTO,
 } from "common/validation/task_validation";
 import { FileHashesResponse, FileUploadResponse } from "common/types/files";
@@ -28,7 +27,7 @@ import {
   TaskScriptED,
 } from "./types";
 import { APIPath, getAPIPath } from "client/paths";
-import { CheckerKind, TaskType } from "common/types/constants";
+import { CheckerKind, TaskFlavor, TaskType } from "common/types/constants";
 import { NotYetImplementedError, UnreachableError } from "common/errors";
 
 export class IncompleteHashesException extends Error {
@@ -75,7 +74,9 @@ function extractLocalFiles(task: TaskED): TaskFileLocal[] {
 
   for (const subtask of task.subtasks) {
     for (const data of subtask.data) {
-      maybeAddFile(data.input_file);
+      if (task.type !== TaskType.OutputOnly) {
+        maybeAddFile(data.input_file);
+      }
       maybeAddFile(data.output_file);
       maybeAddFile(data.judge_file);
     }
@@ -117,7 +118,8 @@ function applySavedFileChanges(ed: TaskED, changes: TaskFileSaveResult[]): TaskE
           .map((data) => {
             return {
               ...data,
-              input_file: maybeReplaceFile(data.input_file),
+              input_file:
+                ed.type !== TaskType.OutputOnly ? maybeReplaceFile(data.input_file) : null,
               output_file: maybeReplaceFile(data.output_file),
               judge_file: maybeReplaceFile(data.judge_file),
             };
@@ -187,53 +189,11 @@ function coerceTaskDTO(ed: TaskED): TaskDTO {
   }
 
   if (ed.type === TaskType.Batch) {
-    const dto: TaskBatchDTO = {
-      // Common
-      id: ed.id,
-      slug: ed.slug,
-      title: ed.title,
-      description: ed.description ?? null,
-      statement: ed.statement,
-      is_public: true,
-      score_max: ed.subtasks.reduce((acc, subtask) => acc + subtask.score_max, 0),
-      credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
-      attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
-      // Batch-only
-      type: ed.type,
-      time_limit_ms: 3000,
-      memory_limit_byte: 1000000,
-      compile_time_limit_ms: null,
-      compile_memory_limit_byte: null,
-      submission_size_limit_byte: null,
-      checker_kind: ed.checker.kind,
-      checker_script:
-        CheckerKind.Custom === ed.checker.kind ? coerceTaskScriptDTO(ed.checker.script) : undefined,
-      subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
-    };
-    return dto;
+    return coerceTaskBatchDTO(ed);
   } else if (ed.type === TaskType.Communication) {
     throw new NotYetImplementedError(ed.type);
   } else if (ed.type === TaskType.OutputOnly) {
-    const dto: TaskOutputDTO = {
-      // Common
-      id: ed.id,
-      slug: ed.slug,
-      title: ed.title,
-      description: ed.description ?? null,
-      statement: ed.statement,
-      is_public: true,
-      score_max: ed.subtasks.reduce((acc, subtask) => acc + subtask.score_max, 0),
-      credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
-      attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
-      // Batch-only
-      type: ed.type,
-      submission_size_limit_byte: null,
-      checker_kind: ed.checker.kind,
-      checker_script:
-        CheckerKind.Custom === ed.checker.kind ? coerceTaskScriptDTO(ed.checker.script) : undefined,
-      subtasks: ed.subtasks.map(coerceSubtaskOutputDTO).filter(notNull),
-    };
-    return dto;
+    return coerceTaskOutputDTO(ed);
   } else {
     throw new UnreachableError(ed.type);
   }
@@ -300,6 +260,31 @@ function coerceTaskScriptDTO(ed: TaskScriptED): TaskScriptDTO {
   }
 }
 
+function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
+  return {
+    // Common
+    id: ed.id,
+    slug: ed.slug,
+    title: ed.title,
+    description: ed.description ?? null,
+    statement: ed.statement,
+    is_public: true,
+    score_max: ed.subtasks.reduce((acc, subtask) => acc + subtask.score_max, 0),
+    credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
+    attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
+    // Batch-only
+    type: TaskType.Batch,
+    time_limit_ms: 3000,
+    memory_limit_byte: 1000000,
+    compile_time_limit_ms: null,
+    compile_memory_limit_byte: null,
+    submission_size_limit_byte: null,
+    checker_kind: ed.checker.kind,
+    checker_script: undefined,
+    subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
+  };
+}
+
 function coerceSubtaskBatchDTO(ed: TaskSubtaskED): TaskSubtaskBatchDTO | null {
   if (ed.deleted) {
     return null;
@@ -321,27 +306,6 @@ function coerceSubtaskBatchDTO(ed: TaskSubtaskED): TaskSubtaskBatchDTO | null {
   }
 }
 
-function coerceSubtaskOutputDTO(ed: TaskSubtaskED): TaskSubtaskOutputDTO | null {
-  if (ed.deleted) {
-    return null;
-  }
-
-  if (ed.kind == EditorKind.Local) {
-    return {
-      name: ed.name,
-      score_max: ed.score_max,
-      data: ed.data.map(coerceTaskDataBatchDTO).filter(notNull).slice(0, 1),
-    };
-  } else {
-    return {
-      id: ed.id,
-      name: ed.name,
-      score_max: ed.score_max,
-      data: ed.data.map(coerceTaskDataBatchDTO).filter(notNull).slice(0, 1),
-    };
-  }
-}
-
 function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
   if (ed.deleted) {
     return null;
@@ -356,7 +320,7 @@ function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
   if (ed.kind == EditorKind.Local) {
     return {
       name: ed.name,
-      input_file_name: ed.input_file_name,
+      input_file_name: ed.input_file_name as string,
       input_file_hash: ed.input_file.hash,
       output_file_name: ed.output_file_name,
       output_file_hash: ed.output_file.hash,
@@ -368,13 +332,86 @@ function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
     return {
       id: ed.id,
       name: ed.name,
-      input_file_name: ed.input_file_name,
+      input_file_name: ed.input_file_name as string,
       input_file_hash: ed.input_file.hash,
       output_file_name: ed.output_file_name,
       output_file_hash: ed.output_file.hash,
       judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
       judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
       is_sample: ed.is_sample,
+    };
+  }
+}
+
+function coerceTaskOutputDTO(ed: TaskED): TaskOutputDTO {
+  return {
+    // Common
+    id: ed.id,
+    slug: ed.slug,
+    title: ed.title,
+    description: ed.description ?? null,
+    statement: ed.statement,
+    is_public: true,
+    score_max: ed.subtasks.reduce((acc, subtask) => acc + subtask.score_max, 0),
+    credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
+    attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
+    // OutputOnly-only
+    type: TaskType.OutputOnly,
+    flavor: TaskFlavor.OutputText,
+    submission_size_limit_byte: null,
+    checker_kind: ed.checker.kind,
+    checker_script:
+      CheckerKind.Custom === ed.checker.kind ? coerceTaskScriptDTO(ed.checker.script) : undefined,
+    subtasks: ed.subtasks.map(coerceSubtaskOutputDTO).filter(notNull),
+  };
+}
+
+function coerceSubtaskOutputDTO(ed: TaskSubtaskED): TaskSubtaskOutputDTO | null {
+  if (ed.deleted) {
+    return null;
+  }
+
+  if (ed.kind == EditorKind.Local) {
+    return {
+      name: ed.name,
+      score_max: ed.score_max,
+      data: ed.data.map(coerceTaskDataOutputDTO).filter(notNull).slice(0, 1),
+    };
+  } else {
+    return {
+      id: ed.id,
+      name: ed.name,
+      score_max: ed.score_max,
+      data: ed.data.map(coerceTaskDataOutputDTO).filter(notNull).slice(0, 1),
+    };
+  }
+}
+
+function coerceTaskDataOutputDTO(ed: TaskDataED): TaskDataOutputDTO | null {
+  if (ed.deleted) {
+    return null;
+  } else if (ed.output_file == null || ed.output_file.kind === EditorKind.Local) {
+    throw new UnsavedFileException();
+  } else if (ed.judge_file != null && ed.judge_file.kind === EditorKind.Local) {
+    throw new UnsavedFileException();
+  }
+
+  if (ed.kind == EditorKind.Local) {
+    return {
+      name: ed.name,
+      output_file_name: ed.output_file_name,
+      output_file_hash: ed.output_file.hash,
+      judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
+      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
+    };
+  } else {
+    return {
+      id: ed.id,
+      name: ed.name,
+      output_file_name: ed.output_file_name,
+      output_file_hash: ed.output_file.hash,
+      judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
+      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
     };
   }
 }

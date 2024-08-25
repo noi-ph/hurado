@@ -1,19 +1,10 @@
 import { db } from "db";
-import { huradoIDToUUID } from "common/utils/uuid";
-import {
-  TaskBatchDTO,
-  TaskDataBatchDTO,
-  TaskDataDTO,
-  TaskDataOutputDTO,
-  TaskDTO,
-  TaskOutputDTO,
-} from "common/validation/task_validation";
+import { TaskBatchDTO, TaskDTO, TaskOutputDTO } from "common/validation/task_validation";
 import { TaskFlavor, TaskFlavorOutput, TaskType } from "common/types/constants";
 import { NotYetImplementedError, UnreachableError } from "common/errors";
 import { dbToTaskDataBatchDTO, dbToTaskDataOutputDTO } from "./editor_utils";
 
-export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
-  const uuid = huradoIDToUUID(idOrSlug);
+export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
   const task = await db
     .selectFrom("tasks")
     .select([
@@ -34,7 +25,7 @@ export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
       "compile_memory_limit_byte",
       "submission_size_limit_byte",
     ])
-    .where((eb) => eb.or([eb("slug", "=", idOrSlug), eb("id", "=", uuid)]))
+    .where("id", "=", uuid)
     .executeTakeFirst();
 
   if (task == null) {
@@ -125,7 +116,7 @@ export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
   } else if (task.type === TaskType.OutputOnly) {
     const taskdto: TaskOutputDTO = {
       type: task.type as TaskType.OutputOnly,
-      flavor: task.flavor ?? TaskFlavor.OutputText as TaskFlavorOutput,
+      flavor: task.flavor ?? (TaskFlavor.OutputText as TaskFlavorOutput),
       id: task.id,
       score_max: task.score_max,
       slug: task.slug,

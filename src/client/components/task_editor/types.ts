@@ -119,7 +119,7 @@ export type TaskDataSaved = {
   kind: EditorKind.Saved;
   id: string;
   name: string;
-  input_file_name: string;
+  input_file_name: string | null;
   input_file: TaskFileED | null;
   output_file_name: string;
   output_file: TaskFileED | null;
@@ -132,7 +132,7 @@ export type TaskDataSaved = {
 export type TaskDataLocal = {
   kind: EditorKind.Local;
   name: string;
-  input_file_name: string;
+  input_file_name: string | null;
   input_file: TaskFileED | null;
   output_file_name: string;
   output_file: TaskFileED | null;
