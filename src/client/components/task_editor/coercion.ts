@@ -13,7 +13,7 @@ import {
   TaskSubtaskED,
   TaskDataED,
 } from "./types";
-import { CheckerKind, TaskType } from "common/types/constants";
+import { CheckerKind } from "common/types/constants";
 
 export function coerceTaskED(dto: TaskDTO): TaskED {
   const task: TaskED = {
@@ -75,7 +75,7 @@ function coerceTaskDataED(dto: TaskDataDTO): TaskDataED {
     kind: EditorKind.Saved,
     id: dto.id as string,
     name: dto.name,
-    is_sample: "is_sample" in dto ? dto.is_sample : null,
+    is_sample: "is_sample" in dto ? dto.is_sample : false,
     input_file:
       "input_file_hash" in dto
         ? {

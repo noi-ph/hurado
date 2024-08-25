@@ -29,6 +29,7 @@ import {
 import { APIPath, getAPIPath } from "client/paths";
 import { CheckerKind, TaskFlavor, TaskType } from "common/types/constants";
 import { NotYetImplementedError, UnreachableError } from "common/errors";
+import { coerceTaskED } from "./coercion";
 
 export class IncompleteHashesException extends Error {
   constructor() {
@@ -56,8 +57,8 @@ export async function saveTask(task: TaskED): Promise<TaskED> {
   const updatedTask = applySavedFileChanges(task, savedFiles);
   const dto = coerceTaskDTO(updatedTask);
   const taskUpdateURL = getAPIPath({ kind: APIPath.TaskUpdate, id: task.id });
-  const response = await http.put(taskUpdateURL, dto);
-  return response.data;
+  const response: AxiosResponse<TaskDTO> = await http.put(taskUpdateURL, dto);
+  return coerceTaskED(response.data);
 }
 
 function extractLocalFiles(task: TaskED): TaskFileLocal[] {
