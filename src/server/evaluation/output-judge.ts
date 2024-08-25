@@ -1,71 +1,29 @@
-import { UnreachableError } from "common/errors";
-import { TaskType, Verdict } from "common/types/constants";
+import ChildProcess from "child_process";
+import fs from "fs";
+import path from "path";
+import { Verdict } from "common/types/constants";
 import {
   JudgeSubmission,
-  JudgeSubtaskBatch,
-  JudgeTask,
-  JudgeTaskBatch,
-  JudgeTaskDataBatch,
+  JudgeSubtaskOutput,
+  JudgeTaskDataOutput,
   JudgeTaskOutput,
   JudgeVerdict,
   JudgeVerdictSubtask,
   JudgeVerdictTaskData,
 } from "common/types/judge";
 import { db } from "db";
-import { CompilationResult } from "server/evaluation";
-import {
-  compileSubmission,
-  evaluateTaskData,
-  GoJudgeEvaluationContext,
-} from "server/evaluation/go-judge";
-import { runTaskTypeOutput } from "server/evaluation/output-judge";
+import { EvaluationResult } from ".";
+import { readFileSync } from "fs";
 
-export class JudgeRunner {
-  static async evaluate(
-    task: JudgeTask,
-    submission: JudgeSubmission,
-    taskDir: string,
-    submissionDir: string
-  ): Promise<JudgeVerdict> {
-    switch (task.type) {
-      case TaskType.Batch:
-        return JudgeRunner.evaluateBatch(task, submission, taskDir, submissionDir);
-      case TaskType.OutputOnly:
-        return JudgeRunner.evaluateOutput(task, submission, taskDir, submissionDir);
-      default:
-        throw new UnreachableError(task);
-    }
-  }
+type OutputJudgeEvaluationContext = {
+  taskDir: string;
+  submissionDir: string;
+};
 
-  private static async evaluateBatch(
-    task: JudgeTaskBatch,
-    submission: JudgeSubmission,
-    taskDir: string,
-    submissionDir: string
-  ): Promise<JudgeVerdict> {
-    const compilation = await compileSubmission(task, submission, taskDir, submissionDir);
-    const verdict = await runTaskBatch(compilation, task, submission);
-    return verdict;
-  }
-
-  private static async evaluateOutput(
-    task: JudgeTaskOutput,
-    submission: JudgeSubmission,
-    taskDir: string,
-    submissionDir: string
-  ): Promise<JudgeVerdict> {
-    const verdict = await runTaskTypeOutput(task, submission, {
-      taskDir,
-      submissionDir,
-    });
-    return verdict;
-  }
-}
-
-async function runTaskBatch(
-  compilation: CompilationResult<GoJudgeEvaluationContext>,
-  task: JudgeTaskBatch,
-  submission: JudgeSubmission
+export async function runTaskTypeOutput(
+  task: JudgeTaskOutput,
+  submission: JudgeSubmission,
+  context: OutputJudgeEvaluationContext
 ): Promise<JudgeVerdict> {
   const dbVerdict = await db.transaction().execute(async (trx) => {
     const trxVerdict = await trx
@@ -73,8 +31,6 @@ async function runTaskBatch(
       .values({
         submission_id: submission.id,
         is_official: true,
-        compile_memory_byte: compilation.compile_memory_byte,
-        compile_time_ms: compilation.compile_time_ms,
       })
       .returning(["id", "created_at"])
       .executeTakeFirstOrThrow();
@@ -97,11 +53,9 @@ async function runTaskBatch(
   let running_memory_byte = 0;
 
   for (const subtask of task.subtasks) {
-    const child = await runSubtaskBatch(compilation.context, dbVerdict.id, subtask);
+    const child = await runSubtaskOutput(context, dbVerdict.id, subtask);
     allVerdictSubtasks.push(child);
 
-    running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
-    running_time_ms = Math.max(running_time_ms, child.running_time_ms);
     if (child.verdict != Verdict.Accepted) {
       verdict = child.verdict;
       raw_score = 0;
@@ -133,10 +87,10 @@ async function runTaskBatch(
   };
 }
 
-async function runSubtaskBatch(
-  context: GoJudgeEvaluationContext,
+async function runSubtaskOutput(
+  context: OutputJudgeEvaluationContext,
   verdict_id: string,
-  subtask: JudgeSubtaskBatch
+  subtask: JudgeSubtaskOutput
 ): Promise<JudgeVerdictSubtask> {
   const dbSubtask = await db
     .insertInto("verdict_subtasks")
@@ -154,7 +108,7 @@ async function runSubtaskBatch(
   let running_memory_byte = 0;
 
   for (const data of subtask.data) {
-    const child = await runTestDataBatch(context, dbSubtask.id, data);
+    const child = await runTestDataOutput(context, dbSubtask.id, data);
     allVerdictData.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -189,12 +143,12 @@ async function runSubtaskBatch(
   };
 }
 
-async function runTestDataBatch(
-  context: GoJudgeEvaluationContext,
+async function runTestDataOutput(
+  context: OutputJudgeEvaluationContext,
   verdict_subtask_id: string,
-  task_data: JudgeTaskDataBatch
+  task_data: JudgeTaskDataOutput
 ): Promise<JudgeVerdictTaskData> {
-  const result = await evaluateTaskData(context, task_data);
+  const result = await evaluateTaskDataForOutputTask(context, task_data);
 
   const dbTaskData = await db
     .insertInto("verdict_task_data")
@@ -218,4 +172,48 @@ async function runTestDataBatch(
     running_time_ms: result.running_time_ms,
     running_memory_byte: result.running_memory_byte,
   };
+}
+
+async function evaluateTaskDataForOutputTask(
+  context: OutputJudgeEvaluationContext,
+  data: JudgeTaskDataOutput
+): Promise<EvaluationResult> {
+  const judgePath = path.join(context.taskDir, data.output_file_name);
+  const submissionPath = path.join(context.submissionDir, data.output_file_name);
+  let submissionExists = false;
+  try {
+    await fs.promises.lstat(submissionPath);
+    submissionExists = true;
+  } catch (e) {
+    // File does not exist. Skip it!
+  }
+
+  if (submissionExists) {
+    const diffStatus = await spawnNoStdio("diff", [judgePath, submissionPath]);
+    if (diffStatus == 0) {
+      return {
+        verdict: Verdict.Accepted,
+        raw_score: 1,
+        running_time_ms: 0,
+        running_memory_byte: 0,
+      };
+    }
+  }
+
+  return {
+    verdict: Verdict.WrongAnswer,
+    raw_score: 0,
+    running_time_ms: 0,
+    running_memory_byte: 0,
+  };
+}
+
+function spawnNoStdio(binary: string, args: string[]): Promise<number> {
+  return new Promise((resolve) => {
+    const child = ChildProcess.spawn(binary, args);
+
+    child.on("close", (code) => {
+      resolve(code ?? 0);
+    });
+  });
 }

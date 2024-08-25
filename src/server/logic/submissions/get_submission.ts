@@ -1,6 +1,7 @@
 import { db } from "db";
 import {
   SubmissionViewerDTO,
+  SubmissionViewerFileDTO,
   UserPublic,
   VerdictSubtaskViewerDTO,
   VerdictTaskDataViewerDTO,
@@ -8,7 +9,7 @@ import {
 } from "common/types";
 import { checkUUIDv4 } from "common/utils/uuid";
 import { SubmissionFileStorage } from "server/files";
-import { Language, Verdict } from "common/types/constants";
+import { Language, TaskType, Verdict } from "common/types/constants";
 import { notNull } from "common/utils/guards";
 
 export async function getSubmissionViewerDTO(
@@ -28,11 +29,11 @@ export async function getSubmissionViewerDTO(
       "submissions.id",
       "submissions.language",
       "submissions.created_at",
-      "submissions.file_hash",
       "submissions.task_id",
       "submissions.official_verdict_id",
-      "tasks.slug",
-      "tasks.title",
+      "tasks.slug as task_slug",
+      "tasks.title as task_title",
+      "tasks.type as task_type",
     ])
     .orderBy("submissions.created_at", "desc")
     .executeTakeFirst();
@@ -41,27 +42,95 @@ export async function getSubmissionViewerDTO(
     return null;
   }
 
-  const [code, verdict] = await Promise.all([
-    getSubmissionCode(sub.file_hash),
+  const [files, verdict] = await Promise.all([
+    getSubmissionViewerFiles({
+      type: sub.task_type,
+      submission_id: sub.id,
+      task_id: sub.task_id,
+    }),
     getSubmissionVerdict(sub.official_verdict_id, sub.task_id),
   ]);
 
   return {
     id: sub.id,
     language: sub.language as Language,
-    code: code,
     created_at: sub.created_at,
     verdict: verdict,
-    task_id: sub.task_id,
-    task_slug: sub.slug ?? sub.task_id,
-    task_title: sub.title ?? sub.task_id,
+    files: files,
+    task: {
+      id: sub.task_id,
+      slug: sub.task_slug as string,
+      title: sub.task_title as string,
+      type: sub.task_type as TaskType,
+    },
   };
 }
 
-async function getSubmissionCode(hash: string): Promise<string> {
+type SubmissionData = {
+  type: TaskType | null;
+  submission_id: string;
+  task_id: string;
+};
+
+async function getSubmissionViewerFiles(data: SubmissionData): Promise<SubmissionViewerFileDTO[]> {
+  if (data.type === TaskType.OutputOnly) {
+    const files = await db
+      .selectFrom("submission_files")
+      .where("submission_files.submission_id", "=", data.submission_id)
+      .innerJoin(
+        (eb) =>
+          eb
+            .selectFrom("tasks")
+            .where("tasks.id", "=", data.task_id)
+            .innerJoin("task_subtasks", "task_subtasks.task_id", "tasks.id")
+            .innerJoin("task_data", "task_data.subtask_id", "task_subtasks.id")
+            .select(["task_data.output_file_name", "task_subtasks.order as subtask_order"])
+            .as("task_info"),
+        (join) => join.onRef("task_info.output_file_name", "=", "submission_files.file_name")
+      )
+      .select(["submission_files.hash", "task_info.subtask_order"])
+      .execute();
+    return Promise.all(files.map((f) => loadSubmissionViewerFile(f.hash, f.subtask_order)));
+  } else {
+    const file = await db
+      .selectFrom("submission_files")
+      .select(["hash"])
+      .where("submission_id", "=", data.submission_id)
+      .executeTakeFirst();
+    if (file == null) {
+      return [];
+    }
+
+    return Promise.all([loadSubmissionViewerFile(file.hash, null)]);
+  }
+}
+
+async function loadSubmissionViewerFile(
+  hash: string,
+  subtask: number | null
+): Promise<SubmissionViewerFileDTO> {
+  console.log('Subtask number', subtask, hash);
   const client = SubmissionFileStorage.getBlobClient(hash);
-  const buffer = await client.downloadToBuffer();
-  return buffer.toString("utf8");
+  let buffer: Buffer | null = null;
+  try {
+    buffer = await client.downloadToBuffer();
+  } catch {
+    // File does not exist
+  }
+  if (buffer == null) {
+    return {
+      subtask: subtask,
+      hash: hash,
+      content: null,
+    };
+  } else {
+    const content = buffer.toString("utf8");
+    return {
+      subtask: subtask,
+      hash: hash,
+      content,
+    };
+  }
 }
 
 async function getSubmissionVerdict(

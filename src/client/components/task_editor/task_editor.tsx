@@ -113,7 +113,7 @@ const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps
     setSaving(true);
     try {
       const newTask = await saveTask(task);
-      // setTask(newTask);
+      setTask(newTask);
     } catch (e) {
       if (e instanceof IncompleteHashesException) {
         alert(`Try again in a few seconds. Error: ${e.message}.`);

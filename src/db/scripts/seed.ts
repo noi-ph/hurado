@@ -8,6 +8,7 @@ import fs from "fs";
 import { sha256 } from "common/utils/hashing";
 import { TaskFileStorage } from "server/files";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
+import { CheckerKind, ScorerKind, TaskFlavor, TaskType } from "common/types/constants";
 
 const users: Insertable<UserTable>[] = [
   {
@@ -66,11 +67,19 @@ const filenames = [
   "crazy-problem-1a.in",
   "crazy-problem-1a.out",
   "chocolate-hills.jpg",
+  "sum-of-n-1.out",
+  "sum-of-n-2.out",
+  "sum-of-n-3.out",
+  "please-add-1.in",
+  "please-add-2.in",
+  "please-add-1.out",
+  "please-add-2.out",
 ];
 
 function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
   const tasks: TaskDTO[] = [
     {
+      type: TaskType.Batch,
       id: getOrThrow(ids, "who-is-the-oldest"),
       slug: "who-is-the-oldest",
       title: "Who is the oldest?",
@@ -80,8 +89,14 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         "Output the name of the oldest among the three, which should be either Alvin, Berto or Carlo.",
       ].join("\n"),
       description: "Determine the oldest among friends.",
+      is_public: true,
       score_max: 100,
-      checker: "",
+      time_limit_ms: 2000,
+      memory_limit_byte: 1_073_741_824,
+      compile_memory_limit_byte: null,
+      compile_time_limit_ms: null,
+      submission_size_limit_byte: null,
+      checker_kind: CheckerKind.LenientDiff,
       attachments: [],
       credits: [
         {
@@ -105,6 +120,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #1",
           score_max: 30,
+          scorer_kind: ScorerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -141,6 +157,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #2",
           score_max: 70,
+          scorer_kind: ScorerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -189,8 +206,15 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           "without cutting their chocolates into pieces.",
       ].join("\n"),
       description: "Can Alvin and Berto share their chocolates fairly?",
+      is_public: true,
+      type: TaskType.Batch,
       score_max: 100,
-      checker: "",
+      time_limit_ms: 2000,
+      memory_limit_byte: 1_073_741_824,
+      compile_memory_limit_byte: null,
+      compile_time_limit_ms: null,
+      submission_size_limit_byte: null,
+      checker_kind: CheckerKind.LenientDiff,
       attachments: [],
       credits: [
         {
@@ -214,6 +238,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #1",
           score_max: 50,
+          scorer_kind: ScorerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -280,6 +305,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #2",
           score_max: 50,
+          scorer_kind: ScorerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -301,14 +327,21 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       title: "Crazy Problem",
       statement: readFileSync("crazy-problem.tex"),
       description: "Read a crazy statement. Solve a crazy problem.",
+      is_public: true,
+      type: TaskType.Batch,
       score_max: 100,
-      checker: "",
+      time_limit_ms: 2000,
+      memory_limit_byte: 1_073_741_824,
+      compile_memory_limit_byte: null,
+      compile_time_limit_ms: null,
+      submission_size_limit_byte: null,
+      checker_kind: CheckerKind.LenientDiff,
       attachments: [
         {
           path: "path/to/chocolate-hills.jpg",
           mime_type: "image/jpeg",
           file_hash: getOrThrow(hashes, "chocolate-hills.jpg"),
-        }
+        },
       ],
       credits: [
         {
@@ -328,6 +361,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #1",
           score_max: 100,
+          scorer_kind: ScorerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -336,6 +370,150 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
               input_file_hash: getOrThrow(hashes, "crazy-problem-1a.in"),
               output_file_name: "crazy-problem-1a.out",
               output_file_hash: getOrThrow(hashes, "crazy-problem-1a.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: getOrThrow(ids, "sum-of-n"),
+      slug: "sum-of-n",
+      title: "Sum of N",
+      statement: "Get the sum of the first n numbers. Subtask 1: n = 3. Subtask 2: n = 10, Subtask 3: n = 100",
+      description: "Solve a quadratic equation!",
+      is_public: true,
+      type: TaskType.OutputOnly,
+      score_max: 100,
+      submission_size_limit_byte: null,
+      checker_kind: CheckerKind.LenientDiff,
+      attachments: [],
+      credits: [
+        {
+          name: "jabbawookiees",
+          role: "Problem Idea",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Story Author",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Tester",
+        },
+      ],
+      subtasks: [
+        {
+          name: "Subtask #1",
+          score_max: 20,
+          data: [
+            {
+              name: "Test Case #1",
+              input_file_name: null,
+              input_file_hash: null,
+              output_file_name: "sum-of-n-1.out",
+              output_file_hash: getOrThrow(hashes, "sum-of-n-1.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+        {
+          name: "Subtask #2",
+          score_max: 30,
+          data: [
+            {
+              name: "Test Case #1",
+              input_file_name: null,
+              input_file_hash: null,
+              output_file_name: "sum-of-n-2.out",
+              output_file_hash: getOrThrow(hashes, "sum-of-n-2.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+        {
+          name: "Subtask #3",
+          score_max: 50,
+          data: [
+            {
+              name: "Test Case #1",
+              input_file_name: null,
+              input_file_hash: null,
+              output_file_name: "sum-of-n-3.out",
+              output_file_hash: getOrThrow(hashes, "sum-of-n-3.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: getOrThrow(ids, "please-add"),
+      slug: "please-add",
+      title: "Please Add",
+      statement: "Please add the numbers in the input files \\href{/tasks/please-add/attachments/please-add-1.in}{Subtask 1} \\href{/tasks/please-add/attachments/please-add-2.in}{Subtask 2}",
+      description: "Follow instructions!",
+      is_public: true,
+      type: TaskType.OutputOnly,
+      score_max: 100,
+      submission_size_limit_byte: null,
+      checker_kind: CheckerKind.LenientDiff,
+      attachments: [
+        {
+          path: "please-add-1.in",
+          mime_type: "text/plain",
+          file_hash: getOrThrow(hashes, "please-add-1.in"),
+        },
+        {
+          path: "please-add-2.in",
+          mime_type: "text/plain",
+          file_hash: getOrThrow(hashes, "please-add-2.in"),
+        },
+      ],
+      credits: [
+        {
+          name: "jabbawookiees",
+          role: "Problem Idea",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Story Author",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Tester",
+        },
+      ],
+      subtasks: [
+        {
+          name: "Subtask #1",
+          score_max: 20,
+          data: [
+            {
+              name: "Test Case #1",
+              input_file_name: null,
+              input_file_hash: null,
+              output_file_name: "please-add-1.out",
+              output_file_hash: getOrThrow(hashes, "please-add-1.out"),
+              judge_file_name: null,
+              judge_file_hash: null,
+            },
+          ],
+        },
+        {
+          name: "Subtask #2",
+          score_max: 30,
+          data: [
+            {
+              name: "Test Case #1",
+              input_file_name: null,
+              input_file_hash: null,
+              output_file_name: "please-add-2.out",
+              output_file_hash: getOrThrow(hashes, "please-add-2.out"),
               judge_file_name: null,
               judge_file_hash: null,
             },
@@ -357,19 +535,58 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           title: "Who is the oldest",
           slug: "who-is-the-oldest",
           statement: "",
+          is_public: true,
+          type: TaskType.Batch,
           score_max: 100,
+          time_limit_ms: 2000,
+          memory_limit_byte: 1_073_741_824,
+          checker_kind: CheckerKind.LenientDiff,
         },
         {
           title: "Sharing Chocolates",
           slug: "sharing-chocolates",
           statement: "",
+          is_public: true,
+          type: TaskType.Batch,
           score_max: 100,
+          time_limit_ms: 2000,
+          memory_limit_byte: 1_073_741_824,
+          checker_kind: CheckerKind.LenientDiff,
         },
         {
           title: "Crazy Problem",
           slug: "crazy-problem",
           statement: "",
+          is_public: true,
+          type: TaskType.Batch,
           score_max: 100,
+          time_limit_ms: 2000,
+          memory_limit_byte: 1_073_741_824,
+          checker_kind: CheckerKind.LenientDiff,
+        },
+        {
+          title: "Sum of N",
+          slug: "sum-of-n",
+          statement: "",
+          is_public: true,
+          type: TaskType.OutputOnly,
+          flavor: TaskFlavor.OutputText,
+          score_max: 100,
+          time_limit_ms: 2000,
+          memory_limit_byte: 1_073_741_824,
+          checker_kind: CheckerKind.LenientDiff,
+        },
+        {
+          title: "Please Add",
+          slug: "please-add",
+          statement: "",
+          is_public: true,
+          type: TaskType.OutputOnly,
+          flavor: TaskFlavor.OutputFile,
+          score_max: 100,
+          time_limit_ms: 2000,
+          memory_limit_byte: 1_073_741_824,
+          checker_kind: CheckerKind.LenientDiff,
         },
       ])
       .returning(["id", "slug"])

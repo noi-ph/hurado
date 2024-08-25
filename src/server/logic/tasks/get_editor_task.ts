@@ -1,13 +1,31 @@
 import { db } from "db";
-import { huradoIDToUUID } from "common/utils/uuid";
-import { TaskDataDTO, TaskDTO } from "common/validation/task_validation";
+import { TaskBatchDTO, TaskDTO, TaskOutputDTO } from "common/validation/task_validation";
+import { TaskFlavor, TaskFlavorOutput, TaskType } from "common/types/constants";
+import { NotYetImplementedError, UnreachableError } from "common/errors";
+import { dbToTaskDataBatchDTO, dbToTaskDataOutputDTO } from "./editor_utils";
 
-export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
-  const uuid = huradoIDToUUID(idOrSlug);
+export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
   const task = await db
     .selectFrom("tasks")
-    .select(["id", "title", "slug", "description", "statement", "score_max"])
-    .where((eb) => eb.or([eb("slug", "=", idOrSlug), eb("id", "=", uuid)]))
+    .select([
+      "id",
+      "title",
+      "slug",
+      "description",
+      "statement",
+      "type",
+      "flavor",
+      "score_max",
+      "checker_kind",
+      "checker_id",
+      "is_public",
+      "time_limit_ms",
+      "memory_limit_byte",
+      "compile_time_limit_ms",
+      "compile_memory_limit_byte",
+      "submission_size_limit_byte",
+    ])
+    .where("id", "=", uuid)
     .executeTakeFirst();
 
   if (task == null) {
@@ -60,41 +78,77 @@ export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
           .execute()
       : [];
 
-  const toTaskDataDTO = (d: (typeof data)[number]): TaskDataDTO => {
-    return {
-      id: d.id,
-      name: d.name,
-      is_sample: d.is_sample,
-      input_file_name: d.input_file_name,
-      input_file_hash: d.input_file_hash,
-      output_file_name: d.output_file_name,
-      output_file_hash: d.output_file_hash,
-      judge_file_name: d.judge_file_name,
-      judge_file_hash: d.judge_file_hash,
+  if (task.type === TaskType.Batch) {
+    const taskdto: TaskBatchDTO = {
+      type: task.type as TaskType.Batch,
+      id: task.id,
+      score_max: task.score_max,
+      slug: task.slug,
+      title: task.title,
+      description: task.description,
+      statement: task.statement,
+      is_public: task.is_public,
+      time_limit_ms: task.time_limit_ms,
+      memory_limit_byte: task.memory_limit_byte,
+      compile_time_limit_ms: task.compile_time_limit_ms,
+      compile_memory_limit_byte: task.compile_memory_limit_byte,
+      submission_size_limit_byte: task.submission_size_limit_byte,
+      checker_kind: task.checker_kind,
+      credits: credits.map((cred) => ({
+        id: cred.id,
+        name: cred.name,
+        role: cred.role,
+      })),
+      attachments: attachments.map((att) => ({
+        id: att.id,
+        path: att.path,
+        file_hash: att.file_hash,
+        mime_type: att.mime_type,
+      })),
+      subtasks: subtasks.map((sub) => ({
+        id: sub.id,
+        name: sub.name,
+        score_max: sub.score_max,
+        data: data.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataBatchDTO),
+      })),
     };
-  };
+    return taskdto;
+  } else if (task.type === TaskType.OutputOnly) {
+    const taskdto: TaskOutputDTO = {
+      type: task.type as TaskType.OutputOnly,
+      flavor: task.flavor ?? (TaskFlavor.OutputText as TaskFlavorOutput),
+      id: task.id,
+      score_max: task.score_max,
+      slug: task.slug,
+      title: task.title,
+      description: task.description,
+      statement: task.statement,
+      is_public: task.is_public,
+      submission_size_limit_byte: task.submission_size_limit_byte,
+      checker_kind: task.checker_kind,
+      credits: credits.map((cred) => ({
+        id: cred.id,
+        name: cred.name,
+        role: cred.role,
+      })),
+      attachments: attachments.map((att) => ({
+        id: att.id,
+        path: att.path,
+        file_hash: att.file_hash,
+        mime_type: att.mime_type,
+      })),
+      subtasks: subtasks.map((sub) => ({
+        id: sub.id,
+        name: sub.name,
+        score_max: sub.score_max,
+        data: data.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataOutputDTO),
+      })),
+    };
 
-  const editor: TaskDTO = {
-    ...task,
-    checker: "fake-checker",
-    credits: credits.map((cred) => ({
-      id: cred.id,
-      name: cred.name,
-      role: cred.role,
-    })),
-    attachments: attachments.map((att) => ({
-      id: att.id,
-      path: att.path,
-      file_hash: att.file_hash,
-      mime_type: att.mime_type,
-    })),
-    subtasks: subtasks.map((sub) => ({
-      id: sub.id,
-      name: sub.name,
-      score_max: sub.score_max,
-      data: data.filter((d) => d.subtask_id === sub.id).map(toTaskDataDTO),
-    })),
-  };
-
-  return editor;
+    return taskdto;
+  } else if (task.type === TaskType.Communication) {
+    throw new NotYetImplementedError(task.type);
+  } else {
+    throw new UnreachableError(task.type);
+  }
 }

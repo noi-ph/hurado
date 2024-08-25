@@ -1,8 +1,24 @@
+export enum TaskType {
+  Batch = "batch",
+  OutputOnly = "output",
+  Communication = "comm",
+}
+
+export enum TaskFlavor {
+  OutputText = "text",
+  OutputFile = "file",
+}
+
+export type TaskFlavorOutput = TaskFlavor.OutputText | TaskFlavor.OutputFile;
+
 export enum Language {
   Python3 = "python3",
   CPP = "cpp",
   Java = "java",
+  PlainText = "text",
 }
+
+export type ProgrammingLanguage = Exclude<Language, Language.PlainText>;
 
 export enum Verdict {
   Accepted = "ac",
@@ -11,6 +27,16 @@ export enum Verdict {
   TimeLimitExceeded = "tle",
   MemoryLimitExceeded = "mle",
   Skipped = "skip",
+}
+
+export enum CheckerKind {
+  LenientDiff = "ld",
+  Custom = "xx",
+}
+
+export enum ScorerKind {
+  MinData = "min",
+  Custom = "xx",
 }
 
 export function humanizeLanguage(language: Language): string {

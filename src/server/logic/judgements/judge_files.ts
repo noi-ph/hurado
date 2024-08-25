@@ -1,9 +1,10 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { Language } from "common/types/constants";
+import { TaskType } from "common/types/constants";
 import { JudgeSubmission, JudgeTask } from "common/types/judge";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
+import { UnreachableError } from "common/errors";
 import { getLanguageFilename } from "server/evaluation";
 
 // TODO: Setup some sort of caching for task data so hundreds of megabytes
@@ -20,22 +21,44 @@ export class JudgeFiles {
   }
 
   static async setupTask(task: JudgeTask, dir: string): Promise<unknown> {
-    const promises: Promise<void>[] = [];
-    task.subtasks.forEach((subtask) => {
-      subtask.data.forEach((data) => {
-        promises.push(downloadTaskFile(dir, data.input_file_name, data.input_file_hash));
-        promises.push(downloadTaskFile(dir, data.output_file_name, data.output_file_hash));
-        if (data.judge_file_name && data.judge_file_hash) {
-          promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
-        }
-      });
-    });
-    return Promise.all(promises);
+    switch(task.type) {
+      case TaskType.Batch: {
+        const promises: Promise<void>[] = [];
+        task.subtasks.forEach((subtask) => {
+          subtask.data.forEach((data) => {
+            promises.push(downloadTaskFile(dir, data.input_file_name, data.input_file_hash));
+            promises.push(downloadTaskFile(dir, data.output_file_name, data.output_file_hash));
+            if (data.judge_file_name && data.judge_file_hash) {
+              promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
+            }
+          });
+        });
+        return Promise.all(promises);
+      }
+      case TaskType.OutputOnly: {
+        const promises: Promise<void>[] = [];
+        task.subtasks.forEach((subtask) => {
+          subtask.data.forEach((data) => {
+            promises.push(downloadTaskFile(dir, data.output_file_name, data.output_file_hash));
+            if (data.judge_file_name && data.judge_file_hash) {
+              promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
+            }
+          });
+        });
+        return Promise.all(promises);
+      }
+      default:
+        throw new UnreachableError(task);
+    }
   }
 
   static async setupSubmission(submission: JudgeSubmission, dir: string): Promise<unknown> {
-    const filename = getLanguageFilename(submission.language as Language);
-    return downloadSubmissionFile(dir, filename, submission.file_hash);
+    return Promise.all(submission.files.map(file => {
+      const filename = file.file_name == null
+        ? getLanguageFilename(submission.language)
+        : file.file_name;
+      return downloadSubmissionFile(dir, filename, file.hash);
+    }));
   }
 }
 

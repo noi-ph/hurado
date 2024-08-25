@@ -1,6 +1,6 @@
 import {
   TaskFileTable,
-  ScriptTable,
+  TaskScriptTable,
   TaskAttachmentTable,
   TaskCreditTable,
   TaskDataTable,
@@ -8,6 +8,7 @@ import {
   TaskTable,
 } from "./tasks";
 import {
+  SubmissionFileTable,
   SubmissionTable,
 } from "./submissions";
 import {
@@ -25,8 +26,9 @@ export interface Models {
   task_subtasks: TaskSubtaskTable;
   task_data: TaskDataTable;
   task_files: TaskFileTable;
-  scripts: ScriptTable;
+  task_scripts: TaskScriptTable;
   submissions: SubmissionTable;
+  submission_files: SubmissionFileTable;
   verdicts: VerdictTable;
   verdict_subtasks: VerdictSubtaskTable;
   verdict_task_data: VerdictTaskDataTable;

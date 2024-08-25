@@ -7,10 +7,11 @@ import { useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   SubmissionViewerDTO,
+  SubmissionViewerFileDTO,
   VerdictSubtaskViewerDTO,
   VerdictTaskDataViewerDTO,
 } from "common/types";
-import { humanizeLanguage, humanizeVerdict, Verdict } from "common/types/constants";
+import { humanizeLanguage, humanizeVerdict, TaskType, Verdict } from "common/types/constants";
 import { formatDateTime, humanizeTimeAgo } from "common/utils/dates";
 import { notNull } from "common/utils/guards";
 import { uuidToHuradoID } from "common/utils/uuid";
@@ -33,7 +34,7 @@ const MonacoOptions: editor.IStandaloneEditorConstructionOptions = Object.freeze
 const CodeEditorMinimumHeight = 72;
 
 export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
-  const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task_slug });
+  const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task.slug });
   const taskURL = `${baseTaskURL}#submissions`;
 
   return (
@@ -44,7 +45,7 @@ export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
           className="flex items-center font-sans font-bold text-4xl text-blue-400"
         >
           <BoxIcon name="bx-chevron-left" className="bx-lg" />
-          {submission.task_title}
+          {submission.task.title}
         </Link>
         <div className="ml-auto text-gray-300 whitespace-nowrap">
           {uuidToHuradoID(submission.id)}
@@ -57,8 +58,21 @@ export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
           <SubmissionVerdictViewer submission={submission} />
         </>
       ) : null}
-      <div className="text-2xl mt-3 mb-2">Submitted Code</div>
-      <SubmissionCodeViewer submission={submission} />
+      {(submission.task.type === TaskType.Batch ||
+        submission.task.type === TaskType.Communication) && (
+        <>
+          <div className="text-2xl mt-3 mb-2">Submitted Code</div>
+          <SubmissionCodeViewer submission={submission} />
+        </>
+      )}
+      {submission.task.type === TaskType.OutputOnly && (
+        <>
+          <div className="text-2xl mt-3 mb-2">Submitted Output</div>
+          {submission.files.map((file, idx) => (
+            <SubmissionOutputViewer key={idx} file={file} />
+          ))}
+        </>
+      )}
     </>
   );
 };
@@ -226,6 +240,15 @@ const SubmissionCodeViewer = ({ submission }: SubmissionViewerProps) => {
     });
   }, []);
 
+  if (submission.files.length == 0) {
+    return null;
+  }
+
+  const file = submission.files[0];
+  if (file.content == null) {
+    return <div>Code could not be found on the server.</div>;
+  }
+
   return (
     <div className="border border-gray-300">
       <div className="flex px-5 py-3 font-light box-border border-b border-gray-300">
@@ -233,12 +256,27 @@ const SubmissionCodeViewer = ({ submission }: SubmissionViewerProps) => {
       </div>
       <div ref={containerRef}>
         <MonacoEditor
-          value={submission.code}
+          value={file.content ?? ""}
           options={MonacoOptions}
           theme="light"
           onMount={onEditorMount}
         />
       </div>
+    </div>
+  );
+};
+
+type SubmissionOutputViewerProps = {
+  file: SubmissionViewerFileDTO;
+};
+
+const SubmissionOutputViewer = ({ file }: SubmissionOutputViewerProps): React.ReactNode => {
+  const title = file.subtask == null ? "Subtask #?" : `Subtask #${file.subtask}`;
+  const content = file.content == null ? "Code could not be found on the server." : file.content;
+  return (
+    <div className="mt-3">
+      <div className="text-lg mb-1">{title}</div>
+      <pre className="space-mono p-2 border border-gray-300 bg-gray-200">{content}</pre>
     </div>
   );
 };

@@ -26,14 +26,40 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
+    .createTable("task_scripts")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("task_id", "uuid", (col) => col.notNull())
+    .addColumn("file_name", "text", (col) => col.notNull())
+    .addColumn("file_hash", "text", (col) => col.notNull().references("task_files.hash"))
+    .addColumn("language", "text", (col) => col.notNull())
+    .addColumn("argv", sql`text[]`)
+    .execute();
+
+  await db.schema
     .createTable("tasks")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("slug", "text", (col) => col.notNull().unique())
     .addColumn("title", "text", (col) => col.notNull())
     .addColumn("description", "text", (col) => col)
     .addColumn("statement", "text", (col) => col.notNull())
-    .addColumn("score_max", "decimal", (col) => col.notNull())
-    .addColumn("mvp_output", "text") // Delete this later. It's just for making progress
+    .addColumn("is_public", "boolean", (col) => col.notNull())
+    .addColumn("type", "text", (col) => col.notNull())
+    .addColumn("flavor", "text")
+    .addColumn("score_max", "double precision", (col) => col.notNull())
+    .addColumn("time_limit_ms", "integer")
+    .addColumn("memory_limit_byte", "bigint")
+    .addColumn("compile_time_limit_ms", "integer")
+    .addColumn("compile_memory_limit_byte", "bigint")
+    .addColumn("submission_size_limit_byte", "integer")
+    .addColumn("checker_kind", "text", (col) => col.notNull())
+    .addColumn("checker_id", "uuid", (col) => col.references("task_scripts.id"))
+    .addColumn("allowed_languages", sql`text[]`)
+    .execute();
+
+  await db.schema
+    .alterTable("task_scripts")
+    .addForeignKeyConstraint("fk_task_scripts_task_id", ["task_id"], "tasks", ["id"])
+    .onDelete("cascade")
     .execute();
 
   await db.schema
@@ -59,7 +85,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("name", "text", (col) => col.notNull())
     .addColumn("order", "integer", (col) => col.notNull())
-    .addColumn("score_max", "real", (col) => col.notNull())
+    .addColumn("score_max", "double precision", (col) => col.notNull())
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
     .execute();
 
@@ -69,8 +95,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("name", "text", (col) => col.notNull())
     .addColumn("order", "integer", (col) => col.notNull())
     .addColumn("is_sample", "boolean", (col) => col.notNull())
-    .addColumn("input_file_name", "text", (col) => col.notNull())
-    .addColumn("input_file_hash", "text", (col) => col.notNull().references("task_files.hash"))
+    .addColumn("input_file_name", "text")
+    .addColumn("input_file_hash", "text", (col) => col.references("task_files.hash"))
     .addColumn("output_file_name", "text", (col) => col.notNull())
     .addColumn("output_file_hash", "text", (col) => col.notNull().references("task_files.hash"))
     .addColumn("judge_file_name", "text")
@@ -107,22 +133,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("scripts")
-    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
-    .addColumn("file_hash", "text", (col) => col.notNull().references("task_files.hash"))
-    .addColumn("language", "text", (col) => col.notNull())
-    .addColumn("runtime_args", "text")
-    .execute();
-
-  await db.schema
     .createTable("submissions")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
-    .addColumn("file_hash", "text", (col) => col.notNull())
     .addColumn("language", "text", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
-    .addColumn("runtime_args", "text")
     .addColumn("official_verdict_id", "uuid")
     .execute();
 
@@ -136,6 +152,30 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createIndex("idx_submissions_task_id_created_at")
     .on("submissions")
     .columns(["created_at", "task_id"])
+    .execute();
+
+  // These are distinct from task_files because there's going to be way more of these
+  // and our garbage collection routines can check if they're unneeded with just one join
+  // unlike task_files which need to check all scripts, attachments, multiple columns of task data
+  // and some of those aren't indexed. For these ones, we can just make sure to index
+  await db.schema
+    .createTable("submission_files")
+    .addColumn("hash", "text")
+    .addColumn("size", "bigint", (col) => col.notNull())
+    .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
+    .addColumn("file_name", "text")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_submissions_files_submission_id")
+    .on("submission_files")
+    .columns(["submission_id"])
+    .execute();
+
+  await db.schema
+    .createIndex("idx_submissions_files_hash")
+    .on("submission_files")
+    .columns(["hash"])
     .execute();
 
   await db.schema

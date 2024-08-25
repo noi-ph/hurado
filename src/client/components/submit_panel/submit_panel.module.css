@@ -30,3 +30,11 @@
   cursor: default;
   background: var(--color-blue-200);
 }
+
+.outputGrid {
+  display: grid;
+  align-items: center;
+  grid-column-gap: .5rem;
+  grid-row-gap: .5rem;
+  grid-template-columns: auto 1fr;
+}

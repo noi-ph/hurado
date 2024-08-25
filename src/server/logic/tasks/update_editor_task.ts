@@ -9,12 +9,17 @@ import {
 } from "common/types";
 import {
   TaskAttachmentDTO,
+  TaskBatchDTO,
   TaskCreditDTO,
   TaskDataDTO,
   TaskDTO,
+  TaskOutputDTO,
   TaskSubtaskDTO,
 } from "common/validation/task_validation";
 import { normalizeAttachmentPath } from "common/utils/attachments";
+import { TaskFlavorOutput, TaskType } from "common/types/constants";
+import { NotYetImplementedError, UnreachableError } from "common/errors";
+import { dbToTaskDataBatchDTO, dbToTaskDataOutputDTO } from "./editor_utils";
 
 type Ordered<T> = T & {
   order: number;
@@ -290,10 +295,10 @@ async function upsertTaskData(
           .values(
             dataNew.map((data, index) => ({
               name: data.name,
-              is_sample: data.is_sample,
+              is_sample: "is_sample" in data ? data.is_sample : false,
               order: data.order,
-              input_file_hash: data.input_file_hash,
-              input_file_name: data.input_file_name,
+              input_file_hash: "input_file_hash" in data ? data.input_file_hash : null,
+              input_file_name: "input_file_name" in data ? data.input_file_name : null,
               output_file_hash: data.output_file_hash,
               output_file_name: data.output_file_name,
               judge_file_hash: data.judge_file_hash,
@@ -313,10 +318,10 @@ async function upsertTaskData(
             dataOld.map((data) => ({
               id: data.id,
               name: data.name,
-              is_sample: data.is_sample,
+              is_sample: "is_sample" in data ? data.is_sample : false,
               order: data.order,
-              input_file_hash: data.input_file_hash,
-              input_file_name: data.input_file_name,
+              input_file_hash: "input_file_hash" in data ? data.input_file_hash : null,
+              input_file_name: "input_file_name" in data ? data.input_file_name : null,
               output_file_hash: data.output_file_hash,
               output_file_name: data.output_file_name,
               judge_file_hash: data.judge_file_hash,
@@ -344,8 +349,8 @@ async function upsertTaskData(
   return [...dbDataNew, ...dbDataOld];
 }
 
-export async function updateEditorTask(task: TaskDTO) {
-  const result = await db.transaction().execute(async (trx) => {
+export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
+  return db.transaction().execute(async (trx): Promise<TaskDTO> => {
     const dbTask = await trx
       .updateTable("tasks")
       .set({
@@ -354,9 +359,36 @@ export async function updateEditorTask(task: TaskDTO) {
         description: task.description ?? undefined,
         statement: task.statement,
         score_max: task.score_max,
+        type: task.type,
+        flavor: "flavor" in task ? task.flavor : null,
+        time_limit_ms: "time_limit_ms" in task ? task.time_limit_ms : null,
+        memory_limit_byte: "memory_limit_byte" in task ? task.memory_limit_byte : null,
+        compile_time_limit_ms: "compile_time_limit_ms" in task ? task.compile_time_limit_ms : null,
+        compile_memory_limit_byte:
+          "compile_memory_limit_byte" in task ? task.compile_memory_limit_byte : null,
+        submission_size_limit_byte:
+          "submission_size_limit_byte" in task ? task.submission_size_limit_byte : null,
       })
       .where("id", "=", task.id)
-      .execute();
+      .returning([
+        "id",
+        "title",
+        "slug",
+        "description",
+        "statement",
+        "type",
+        "flavor",
+        "score_max",
+        "checker_kind",
+        "checker_id",
+        "is_public",
+        "time_limit_ms",
+        "memory_limit_byte",
+        "compile_time_limit_ms",
+        "compile_memory_limit_byte",
+        "submission_size_limit_byte",
+      ])
+      .executeTakeFirstOrThrow();
 
     const dbTaskCredits = await upsertTaskCredits(trx, task.id, task.credits);
     const dbTaskAttachments = await upsertTaskAttachments(trx, task.id, task.attachments);
@@ -366,7 +398,78 @@ export async function updateEditorTask(task: TaskDTO) {
       task.subtasks
     );
     const dbTaskData = await upsertTaskData(trx, subtasksWithData);
-  });
 
-  return task;
+    if (dbTask.type === TaskType.Batch) {
+      const result: TaskBatchDTO = {
+        type: dbTask.type as TaskType.Batch,
+        id: dbTask.id,
+        score_max: dbTask.score_max,
+        slug: dbTask.slug,
+        title: dbTask.title,
+        description: dbTask.description,
+        statement: dbTask.statement,
+        is_public: dbTask.is_public,
+        time_limit_ms: dbTask.time_limit_ms,
+        memory_limit_byte: dbTask.memory_limit_byte,
+        compile_time_limit_ms: dbTask.compile_time_limit_ms,
+        compile_memory_limit_byte: dbTask.compile_memory_limit_byte,
+        submission_size_limit_byte: dbTask.submission_size_limit_byte,
+        checker_kind: dbTask.checker_kind,
+        credits: dbTaskCredits.map((cred) => ({
+          id: cred.id,
+          name: cred.name,
+          role: cred.role,
+        })),
+        attachments: dbTaskAttachments.map((att) => ({
+          id: att.id,
+          path: att.path,
+          file_hash: att.file_hash,
+          mime_type: att.mime_type,
+        })),
+        subtasks: dbSubtasks.map((sub) => ({
+          id: sub.id,
+          name: sub.name,
+          score_max: sub.score_max,
+          data: dbTaskData.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataBatchDTO),
+        })),
+      };
+      return result;
+    } else if (dbTask.type === TaskType.Communication) {
+      throw new NotYetImplementedError(dbTask.type);
+    } else if (dbTask.type === TaskType.OutputOnly) {
+      const result: TaskOutputDTO = {
+        type: dbTask.type as TaskType.OutputOnly,
+        flavor: dbTask.flavor as TaskFlavorOutput,
+        id: dbTask.id,
+        score_max: dbTask.score_max,
+        slug: dbTask.slug,
+        title: dbTask.title,
+        description: dbTask.description,
+        statement: dbTask.statement,
+        is_public: dbTask.is_public,
+        submission_size_limit_byte: dbTask.submission_size_limit_byte,
+        checker_kind: dbTask.checker_kind,
+        credits: dbTaskCredits.map((cred) => ({
+          id: cred.id,
+          name: cred.name,
+          role: cred.role,
+        })),
+        attachments: dbTaskAttachments.map((att) => ({
+          id: att.id,
+          path: att.path,
+          file_hash: att.file_hash,
+          mime_type: att.mime_type,
+        })),
+        subtasks: dbSubtasks.map((sub) => ({
+          id: sub.id,
+          name: sub.name,
+          score_max: sub.score_max,
+          data: dbTaskData.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataOutputDTO),
+        })),
+      };
+      return result;
+    } else {
+      throw new UnreachableError(dbTask.type);
+    }
+  });
 }
