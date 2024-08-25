@@ -41,8 +41,13 @@ export async function getSubmissionViewerDTO(
   if (sub == null) {
     return null;
   }
+
   const [files, verdict] = await Promise.all([
-    getSubmissionViewerFiles(sub.id),
+    getSubmissionViewerFiles({
+      type: sub.task_type,
+      submission_id: sub.id,
+      task_id: sub.task_id,
+    }),
     getSubmissionVerdict(sub.official_verdict_id, sub.task_id),
   ]);
 
@@ -61,39 +66,71 @@ export async function getSubmissionViewerDTO(
   };
 }
 
-async function getSubmissionViewerFiles(submissionId: string): Promise<SubmissionViewerFileDTO[]> {
-  const files = await db
-    .selectFrom("submission_files")
-    .select(["file_name", "hash"])
-    .where("submission_id", "=", submissionId)
-    .execute();
+type SubmissionData = {
+  type: TaskType | null;
+  submission_id: string;
+  task_id: string;
+};
 
-  return Promise.all(
-    files.map(async (file) => {
-      const client = SubmissionFileStorage.getBlobClient(file.hash);
-      let buffer: Buffer | null = null;
-      try {
-        buffer = await client.downloadToBuffer();
-      } catch {
-        // File does not exist
-      }
+async function getSubmissionViewerFiles(data: SubmissionData): Promise<SubmissionViewerFileDTO[]> {
+  if (data.type === TaskType.OutputOnly) {
+    const files = await db
+      .selectFrom("submission_files")
+      .where("submission_files.submission_id", "=", data.submission_id)
+      .innerJoin(
+        (eb) =>
+          eb
+            .selectFrom("tasks")
+            .where("tasks.id", "=", data.task_id)
+            .innerJoin("task_subtasks", "task_subtasks.task_id", "tasks.id")
+            .innerJoin("task_data", "task_data.subtask_id", "task_subtasks.id")
+            .select(["task_data.output_file_name", "task_subtasks.order as subtask_order"])
+            .as("task_info"),
+        (join) => join.onRef("task_info.output_file_name", "=", "submission_files.file_name")
+      )
+      .select(["submission_files.hash", "task_info.subtask_order"])
+      .execute();
+    return Promise.all(files.map((f) => loadSubmissionViewerFile(f.hash, f.subtask_order)));
+  } else {
+    const file = await db
+      .selectFrom("submission_files")
+      .select(["hash"])
+      .where("submission_id", "=", data.submission_id)
+      .executeTakeFirst();
+    if (file == null) {
+      return [];
+    }
 
-      if (buffer == null) {
-        return {
-          file_name: file.file_name,
-          hash: file.hash,
-          content: null,
-        };
-      } else {
-        const content = buffer.toString("utf8");
-        return {
-          file_name: file.file_name,
-          hash: file.hash,
-          content,
-        };
-      }
-    })
-  );
+    return Promise.all([loadSubmissionViewerFile(file.hash, null)]);
+  }
+}
+
+async function loadSubmissionViewerFile(
+  hash: string,
+  subtask: number | null
+): Promise<SubmissionViewerFileDTO> {
+  console.log('Subtask number', subtask, hash);
+  const client = SubmissionFileStorage.getBlobClient(hash);
+  let buffer: Buffer | null = null;
+  try {
+    buffer = await client.downloadToBuffer();
+  } catch {
+    // File does not exist
+  }
+  if (buffer == null) {
+    return {
+      subtask: subtask,
+      hash: hash,
+      content: null,
+    };
+  } else {
+    const content = buffer.toString("utf8");
+    return {
+      subtask: subtask,
+      hash: hash,
+      content,
+    };
+  }
 }
 
 async function getSubmissionVerdict(

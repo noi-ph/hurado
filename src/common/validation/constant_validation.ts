@@ -16,8 +16,8 @@ export const zTaskType = z.union([
 ]);
 
 export const zTaskFlavorOutput = z.union([
-  z.literal(TaskFlavor.FileOutput),
-  z.literal(TaskFlavor.TextOutput),
+  z.literal(TaskFlavor.OutputFile),
+  z.literal(TaskFlavor.OutputText),
 ]);
 
 export const zCheckerKind = z.union([

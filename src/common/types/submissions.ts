@@ -44,7 +44,7 @@ export type SubmissionViewerDTO = {
 };
 
 export type SubmissionViewerFileDTO = {
-  file_name: string | null;
+  subtask: number | null;
   hash: string;
   content: string | null;
 };
