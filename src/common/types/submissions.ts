@@ -1,5 +1,5 @@
 import { ColumnType, Generated } from "kysely";
-import { Language, Verdict } from "./constants";
+import { Language, TaskType, Verdict } from "./constants";
 
 export type SubmissionTable = {
   id: Generated<string>;
@@ -34,15 +34,19 @@ export type SubmissionViewerDTO = {
   language: Language;
   created_at: Date;
   verdict: VerdictViewerDTO | null;
-  task_id: string;
-  task_slug: string;
-  task_title: string;
-  files: SubmissionFileDTO[];
+  files: SubmissionViewerFileDTO[];
+  task: {
+    id: string;
+    slug: string;
+    title: string;
+    type: TaskType;
+  };
 };
 
-export type SubmissionFileDTO = {
-  content: string;
+export type SubmissionViewerFileDTO = {
   file_name: string | null;
+  hash: string;
+  content: string | null;
 };
 
 export type VerdictViewerDTO = {

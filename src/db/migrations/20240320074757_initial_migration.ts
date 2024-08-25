@@ -160,7 +160,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   // and some of those aren't indexed. For these ones, we can just make sure to index
   await db.schema
     .createTable("submission_files")
-    .addColumn("hash", "text", (col) => col.primaryKey())
+    .addColumn("hash", "text")
     .addColumn("size", "bigint", (col) => col.notNull())
     .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
     .addColumn("file_name", "text")

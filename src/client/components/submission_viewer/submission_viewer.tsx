@@ -33,7 +33,7 @@ const MonacoOptions: editor.IStandaloneEditorConstructionOptions = Object.freeze
 const CodeEditorMinimumHeight = 72;
 
 export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
-  const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task_slug });
+  const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task.slug });
   const taskURL = `${baseTaskURL}#submissions`;
 
   return (
@@ -44,7 +44,7 @@ export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
           className="flex items-center font-sans font-bold text-4xl text-blue-400"
         >
           <BoxIcon name="bx-chevron-left" className="bx-lg" />
-          {submission.task_title}
+          {submission.task.title}
         </Link>
         <div className="ml-auto text-gray-300 whitespace-nowrap">
           {uuidToHuradoID(submission.id)}

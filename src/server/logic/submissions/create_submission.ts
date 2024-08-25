@@ -41,7 +41,7 @@ export async function createSubmission(
         file_name: u.filename,
         submission_id: submission.id,
       }))
-    );
+    ).execute();
 
     return {
       id: submission.id,

@@ -101,13 +101,13 @@ export type TaskViewerCommunicationDTO = TaskViewerCommonDTO & {
 export type TaskViewerOutputDTO = TaskViewerCommonDTO & {
   type: TaskType.OutputOnly;
   flavor: TaskFlavor;
-  subtasks: TaskViewerOutputSubtaskDTO[];
+  subtasks: TaskViewerSubtaskOutputDTO[];
 };
 
-export type TaskViewerOutputSubtaskDTO = {
-  name: string;
+export type TaskViewerSubtaskOutputDTO = {
   order: number;
   score_max: number;
+  file_name: string;
 };
 
 export type TaskViewerCreditDTO = {

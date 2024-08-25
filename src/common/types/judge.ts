@@ -1,16 +1,19 @@
-import { Language, Verdict } from "./constants";
+import { Language, TaskType, Verdict } from "./constants";
 
-export type JudgeTask = {
-  subtasks: JudgeSubtask[];
+export type JudgeTask = JudgeTaskBatch | JudgeTaskOutput;
+
+export type JudgeTaskBatch = {
+  type: TaskType.Batch;
+  subtasks: JudgeSubtaskBatch[];
 };
 
-export type JudgeSubtask = {
+export type JudgeSubtaskBatch = {
   id: string;
   score_max: number;
-  data: JudgeTaskData[];
+  data: JudgeTaskDataBatch[];
 };
 
-export type JudgeTaskData = {
+export type JudgeTaskDataBatch = {
   id: string;
   input_file_name: string;
   input_file_hash: string;
@@ -20,12 +23,38 @@ export type JudgeTaskData = {
   judge_file_hash: string | null;
 };
 
+export type JudgeTaskOutput = {
+  type: TaskType.OutputOnly;
+  subtasks: JudgeSubtaskOutput[];
+};
+
+export type JudgeSubtaskOutput = {
+  id: string;
+  score_max: number;
+  data: JudgeTaskDataOutput[];
+};
+
+export type JudgeTaskDataOutput = {
+  id: string;
+  output_file_name: string;
+  output_file_hash: string;
+  judge_file_name: string | null;
+  judge_file_hash: string | null;
+};
+
+
 export type JudgeSubmission = {
   id: string;
   task_id: string;
-  file_hash: string;
-  language: string;
+  files: JudgeSubmissionFile[];
+  language: Language;
 };
+
+type JudgeSubmissionFile = {
+  hash: string;
+  file_name: string | null;
+};
+
 
 export type JudgeVerdict = {
   id: string;

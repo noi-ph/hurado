@@ -1,5 +1,5 @@
-import { Language, Verdict } from "common/types/constants";
-import type { JudgeSubmission, JudgeTask, JudgeTaskData } from "common/types/judge";
+import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
+import type { JudgeSubmission, JudgeTask, JudgeTaskBatch, JudgeTaskData } from "common/types/judge";
 import fs from "fs";
 import path from "path";
 import { CompilationResult, EvaluationResult, getLanguageFilename } from ".";
@@ -7,7 +7,14 @@ import { CompilationResult, EvaluationResult, getLanguageFilename } from ".";
 // See https://github.com/criyle/go-judge/tree/master?tab=readme-ov-file#rest-api-interface
 const baseURL = "http://hurado-go-judge:5050";
 
-const evalSpecs = {
+type EvalSpec = {
+  sourceFileName: string;
+  compileCmd: string[];
+  execFileNames: string[];
+  runCmd: string[];
+};
+
+const evalSpecs: Record<ProgrammingLanguage, EvalSpec> = {
   [Language.Python3]: {
     sourceFileName: "main.py",
     compileCmd: [
@@ -34,17 +41,17 @@ const evalSpecs = {
 
 export type GoJudgeEvaluationContext = {
   judgeRoot: string;
-  language: Language;
+  language: ProgrammingLanguage;
   execFileIds: Record<string, string>;
 };
 
 export async function compileSubmission(
-  task: JudgeTask,
+  task: JudgeTaskBatch,
   submission: JudgeSubmission,
   taskDir: string,
   submissionDir: string
 ): Promise<CompilationResult<GoJudgeEvaluationContext>> {
-  const lang = submission.language as Language;
+  const lang = submission.language as ProgrammingLanguage;
   const spec = evalSpecs[lang];
   const sourcePath = path.join(submissionDir, getLanguageFilename(lang));
   const reqBody = {

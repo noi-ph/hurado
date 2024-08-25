@@ -4,7 +4,7 @@ import { createSubmission, SubmissionFileCreate } from "server/logic/submissions
 import { getSession } from "server/sessions";
 import { enqueueSubmissionJudgement } from "worker/queue";
 import { db } from "db";
-import { TaskType } from "common/types/constants";
+import { Language, TaskType } from "common/types/constants";
 
 export async function POST(request: NextRequest) {
   const session = getSession(request);
@@ -32,12 +32,12 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
+  const submissionReq: SubmissionRequestDTO = zodRequest.data;
 
-  const subreq: SubmissionRequestDTO = zodRequest.data;
   const task = await db
     .selectFrom("tasks")
     .select(["type", "allowed_languages"])
-    .where("id", "=", subreq.task_id)
+    .where("id", "=", submissionReq.task_id)
     .executeTakeFirst();
 
   if (task == null) {
@@ -49,20 +49,39 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (!isAllowedLanguage(task.type, task.allowed_languages, submissionReq.language)) {
+    return NextResponse.json(
+      {
+        error: "Invalid language",
+      },
+      { status: 400 }
+    );
+  }
+
   let sources: SubmissionFileCreate[];
 
   if (task.type === TaskType.OutputOnly) {
+    const allowedFileNameList = await loadAllowedFilenames(submissionReq.task_id);
+    const allowedFileNames = new Set(allowedFileNameList);
     sources = [];
     for (const [key, value] of formData.entries()) {
-      if (key === "request") {
+      if (!key.startsWith("$")) {
+        // Task-provided file names are prepended with $ to not collide with internal stuff
+        // This skips through 'request' and any other weird user-hacked stuff
+        continue;
+      } else if (!(value instanceof File)) {
         continue;
       }
-      if (!(value instanceof File)) {
+
+      // Remove the pre-pended "$"
+      const filename = key.substring(1);
+      if (!allowedFileNames.has(filename)) {
         continue;
       }
+
       sources.push({
         file: value,
-        filename: key,
+        filename: filename,
       });
     }
   } else {
@@ -83,11 +102,30 @@ export async function POST(request: NextRequest) {
     ];
   }
 
-  const submission = await createSubmission(sources, zodRequest.data, session.user);
+  const submission = await createSubmission(sources, submissionReq, session.user);
 
   enqueueSubmissionJudgement({
     id: submission.id,
   });
 
   return NextResponse.json(submission);
+}
+
+function isAllowedLanguage(type: TaskType, allowed: Language[] | null, language: Language) {
+  if (type === TaskType.OutputOnly) {
+    return language === Language.PlainText;
+  }
+
+  return allowed == null || allowed.includes(language);
+}
+
+async function loadAllowedFilenames(taskId: string): Promise<string[]> {
+  const data = await db
+    .selectFrom("task_subtasks")
+    .innerJoin("task_data", "task_data.subtask_id", "task_subtasks.id")
+    .where("task_subtasks.task_id", "=", taskId)
+    .select("task_data.output_file_name")
+    .execute();
+
+  return data.map((d) => d.output_file_name);
 }

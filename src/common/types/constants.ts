@@ -5,9 +5,11 @@ export enum TaskType {
 }
 
 export enum TaskFlavor {
-  OutputFile = "file",
   OutputText = "text",
+  OutputFile = "file",
 }
+
+export type TaskFlavorOutput = TaskFlavor.OutputText | TaskFlavor.OutputFile;
 
 export enum Language {
   Python3 = "python3",
@@ -15,6 +17,8 @@ export enum Language {
   Java = "java",
   PlainText = "text",
 }
+
+export type ProgrammingLanguage = Exclude<Language, Language.PlainText>;
 
 export enum Verdict {
   Accepted = "ac",

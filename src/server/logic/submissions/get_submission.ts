@@ -1,6 +1,7 @@
 import { db } from "db";
 import {
   SubmissionViewerDTO,
+  SubmissionViewerFileDTO,
   UserPublic,
   VerdictSubtaskViewerDTO,
   VerdictTaskDataViewerDTO,
@@ -8,7 +9,7 @@ import {
 } from "common/types";
 import { checkUUIDv4 } from "common/utils/uuid";
 import { SubmissionFileStorage } from "server/files";
-import { Language, Verdict } from "common/types/constants";
+import { Language, TaskType, Verdict } from "common/types/constants";
 import { notNull } from "common/utils/guards";
 
 export async function getSubmissionViewerDTO(
@@ -28,11 +29,11 @@ export async function getSubmissionViewerDTO(
       "submissions.id",
       "submissions.language",
       "submissions.created_at",
-      "submissions.file_hash",
       "submissions.task_id",
       "submissions.official_verdict_id",
-      "tasks.slug",
-      "tasks.title",
+      "tasks.slug as task_slug",
+      "tasks.title as task_title",
+      "tasks.type as task_type",
     ])
     .orderBy("submissions.created_at", "desc")
     .executeTakeFirst();
@@ -40,28 +41,59 @@ export async function getSubmissionViewerDTO(
   if (sub == null) {
     return null;
   }
-
-  const [code, verdict] = await Promise.all([
-    getSubmissionCode(sub.file_hash),
+  const [files, verdict] = await Promise.all([
+    getSubmissionViewerFiles(sub.id),
     getSubmissionVerdict(sub.official_verdict_id, sub.task_id),
   ]);
 
   return {
     id: sub.id,
     language: sub.language as Language,
-    code: code,
     created_at: sub.created_at,
     verdict: verdict,
-    task_id: sub.task_id,
-    task_slug: sub.slug ?? sub.task_id,
-    task_title: sub.title ?? sub.task_id,
+    files: files,
+    task: {
+      id: sub.task_id,
+      slug: sub.task_slug as string,
+      title: sub.task_title as string,
+      type: sub.task_type as TaskType,
+    },
   };
 }
 
-async function getSubmissionCode(hash: string): Promise<string> {
-  const client = SubmissionFileStorage.getBlobClient(hash);
-  const buffer = await client.downloadToBuffer();
-  return buffer.toString("utf8");
+async function getSubmissionViewerFiles(submissionId: string): Promise<SubmissionViewerFileDTO[]> {
+  const files = await db
+    .selectFrom("submission_files")
+    .select(["file_name", "hash"])
+    .where("submission_id", "=", submissionId)
+    .execute();
+
+  return Promise.all(
+    files.map(async (file) => {
+      const client = SubmissionFileStorage.getBlobClient(file.hash);
+      let buffer: Buffer | null = null;
+      try {
+        buffer = await client.downloadToBuffer();
+      } catch {
+        // File does not exist
+      }
+
+      if (buffer == null) {
+        return {
+          file_name: file.file_name,
+          hash: file.hash,
+          content: null,
+        };
+      } else {
+        const content = buffer.toString("utf8");
+        return {
+          file_name: file.file_name,
+          hash: file.hash,
+          content,
+        };
+      }
+    })
+  );
 }
 
 async function getSubmissionVerdict(
