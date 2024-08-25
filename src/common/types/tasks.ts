@@ -18,8 +18,8 @@ export type TaskTable = {
   flavor: TaskFlavor | null;
   allowed_languages: Language[] | null;
   score_max: number;
-  time_limit_ms: number;
-  memory_limit_byte: number;
+  time_limit_ms: number | null;
+  memory_limit_byte: number | null;
   compile_time_limit_ms: number | null;
   compile_memory_limit_byte: number | null;
   submission_size_limit_byte: number | null;

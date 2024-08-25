@@ -8,8 +8,9 @@ import {
   TaskDTO,
   TaskOutputDTO,
 } from "common/validation/task_validation";
-import { TaskType } from "common/types/constants";
+import { TaskFlavor, TaskFlavorOutput, TaskType } from "common/types/constants";
 import { NotYetImplementedError, UnreachableError } from "common/errors";
+import { dbToTaskDataBatchDTO, dbToTaskDataOutputDTO } from "./editor_utils";
 
 export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
   const uuid = huradoIDToUUID(idOrSlug);
@@ -22,6 +23,7 @@ export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
       "description",
       "statement",
       "type",
+      "flavor",
       "score_max",
       "checker_kind",
       "checker_id",
@@ -86,20 +88,6 @@ export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
       : [];
 
   if (task.type === TaskType.Batch) {
-    const toTaskDataBatchDTO = (d: (typeof data)[number]): TaskDataBatchDTO => {
-      return {
-        id: d.id,
-        name: d.name,
-        is_sample: d.is_sample,
-        input_file_name: d.input_file_name as string,
-        input_file_hash: d.input_file_hash as string,
-        output_file_name: d.output_file_name,
-        output_file_hash: d.output_file_hash,
-        judge_file_name: d.judge_file_name,
-        judge_file_hash: d.judge_file_hash,
-      };
-    };
-
     const taskdto: TaskBatchDTO = {
       type: task.type as TaskType.Batch,
       id: task.id,
@@ -130,24 +118,14 @@ export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
         id: sub.id,
         name: sub.name,
         score_max: sub.score_max,
-        data: data.filter((d) => d.subtask_id === sub.id).map(toTaskDataBatchDTO),
+        data: data.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataBatchDTO),
       })),
     };
     return taskdto;
   } else if (task.type === TaskType.OutputOnly) {
-    const toTaskDataOutputDTO = (d: (typeof data)[number]): TaskDataOutputDTO => {
-      return {
-        id: d.id,
-        name: d.name,
-        output_file_name: d.output_file_name,
-        output_file_hash: d.output_file_hash,
-        judge_file_name: d.judge_file_name,
-        judge_file_hash: d.judge_file_hash,
-      };
-    };
-
     const taskdto: TaskOutputDTO = {
       type: task.type as TaskType.OutputOnly,
+      flavor: task.flavor ?? TaskFlavor.OutputText as TaskFlavorOutput,
       id: task.id,
       score_max: task.score_max,
       slug: task.slug,
@@ -172,7 +150,7 @@ export async function getEditorTask(idOrSlug: string): Promise<TaskDTO | null> {
         id: sub.id,
         name: sub.name,
         score_max: sub.score_max,
-        data: data.filter((d) => d.subtask_id === sub.id).map(toTaskDataOutputDTO),
+        data: data.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataOutputDTO),
       })),
     };
 

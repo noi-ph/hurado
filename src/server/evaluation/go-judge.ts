@@ -1,5 +1,5 @@
 import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
-import type { JudgeSubmission, JudgeTask, JudgeTaskBatch, JudgeTaskData } from "common/types/judge";
+import type { JudgeSubmission, JudgeTaskBatch, JudgeTaskDataBatch } from "common/types/judge";
 import fs from "fs";
 import path from "path";
 import { CompilationResult, EvaluationResult, getLanguageFilename } from ".";
@@ -112,7 +112,7 @@ export async function compileSubmission(
 
 export async function evaluateTaskData(
   context: GoJudgeEvaluationContext,
-  data: JudgeTaskData
+  data: JudgeTaskDataBatch
 ): Promise<EvaluationResult> {
   const spec = evalSpecs[context.language];
   const inputPath = path.join(context.judgeRoot, data.input_file_name);

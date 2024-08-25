@@ -1,6 +1,7 @@
 import { RefinementCtx, z } from "zod";
 import { zCheckerKind, zLanguageKind, zScorerKind, zTaskFlavorOutput } from "./constant_validation";
 import { CheckerKind, TaskType } from "common/types/constants";
+import { REGEX_SLUG } from "./common_validation";
 
 export type TaskCreditDTO = z.infer<typeof zTaskCredit>;
 export type TaskAttachmentDTO = z.infer<typeof zTaskAttachment>;
@@ -41,7 +42,7 @@ const zTaskScript = z.object({
 
 const zTaskCommon = {
   id: z.string().uuid(),
-  slug: z.string().min(1).regex(SLUG_REGEX),
+  slug: z.string().min(1).regex(REGEX_SLUG),
   title: z.string().min(1),
   description: z.string().nullable(),
   statement: z.string(),
@@ -75,8 +76,8 @@ const zTaskSubtaskBatch = z.object({
 export const zTaskTypeBatch = z.object({
   ...zTaskCommon,
   type: z.literal(TaskType.Batch),
-  time_limit_ms: z.number().nonnegative(),
-  memory_limit_byte: z.number().nonnegative(),
+  time_limit_ms: z.number().nonnegative().nullable(),
+  memory_limit_byte: z.number().nonnegative().nullable(),
   compile_time_limit_ms: z.number().nonnegative().nullable(),
   compile_memory_limit_byte: z.number().nonnegative().nullable(),
   submission_size_limit_byte: z.number().nonnegative().nullable(),
