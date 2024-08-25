@@ -357,7 +357,7 @@ function coerceTaskOutputDTO(ed: TaskED): TaskOutputDTO {
     attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
     // OutputOnly-only
     type: TaskType.OutputOnly,
-    flavor: TaskFlavor.OutputText,
+    flavor: ed.flavor ?? TaskFlavor.OutputText,
     submission_size_limit_byte: null,
     checker_kind: ed.checker.kind,
     checker_script:

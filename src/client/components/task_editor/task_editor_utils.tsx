@@ -10,7 +10,7 @@ import BoxIcon from "client/components/box_icon";
 import { TaskED, TaskFileLocal } from "./types";
 import classNames from "classnames";
 import { sha256 } from "common/utils/hashing";
-import styles from './task_editor.module.css';
+import styles from "./task_editor.module.css";
 
 export function useTaskStringPropUpdater(
   task: TaskED,
@@ -36,11 +36,7 @@ type TaskEditorAddButtonProps = {
 
 export const TaskEditorAddButton = ({ onClick, disabled, label }: TaskEditorAddButtonProps) => {
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={styles.addButton}
-    >
+    <button onClick={onClick} disabled={disabled} className={styles.addButton}>
       <BoxIcon name="bx-plus" className="bx-xs mt-1" />
       {label}
     </button>
@@ -154,13 +150,19 @@ export const TaskEditorInputSubtle = ({
 type TaskEditorSelectProps = {
   value: string;
   onChange(event: SelectChangeEvent): void;
+  className?: string;
   children: ReactNode;
 };
 
-export const TaskEditorSelect = ({ value, onChange, children }: TaskEditorSelectProps) => {
+export const TaskEditorSelect = ({
+  value,
+  onChange,
+  className,
+  children,
+}: TaskEditorSelectProps) => {
   return (
     <select
-      className="font-mono p-2 border border-gray-300 rounded-lg"
+      className={classNames(className, "font-mono p-2 border border-gray-300 rounded-lg")}
       value={value}
       onChange={onChange}
     >

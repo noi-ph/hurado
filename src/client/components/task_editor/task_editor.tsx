@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Navbar } from "client/components/navbar";
-import { TaskDTO, zTaskSchema } from "common/validation/task_validation";
+import { TaskDTO } from "common/validation/task_validation";
 import { TaskSubmissionsCache } from "client/submissions";
 import { TaskEditorStatement } from "./task_editor_statement";
 import { coerceTaskEditorTab, TaskEditorTab, TaskEditorTabComponent } from "./task_editor_tabs";

@@ -1,4 +1,4 @@
-import { CheckerKind, Language, TaskType } from "common/types/constants";
+import { CheckerKind, Language, TaskFlavor, TaskType } from "common/types/constants";
 
 // These ED types represent the internal state of the task editor
 export enum EditorKind {
@@ -13,6 +13,7 @@ export type TaskED = {
   description: string | null;
   statement: string;
   type: TaskType;
+  flavor: TaskFlavor | null;
   checker: TaskCheckerED;
   credits: TaskCreditED[];
   attachments: TaskAttachmentED[];

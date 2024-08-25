@@ -13,11 +13,10 @@ import {
   TaskSubtaskED,
   TaskDataED,
 } from "./types";
-import { CheckerKind } from "common/types/constants";
+import { CheckerKind, TaskType } from "common/types/constants";
 
 export function coerceTaskED(dto: TaskDTO): TaskED {
   const task: TaskED = {
-    type: dto.type,
     id: dto.id,
     slug: dto.slug,
     title: dto.title,
@@ -29,6 +28,8 @@ export function coerceTaskED(dto: TaskDTO): TaskED {
         : { kind: dto.checker_kind, script: dto.checker_script as any },
     credits: dto.credits.map(coerceTaskCreditED),
     attachments: dto.attachments.map((x) => coerceTaskAttachmentED(x)),
+    type: dto.type,
+    flavor: 'flavor' in dto ? dto.flavor : null,
     subtasks: dto.subtasks.map((x) => coerceTaskSubtaskED(x)),
   };
   return task;
