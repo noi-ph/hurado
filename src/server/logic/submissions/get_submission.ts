@@ -109,7 +109,6 @@ async function loadSubmissionViewerFile(
   hash: string,
   subtask: number | null
 ): Promise<SubmissionViewerFileDTO> {
-  console.log('Subtask number', subtask, hash);
   const client = SubmissionFileStorage.getBlobClient(hash);
   let buffer: Buffer | null = null;
   try {
