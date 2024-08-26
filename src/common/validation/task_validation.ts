@@ -1,4 +1,4 @@
-import { RefinementCtx, z } from "zod";
+import { z } from "zod";
 import { zCheckerKind, zLanguageKind, zScorerKind, zTaskFlavorOutput } from "./constant_validation";
 import { CheckerKind, TaskType } from "common/types/constants";
 import { REGEX_SLUG } from "./common_validation";
@@ -58,10 +58,8 @@ const zTaskDataBatch = z.object({
   is_sample: z.boolean(),
   input_file_hash: z.string().min(1),
   input_file_name: z.string().min(1),
-  output_file_hash: z.string().min(1),
-  output_file_name: z.string().min(1),
-  judge_file_hash: z.string().nullable(),
-  judge_file_name: z.string().nullable(),
+  judge_file_hash: z.string().min(1),
+  judge_file_name: z.string().min(1),
 });
 
 const zTaskSubtaskBatch = z.object({
@@ -89,10 +87,8 @@ export const zTaskTypeBatch = z.object({
 const zTaskDataOutput = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
-  output_file_hash: z.string().min(1),
-  output_file_name: z.string().min(1),
-  judge_file_hash: z.string().nullable(),
-  judge_file_name: z.string().nullable(),
+  judge_file_hash: z.string().min(1),
+  judge_file_name: z.string().min(1),
 });
 
 const zTaskSubtaskOutput = z.object({
@@ -115,7 +111,6 @@ export const zTaskTypeOutput = z.object({
 export const zTaskSchema = z
   .discriminatedUnion("type", [zTaskTypeBatch, zTaskTypeOutput])
   .superRefine((obj, ctx) => {
-    const subtasks = obj.subtasks as TaskSubtaskDTO[];
     if (obj.checker_kind === CheckerKind.Custom) {
       if (obj.checker_script == null) {
         ctx.addIssue({
@@ -124,9 +119,6 @@ export const zTaskSchema = z
           message: "Checker script cannot be null if using a custom checker",
         });
       }
-      forEachTaskData(subtasks, (_subtask, data, path) => {
-        validateDataJudgeNullity(ctx, data, path);
-      });
     } else {
       if (obj.checker_script != null) {
         ctx.addIssue({
@@ -135,57 +127,5 @@ export const zTaskSchema = z
           message: "Checker script must be null if using a default checker",
         });
       }
-      forEachTaskData(subtasks, (_subtask, data, path) => {
-        validateDataHasNoJudge(ctx, data, path);
-      });
     }
   });
-
-function validateDataHasNoJudge(ctx: RefinementCtx, data: TaskDataDTO, path: string[]) {
-  if (data.judge_file_name != null) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: [...path, "judge_file_name"],
-      message: "judge_file_name must be null if using a default checker",
-    });
-  }
-  if (data.judge_file_hash != null) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: [...path, "judge_file_hash"],
-      message: "judge_file_hash must be null if using a default checker",
-    });
-  }
-}
-
-function validateDataJudgeNullity(ctx: RefinementCtx, data: TaskDataDTO, path: string[]) {
-  const judge_file_name_nullity = data.judge_file_name == null;
-  const judge_file_hash_nullity = data.judge_file_hash == null;
-  if (judge_file_name_nullity != judge_file_hash_nullity) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: [...path, "judge_file_path"],
-      message: "judge_file_path must be null if judge_file_name is null",
-    });
-  }
-}
-
-function forEachTaskData(
-  subtasks: TaskSubtaskDTO[],
-  callback: (
-    subtask: TaskSubtaskDTO,
-    data: TaskDataDTO,
-    path: string[],
-    subtaskIndex: string,
-    dataIndex: string
-  ) => void
-) {
-  for (let subtaskIndex in subtasks) {
-    const subtask = subtasks[subtaskIndex];
-    for (let dataIndex in subtask.data) {
-      const data = subtask.data[dataIndex];
-      const path = ["subtasks", subtaskIndex, "data", dataIndex];
-      callback(subtask, data, path, subtaskIndex, dataIndex);
-    }
-  }
-}

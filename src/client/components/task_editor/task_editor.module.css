@@ -74,11 +74,11 @@
 
 .testData {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 1fr auto;
 }
 
 .testData.outputOnly {
-  grid-template-columns: 1fr 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr auto;
 }
 
 .addButton {

@@ -8,8 +8,6 @@ type TaskDataDatabaseResponseKey =
   | 'is_sample'
   | 'input_file_name'
   | 'input_file_hash'
-  | 'output_file_name'
-  | 'output_file_hash'
   | 'judge_file_name'
   | 'judge_file_hash';
 
@@ -22,8 +20,6 @@ export function dbToTaskDataBatchDTO(data: TaskDataDatabaseResponse): TaskDataBa
     is_sample: data.is_sample,
     input_file_name: data.input_file_name as string,
     input_file_hash: data.input_file_hash as string,
-    output_file_name: data.output_file_name,
-    output_file_hash: data.output_file_hash,
     judge_file_name: data.judge_file_name,
     judge_file_hash: data.judge_file_hash,
   };
@@ -33,8 +29,6 @@ export function dbToTaskDataOutputDTO(data: TaskDataDatabaseResponse): TaskDataO
   return {
     id: data.id,
     name: data.name,
-    output_file_name: data.output_file_name,
-    output_file_hash: data.output_file_hash,
     judge_file_name: data.judge_file_name,
     judge_file_hash: data.judge_file_hash,
   };

@@ -97,10 +97,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("is_sample", "boolean", (col) => col.notNull())
     .addColumn("input_file_name", "text")
     .addColumn("input_file_hash", "text", (col) => col.references("task_files.hash"))
-    .addColumn("output_file_name", "text", (col) => col.notNull())
-    .addColumn("output_file_hash", "text", (col) => col.notNull().references("task_files.hash"))
-    .addColumn("judge_file_name", "text")
-    .addColumn("judge_file_hash", "text", (col) => col.references("task_files.hash"))
+    .addColumn("judge_file_name", "text", (col) => col.notNull())
+    .addColumn("judge_file_hash", "text", (col) => col.notNull().references("task_files.hash"))
     .addColumn("subtask_id", "uuid", (col) =>
       col.notNull().references("task_subtasks.id").onDelete("cascade")
     )

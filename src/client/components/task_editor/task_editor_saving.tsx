@@ -78,7 +78,6 @@ function extractLocalFiles(task: TaskED): TaskFileLocal[] {
       if (task.type !== TaskType.OutputOnly) {
         maybeAddFile(data.input_file);
       }
-      maybeAddFile(data.output_file);
       maybeAddFile(data.judge_file);
     }
   }
@@ -121,7 +120,6 @@ function applySavedFileChanges(ed: TaskED, changes: TaskFileSaveResult[]): TaskE
               ...data,
               input_file:
                 ed.type !== TaskType.OutputOnly ? maybeReplaceFile(data.input_file) : null,
-              output_file: maybeReplaceFile(data.output_file),
               judge_file: maybeReplaceFile(data.judge_file),
             };
           }),
@@ -312,9 +310,7 @@ function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
     return null;
   } else if (ed.input_file == null || ed.input_file.kind === EditorKind.Local) {
     throw new UnsavedFileException();
-  } else if (ed.output_file == null || ed.output_file.kind === EditorKind.Local) {
-    throw new UnsavedFileException();
-  } else if (ed.judge_file != null && ed.judge_file.kind === EditorKind.Local) {
+  } else if (ed.judge_file == null || ed.judge_file.kind === EditorKind.Local) {
     throw new UnsavedFileException();
   }
 
@@ -323,10 +319,8 @@ function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
       name: ed.name,
       input_file_name: ed.input_file_name as string,
       input_file_hash: ed.input_file.hash,
-      output_file_name: ed.output_file_name,
-      output_file_hash: ed.output_file.hash,
-      judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
-      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
+      judge_file_name: ed.judge_file_name,
+      judge_file_hash: ed.judge_file.hash,
       is_sample: ed.is_sample,
     };
   } else {
@@ -335,10 +329,8 @@ function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
       name: ed.name,
       input_file_name: ed.input_file_name as string,
       input_file_hash: ed.input_file.hash,
-      output_file_name: ed.output_file_name,
-      output_file_hash: ed.output_file.hash,
-      judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
-      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
+      judge_file_name: ed.judge_file_name,
+      judge_file_hash: ed.judge_file.hash,
       is_sample: ed.is_sample,
     };
   }
@@ -391,7 +383,7 @@ function coerceSubtaskOutputDTO(ed: TaskSubtaskED): TaskSubtaskOutputDTO | null 
 function coerceTaskDataOutputDTO(ed: TaskDataED): TaskDataOutputDTO | null {
   if (ed.deleted) {
     return null;
-  } else if (ed.output_file == null || ed.output_file.kind === EditorKind.Local) {
+  } else if (ed.judge_file == null || ed.judge_file.kind === EditorKind.Local) {
     throw new UnsavedFileException();
   } else if (ed.judge_file != null && ed.judge_file.kind === EditorKind.Local) {
     throw new UnsavedFileException();
@@ -400,19 +392,15 @@ function coerceTaskDataOutputDTO(ed: TaskDataED): TaskDataOutputDTO | null {
   if (ed.kind == EditorKind.Local) {
     return {
       name: ed.name,
-      output_file_name: ed.output_file_name,
-      output_file_hash: ed.output_file.hash,
-      judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
-      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
+      judge_file_name: ed.judge_file_name,
+      judge_file_hash: ed.judge_file.hash,
     };
   } else {
     return {
       id: ed.id,
       name: ed.name,
-      output_file_name: ed.output_file_name,
-      output_file_hash: ed.output_file.hash,
-      judge_file_name: ed.judge_file != null ? ed.judge_file_name ?? "" : null,
-      judge_file_hash: ed.judge_file != null ? ed.judge_file.hash : null,
+      judge_file_name: ed.judge_file_name,
+      judge_file_hash: ed.judge_file.hash,
     };
   }
 }

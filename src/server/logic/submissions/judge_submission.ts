@@ -105,8 +105,6 @@ async function loadSubtasksBatch(
             "subtask_id",
             "input_file_name",
             "input_file_hash",
-            "output_file_name",
-            "output_file_hash",
             "judge_file_name",
             "judge_file_hash",
           ])
@@ -123,8 +121,6 @@ async function loadSubtasksBatch(
         id: d.id,
         input_file_name: d.input_file_name as string,
         input_file_hash: d.input_file_hash as string,
-        output_file_name: d.output_file_name,
-        output_file_hash: d.output_file_hash,
         judge_file_name: d.judge_file_name,
         judge_file_hash: d.judge_file_hash,
       })),
@@ -151,8 +147,6 @@ async function loadSubtasksOutput(
           .select([
             "id",
             "subtask_id",
-            "output_file_name",
-            "output_file_hash",
             "judge_file_name",
             "judge_file_hash",
           ])
@@ -167,8 +161,6 @@ async function loadSubtasksOutput(
       .filter((d) => d.subtask_id == subtask.id)
       .map((d) => ({
         id: d.id,
-        output_file_name: d.output_file_name,
-        output_file_hash: d.output_file_hash,
         judge_file_name: d.judge_file_name,
         judge_file_hash: d.judge_file_hash,
       })),

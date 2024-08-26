@@ -122,9 +122,7 @@ export type TaskDataSaved = {
   name: string;
   input_file_name: string | null;
   input_file: TaskFileED | null;
-  output_file_name: string;
-  output_file: TaskFileED | null;
-  judge_file_name: string | null;
+  judge_file_name: string;
   judge_file: TaskFileED | null;
   is_sample: boolean;
   deleted: boolean;
@@ -135,9 +133,7 @@ export type TaskDataLocal = {
   name: string;
   input_file_name: string | null;
   input_file: TaskFileED | null;
-  output_file_name: string;
-  output_file: TaskFileED | null;
-  judge_file_name: string | null;
+  judge_file_name: string;
   judge_file: TaskFileED | null;
   is_sample: boolean;
   deleted: boolean;

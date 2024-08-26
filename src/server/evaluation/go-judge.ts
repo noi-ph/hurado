@@ -116,7 +116,7 @@ export async function evaluateTaskData(
 ): Promise<EvaluationResult> {
   const spec = evalSpecs[context.language];
   const inputPath = path.join(context.judgeRoot, data.input_file_name);
-  const outputPath = path.join(context.judgeRoot, data.output_file_name);
+  const judgePath = path.join(context.judgeRoot, data.judge_file_name);
   const reqBody = {
     "cmd": [
       {
@@ -166,7 +166,7 @@ export async function evaluateTaskData(
   let score = 0;
   if (verdict === Verdict.Accepted) {
     // Just verbatim comparison for now.
-    const answer = fs.readFileSync(outputPath, "utf8");
+    const answer = fs.readFileSync(judgePath, "utf8");
     if (answer === resBody.files.stdout) {
       score = 1;
     } else {

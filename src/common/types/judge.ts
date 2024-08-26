@@ -17,10 +17,8 @@ export type JudgeTaskDataBatch = {
   id: string;
   input_file_name: string;
   input_file_hash: string;
-  output_file_name: string;
-  output_file_hash: string;
-  judge_file_name: string | null;
-  judge_file_hash: string | null;
+  judge_file_name: string;
+  judge_file_hash: string;
 };
 
 export type JudgeTaskOutput = {
@@ -36,10 +34,8 @@ export type JudgeSubtaskOutput = {
 
 export type JudgeTaskDataOutput = {
   id: string;
-  output_file_name: string;
-  output_file_hash: string;
-  judge_file_name: string | null;
-  judge_file_hash: string | null;
+  judge_file_name: string;
+  judge_file_hash: string;
 };
 
 

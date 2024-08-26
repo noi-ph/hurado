@@ -84,9 +84,9 @@ async function getSubmissionViewerFiles(data: SubmissionData): Promise<Submissio
             .where("tasks.id", "=", data.task_id)
             .innerJoin("task_subtasks", "task_subtasks.task_id", "tasks.id")
             .innerJoin("task_data", "task_data.subtask_id", "task_subtasks.id")
-            .select(["task_data.output_file_name", "task_subtasks.order as subtask_order"])
+            .select(["task_data.judge_file_name", "task_subtasks.order as subtask_order"])
             .as("task_info"),
-        (join) => join.onRef("task_info.output_file_name", "=", "submission_files.file_name")
+        (join) => join.onRef("task_info.judge_file_name", "=", "submission_files.file_name")
       )
       .select(["submission_files.hash", "task_info.subtask_order"])
       .execute();
