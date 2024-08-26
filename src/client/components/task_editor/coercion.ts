@@ -84,18 +84,10 @@ function coerceTaskDataED(dto: TaskDataDTO): TaskDataED {
           }
         : null,
     input_file_name: "input_file_name" in dto ? dto.input_file_name : null,
-    output_file: {
+    judge_file: {
       kind: EditorKind.Saved,
-      hash: dto.output_file_hash,
+      hash: dto.judge_file_hash,
     },
-    output_file_name: dto.output_file_name,
-    judge_file:
-      dto.judge_file_hash != null
-        ? {
-            kind: EditorKind.Saved,
-            hash: dto.judge_file_hash,
-          }
-        : null,
     judge_file_name: dto.judge_file_name,
     deleted: false,
   };

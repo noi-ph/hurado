@@ -178,8 +178,8 @@ async function evaluateTaskDataForOutputTask(
   context: OutputJudgeEvaluationContext,
   data: JudgeTaskDataOutput
 ): Promise<EvaluationResult> {
-  const judgePath = path.join(context.taskDir, data.output_file_name);
-  const submissionPath = path.join(context.submissionDir, data.output_file_name);
+  const judgePath = path.join(context.taskDir, data.judge_file_name);
+  const submissionPath = path.join(context.submissionDir, data.judge_file_name);
   let submissionExists = false;
   try {
     await fs.promises.lstat(submissionPath);

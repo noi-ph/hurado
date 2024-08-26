@@ -27,10 +27,7 @@ export class JudgeFiles {
         task.subtasks.forEach((subtask) => {
           subtask.data.forEach((data) => {
             promises.push(downloadTaskFile(dir, data.input_file_name, data.input_file_hash));
-            promises.push(downloadTaskFile(dir, data.output_file_name, data.output_file_hash));
-            if (data.judge_file_name && data.judge_file_hash) {
-              promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
-            }
+            promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
           });
         });
         return Promise.all(promises);
@@ -39,10 +36,7 @@ export class JudgeFiles {
         const promises: Promise<void>[] = [];
         task.subtasks.forEach((subtask) => {
           subtask.data.forEach((data) => {
-            promises.push(downloadTaskFile(dir, data.output_file_name, data.output_file_hash));
-            if (data.judge_file_name && data.judge_file_hash) {
-              promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
-            }
+            promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
           });
         });
         return Promise.all(promises);

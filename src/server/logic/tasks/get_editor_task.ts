@@ -64,8 +64,6 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
             "is_sample",
             "input_file_name",
             "input_file_hash",
-            "output_file_name",
-            "output_file_hash",
             "judge_file_name",
             "judge_file_hash",
           ])

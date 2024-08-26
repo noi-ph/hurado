@@ -118,9 +118,7 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
       name: "Data",
       input_file_name: "",
       input_file: null,
-      output_file_name: "",
-      output_file: null,
-      judge_file_name: null,
+      judge_file_name: "",
       judge_file: null,
       is_sample: false,
       deleted: false,
@@ -156,10 +154,9 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
       >
         <div className="text-gray-500 font-roboto font-medium">Name</div>
         {task.type !== TaskType.OutputOnly && (
-          <div className="text-gray-500 font-roboto font-medium">Input</div>
+          <div className="text-gray-500 font-roboto font-medium">Input Data</div>
         )}
-        <div className="text-gray-500 font-roboto font-medium">Output</div>
-        <div className="text-gray-500 font-roboto font-medium">Judge</div>
+        <div className="text-gray-500 font-roboto font-medium">Judge Data</div>
         <div className="text-gray-500 font-roboto font-medium">Actions</div>
         {subtask.data.map((data, dataIndex) => (
           <TaskDataEditor
@@ -226,16 +223,6 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
     [data, replaceThisTaskData]
   );
 
-  const onOutputFilenameChange = useCallback(
-    (filename: string) => {
-      replaceThisTaskData({
-        ...data,
-        output_file_name: filename,
-      });
-    },
-    [data, replaceThisTaskData]
-  );
-
   const onJudgeFilenameChange = useCallback(
     (filename: string) => {
       replaceThisTaskData({
@@ -252,17 +239,6 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
         ...data,
         input_file_name: filename,
         input_file: file,
-      });
-    },
-    [data, replaceThisTaskData]
-  );
-
-  const onOutputFileChange = useCallback(
-    (file: TaskFileED | null, filename: string) => {
-      replaceThisTaskData({
-        ...data,
-        output_file_name: filename,
-        output_file: file,
       });
     },
     [data, replaceThisTaskData]
@@ -328,15 +304,6 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
           />
         </TaskEditorTableCell>
       )}
-      <TaskEditorTableCell deleted={data.deleted}>
-        <TaskDataFileEditor
-          file={data.output_file}
-          onFileChange={onOutputFileChange}
-          filename={data.output_file_name}
-          onFilenameChange={onOutputFilenameChange}
-          disabled={data.deleted}
-        />
-      </TaskEditorTableCell>
       <TaskEditorTableCell deleted={data.deleted}>
         <TaskDataFileEditor
           file={data.judge_file}

@@ -124,8 +124,8 @@ async function loadAllowedFilenames(taskId: string): Promise<string[]> {
     .selectFrom("task_subtasks")
     .innerJoin("task_data", "task_data.subtask_id", "task_subtasks.id")
     .where("task_subtasks.task_id", "=", taskId)
-    .select("task_data.output_file_name")
+    .select("task_data.judge_file_name")
     .execute();
 
-  return data.map((d) => d.output_file_name);
+  return data.map((d) => d.judge_file_name);
 }

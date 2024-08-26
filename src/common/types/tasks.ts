@@ -67,10 +67,8 @@ export type TaskDataTable = {
   is_sample: boolean;
   input_file_name: string | null;
   input_file_hash: string | null;
-  output_file_name: string;
-  output_file_hash: string;
-  judge_file_name: string | null;
-  judge_file_hash: string | null;
+  judge_file_name: string;
+  judge_file_hash: string;
 };
 
 export type Task = Selectable<TaskTable>;

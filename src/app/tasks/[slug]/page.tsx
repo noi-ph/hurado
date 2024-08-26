@@ -59,7 +59,7 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
           "task_subtasks.id",
           "task_subtasks.order",
           "task_subtasks.score_max",
-          "task_data.output_file_name",
+          "task_data.judge_file_name",
         ])
         .execute();
 
@@ -73,7 +73,7 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
         subtasks.push({
           order: st.order,
           score_max: st.score_max,
-          file_name: st.output_file_name,
+          file_name: st.judge_file_name,
         });
       }
 
