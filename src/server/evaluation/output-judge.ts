@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { Verdict } from "common/types/constants";
 import {
+  JudgeChecker,
   JudgeSubmission,
   JudgeSubtaskOutput,
   JudgeTaskDataOutput,
@@ -13,9 +14,10 @@ import {
 } from "common/types/judge";
 import { db } from "db";
 import { EvaluationResult } from ".";
-import { readFileSync } from "fs";
+import { checkSubmissionOutput } from "./run_checker";
 
 type OutputJudgeEvaluationContext = {
+  checker: JudgeChecker;
   taskDir: string;
   submissionDir: string;
 };
@@ -180,40 +182,5 @@ async function evaluateTaskDataForOutputTask(
 ): Promise<EvaluationResult> {
   const judgePath = path.join(context.taskDir, data.judge_file_name);
   const submissionPath = path.join(context.submissionDir, data.judge_file_name);
-  let submissionExists = false;
-  try {
-    await fs.promises.lstat(submissionPath);
-    submissionExists = true;
-  } catch (e) {
-    // File does not exist. Skip it!
-  }
-
-  if (submissionExists) {
-    const diffStatus = await spawnNoStdio("diff", [judgePath, submissionPath]);
-    if (diffStatus == 0) {
-      return {
-        verdict: Verdict.Accepted,
-        raw_score: 1,
-        running_time_ms: 0,
-        running_memory_byte: 0,
-      };
-    }
-  }
-
-  return {
-    verdict: Verdict.WrongAnswer,
-    raw_score: 0,
-    running_time_ms: 0,
-    running_memory_byte: 0,
-  };
-}
-
-function spawnNoStdio(binary: string, args: string[]): Promise<number> {
-  return new Promise((resolve) => {
-    const child = ChildProcess.spawn(binary, args);
-
-    child.on("close", (code) => {
-      resolve(code ?? 0);
-    });
-  });
+  return checkSubmissionOutput(judgePath, submissionPath, context.checker)
 }

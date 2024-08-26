@@ -57,6 +57,7 @@ export class JudgeRunner {
     const verdict = await runTaskTypeOutput(task, submission, {
       taskDir,
       submissionDir,
+      checker: task.checker,
     });
     return verdict;
   }

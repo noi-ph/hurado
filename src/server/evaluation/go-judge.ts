@@ -1,5 +1,5 @@
 import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
-import type { JudgeSubmission, JudgeTaskBatch, JudgeTaskDataBatch } from "common/types/judge";
+import type { JudgeChecker, JudgeSubmission, JudgeTaskBatch, JudgeTaskDataBatch } from "common/types/judge";
 import fs from "fs";
 import path from "path";
 import { CompilationResult, EvaluationResult, getLanguageFilename } from ".";
@@ -14,7 +14,7 @@ type EvalSpec = {
   runCmd: string[];
 };
 
-const evalSpecs: Record<ProgrammingLanguage, EvalSpec> = {
+export const EVAL_SPECS: Record<ProgrammingLanguage, EvalSpec> = {
   [Language.Python3]: {
     sourceFileName: "main.py",
     compileCmd: [
@@ -40,9 +40,11 @@ const evalSpecs: Record<ProgrammingLanguage, EvalSpec> = {
 };
 
 export type GoJudgeEvaluationContext = {
+  submissionRoot: string;
   judgeRoot: string;
   language: ProgrammingLanguage;
   execFileIds: Record<string, string>;
+  checker: JudgeChecker;
 };
 
 export async function compileSubmission(
@@ -52,7 +54,7 @@ export async function compileSubmission(
   submissionDir: string
 ): Promise<CompilationResult<GoJudgeEvaluationContext>> {
   const lang = submission.language as ProgrammingLanguage;
-  const spec = evalSpecs[lang];
+  const spec = EVAL_SPECS[lang];
   const sourcePath = path.join(submissionDir, getLanguageFilename(lang));
   const reqBody = {
     "cmd": [
@@ -103,9 +105,11 @@ export async function compileSubmission(
     compile_time_ms: Math.round(resBody.time / 1000000),
     compile_memory_byte: resBody.memory,
     context: {
+      submissionRoot: submissionDir,
       judgeRoot: taskDir,
       language: lang,
       execFileIds: resBody.fileIds,
+      checker: task.checker,
     },
   };
 }
@@ -114,9 +118,11 @@ export async function evaluateTaskData(
   context: GoJudgeEvaluationContext,
   data: JudgeTaskDataBatch
 ): Promise<EvaluationResult> {
-  const spec = evalSpecs[context.language];
+  const spec = EVAL_SPECS[context.language];
   const inputPath = path.join(context.judgeRoot, data.input_file_name);
   const judgePath = path.join(context.judgeRoot, data.judge_file_name);
+  const answerPath = path.join(context.submissionRoot, data.judge_file_name);
+
   const reqBody = {
     "cmd": [
       {
@@ -167,11 +173,8 @@ export async function evaluateTaskData(
   if (verdict === Verdict.Accepted) {
     // Just verbatim comparison for now.
     const answer = fs.readFileSync(judgePath, "utf8");
-    if (answer === resBody.files.stdout) {
-      score = 1;
-    } else {
-      verdict = Verdict.WrongAnswer;
-    }
+    fs.writeFileSync(answerPath, resBody.files.stdout, "utf8");
+
   }
   return {
     verdict,

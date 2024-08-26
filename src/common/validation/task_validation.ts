@@ -37,7 +37,7 @@ const zTaskScript = z.object({
   file_name: z.string().min(1),
   file_hash: z.string().min(1),
   language: zLanguageKind,
-  argv: z.array(z.string()),
+  argv: z.array(z.string()).optional(),
 });
 
 const zTaskCommon = {

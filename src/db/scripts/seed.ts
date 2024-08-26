@@ -8,7 +8,7 @@ import fs from "fs";
 import { sha256 } from "common/utils/hashing";
 import { TaskFileStorage } from "server/files";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
-import { CheckerKind, ScorerKind, TaskFlavor, TaskType } from "common/types/constants";
+import { CheckerKind, Language, ScorerKind, TaskFlavor, TaskType } from "common/types/constants";
 
 const users: Insertable<UserTable>[] = [
   {
@@ -64,8 +64,11 @@ const filenames = [
   "sharing-chocolates-1e.out",
   "sharing-chocolates-1f.out",
   "sharing-chocolates-2a.out",
+  "crazy-problem-checker.py",
   "crazy-problem-1a.in",
   "crazy-problem-1a.out",
+  "crazy-problem-2a.in",
+  "crazy-problem-2a.out",
   "chocolate-hills.jpg",
   "sum-of-n-1.out",
   "sum-of-n-2.out",
@@ -309,7 +312,12 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       compile_memory_limit_byte: null,
       compile_time_limit_ms: null,
       submission_size_limit_byte: null,
-      checker_kind: CheckerKind.LenientDiff,
+      checker_kind: CheckerKind.Custom,
+      checker_script: {
+        file_name: 'crazy-problem-checker.py',
+        file_hash: getOrThrow(hashes, "crazy-problem-checker.py"),
+        language: Language.Python3,
+      },
       attachments: [
         {
           path: "path/to/chocolate-hills.jpg",
@@ -334,7 +342,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       subtasks: [
         {
           name: "Subtask #1",
-          score_max: 100,
+          score_max: 30,
           scorer_kind: ScorerKind.MinData,
           data: [
             {
@@ -344,6 +352,21 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
               input_file_hash: getOrThrow(hashes, "crazy-problem-1a.in"),
               judge_file_name: "crazy-problem-1a.out",
               judge_file_hash: getOrThrow(hashes, "crazy-problem-1a.out"),
+            },
+          ],
+        },
+        {
+          name: "Subtask #2",
+          score_max: 70,
+          scorer_kind: ScorerKind.MinData,
+          data: [
+            {
+              name: "Test Case #1",
+              is_sample: false,
+              input_file_name: "crazy-problem-2a.in",
+              input_file_hash: getOrThrow(hashes, "crazy-problem-2a.in"),
+              judge_file_name: "crazy-problem-2a.out",
+              judge_file_hash: getOrThrow(hashes, "crazy-problem-2a.out"),
             },
           ],
         },

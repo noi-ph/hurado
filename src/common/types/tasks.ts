@@ -1,5 +1,5 @@
 import { Generated, Insertable, Selectable, Updateable } from "kysely";
-import { CheckerKind, Language, TaskFlavor, TaskType } from "./constants";
+import { CheckerKind, JudgeLanguage, Language, TaskFlavor, TaskType } from "./constants";
 
 export type TaskFileTable = {
   id: Generated<string>;
@@ -46,8 +46,9 @@ export type TaskAttachmentTable = {
 export type TaskScriptTable = {
   id: Generated<string>;
   task_id: string;
+  file_name: string;
   file_hash: string;
-  language: string;
+  language: JudgeLanguage;
   argv: string[];
 };
 
