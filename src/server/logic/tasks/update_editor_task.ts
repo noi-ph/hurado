@@ -5,21 +5,28 @@ import {
   TaskAttachmentTable,
   TaskCreditTable,
   TaskDataTable,
+  TaskScriptTable,
   TaskSubtaskTable,
 } from "common/types";
 import {
   TaskAttachmentDTO,
   TaskBatchDTO,
+  TaskCommunicationDTO,
   TaskCreditDTO,
   TaskDataDTO,
   TaskDTO,
   TaskOutputDTO,
+  TaskScriptDTO,
   TaskSubtaskDTO,
 } from "common/validation/task_validation";
 import { normalizeAttachmentPath } from "common/utils/attachments";
-import { TaskFlavorOutput, TaskType } from "common/types/constants";
+import { CheckerKind, JudgeLanguage, TaskFlavorOutput, TaskType } from "common/types/constants";
 import { NotYetImplementedError, UnreachableError } from "common/errors";
-import { dbToTaskDataBatchDTO, dbToTaskDataOutputDTO } from "./editor_utils";
+import {
+  dbToTaskDataBatchDTO,
+  dbToTaskDataInteractiveDTO,
+  dbToTaskDataOutputDTO,
+} from "./editor_utils";
 
 type Ordered<T> = T & {
   order: number;
@@ -94,6 +101,71 @@ async function upsertTaskCredits(
           .execute();
 
   return [...dbCreditsNew, ...dbCreditsUpdate];
+}
+
+async function upsertTaskScripts(
+  trx: Transaction<Models>,
+  taskId: string,
+  scripts: TaskScriptDTO[]
+): Promise<Selectable<TaskScriptTable>[]> {
+  const scriptsNew = scripts.filter((script) => script.id == null);
+  const scriptsOld = scripts.filter((script) => script.id != null);
+
+  const scriptsOldIds = scriptsOld.map((script) => script.id as string);
+  if (scriptsOldIds.length <= 0) {
+    await trx.deleteFrom("task_scripts").where("task_id", "=", taskId).execute();
+  } else {
+    await trx
+      .deleteFrom("task_scripts")
+      .where("task_id", "=", taskId)
+      .where("id", "not in", scriptsOldIds)
+      .execute();
+  }
+
+  const dbScriptsNew =
+    scriptsNew.length <= 0
+      ? []
+      : await trx
+          .insertInto("task_scripts")
+          .values(
+            scriptsNew.map((script) => ({
+              task_id: taskId,
+              file_name: script.file_name,
+              file_hash: script.file_hash,
+              language: script.language as JudgeLanguage,
+              argv: script.argv,
+            }))
+          )
+          .returningAll()
+          .execute();
+
+  const dbScriptsUpdate =
+    scriptsOld.length <= 0
+      ? []
+      : await trx
+          .insertInto("task_scripts")
+          .values(
+            scriptsOld.map((script) => ({
+              task_id: taskId,
+              file_name: script.file_name,
+              file_hash: script.file_hash,
+              language: script.language as JudgeLanguage,
+              argv: script.argv,
+            }))
+          )
+          .onConflict((oc) =>
+            oc.column("id").doUpdateSet((eb) => ({
+              task_id: eb.ref("excluded.task_id"),
+              file_name: eb.ref("excluded.file_name"),
+              file_hash: eb.ref("excluded.file_hash"),
+              language: eb.ref("excluded.language"),
+              argv: eb.ref("excluded.argv"),
+            }))
+          )
+          .returningAll()
+          .execute();
+
+  return [...dbScriptsNew, ...dbScriptsUpdate];
 }
 
 async function upsertTaskAttachments(
@@ -345,6 +417,50 @@ async function upsertTaskData(
 
 export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
   return db.transaction().execute(async (trx): Promise<TaskDTO> => {
+    const dbTaskScripts = await upsertTaskScripts(trx, task.id, task.scripts);
+    const scriptNameToId = new Map(dbTaskScripts.map((s) => [s.file_name, s.id]));
+    const scriptIdToName = new Map(dbTaskScripts.map((s) => [s.id, s.file_name]));
+
+    function getScriptFilename(id: string | null, required: true): string;
+    function getScriptFilename(id: string | null, required: false): string | undefined;
+    function getScriptFilename(id: string | null, required: boolean): string | undefined {
+      if (required) {
+        if (id == null) {
+          throw new Error("Missing script file id");
+        }
+        const filename = scriptIdToName.get(id);
+        if (filename == null) {
+          throw new Error(`Missing script id ${id}`);
+        }
+        return filename;
+      } else {
+        if (id == null) {
+          return undefined;
+        }
+        return scriptIdToName.get(id);
+      }
+    }
+
+    function getScriptId(filename: string | undefined, required: true): string;
+    function getScriptId(filename: string | undefined, required: false): string | undefined;
+    function getScriptId(filename: string | undefined, required: boolean): string | undefined {
+      if (required) {
+        if (filename == null) {
+          throw new Error("Missing script file name");
+        }
+        const scriptId = scriptNameToId.get(filename);
+        if (scriptId == null) {
+          throw new Error(`Missing script file name ${filename}`);
+        }
+        return scriptId;
+      } else {
+        if (filename == null) {
+          return undefined;
+        }
+        return scriptNameToId.get(filename);
+      }
+    }
+
     const dbTask = await trx
       .updateTable("tasks")
       .set({
@@ -354,6 +470,12 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
         statement: task.statement,
         score_max: task.score_max,
         type: task.type,
+        checker_kind: task.checker_kind,
+        checker_id: getScriptId(task.checker_file_name, false),
+        communicator_id:
+          task.type === TaskType.Communication
+            ? getScriptId(task.communicator_file_name, true)
+            : null,
         flavor: "flavor" in task ? task.flavor : null,
         time_limit_ms: "time_limit_ms" in task ? task.time_limit_ms : null,
         memory_limit_byte: "memory_limit_byte" in task ? task.memory_limit_byte : null,
@@ -375,6 +497,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
         "score_max",
         "checker_kind",
         "checker_id",
+        "communicator_id",
         "is_public",
         "time_limit_ms",
         "memory_limit_byte",
@@ -409,6 +532,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
         compile_memory_limit_byte: dbTask.compile_memory_limit_byte,
         submission_size_limit_byte: dbTask.submission_size_limit_byte,
         checker_kind: dbTask.checker_kind,
+        checker_file_name: getScriptFilename(dbTask.checker_id, false),
         credits: dbTaskCredits.map((cred) => ({
           id: cred.id,
           name: cred.name,
@@ -426,10 +550,57 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           score_max: sub.score_max,
           data: dbTaskData.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataBatchDTO),
         })),
+        scripts: dbTaskScripts.map((script) => ({
+          file_name: script.file_name,
+          file_hash: script.file_hash,
+          language: script.language,
+          argv: script.argv ?? undefined,
+        })),
       };
       return result;
     } else if (dbTask.type === TaskType.Communication) {
-      throw new NotYetImplementedError(dbTask.type);
+      const result: TaskCommunicationDTO = {
+        type: dbTask.type as TaskType.Communication,
+        id: dbTask.id,
+        score_max: dbTask.score_max,
+        slug: dbTask.slug,
+        title: dbTask.title,
+        description: dbTask.description,
+        statement: dbTask.statement,
+        is_public: dbTask.is_public,
+        time_limit_ms: dbTask.time_limit_ms,
+        memory_limit_byte: dbTask.memory_limit_byte,
+        compile_time_limit_ms: dbTask.compile_time_limit_ms,
+        compile_memory_limit_byte: dbTask.compile_memory_limit_byte,
+        submission_size_limit_byte: dbTask.submission_size_limit_byte,
+        checker_kind: dbTask.checker_kind,
+        checker_file_name: getScriptFilename(dbTask.checker_id, false),
+        communicator_file_name: getScriptFilename(dbTask.communicator_id, true),
+        credits: dbTaskCredits.map((cred) => ({
+          id: cred.id,
+          name: cred.name,
+          role: cred.role,
+        })),
+        attachments: dbTaskAttachments.map((att) => ({
+          id: att.id,
+          path: att.path,
+          file_hash: att.file_hash,
+          mime_type: att.mime_type,
+        })),
+        subtasks: dbSubtasks.map((sub) => ({
+          id: sub.id,
+          name: sub.name,
+          score_max: sub.score_max,
+          data: dbTaskData.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataInteractiveDTO),
+        })),
+        scripts: dbTaskScripts.map((script) => ({
+          file_name: script.file_name,
+          file_hash: script.file_hash,
+          language: script.language,
+          argv: script.argv ?? undefined,
+        })),
+      };
+      return result;
     } else if (dbTask.type === TaskType.OutputOnly) {
       const result: TaskOutputDTO = {
         type: dbTask.type as TaskType.OutputOnly,
@@ -443,6 +614,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
         is_public: dbTask.is_public,
         submission_size_limit_byte: dbTask.submission_size_limit_byte,
         checker_kind: dbTask.checker_kind,
+        checker_file_name: getScriptFilename(dbTask.checker_id, false),
         credits: dbTaskCredits.map((cred) => ({
           id: cred.id,
           name: cred.name,
@@ -459,6 +631,12 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           name: sub.name,
           score_max: sub.score_max,
           data: dbTaskData.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataOutputDTO),
+        })),
+        scripts: dbTaskScripts.map((script) => ({
+          file_name: script.file_name,
+          file_hash: script.file_hash,
+          language: script.language,
+          argv: script.argv ?? undefined,
         })),
       };
       return result;

@@ -1,5 +1,5 @@
 import { TaskDataTable } from "common/types";
-import { TaskDataBatchDTO, TaskDataOutputDTO } from "common/validation/task_validation";
+import { TaskDataBatchDTO, TaskDataInteractiveDTO, TaskDataOutputDTO } from "common/validation/task_validation";
 import { Selectable } from "kysely";
 
 type TaskDataDatabaseResponseKey =
@@ -23,6 +23,10 @@ export function dbToTaskDataBatchDTO(data: TaskDataDatabaseResponse): TaskDataBa
     judge_file_name: data.judge_file_name,
     judge_file_hash: data.judge_file_hash,
   };
+};
+
+export function dbToTaskDataInteractiveDTO(data: TaskDataDatabaseResponse): TaskDataInteractiveDTO {
+  return dbToTaskDataBatchDTO(data);
 };
 
 export function dbToTaskDataOutputDTO(data: TaskDataDatabaseResponse): TaskDataOutputDTO {

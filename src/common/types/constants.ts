@@ -1,7 +1,7 @@
 export enum TaskType {
   Batch = "batch",
   OutputOnly = "output",
-  Communication = "comm",
+  Communication = "communication",
 }
 
 export enum TaskFlavor {
@@ -37,7 +37,7 @@ export enum CheckerKind {
   Custom = "xx",
 }
 
-export enum ScorerKind {
+export enum ReducerKind {
   MinData = "min",
   Custom = "xx",
 }

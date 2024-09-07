@@ -25,6 +25,7 @@ export type TaskTable = {
   submission_size_limit_byte: number | null;
   checker_kind: CheckerKind;
   checker_id: string | null;
+  communicator_id: string | null;
 };
 
 export type TaskCreditTable = {
@@ -49,7 +50,7 @@ export type TaskScriptTable = {
   file_name: string;
   file_hash: string;
   language: JudgeLanguage;
-  argv: string[];
+  argv: string[] | null;
 };
 
 export type TaskSubtaskTable = {

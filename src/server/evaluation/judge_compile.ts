@@ -1,11 +1,11 @@
-import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
-import type { JudgeChecker, JudgeSubmission, JudgeTaskBatch, JudgeTaskDataBatch } from "common/types/judge";
 import fs from "fs";
 import path from "path";
-import { CompilationResult, EvaluationResult, getLanguageFilename } from ".";
+import { Language, ProgrammingLanguage } from "common/types/constants";
+import type {JudgeSubmission, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
+import { CompilationResult } from "./types";
 
 // See https://github.com/criyle/go-judge/tree/master?tab=readme-ov-file#rest-api-interface
-const baseURL = "http://hurado-go-judge:5050";
+export const GO_JUDGE_BASE_URL = "http://hurado-go-judge:5050";
 
 type EvalSpec = {
   sourceFileName: string;
@@ -39,16 +39,8 @@ export const EVAL_SPECS: Record<ProgrammingLanguage, EvalSpec> = {
   },
 };
 
-export type GoJudgeEvaluationContext = {
-  submissionRoot: string;
-  judgeRoot: string;
-  language: ProgrammingLanguage;
-  execFileIds: Record<string, string>;
-  checker: JudgeChecker;
-};
-
 export async function compileSubmission(
-  task: JudgeTaskBatch,
+  task: JudgeTaskBatch | JudgeTaskCommunication,
   submission: JudgeSubmission,
   taskDir: string,
   submissionDir: string
@@ -87,7 +79,7 @@ export async function compileSubmission(
       },
     ],
   };
-  const res = await fetch(`${baseURL}/run`, {
+  const res = await fetch(`${GO_JUDGE_BASE_URL}/run`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(reqBody),
@@ -114,72 +106,15 @@ export async function compileSubmission(
   };
 }
 
-export async function evaluateTaskData(
-  context: GoJudgeEvaluationContext,
-  data: JudgeTaskDataBatch
-): Promise<EvaluationResult> {
-  const spec = EVAL_SPECS[context.language];
-  const inputPath = path.join(context.judgeRoot, data.input_file_name);
-  const judgePath = path.join(context.judgeRoot, data.judge_file_name);
-  const answerPath = path.join(context.submissionRoot, data.judge_file_name);
-
-  const reqBody = {
-    "cmd": [
-      {
-        "args": spec.runCmd,
-        "env": ["PATH=/usr/bin:/bin"],
-        "files": [
-          {
-            "content": fs.readFileSync(inputPath, "utf8"),
-          },
-          {
-            "name": "stdout",
-            "max": 10240,
-          },
-          {
-            "name": "stderr",
-            "max": 10240,
-          },
-        ],
-        "cpuLimit": 10000000000,
-        "memoryLimit": 104857600,
-        "procLimit": 50,
-        "copyIn": Object.fromEntries(
-          Object.entries(context.execFileIds).map(([k, v]) => [k, { "fileId": v }])
-        ),
-        "copyOut": ["stdout", "stderr"],
-        "copyOutCached": [],
-      },
-    ],
-  };
-  const res = await fetch(`${baseURL}/run`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(reqBody),
-  });
-  if (res.status != 200) {
-    // TODO: Handle system error
-    throw new Error(`Unexpected response while running: ${JSON.stringify(await res.blob())}`);
+export function getLanguageFilename(language: Language) {
+  switch (language) {
+    case Language.CPP:
+      return "main.cpp";
+    case Language.Java:
+      return "main.java";
+    case Language.Python3:
+      return "main.py";
+    default:
+      return "main.txt";
   }
-  const resBody = (await res.json())[0];
-  let verdict: Verdict =
-    {
-      "Accepted": Verdict.Accepted, // provisional, not yet compared to answer
-      "Memory Limit Exceeded": Verdict.MemoryLimitExceeded,
-      "Time Limit Exceeded": Verdict.TimeLimitExceeded,
-      "Internal Error": Verdict.RuntimeError, // TODO: Add a new verdict to handle this?
-    }[resBody.status as string] ?? Verdict.RuntimeError;
-  let score = 0;
-  if (verdict === Verdict.Accepted) {
-    // Just verbatim comparison for now.
-    const answer = fs.readFileSync(judgePath, "utf8");
-    fs.writeFileSync(answerPath, resBody.files.stdout, "utf8");
-
-  }
-  return {
-    verdict,
-    raw_score: score,
-    running_time_ms: Math.round(resBody.time / 1000000),
-    running_memory_byte: resBody.memory,
-  };
 }

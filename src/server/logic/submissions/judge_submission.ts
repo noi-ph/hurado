@@ -1,8 +1,10 @@
 import { db } from "db";
 import type {
   JudgeChecker,
+  JudgeScript,
   JudgeSubmission,
   JudgeSubtaskBatch,
+  JudgeSubtaskInteractive,
   JudgeSubtaskOutput,
   JudgeTask,
 } from "common/types/judge";
@@ -62,16 +64,24 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
   const task = await trx
     .selectFrom("tasks")
     .where("id", "=", taskId)
-    .leftJoin("task_scripts as checker_scripts", "checker_scripts.id", "tasks.checker_id")
-    .select([
-      "tasks.type",
-      "tasks.checker_kind",
-      "checker_scripts.language as checker_language",
-      "checker_scripts.file_name as checker_file_name",
-      "checker_scripts.file_hash as checker_file_hash",
-      "checker_scripts.argv as checker_argv",
-    ])
+    .select(["tasks.type", "tasks.checker_kind", "tasks.checker_id", "tasks.communicator_id"])
     .executeTakeFirstOrThrow();
+
+  const dbScripts = await trx.selectFrom("task_scripts").where("task_id", "=", taskId).select([
+    "id",
+    "language",
+    "file_name",
+    "file_hash",
+    "argv",
+  ]).execute();
+  const scripts: JudgeScript[] = dbScripts.map(script => ({
+    id: script.id,
+    language: script.language,
+    file_name: script.file_name,
+    file_hash: script.file_hash,
+    argv: script.argv ?? [],
+    exe_name: null,
+  }));
 
   if (task.type === TaskType.Batch) {
     const subtasks = await loadSubtasksBatch(trx, taskId);
@@ -81,13 +91,29 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
       checker: makeChecker({
         task_id: taskId,
         kind: task.checker_kind,
-        language: task.checker_language,
-        file_hash: task.checker_file_hash,
-        argv: task.checker_argv,
+        checker_id: task.checker_id,
+        scripts,
       }),
+      scripts,
     };
   } else if (task.type === TaskType.Communication) {
-    throw new NotYetImplementedError(task.type);
+    const subtasks = await loadSubtasksInteractive(trx, taskId);
+    return {
+      type: task.type,
+      subtasks: subtasks,
+      checker: makeChecker({
+        task_id: taskId,
+        kind: task.checker_kind,
+        checker_id: task.checker_id,
+        scripts,
+      }),
+      communicator: findScript({
+        task_id: taskId,
+        script_id: task.communicator_id,
+        scripts,
+      }),
+      scripts,
+    };
   } else if (task.type === TaskType.OutputOnly) {
     const subtasks = await loadSubtasksOutput(trx, taskId);
     return {
@@ -96,10 +122,10 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
       checker: makeChecker({
         task_id: taskId,
         kind: task.checker_kind,
-        language: task.checker_language,
-        file_hash: task.checker_file_hash,
-        argv: task.checker_argv,
+        checker_id: task.checker_id,
+        scripts,
       }),
+      scripts,
     };
   } else {
     throw new UnreachableError(task.type);
@@ -110,6 +136,50 @@ async function loadSubtasksBatch(
   trx: Transaction<Models>,
   taskId: string
 ): Promise<JudgeSubtaskBatch[]> {
+  const rawSubtasks = await trx
+    .selectFrom("task_subtasks")
+    .select(["id", "score_max"])
+    .where("task_id", "=", taskId)
+    .orderBy("order")
+    .execute();
+
+  const subtaskIds = rawSubtasks.map((s) => s.id);
+  const rawData =
+    subtaskIds.length <= 0
+      ? []
+      : await trx
+          .selectFrom("task_data")
+          .select([
+            "id",
+            "subtask_id",
+            "input_file_name",
+            "input_file_hash",
+            "judge_file_name",
+            "judge_file_hash",
+          ])
+          .where("subtask_id", "in", subtaskIds)
+          .orderBy(["subtask_id", "order"])
+          .execute();
+
+  return rawSubtasks.map((subtask) => ({
+    id: subtask.id,
+    score_max: subtask.score_max,
+    data: rawData
+      .filter((d) => d.subtask_id == subtask.id)
+      .map((d) => ({
+        id: d.id,
+        input_file_name: d.input_file_name as string,
+        input_file_hash: d.input_file_hash as string,
+        judge_file_name: d.judge_file_name,
+        judge_file_hash: d.judge_file_hash,
+      })),
+  }));
+}
+
+async function loadSubtasksInteractive(
+  trx: Transaction<Models>,
+  taskId: string
+): Promise<JudgeSubtaskInteractive[]> {
   const rawSubtasks = await trx
     .selectFrom("task_subtasks")
     .select(["id", "score_max"])
@@ -188,24 +258,34 @@ async function loadSubtasksOutput(
 type CheckerOpts = {
   task_id: string;
   kind: CheckerKind;
-  language: JudgeLanguage | null;
-  file_hash: string | null;
-  argv: string[] | null;
+  checker_id: string | null;
+  scripts: JudgeScript[];
 };
 
 function makeChecker(opts: CheckerOpts): JudgeChecker {
   if (opts.kind !== CheckerKind.Custom) {
     return { kind: opts.kind };
   }
-  if (opts.language == null || opts.file_hash == null) {
-    throw new TaskConfigurationError(opts.task_id, "Missing checker script");
-  }
   return {
     kind: opts.kind,
-    script: {
-      language: opts.language,
-      file_hash: opts.file_hash,
-      argv: opts.argv ?? [],
-    },
+    script: findScript({
+      task_id: opts.task_id,
+      script_id: opts.checker_id,
+      scripts: opts.scripts,
+    }),
   };
+}
+
+type FindScriptOpts = {
+  task_id: string;
+  script_id: string | null;
+  scripts: JudgeScript[];
+};
+
+function findScript(opts: FindScriptOpts): JudgeScript {
+  const script = opts.scripts.find(s => s.id === opts.script_id);
+  if (script == null) {
+    throw new TaskConfigurationError(opts.task_id, "Missing checker script");
+  }
+  return script;
 }

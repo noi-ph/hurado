@@ -1,7 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { CheckerKind, JudgeLanguage, Language, TaskType } from "common/types/constants";
+import { JudgeLanguage, Language, TaskType } from "common/types/constants";
 import { JudgeScript, JudgeSubmission, JudgeTask } from "common/types/judge";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
 import { UnreachableError } from "common/errors";
@@ -50,18 +50,14 @@ function generateRandomString(length: number): string {
 }
 
 async function compileTaskScripts(task: JudgeTask, dir: string): Promise<unknown> {
-  if (task.checker.kind === CheckerKind.Custom) {
-    await compileTaskScript(dir, task.checker.script);
-  }
-
-  return;
+  return Promise.all(task.scripts.map((script) => compileTaskScript(dir, script)));
 }
 
 async function downloadTaskFiles(task: JudgeTask, dir: string): Promise<unknown> {
   switch (task.type) {
     case TaskType.Batch: {
-      const promises: Promise<void>[] = [];
-      promises.push(downloadTaskChecker(dir, task));
+      const promises: Promise<unknown>[] = [];
+      promises.push(downloadTaskScripts(dir, task.scripts));
       task.subtasks.forEach((subtask) => {
         subtask.data.forEach((data) => {
           promises.push(downloadTaskFile(dir, data.input_file_name, data.input_file_hash));
@@ -71,8 +67,18 @@ async function downloadTaskFiles(task: JudgeTask, dir: string): Promise<unknown>
       return Promise.all(promises);
     }
     case TaskType.OutputOnly: {
-      const promises: Promise<void>[] = [];
-      promises.push(downloadTaskChecker(dir, task));
+      const promises: Promise<unknown>[] = [];
+      promises.push(downloadTaskScripts(dir, task.scripts));
+      task.subtasks.forEach((subtask) => {
+        subtask.data.forEach((data) => {
+          promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
+        });
+      });
+      return Promise.all(promises);
+    }
+    case TaskType.Communication: {
+      const promises: Promise<unknown>[] = [];
+      promises.push(downloadTaskScripts(dir, task.scripts));
       task.subtasks.forEach((subtask) => {
         subtask.data.forEach((data) => {
           promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
@@ -85,11 +91,10 @@ async function downloadTaskFiles(task: JudgeTask, dir: string): Promise<unknown>
   }
 }
 
-async function downloadTaskChecker(directory: string, task: JudgeTask) {
-  const checker = task.checker;
-  if (checker.kind === CheckerKind.Custom) {
-    await downloadTaskFile(directory, checker.script.file_name, checker.script.file_hash);
-  }
+async function downloadTaskScripts(directory: string, scripts: JudgeScript[]): Promise<unknown[]> {
+  return Promise.all(
+    scripts.map((script) => downloadTaskFile(directory, script.file_name, script.file_hash))
+  );
 }
 
 async function downloadTaskFile(directory: string, filename: string, hash: string) {
