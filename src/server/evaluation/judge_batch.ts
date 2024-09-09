@@ -1,77 +1,103 @@
 import fs from "fs";
 import path from "path";
+import { WriteStream } from "tty";
+import ChildProcess from "child_process";
+import { ContestantScript, JudgeTaskDataBatch } from "common/types/judge";
+import { EvaluationResult, IsolateResult, JudgeEvaluationContextBatch } from "./types";
+import { LANGUAGE_SPECS } from "./judge_compile";
+import { checkSubmissionOutput } from "./judge_checker";
 import { Verdict } from "common/types/constants";
-import type { JudgeTaskDataBatch } from "common/types/judge";
-import { EvaluationResult, GoJudgeEvaluationContext } from "./types";
-import { EVAL_SPECS, GO_JUDGE_BASE_URL } from "./judge_compile";
-
+import { UnreachableError } from "common/errors";
+import { ISOLATE_EXECUTABLE, IsolateUtils } from "./judge_utils";
 
 export async function evaluateTaskDataForBatch(
-  context: GoJudgeEvaluationContext,
+  context: JudgeEvaluationContextBatch,
   data: JudgeTaskDataBatch
 ): Promise<EvaluationResult> {
-  const spec = EVAL_SPECS[context.language];
-  const inputPath = path.join(context.judgeRoot, data.input_file_name);
-  const judgePath = path.join(context.judgeRoot, data.judge_file_name);
-  const answerPath = path.join(context.submissionRoot, data.judge_file_name);
-
-  const reqBody = {
-    "cmd": [
-      {
-        "args": spec.runCmd,
-        "env": ["PATH=/usr/bin:/bin"],
-        "files": [
-          {
-            "content": fs.readFileSync(inputPath, "utf8"),
-          },
-          {
-            "name": "stdout",
-            "max": 10240,
-          },
-          {
-            "name": "stderr",
-            "max": 10240,
-          },
-        ],
-        "cpuLimit": 10000000000,
-        "memoryLimit": 104857600,
-        "procLimit": 50,
-        "copyIn": Object.fromEntries(
-          Object.entries(context.execFileIds).map(([k, v]) => [k, { "fileId": v }])
-        ),
-        "copyOut": ["stdout", "stderr"],
-        "copyOutCached": [],
-      },
-    ],
-  };
-  const res = await fetch(`${GO_JUDGE_BASE_URL}/run`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(reqBody),
-  });
-  if (res.status != 200) {
-    // TODO: Handle system error
-    throw new Error(`Unexpected response while running: ${JSON.stringify(await res.blob())}`);
+  const inputPath = path.join(context.judge_root, data.input_file_name);
+  const judgePath = path.join(context.judge_root, data.judge_file_name);
+  const answerPath = path.join(context.scratch_root, data.judge_file_name);
+  const isolateResult = await runContestantScript(
+    context.contestant,
+    context.submission_root,
+    inputPath,
+    answerPath,
+    process.stderr
+  );
+  switch (isolateResult.verdict) {
+    case Verdict.RuntimeError:
+    case Verdict.TimeLimitExceeded:
+    case Verdict.MemoryLimitExceeded:
+    case Verdict.JudgeFailed:
+      return {
+        verdict: isolateResult.verdict,
+        raw_score: 0,
+        running_time_ms: isolateResult.running_time_ms,
+        running_memory_byte: isolateResult.running_memory_byte,
+      };
+    case Verdict.Accepted:
+      return checkSubmissionOutput(judgePath, answerPath, context.checker);
+    default:
+      throw new UnreachableError(isolateResult.verdict);
   }
-  const resBody = (await res.json())[0];
-  let verdict: Verdict =
-    {
-      "Accepted": Verdict.Accepted, // provisional, not yet compared to answer
-      "Memory Limit Exceeded": Verdict.MemoryLimitExceeded,
-      "Time Limit Exceeded": Verdict.TimeLimitExceeded,
-      "Internal Error": Verdict.RuntimeError, // TODO: Add a new verdict to handle this?
-    }[resBody.status as string] ?? Verdict.RuntimeError;
-  let score = 0;
-  if (verdict === Verdict.Accepted) {
-    // Just verbatim comparison for now.
-    const answer = fs.readFileSync(judgePath, "utf8");
-    fs.writeFileSync(answerPath, resBody.files.stdout, "utf8");
+}
 
+async function runContestantScript(
+  script: ContestantScript,
+  submissionRoot: string,
+  inputPath: string,
+  answerPath: string,
+  stderr: WriteStream | null
+): Promise<IsolateResult> {
+  // TODO: Enable memory / time limits
+  const isolate = await IsolateUtils.init();
+  const spec = LANGUAGE_SPECS[script.language];
+  const argv: string[] = [
+    "--box-id",
+    isolate.name,
+    "--dir",
+    `/submission=${submissionRoot}`,
+    "--chdir",
+    "/submission",
+    "--meta",
+    isolate.meta,
+    "--run",
+    "--",
+  ];
+
+  if (spec.interpreter == null) {
+    argv.push(`/submission/${script.exe_name}`);
+  } else if (script.exe_name != null) {
+    argv.push(spec.interpreter);
+    argv.push(script.exe_name);
+  } else {
+    throw new Error("Missing script exe name");
   }
-  return {
-    verdict,
-    raw_score: score,
-    running_time_ms: Math.round(resBody.time / 1000000),
-    running_memory_byte: resBody.memory,
-  };
+
+  const inputFile = await fs.promises.open(inputPath, "r");
+  const outputFile = await fs.promises.open(answerPath, "w");
+
+  try {
+    const child = ChildProcess.spawn(ISOLATE_EXECUTABLE, argv, {
+      stdio: [inputFile.fd, outputFile.fd, stderr],
+    });
+    const promise: Promise<IsolateResult> = new Promise((resolve) => {
+      child.on("exit", async () => {
+        try {
+          const result = IsolateUtils.readResult(isolate);
+          resolve(result);
+        } catch (e) {
+          console.error("Failed to parse isolate result", e);
+          resolve({
+            verdict: Verdict.JudgeFailed,
+            running_memory_byte: 0,
+            running_time_ms: 0,
+          });
+        }
+      });
+    });
+    return await promise;
+  } finally {
+    await Promise.all([inputFile.close(), outputFile.close(), IsolateUtils.cleanup(isolate)]);
+  }
 }

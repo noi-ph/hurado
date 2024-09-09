@@ -1,56 +1,54 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { JudgeLanguage, Language, TaskType } from "common/types/constants";
+import { TaskType } from "common/types/constants";
 import { JudgeScript, JudgeSubmission, JudgeTask } from "common/types/judge";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
 import { UnreachableError } from "common/errors";
-import { getLanguageFilename } from "server/evaluation";
-import ChildProcess from "child_process";
+import { compileJudgeScriptAndMutate, getLanguageFilename } from "server/evaluation";
+
+const JUDGE_ROOT_DIRECTORY = "/var/hurado/tasks";
+const SUBMISSION_ROOT_DIRECTORY = "/tmp/submissions";
+const SCRATCH_ROOT_DIRECTORY = "/tmp/scratch";
 
 // TODO: Setup some sort of caching for task data so hundreds of megabytes
 // aren't downloaded every time someone submits code
 export class JudgeFiles {
-  static async setupDirectory(): Promise<string> {
-    const base = generateRandomString(32);
-    const folder = await fs.promises.mkdtemp(path.join(os.tmpdir(), base));
-    return folder;
-  }
-
   static async cleanDirectory(path: string): Promise<void> {
     await fs.promises.rm(path, { recursive: true });
   }
 
-  static async setupTask(task: JudgeTask, dir: string): Promise<unknown> {
-    await downloadTaskFiles(task, dir);
-    return await compileTaskScripts(task, dir);
+  static async setupTask(task: JudgeTask): Promise<string> {
+    const root = path.join(JUDGE_ROOT_DIRECTORY, task.id);
+    await fs.promises.mkdir(root, { mode: 0o777, recursive: true });
+    await fs.promises.chmod(root, 0o777); // NodeJS seems to ignore mode on mkdir
+    await downloadTaskFiles(task, root);
+    await compileTaskScripts(task, root);
+    return root;
   }
 
-  static async setupSubmission(submission: JudgeSubmission, dir: string): Promise<unknown> {
-    return Promise.all(
+  static async setupScratch(submission: JudgeSubmission): Promise<string> {
+    const root = path.join(SCRATCH_ROOT_DIRECTORY, submission.id);
+    await fs.promises.mkdir(root, { mode: 0o777, recursive: true });
+    await fs.promises.chmod(root, 0o777); // NodeJS seems to ignore mode on mkdir
+    return root;
+  }
+
+  static async setupSubmission(submission: JudgeSubmission): Promise<string> {
+    const root = path.join(SUBMISSION_ROOT_DIRECTORY, submission.id);
+    await fs.promises.mkdir(root, { mode: 0o777, recursive: true });
+    await fs.promises.chmod(root, 0o777); // NodeJS seems to ignore mode on mkdir
+
+    await Promise.all(
       submission.files.map((file) => {
         const filename =
           file.file_name == null ? getLanguageFilename(submission.language) : file.file_name;
-        return downloadSubmissionFile(dir, filename, file.hash);
+        return downloadSubmissionFile(root, filename, file.hash);
       })
     );
+
+    return root;
   }
-}
-
-function generateRandomString(length: number): string {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    result += characters.charAt(randomIndex);
-  }
-
-  return result;
-}
-
-async function compileTaskScripts(task: JudgeTask, dir: string): Promise<unknown> {
-  return Promise.all(task.scripts.map((script) => compileTaskScript(dir, script)));
 }
 
 async function downloadTaskFiles(task: JudgeTask, dir: string): Promise<unknown> {
@@ -107,52 +105,6 @@ async function downloadSubmissionFile(directory: string, filename: string, hash:
   await client.downloadToFile(path.join(directory, filename));
 }
 
-type CompileSpec = {
-  getExecutableName(source: string): string;
-  getCompileCommand(source: string, exe: string): string[] | null;
-};
-
-const COMPILE_SPECS: Record<JudgeLanguage, CompileSpec> = {
-  [Language.Python3]: {
-    getExecutableName: (source: string) => {
-      return source;
-    },
-    getCompileCommand: (source: string, exe: string) => {
-      return [];
-    },
-  },
-  [Language.CPP]: {
-    getExecutableName: (source: string) => {
-      return removeLastExtension(source);
-    },
-    getCompileCommand: (source: string, exe: string) => {
-      return ["/usr/bin/g++", "-O2", "-std=c++11", "-o", exe, source];
-    },
-  },
-};
-
-async function compileTaskScript(directory: string, script: JudgeScript): Promise<JudgeScript> {
-  const srcpath = path.join(directory, script.file_name);
-  const specs = COMPILE_SPECS[script.language];
-  const exepath = specs.getExecutableName(srcpath);
-  const compileCmd = specs.getCompileCommand(srcpath, exepath);
-  if (compileCmd) {
-    await runCompiler(compileCmd[0], compileCmd.slice(1));
-  }
-  script.exe_name = exepath;
-  return script;
-}
-
-function removeLastExtension(filename: string): string {
-  return filename.replace(/\.[^/.]+$/, "");
-}
-
-function runCompiler(binary: string, args: string[]): Promise<number> {
-  return new Promise((resolve) => {
-    const child = ChildProcess.spawn(binary, args);
-
-    child.on("close", (code) => {
-      resolve(code ?? 0);
-    });
-  });
+async function compileTaskScripts(task: JudgeTask, dir: string): Promise<unknown> {
+  return Promise.all(task.scripts.map((script) => compileJudgeScriptAndMutate(script, dir)));
 }

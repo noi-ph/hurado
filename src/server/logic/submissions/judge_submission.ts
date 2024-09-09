@@ -4,16 +4,16 @@ import type {
   JudgeScript,
   JudgeSubmission,
   JudgeSubtaskBatch,
-  JudgeSubtaskInteractive,
+  JudgeSubtaskCommunication,
   JudgeSubtaskOutput,
   JudgeTask,
 } from "common/types/judge";
 import { JudgeFiles } from "server/logic/judgements/judge_files";
 import { JudgeRunner } from "server/logic/judgements/judge_runner";
-import { CheckerKind, JudgeLanguage, Language, TaskType } from "common/types/constants";
+import { CheckerKind, Language, TaskType } from "common/types/constants";
 import { Transaction } from "kysely";
 import { Models } from "common/types";
-import { NotYetImplementedError, TaskConfigurationError, UnreachableError } from "common/errors";
+import { TaskConfigurationError, UnreachableError } from "common/errors";
 
 export async function judgeSubmission(submissionId: string) {
   const [submission, task] = await db.transaction().execute(async (trx) => {
@@ -22,17 +22,32 @@ export async function judgeSubmission(submissionId: string) {
     return [sub, tsk];
   });
 
-  const pTaskDir = JudgeFiles.setupDirectory();
-  const pSubDir = JudgeFiles.setupDirectory();
-  const [taskDir, subDir] = await Promise.all([pTaskDir, pSubDir]);
+  let tJudgeRoot: string | null = null;
+  let tScratchRoot: string | null = null;
+  let tSubmissionRoot: string | null = null;
   try {
-    await Promise.all([
-      JudgeFiles.setupTask(task, taskDir),
-      JudgeFiles.setupSubmission(submission, subDir),
-    ]);
-    await JudgeRunner.evaluate(task, submission, taskDir, subDir);
+    const pTask = JudgeFiles.setupTask(task).then((newJudgeRoot) => {
+      tJudgeRoot = newJudgeRoot;
+      return newJudgeRoot;
+    });
+    const pScratch = JudgeFiles.setupScratch(submission).then((newScratchRoot) => {
+      tScratchRoot = newScratchRoot;
+      return newScratchRoot;
+    });
+    const pSubmission = JudgeFiles.setupSubmission(submission).then((newSubmissionRoot) => {
+      tSubmissionRoot = newSubmissionRoot;
+      return newSubmissionRoot;
+    });
+    const [judgeRoot, scratchRoot, submissionRoot] = await Promise.all([pTask, pScratch, pSubmission]);
+    await JudgeRunner.evaluate(task, submission, judgeRoot, scratchRoot, submissionRoot);
   } finally {
-    await Promise.all([JudgeFiles.cleanDirectory(taskDir), JudgeFiles.cleanDirectory(subDir)]);
+    // Don't clean up judge root
+    // if (tSubmissionRoot != null) {
+    //   await JudgeFiles.cleanDirectory(tSubmissionRoot);
+    // }
+    // if (tScratchRoot != null) {
+    //   await JudgeFiles.cleanDirectory(tScratchRoot);
+    // }
   }
 }
 
@@ -67,14 +82,13 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
     .select(["tasks.type", "tasks.checker_kind", "tasks.checker_id", "tasks.communicator_id"])
     .executeTakeFirstOrThrow();
 
-  const dbScripts = await trx.selectFrom("task_scripts").where("task_id", "=", taskId).select([
-    "id",
-    "language",
-    "file_name",
-    "file_hash",
-    "argv",
-  ]).execute();
-  const scripts: JudgeScript[] = dbScripts.map(script => ({
+  const dbScripts = await trx
+    .selectFrom("task_scripts")
+    .where("task_id", "=", taskId)
+    .select(["id", "language", "file_name", "file_hash", "argv"])
+    .execute();
+
+  const scripts: JudgeScript[] = dbScripts.map((script) => ({
     id: script.id,
     language: script.language,
     file_name: script.file_name,
@@ -86,6 +100,7 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
   if (task.type === TaskType.Batch) {
     const subtasks = await loadSubtasksBatch(trx, taskId);
     return {
+      id: taskId,
       type: task.type,
       subtasks: subtasks,
       checker: makeChecker({
@@ -97,8 +112,9 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
       scripts,
     };
   } else if (task.type === TaskType.Communication) {
-    const subtasks = await loadSubtasksInteractive(trx, taskId);
+    const subtasks = await loadSubtasksCommunication(trx, taskId);
     return {
+      id: taskId,
       type: task.type,
       subtasks: subtasks,
       checker: makeChecker({
@@ -117,6 +133,7 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
   } else if (task.type === TaskType.OutputOnly) {
     const subtasks = await loadSubtasksOutput(trx, taskId);
     return {
+      id: taskId,
       type: task.type,
       subtasks: subtasks,
       checker: makeChecker({
@@ -136,50 +153,6 @@ async function loadSubtasksBatch(
   trx: Transaction<Models>,
   taskId: string
 ): Promise<JudgeSubtaskBatch[]> {
-  const rawSubtasks = await trx
-    .selectFrom("task_subtasks")
-    .select(["id", "score_max"])
-    .where("task_id", "=", taskId)
-    .orderBy("order")
-    .execute();
-
-  const subtaskIds = rawSubtasks.map((s) => s.id);
-  const rawData =
-    subtaskIds.length <= 0
-      ? []
-      : await trx
-          .selectFrom("task_data")
-          .select([
-            "id",
-            "subtask_id",
-            "input_file_name",
-            "input_file_hash",
-            "judge_file_name",
-            "judge_file_hash",
-          ])
-          .where("subtask_id", "in", subtaskIds)
-          .orderBy(["subtask_id", "order"])
-          .execute();
-
-  return rawSubtasks.map((subtask) => ({
-    id: subtask.id,
-    score_max: subtask.score_max,
-    data: rawData
-      .filter((d) => d.subtask_id == subtask.id)
-      .map((d) => ({
-        id: d.id,
-        input_file_name: d.input_file_name as string,
-        input_file_hash: d.input_file_hash as string,
-        judge_file_name: d.judge_file_name,
-        judge_file_hash: d.judge_file_hash,
-      })),
-  }));
-}
-
-async function loadSubtasksInteractive(
-  trx: Transaction<Models>,
-  taskId: string
-): Promise<JudgeSubtaskInteractive[]> {
   const rawSubtasks = await trx
     .selectFrom("task_subtasks")
     .select(["id", "score_max"])
@@ -255,6 +228,50 @@ async function loadSubtasksOutput(
   }));
 }
 
+async function loadSubtasksCommunication(
+  trx: Transaction<Models>,
+  taskId: string
+): Promise<JudgeSubtaskCommunication[]> {
+  const rawSubtasks = await trx
+    .selectFrom("task_subtasks")
+    .select(["id", "score_max"])
+    .where("task_id", "=", taskId)
+    .orderBy("order")
+    .execute();
+
+  const subtaskIds = rawSubtasks.map((s) => s.id);
+  const rawData =
+    subtaskIds.length <= 0
+      ? []
+      : await trx
+          .selectFrom("task_data")
+          .select([
+            "id",
+            "subtask_id",
+            "input_file_name",
+            "input_file_hash",
+            "judge_file_name",
+            "judge_file_hash",
+          ])
+          .where("subtask_id", "in", subtaskIds)
+          .orderBy(["subtask_id", "order"])
+          .execute();
+
+  return rawSubtasks.map((subtask) => ({
+    id: subtask.id,
+    score_max: subtask.score_max,
+    data: rawData
+      .filter((d) => d.subtask_id == subtask.id)
+      .map((d) => ({
+        id: d.id,
+        input_file_name: d.input_file_name as string,
+        input_file_hash: d.input_file_hash as string,
+        judge_file_name: d.judge_file_name,
+        judge_file_hash: d.judge_file_hash,
+      })),
+  }));
+}
+
 type CheckerOpts = {
   task_id: string;
   kind: CheckerKind;
@@ -283,7 +300,7 @@ type FindScriptOpts = {
 };
 
 function findScript(opts: FindScriptOpts): JudgeScript {
-  const script = opts.scripts.find(s => s.id === opts.script_id);
+  const script = opts.scripts.find((s) => s.id === opts.script_id);
   if (script == null) {
     throw new TaskConfigurationError(opts.task_id, "Missing checker script");
   }

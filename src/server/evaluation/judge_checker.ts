@@ -1,9 +1,9 @@
 import fs from "fs";
-import ChildProcess from "child_process";
 import { JudgeChecker, JudgeScript } from "common/types/judge";
-import { EvaluationResult } from ".";
+import { EvaluationResult } from "./types";
 import { CheckerKind, Language, Verdict } from "common/types/constants";
 import { UnreachableError } from "common/errors";
+import { runChildProcess } from "./judge_utils";
 
 export async function checkSubmissionOutput(
   judgePath: string,
@@ -23,7 +23,7 @@ export async function checkSubmissionOutput(
   }
   switch (checker.kind) {
     case CheckerKind.LenientDiff: {
-      const diffStatus = await spawnNoStdio("diff", [judgePath, answerPath]);
+      const diffStatus = await runChildProcess(["diff", judgePath, answerPath]);
       if (diffStatus == 0) {
         return {
           verdict: Verdict.Accepted,
@@ -57,7 +57,8 @@ async function runCustomChecker(
 ): Promise<EvaluationResult> {
   switch (checker.language) {
     case Language.Python3: {
-      const status = await spawnNoStdio("python3", [
+      const status = await runChildProcess([
+        "python3",
         checker.exe_name!,
         ...checker.argv,
         judgePath,
@@ -74,7 +75,8 @@ async function runCustomChecker(
       break;
     }
     case Language.CPP: {
-      const status = await spawnNoStdio(checker.exe_name!, [
+      const status = await runChildProcess([
+        checker.exe_name!,
         ...checker.argv,
         judgePath,
         answerPath,
@@ -99,14 +101,4 @@ async function runCustomChecker(
     running_time_ms: 0,
     running_memory_byte: 0,
   };
-}
-
-function spawnNoStdio(binary: string, args: string[]): Promise<number> {
-  return new Promise((resolve) => {
-    const child = ChildProcess.spawn(binary, args);
-
-    child.on("close", (code) => {
-      resolve(code ?? 0);
-    });
-  });
 }

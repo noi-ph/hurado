@@ -1,6 +1,6 @@
 try:
     while True:
         line = input()
-        print(inp.upper(), flush=True)
+        print(line.upper(), flush=True)
 except EOFError:
     pass

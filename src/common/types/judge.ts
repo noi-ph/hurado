@@ -1,8 +1,9 @@
-import { CheckerKind, Language, JudgeLanguage, TaskType, Verdict } from "./constants";
+import { CheckerKind, Language, JudgeLanguage, TaskType, Verdict, ProgrammingLanguage } from "./constants";
 
 export type JudgeTask = JudgeTaskBatch | JudgeTaskOutput | JudgeTaskCommunication;
 
 export type JudgeTaskBatch = {
+  id: string;
   type: TaskType.Batch;
   subtasks: JudgeSubtaskBatch[];
   checker: JudgeChecker;
@@ -24,6 +25,7 @@ export type JudgeTaskDataBatch = {
 };
 
 export type JudgeTaskOutput = {
+  id: string;
   type: TaskType.OutputOnly;
   subtasks: JudgeSubtaskOutput[];
   checker: JudgeChecker;
@@ -43,6 +45,7 @@ export type JudgeTaskDataOutput = {
 };
 
 export type JudgeTaskCommunication = {
+  id: string;
   type: TaskType.Communication;
   subtasks: JudgeSubtaskCommunication[];
   checker: JudgeChecker;
@@ -127,4 +130,9 @@ export type JudgeScript = {
   file_hash: string;
   argv: string[];
   exe_name: string | null;
+};
+
+export type ContestantScript = {
+  language: ProgrammingLanguage;
+  exe_name: string;
 };

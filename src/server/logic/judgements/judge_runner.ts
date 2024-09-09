@@ -1,5 +1,6 @@
+import fs from "fs";
 import { UnreachableError } from "common/errors";
-import { TaskType, Verdict } from "common/types/constants";
+import { ProgrammingLanguage, TaskType, Verdict } from "common/types/constants";
 import {
   JudgeSubmission,
   JudgeSubtaskBatch,
@@ -18,13 +19,15 @@ import {
 } from "common/types/judge";
 import { db } from "db";
 import {
+  CompilationResult,
   compileSubmission,
   evaluateTaskDataForBatch,
   evaluateTaskDataForCommunication,
   evaluateTaskDataForOutput,
   EvaluationResult,
-  GoJudgeEvaluationContext,
-  OutputJudgeEvaluationContext,
+  JudgeEvaluationContextBatch,
+  JudgeEvaluationContextCommunication,
+  JudgeEvaluationContextOutput,
 } from "server/evaluation";
 
 export class JudgeRunner {
@@ -32,24 +35,46 @@ export class JudgeRunner {
     task: JudgeTask,
     submission: JudgeSubmission,
     taskDir: string,
+    scratchDir: string,
     submissionDir: string
   ): Promise<JudgeVerdict> {
     switch (task.type) {
       case TaskType.Batch: {
-        const compilation = await compileSubmission(task, submission, taskDir, submissionDir);
-        return judgeTask(task.type, compilation.context, compilation, task, submission);
+        const compilation = await compileSubmission(submission, submissionDir);
+        const context: JudgeEvaluationContextBatch = {
+          submission_root: submissionDir,
+          scratch_root: scratchDir,
+          judge_root: taskDir,
+          contestant: {
+            language: submission.language as ProgrammingLanguage,
+            exe_name: compilation.exe_name,
+          },
+          checker: task.checker,
+        };
+        return judgeTask(task.type, context, compilation, task, submission);
       }
       case TaskType.OutputOnly: {
         const context: JudgeContextFor<TaskType.OutputOnly> = {
+          submission_root: submissionDir,
+          judge_root: taskDir,
           checker: task.checker,
-          taskDir: taskDir,
-          submissionDir: submissionDir,
         };
         return judgeTask(task.type, context, null, task, submission);
       }
       case TaskType.Communication: {
-        const compilation = await compileSubmission(task, submission, taskDir, submissionDir);
-        return judgeTask(task.type, compilation.context, compilation, task, submission);
+        const compilation = await compileSubmission(submission, submissionDir);
+        const context: JudgeEvaluationContextCommunication = {
+          submission_root: submissionDir,
+          scratch_root: scratchDir,
+          judge_root: taskDir,
+          contestant: {
+            language: submission.language as ProgrammingLanguage,
+            exe_name: compilation.exe_name,
+          },
+          communicator: task.communicator,
+          checker: task.checker,
+        };
+        return judgeTask(task.type, context, compilation, task, submission);
       }
       default:
         throw new UnreachableError(task);
@@ -58,9 +83,9 @@ export class JudgeRunner {
 }
 
 type JudgeContextFor<Type extends TaskType> = {
-  [TaskType.Batch]: GoJudgeEvaluationContext;
-  [TaskType.OutputOnly]: OutputJudgeEvaluationContext;
-  [TaskType.Communication]: GoJudgeEvaluationContext;
+  [TaskType.Batch]: JudgeEvaluationContextBatch;
+  [TaskType.OutputOnly]: JudgeEvaluationContextOutput;
+  [TaskType.Communication]: JudgeEvaluationContextCommunication;
 }[Type];
 
 type JudgeTaskFor<Type extends TaskType> = {
@@ -81,15 +106,10 @@ type JudgeTaskDataFor<Type extends TaskType> = {
   [TaskType.Communication]: JudgeTaskDataCommunication;
 }[Type];
 
-type JudgeCompilationResult = {
-  compile_time_ms: number;
-  compile_memory_byte: number;
-};
-
 async function judgeTask<Type extends TaskType>(
   type: Type,
   context: JudgeContextFor<Type>,
-  compilation: JudgeCompilationResult | null,
+  compilation: CompilationResult | null,
   task: JudgeTaskFor<Type>,
   submission: JudgeSubmission
 ): Promise<JudgeVerdict> {

@@ -1,5 +1,5 @@
-import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
-import { JudgeChecker } from "common/types/judge";
+import { Verdict } from "common/types/constants";
+import { ContestantScript, JudgeChecker, JudgeScript } from "common/types/judge";
 
 export type EvaluationResult = {
   verdict: Verdict;
@@ -8,16 +8,45 @@ export type EvaluationResult = {
   running_memory_byte: number;
 };
 
-export type CompilationResult<Context> = {
-  context: Context;
-  compile_time_ms: number;
-  compile_memory_byte: number;
+type IsolateVerdict =
+  | Verdict.Accepted
+  | Verdict.RuntimeError
+  | Verdict.MemoryLimitExceeded
+  | Verdict.TimeLimitExceeded
+  | Verdict.JudgeFailed;
+
+export type IsolateResult = {
+  verdict: IsolateVerdict;
+  running_time_ms: number;
+  running_memory_byte: number;
 };
 
-export type GoJudgeEvaluationContext = {
-  submissionRoot: string;
-  judgeRoot: string;
-  language: ProgrammingLanguage;
-  execFileIds: Record<string, string>;
+export type CompilationResult = {
+  verdict: IsolateVerdict;
+  compile_time_ms: number;
+  compile_memory_byte: number;
+  exe_name: string;
+};
+
+export type JudgeEvaluationContextBatch = {
+  submission_root: string;
+  scratch_root: string;
+  judge_root: string;
+  contestant: ContestantScript;
+  checker: JudgeChecker;
+};
+
+export type JudgeEvaluationContextOutput = {
+  submission_root: string;
+  judge_root: string;
+  checker: JudgeChecker;
+};
+
+export type JudgeEvaluationContextCommunication = {
+  submission_root: string;
+  scratch_root: string;
+  judge_root: string;
+  contestant: ContestantScript;
+  communicator: JudgeScript;
   checker: JudgeChecker;
 };

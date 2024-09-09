@@ -1,77 +1,78 @@
 import fs from "fs";
 import path from "path";
-import { Verdict } from "common/types/constants";
-import type { JudgeTaskDataCommunication } from "common/types/judge";
-import { EvaluationResult, GoJudgeEvaluationContext } from "./types";
-import { EVAL_SPECS, GO_JUDGE_BASE_URL } from "./judge_compile";
-
+import ChildProcess from "child_process";
+import { ContestantScript, JudgeScript, JudgeTaskDataCommunication } from "common/types/judge";
+import { EvaluationResult, JudgeEvaluationContextCommunication } from "./types";
+import { checkSubmissionOutput } from "./judge_checker";
+import { LANGUAGE_SPECS } from "./judge_compile";
 
 export async function evaluateTaskDataForCommunication(
-  context: GoJudgeEvaluationContext,
+  context: JudgeEvaluationContextCommunication,
   data: JudgeTaskDataCommunication
 ): Promise<EvaluationResult> {
-  const spec = EVAL_SPECS[context.language];
-  const inputPath = path.join(context.judgeRoot, data.input_file_name);
-  const judgePath = path.join(context.judgeRoot, data.judge_file_name);
-  const answerPath = path.join(context.submissionRoot, data.judge_file_name);
+  const inputPath = path.join(context.judge_root, data.input_file_name);
+  const judgePath = path.join(context.judge_root, data.judge_file_name);
+  const answerPath = path.join(context.judge_root, data.judge_file_name + "ans");
+  const communicator = runCommunicatorScript(
+    context.communicator,
+    inputPath,
+    judgePath,
+    answerPath
+  );
+  const contestant = runContestantScript(context.contestant, metaPath);
+  communicator.stdout.pipe(contestant.stdin);
+  contestant.stdout.pipe(communicator.stdin);
 
-  const reqBody = {
-    "cmd": [
-      {
-        "args": spec.runCmd,
-        "env": ["PATH=/usr/bin:/bin"],
-        "files": [
-          {
-            "content": fs.readFileSync(inputPath, "utf8"),
-          },
-          {
-            "name": "stdout",
-            "max": 10240,
-          },
-          {
-            "name": "stderr",
-            "max": 10240,
-          },
-        ],
-        "cpuLimit": 10000000000,
-        "memoryLimit": 104857600,
-        "procLimit": 50,
-        "copyIn": Object.fromEntries(
-          Object.entries(context.execFileIds).map(([k, v]) => [k, { "fileId": v }])
-        ),
-        "copyOut": ["stdout", "stderr"],
-        "copyOutCached": [],
-      },
-    ],
-  };
-  const res = await fetch(`${GO_JUDGE_BASE_URL}/run`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(reqBody),
+  return new Promise(async (resolve, _reject) => {
+    communicator.on("exit", () => {
+      contestant.kill();
+    });
+
+    const metaContent = fs.readFileSync(metaPath).toString("utf8");
+    const outputContent = fs.readFileSync(answerPath).toString("utf8");
+    const result = await checkSubmissionOutput(judgePath, answerPath, context.checker);
+    resolve(result);
   });
-  if (res.status != 200) {
-    // TODO: Handle system error
-    throw new Error(`Unexpected response while running: ${JSON.stringify(await res.blob())}`);
-  }
-  const resBody = (await res.json())[0];
-  let verdict: Verdict =
-    {
-      "Accepted": Verdict.Accepted, // provisional, not yet compared to answer
-      "Memory Limit Exceeded": Verdict.MemoryLimitExceeded,
-      "Time Limit Exceeded": Verdict.TimeLimitExceeded,
-      "Internal Error": Verdict.RuntimeError, // TODO: Add a new verdict to handle this?
-    }[resBody.status as string] ?? Verdict.RuntimeError;
-  let score = 0;
-  if (verdict === Verdict.Accepted) {
-    // Just verbatim comparison for now.
-    const answer = fs.readFileSync(judgePath, "utf8");
-    fs.writeFileSync(answerPath, resBody.files.stdout, "utf8");
+}
 
+function runCommunicatorScript(
+  communicator: JudgeScript,
+  inputPath: string,
+  judgePath: string,
+  answerPath: string
+) {
+  const spec = LANGUAGE_SPECS[communicator.language];
+
+  const argv: string[] = ["--run", "--"];
+
+  if (spec.interpreter != null) {
+    argv.push(spec.interpreter);
   }
-  return {
-    verdict,
-    raw_score: score,
-    running_time_ms: Math.round(resBody.time / 1000000),
-    running_memory_byte: resBody.memory,
-  };
+  if (communicator.exe_name != null) {
+    argv.push(communicator.exe_name);
+  } else {
+    throw new Error("Missing communicator exe name");
+  }
+
+  argv.push(inputPath);
+  argv.push(judgePath);
+  argv.push(answerPath);
+
+  return ChildProcess.spawn("isolate", argv);
+}
+
+function runContestantScript(script: ContestantScript, metaPath: string) {
+  const spec = LANGUAGE_SPECS[script.language];
+  const argv: string[] = ["--run", "--meta", metaPath, "--"];
+
+  if (spec.interpreter != null) {
+    argv.push(spec.interpreter);
+  }
+  if (script.exe_name != null) {
+    argv.push(script.exe_name);
+  } else {
+    throw new Error("Missing script exe name");
+  }
+
+  return ChildProcess.spawn("isolate", argv);
 }
