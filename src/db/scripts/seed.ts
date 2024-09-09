@@ -73,6 +73,7 @@ const filenames = [
   "sum-of-n-1.out",
   "sum-of-n-2.out",
   "sum-of-n-3.out",
+  "please-add-checker.py",
   "please-add-1.in",
   "please-add-2.in",
   "please-add-1.out",
@@ -457,8 +458,15 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       flavor: TaskFlavor.OutputFile,
       score_max: 100,
       submission_size_limit_byte: null,
-      checker_kind: CheckerKind.LenientDiff,
-      scripts: [],
+      checker_kind: CheckerKind.Custom,
+      checker_file_name: 'please-add-checker.py',
+      scripts: [
+        {
+          file_name: 'please-add-checker.py',
+          file_hash: getOrThrow(hashes, "please-add-checker.py"),
+          language: Language.Python3,
+        },
+      ],
       attachments: [
         {
           path: "please-add-1.in",

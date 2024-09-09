@@ -1,4 +1,3 @@
-import fs from "fs";
 import path from "path";
 import ChildProcess from "child_process";
 import { JudgeChecker, JudgeScript, JudgeTaskDataCommunication } from "common/types/judge";
@@ -63,8 +62,8 @@ export async function evaluateTaskDataForCommunication(
       communicatorResult: rCommunicator,
       checker: context.checker,
       task_root: context.task_root,
-      output_root: context.output_root,
       judge_file_name: data.judge_file_name,
+      output_root: context.output_root,
       output_file_name: data.judge_file_name,
     });
   });
@@ -115,8 +114,8 @@ async function makeCommunicationVerdict(opts: {
   communicatorResult: IsolateResult;
   checker: JudgeChecker;
   task_root: string;
-  output_root: string;
   judge_file_name: string;
+  output_root: string;
   output_file_name: string;
 }): Promise<EvaluationResult> {
   const {
@@ -124,8 +123,8 @@ async function makeCommunicationVerdict(opts: {
     communicatorResult,
     checker,
     task_root,
-    output_root,
     judge_file_name,
+    output_root,
     output_file_name,
   } = opts;
 

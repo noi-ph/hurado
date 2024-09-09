@@ -59,13 +59,14 @@ async function runCustomChecker(opts: {
     const pCheckerOut = new Promise<string>((resolve) => {
       const chunks: string[] = [];
       const child = ChildProcess.spawn(ISOLATE_BIN, argv);
+      child.stderr.pipe(process.stderr);
 
       child.stdout.on("data", (chunk: string) => {
         chunks.push(chunk);
       });
 
       child.stdout.on("close", () => {
-        const combined = chunks.join('');
+        const combined = chunks.join("");
         resolve(combined);
       });
     });
@@ -82,7 +83,15 @@ function makeCheckerArgv(opts: {
   output_root: string;
   output_file_name: string;
 }): string[] {
-  const { checker, isolate, task_root, judge_file_name, output_root, output_file_name } = opts;
+  const {
+    checker,
+    isolate,
+    task_root,
+    judge_file_name,
+    output_root,
+    output_file_name,
+  } = opts;
+
   const spec = LANGUAGE_SPECS[checker.language];
   const argv: string[] = [
     `--box-id=${isolate.name}`,
@@ -95,7 +104,7 @@ function makeCheckerArgv(opts: {
   ];
 
   if (spec.interpreter == null) {
-    argv.push(`/submission/${checker.exe_name}`);
+    argv.push(`/task/${checker.exe_name}`);
   } else if (checker.exe_name != null) {
     argv.push(spec.interpreter);
     argv.push(checker.exe_name);

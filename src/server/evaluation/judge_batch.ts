@@ -75,6 +75,7 @@ async function runContestantScript(
       const promise = new Promise<IsolateResult>((resolve) => {
         child.on("exit", async () => {
           try {
+            // Need this await so the catch block can catch exceptions
             const result = await IsolateUtils.readResult(isolate);
             resolve(result);
           } catch (e) {
