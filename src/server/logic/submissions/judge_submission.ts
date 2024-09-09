@@ -22,31 +22,31 @@ export async function judgeSubmission(submissionId: string) {
     return [sub, tsk];
   });
 
-  let tJudgeRoot: string | null = null;
-  let tScratchRoot: string | null = null;
+  let tTaskRoot: string | null = null;
+  let tOutputRoot: string | null = null;
   let tSubmissionRoot: string | null = null;
   try {
-    const pTask = JudgeFiles.setupTask(task).then((newJudgeRoot) => {
-      tJudgeRoot = newJudgeRoot;
-      return newJudgeRoot;
+    const pTask = JudgeFiles.setupTask(task).then((newTaskRoot) => {
+      tTaskRoot = newTaskRoot;
+      return newTaskRoot;
     });
-    const pScratch = JudgeFiles.setupScratch(submission).then((newScratchRoot) => {
-      tScratchRoot = newScratchRoot;
-      return newScratchRoot;
+    const pOutput = JudgeFiles.setupOutput(submission).then((newOutputRoot) => {
+      tOutputRoot = newOutputRoot;
+      return newOutputRoot;
     });
     const pSubmission = JudgeFiles.setupSubmission(submission).then((newSubmissionRoot) => {
       tSubmissionRoot = newSubmissionRoot;
       return newSubmissionRoot;
     });
-    const [judgeRoot, scratchRoot, submissionRoot] = await Promise.all([pTask, pScratch, pSubmission]);
-    await JudgeRunner.evaluate(task, submission, judgeRoot, scratchRoot, submissionRoot);
+    const [taskRoot, outputRoot, submissionRoot] = await Promise.all([pTask, pOutput, pSubmission]);
+    await JudgeRunner.evaluate(task, submission, taskRoot, outputRoot, submissionRoot);
   } finally {
     // Don't clean up judge root
     // if (tSubmissionRoot != null) {
     //   await JudgeFiles.cleanDirectory(tSubmissionRoot);
     // }
-    // if (tScratchRoot != null) {
-    //   await JudgeFiles.cleanDirectory(tScratchRoot);
+    // if (tOutputRoot != null) {
+    //   await JudgeFiles.cleanDirectory(tOutputRoot);
     // }
   }
 }

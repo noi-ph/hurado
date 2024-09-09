@@ -34,17 +34,17 @@ export class JudgeRunner {
   static async evaluate(
     task: JudgeTask,
     submission: JudgeSubmission,
-    taskDir: string,
-    scratchDir: string,
-    submissionDir: string
+    taskRoot: string,
+    outputRoot: string,
+    submissionRoot: string
   ): Promise<JudgeVerdict> {
     switch (task.type) {
       case TaskType.Batch: {
-        const compilation = await compileSubmission(submission, submissionDir);
+        const compilation = await compileSubmission(submission, submissionRoot);
         const context: JudgeEvaluationContextBatch = {
-          submission_root: submissionDir,
-          scratch_root: scratchDir,
-          judge_root: taskDir,
+          task_root: taskRoot,
+          output_root: outputRoot,
+          submission_root: submissionRoot,
           contestant: {
             language: submission.language as ProgrammingLanguage,
             exe_name: compilation.exe_name,
@@ -55,18 +55,18 @@ export class JudgeRunner {
       }
       case TaskType.OutputOnly: {
         const context: JudgeContextFor<TaskType.OutputOnly> = {
-          submission_root: submissionDir,
-          judge_root: taskDir,
+          task_root: taskRoot,
+          submission_root: submissionRoot,
           checker: task.checker,
         };
         return judgeTask(task.type, context, null, task, submission);
       }
       case TaskType.Communication: {
-        const compilation = await compileSubmission(submission, submissionDir);
+        const compilation = await compileSubmission(submission, submissionRoot);
         const context: JudgeEvaluationContextCommunication = {
-          submission_root: submissionDir,
-          scratch_root: scratchDir,
-          judge_root: taskDir,
+          task_root: taskRoot,
+          output_root: outputRoot,
+          submission_root: submissionRoot,
           contestant: {
             language: submission.language as ProgrammingLanguage,
             exe_name: compilation.exe_name,

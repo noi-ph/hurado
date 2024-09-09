@@ -8,6 +8,11 @@ export type EvaluationResult = {
   running_memory_byte: number;
 };
 
+export type CheckerResult = {
+  verdict: Verdict.Accepted | Verdict.WrongAnswer;
+  raw_score: number;
+};
+
 type IsolateVerdict =
   | Verdict.Accepted
   | Verdict.RuntimeError
@@ -29,23 +34,23 @@ export type CompilationResult = {
 };
 
 export type JudgeEvaluationContextBatch = {
+  task_root: string;
+  output_root: string;
   submission_root: string;
-  scratch_root: string;
-  judge_root: string;
   contestant: ContestantScript;
   checker: JudgeChecker;
 };
 
 export type JudgeEvaluationContextOutput = {
+  task_root: string;
   submission_root: string;
-  judge_root: string;
   checker: JudgeChecker;
 };
 
 export type JudgeEvaluationContextCommunication = {
+  task_root: string;
+  output_root: string;
   submission_root: string;
-  scratch_root: string;
-  judge_root: string;
   contestant: ContestantScript;
   communicator: JudgeScript;
   checker: JudgeChecker;

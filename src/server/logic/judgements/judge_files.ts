@@ -1,5 +1,4 @@
 import fs from "fs";
-import os from "os";
 import path from "path";
 import { TaskType } from "common/types/constants";
 import { JudgeScript, JudgeSubmission, JudgeTask } from "common/types/judge";
@@ -7,9 +6,9 @@ import { SubmissionFileStorage, TaskFileStorage } from "server/files";
 import { UnreachableError } from "common/errors";
 import { compileJudgeScriptAndMutate, getLanguageFilename } from "server/evaluation";
 
-const JUDGE_ROOT_DIRECTORY = "/var/hurado/tasks";
+const TASK_ROOT_DIRECTORY = "/var/hurado/tasks";
 const SUBMISSION_ROOT_DIRECTORY = "/tmp/submissions";
-const SCRATCH_ROOT_DIRECTORY = "/tmp/scratch";
+const OUTPUT_ROOT_DIRECTORY = "/tmp/outputs";
 
 // TODO: Setup some sort of caching for task data so hundreds of megabytes
 // aren't downloaded every time someone submits code
@@ -19,7 +18,7 @@ export class JudgeFiles {
   }
 
   static async setupTask(task: JudgeTask): Promise<string> {
-    const root = path.join(JUDGE_ROOT_DIRECTORY, task.id);
+    const root = path.join(TASK_ROOT_DIRECTORY, task.id);
     await fs.promises.mkdir(root, { mode: 0o777, recursive: true });
     await fs.promises.chmod(root, 0o777); // NodeJS seems to ignore mode on mkdir
     await downloadTaskFiles(task, root);
@@ -27,8 +26,8 @@ export class JudgeFiles {
     return root;
   }
 
-  static async setupScratch(submission: JudgeSubmission): Promise<string> {
-    const root = path.join(SCRATCH_ROOT_DIRECTORY, submission.id);
+  static async setupOutput(submission: JudgeSubmission): Promise<string> {
+    const root = path.join(OUTPUT_ROOT_DIRECTORY, submission.id);
     await fs.promises.mkdir(root, { mode: 0o777, recursive: true });
     await fs.promises.chmod(root, 0o777); // NodeJS seems to ignore mode on mkdir
     return root;

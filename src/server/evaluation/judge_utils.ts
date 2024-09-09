@@ -1,11 +1,11 @@
 import fs from "fs";
+import ChildProcess from "child_process";
 import { Verdict } from "common/types/constants";
 import { IsolateResult } from "./types";
-import ChildProcess from "child_process";
 import { ContestantScript } from "common/types/judge";
 import { LANGUAGE_SPECS } from "./judge_compile";
 
-export const ISOLATE_EXECUTABLE = "/usr/local/bin/isolate";
+export const ISOLATE_BIN = "/usr/local/bin/isolate";
 const ISOLATE_DIRECTORY = "/var/local/lib/isolate";
 
 export type IsolateInstance = {
@@ -14,27 +14,27 @@ export type IsolateInstance = {
 };
 
 export class IsolateUtils {
-  static async init(): Promise<IsolateInstance> {
-    const fnames = await fs.promises.readdir(ISOLATE_DIRECTORY);
-    const taken = new Set(fnames);
-    const name = generateIsolateID(taken);
-    const meta = `/tmp/isolate.${name}.meta`;
-    await runChildProcess([ISOLATE_EXECUTABLE, "--init", "--box-id", name]);
-    return {
-      name,
-      meta,
-    };
+  static async with<T>(callback: (isolate: IsolateInstance) => Promise<T>): Promise<T> {
+    const isolate = await IsolateUtils.init();
+    try {
+      return callback(isolate);
+    } finally {
+      await IsolateUtils.cleanup(isolate);
+    }
   }
 
-  static async cleanup(instance: IsolateInstance): Promise<void> {
+  static async with2<T>(callback: (isolate1: IsolateInstance, isolate2: IsolateInstance) => Promise<T>): Promise<T> {
+    const [isolate1, isolate2] = await Promise.all([
+      IsolateUtils.init(),
+      IsolateUtils.init(),
+    ]);
     try {
-      Promise.all([
-        runChildProcess([ISOLATE_EXECUTABLE, "--cleanup", `--box-id=${instance.name}`]),
-        fs.promises.rm(instance.meta),
+      return callback(isolate1, isolate2);
+    } finally {
+      await Promise.all([
+        IsolateUtils.cleanup(isolate1),
+        IsolateUtils.cleanup(isolate2),
       ]);
-    } catch (e) {
-      // Do nothing
-      console.debug("Failed to cleanup isolate", e);
     }
   }
 
@@ -45,23 +45,48 @@ export class IsolateUtils {
       running_time_ms: 127,
     };
   }
+
+  private static async init(): Promise<IsolateInstance> {
+    const fnames = await fs.promises.readdir(ISOLATE_DIRECTORY);
+    const taken = new Set(fnames);
+    const name = IsolateUtils.generateIsolateID(taken);
+    const meta = `/tmp/isolate.${name}.meta`;
+    await runChildProcess([ISOLATE_BIN, "--init", "--box-id", name]);
+    return {
+      name,
+      meta,
+    };
+  }
+
+  private static async cleanup(instance: IsolateInstance): Promise<void> {
+    try {
+      Promise.all([
+        runChildProcess([ISOLATE_BIN, "--cleanup", `--box-id=${instance.name}`]),
+        fs.promises.rm(instance.meta),
+      ]);
+    } catch (e) {
+      // Do nothing
+      console.debug("Failed to cleanup isolate", e);
+    }
+  }
+
+  private static generateIsolateID(taken: Set<string>): string {
+    // Generate an un-taken number within this range inclusive. Why this range? Trip lang.
+    const min = 17;
+    const max = 999;
+    while (true) {
+      const id = generateRandomInt(min, max).toString();
+      if (!taken.has(id)) {
+        return id;
+      }
+    }
+  }
+  
 }
 
 function generateRandomInt(min: number, max: number) {
   // Generate a random number in the range [min, max]
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function generateIsolateID(taken: Set<string>): string {
-  // Generate an un-taken number within this range inclusive. Why this range? Trip lang.
-  const min = 17;
-  const max = 999;
-  while (true) {
-    const id = generateRandomInt(min, max).toString();
-    if (!taken.has(id)) {
-      return id;
-    }
-  }
 }
 
 export function makeContestantArgv(

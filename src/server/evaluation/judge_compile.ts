@@ -3,7 +3,7 @@ import ChildProcess from "child_process";
 import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
 import { JudgeScript, JudgeSubmission } from "common/types/judge";
 import { CompilationResult } from "./types";
-import { ISOLATE_EXECUTABLE, IsolateUtils } from "./judge_utils";
+import { ISOLATE_BIN, IsolateUtils } from "./judge_utils";
 
 type LanguageSpec = {
   getExecutableName(source: string): string;
@@ -82,12 +82,11 @@ export async function compileLocalSource(
     };
   }
 
-  const isolate = await IsolateUtils.init();
-  try {
+  return IsolateUtils.with(async (isolate) => {
     const argv: string[] = [
       `--box-id=${isolate.name}`,
-      `--dir=/submission=${root}:rw`,
-      "--chdir=/submission",
+      `--dir=/mount=${root}:rw`,
+      "--chdir=/mount",
       "--env=PATH",
       "--mem=512000",   // 512 MB memory limit to compile
       "--time=10",      // 10 seconds time limit to compile
@@ -97,7 +96,7 @@ export async function compileLocalSource(
       "--",
       ...command,
     ];
-    const child = ChildProcess.spawn(ISOLATE_EXECUTABLE, argv, {
+    const child = ChildProcess.spawn(ISOLATE_BIN, argv, {
       stdio: [null, process.stdout, process.stderr],
     });
 
@@ -123,10 +122,8 @@ export async function compileLocalSource(
         }
       });
     });
-    return await promise;
-  } finally {
-    await IsolateUtils.cleanup(isolate);
-  }
+    return promise;
+  });
 }
 
 export function getLanguageFilename(language: Language) {
