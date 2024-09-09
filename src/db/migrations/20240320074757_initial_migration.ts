@@ -53,6 +53,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("submission_size_limit_byte", "integer")
     .addColumn("checker_kind", "text", (col) => col.notNull())
     .addColumn("checker_id", "uuid", (col) => col.references("task_scripts.id"))
+    .addColumn("communicator_id", "uuid", (col) => col.references("task_scripts.id"))
     .addColumn("allowed_languages", sql`text[]`)
     .execute();
 

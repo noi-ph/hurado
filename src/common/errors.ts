@@ -22,3 +22,10 @@ export class NotYetImplementedError extends Error {
     this.message = `Not Yet Implemented: ${value}`;
   }
 }
+
+export class TaskConfigurationError extends Error {
+  constructor(id: string, hint: string) {
+    super();
+    this.message = `Invalid Task '${id}': ${hint}`;
+  }
+}

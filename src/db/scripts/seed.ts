@@ -8,7 +8,7 @@ import fs from "fs";
 import { sha256 } from "common/utils/hashing";
 import { TaskFileStorage } from "server/files";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
-import { CheckerKind, ScorerKind, TaskFlavor, TaskType } from "common/types/constants";
+import { CheckerKind, Language, ReducerKind, TaskFlavor, TaskType } from "common/types/constants";
 
 const users: Insertable<UserTable>[] = [
   {
@@ -64,16 +64,25 @@ const filenames = [
   "sharing-chocolates-1e.out",
   "sharing-chocolates-1f.out",
   "sharing-chocolates-2a.out",
+  "crazy-problem-checker.py",
   "crazy-problem-1a.in",
   "crazy-problem-1a.out",
+  "crazy-problem-2a.in",
+  "crazy-problem-2a.out",
   "chocolate-hills.jpg",
   "sum-of-n-1.out",
   "sum-of-n-2.out",
   "sum-of-n-3.out",
+  "please-add-checker.py",
   "please-add-1.in",
   "please-add-2.in",
   "please-add-1.out",
   "please-add-2.out",
+  "hard-of-hearing-communicator.py",
+  "hard-of-hearing-1.in",
+  "hard-of-hearing-2.in",
+  "hard-of-hearing-1.out",
+  "hard-of-hearing-2.out",
 ];
 
 function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
@@ -97,6 +106,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       compile_time_limit_ms: null,
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.LenientDiff,
+      scripts: [],
       attachments: [],
       credits: [
         {
@@ -120,7 +130,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #1",
           score_max: 30,
-          scorer_kind: ScorerKind.MinData,
+          reducer_kind: ReducerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -151,7 +161,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #2",
           score_max: 70,
-          scorer_kind: ScorerKind.MinData,
+          reducer_kind: ReducerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -203,6 +213,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       compile_time_limit_ms: null,
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.LenientDiff,
+      scripts: [],
       attachments: [],
       credits: [
         {
@@ -226,7 +237,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #1",
           score_max: 50,
-          scorer_kind: ScorerKind.MinData,
+          reducer_kind: ReducerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -281,7 +292,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
         {
           name: "Subtask #2",
           score_max: 50,
-          scorer_kind: ScorerKind.MinData,
+          reducer_kind: ReducerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -309,7 +320,15 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       compile_memory_limit_byte: null,
       compile_time_limit_ms: null,
       submission_size_limit_byte: null,
-      checker_kind: CheckerKind.LenientDiff,
+      checker_kind: CheckerKind.Custom,
+      checker_file_name: 'crazy-problem-checker.py',
+      scripts: [
+        {
+          file_name: 'crazy-problem-checker.py',
+          file_hash: getOrThrow(hashes, "crazy-problem-checker.py"),
+          language: Language.Python3,
+        },
+      ],
       attachments: [
         {
           path: "path/to/chocolate-hills.jpg",
@@ -334,8 +353,8 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       subtasks: [
         {
           name: "Subtask #1",
-          score_max: 100,
-          scorer_kind: ScorerKind.MinData,
+          score_max: 30,
+          reducer_kind: ReducerKind.MinData,
           data: [
             {
               name: "Test Case #1",
@@ -344,6 +363,21 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
               input_file_hash: getOrThrow(hashes, "crazy-problem-1a.in"),
               judge_file_name: "crazy-problem-1a.out",
               judge_file_hash: getOrThrow(hashes, "crazy-problem-1a.out"),
+            },
+          ],
+        },
+        {
+          name: "Subtask #2",
+          score_max: 70,
+          reducer_kind: ReducerKind.MinData,
+          data: [
+            {
+              name: "Test Case #1",
+              is_sample: false,
+              input_file_name: "crazy-problem-2a.in",
+              input_file_hash: getOrThrow(hashes, "crazy-problem-2a.in"),
+              judge_file_name: "crazy-problem-2a.out",
+              judge_file_hash: getOrThrow(hashes, "crazy-problem-2a.out"),
             },
           ],
         },
@@ -361,6 +395,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       score_max: 100,
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.LenientDiff,
+      scripts: [],
       attachments: [],
       credits: [
         {
@@ -423,7 +458,15 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       flavor: TaskFlavor.OutputFile,
       score_max: 100,
       submission_size_limit_byte: null,
-      checker_kind: CheckerKind.LenientDiff,
+      checker_kind: CheckerKind.Custom,
+      checker_file_name: 'please-add-checker.py',
+      scripts: [
+        {
+          file_name: 'please-add-checker.py',
+          file_hash: getOrThrow(hashes, "please-add-checker.py"),
+          language: Language.Python3,
+        },
+      ],
       attachments: [
         {
           path: "please-add-1.in",
@@ -470,6 +513,80 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
               name: "Test Case #1",
               judge_file_name: "please-add-2.out",
               judge_file_hash: getOrThrow(hashes, "please-add-2.out"),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: TaskType.Communication,
+      id: getOrThrow(ids, "hard-of-hearing"),
+      slug: "hard-of-hearing",
+      title: "Hard of Hearing",
+      statement: [
+        "Your grandfather is deaf and you want to write a hearing-to-deaf translator.",
+        "We will provide a program that will send lines of text and you have to send them back in uppercase.",
+      ].join("\n"),
+      description: "Help your grandfather hear better!",
+      is_public: true,
+      score_max: 100,
+      time_limit_ms: 2000,
+      memory_limit_byte: 1_073_741_824,
+      compile_memory_limit_byte: null,
+      compile_time_limit_ms: null,
+      submission_size_limit_byte: null,
+      checker_kind: CheckerKind.LenientDiff,
+      communicator_file_name: 'hard-of-hearing-communicator.py',
+      scripts: [
+        {
+          file_name: 'hard-of-hearing-communicator.py',
+          file_hash: getOrThrow(hashes, "hard-of-hearing-communicator.py"),
+          language: Language.Python3,
+        },
+      ],
+      attachments: [],
+      credits: [
+        {
+          name: "jabbawookiees",
+          role: "Problem Idea",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Story Author",
+        },
+        {
+          name: "jabbawookiees",
+          role: "Tester",
+        },
+      ],
+      subtasks: [
+        {
+          name: "Subtask #1",
+          score_max: 30,
+          reducer_kind: ReducerKind.MinData,
+          data: [
+            {
+              name: "Test Case #1",
+              is_sample: true,
+              input_file_name: "hard-of-hearing-1.in",
+              input_file_hash: getOrThrow(hashes, "hard-of-hearing-1.in"),
+              judge_file_name: "hard-of-hearing-1.out",
+              judge_file_hash: getOrThrow(hashes, "hard-of-hearing-1.out"),
+            },
+          ],
+        },
+        {
+          name: "Subtask #2",
+          score_max: 70,
+          reducer_kind: ReducerKind.MinData,
+          data: [
+            {
+              name: "Test Case #1",
+              is_sample: false,
+              input_file_name: "hard-of-hearing-2.in",
+              input_file_hash: getOrThrow(hashes, "hard-of-hearing-2.in"),
+              judge_file_name: "hard-of-hearing-2.out",
+              judge_file_hash: getOrThrow(hashes, "hard-of-hearing-2.out"),
             },
           ],
         },
@@ -542,6 +659,17 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           memory_limit_byte: 1_073_741_824,
           checker_kind: CheckerKind.LenientDiff,
         },
+        {
+          title: "Hard of Hearing",
+          slug: "hard-of-hearing",
+          statement: "",
+          is_public: true,
+          type: TaskType.Communication,
+          score_max: 100,
+          time_limit_ms: 2000,
+          memory_limit_byte: 1_073_741_824,
+          checker_kind: CheckerKind.LenientDiff,
+        },
       ])
       .returning(["id", "slug"])
       .execute();
@@ -556,7 +684,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
     }
     const tasks = makeTasks(ids, hashes);
     for (const task of tasks) {
-      updateEditorTask(task);
+      await updateEditorTask(task);
     }
   }
 

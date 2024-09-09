@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zCheckerKind, zLanguageKind, zScorerKind, zTaskFlavorOutput } from "./constant_validation";
+import { zCheckerKind, zLanguageKind, zReducerKind, zTaskFlavorOutput } from "./constant_validation";
 import { CheckerKind, TaskType } from "common/types/constants";
 import { REGEX_SLUG } from "./common_validation";
 
@@ -15,7 +15,11 @@ export type TaskOutputDTO = z.infer<typeof zTaskTypeOutput>;
 export type TaskSubtaskOutputDTO = z.infer<typeof zTaskSubtaskOutput>;
 export type TaskDataOutputDTO = z.infer<typeof zTaskDataOutput>;
 
-export type TaskDTO = TaskBatchDTO | TaskOutputDTO;
+export type TaskCommunicationDTO = z.infer<typeof zTaskTypeCommunication>;
+export type TaskSubtaskCommunicationDTO = z.infer<typeof zTaskSubtaskCommunication>;
+export type TaskDataCommunicationDTO = z.infer<typeof zTaskDataCommunication>;
+
+export type TaskDTO = TaskBatchDTO | TaskOutputDTO | TaskCommunicationDTO;
 export type TaskSubtaskDTO = TaskSubtaskBatchDTO | TaskSubtaskOutputDTO;
 export type TaskDataDTO = TaskDataBatchDTO | TaskDataOutputDTO;
 
@@ -37,7 +41,7 @@ const zTaskScript = z.object({
   file_name: z.string().min(1),
   file_hash: z.string().min(1),
   language: zLanguageKind,
-  argv: z.array(z.string()),
+  argv: z.array(z.string()).optional(),
 });
 
 const zTaskCommon = {
@@ -50,6 +54,7 @@ const zTaskCommon = {
   score_max: z.number().nonnegative(),
   credits: z.array(zTaskCredit),
   attachments: z.array(zTaskAttachment),
+  scripts: z.array(zTaskScript),
 };
 
 const zTaskDataBatch = z.object({
@@ -67,8 +72,8 @@ const zTaskSubtaskBatch = z.object({
   name: z.string().min(1),
   score_max: z.number().nonnegative(),
   data: z.array(zTaskDataBatch),
-  scorer_kind: zScorerKind.optional(),
-  scorer_script: zTaskScript.optional(),
+  reducer_kind: zReducerKind.optional(),
+  reducer_script: zTaskScript.optional(),
 });
 
 export const zTaskTypeBatch = z.object({
@@ -80,7 +85,7 @@ export const zTaskTypeBatch = z.object({
   compile_memory_limit_byte: z.number().nonnegative().nullable(),
   submission_size_limit_byte: z.number().nonnegative().nullable(),
   checker_kind: zCheckerKind,
-  checker_script: zTaskScript.optional(),
+  checker_file_name: z.string().optional(),
   subtasks: z.array(zTaskSubtaskBatch),
 });
 
@@ -104,15 +109,48 @@ export const zTaskTypeOutput = z.object({
   flavor: zTaskFlavorOutput,
   submission_size_limit_byte: z.number().nonnegative().nullable(),
   checker_kind: zCheckerKind,
-  checker_script: zTaskScript.optional(),
+  checker_file_name: z.string().optional(),
   subtasks: z.array(zTaskSubtaskOutput),
 });
 
+const zTaskDataCommunication = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1),
+  is_sample: z.boolean(),
+  input_file_hash: z.string().min(1),
+  input_file_name: z.string().min(1),
+  judge_file_hash: z.string().min(1),
+  judge_file_name: z.string().min(1),
+});
+
+const zTaskSubtaskCommunication = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1),
+  score_max: z.number().nonnegative(),
+  data: z.array(zTaskDataCommunication),
+  reducer_kind: zReducerKind.optional(),
+  reducer_script: zTaskScript.optional(),
+});
+
+export const zTaskTypeCommunication = z.object({
+  ...zTaskCommon,
+  type: z.literal(TaskType.Communication),
+  time_limit_ms: z.number().nonnegative().nullable(),
+  memory_limit_byte: z.number().nonnegative().nullable(),
+  compile_time_limit_ms: z.number().nonnegative().nullable(),
+  compile_memory_limit_byte: z.number().nonnegative().nullable(),
+  submission_size_limit_byte: z.number().nonnegative().nullable(),
+  checker_kind: zCheckerKind,
+  checker_file_name: z.string().optional(),
+  communicator_file_name: z.string().min(1),
+  subtasks: z.array(zTaskSubtaskCommunication),
+});
+
 export const zTaskSchema = z
-  .discriminatedUnion("type", [zTaskTypeBatch, zTaskTypeOutput])
+  .discriminatedUnion("type", [zTaskTypeBatch, zTaskTypeOutput, zTaskTypeCommunication])
   .superRefine((obj, ctx) => {
     if (obj.checker_kind === CheckerKind.Custom) {
-      if (obj.checker_script == null) {
+      if (obj.checker_file_name == null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["checker_script"],
@@ -120,7 +158,7 @@ export const zTaskSchema = z
         });
       }
     } else {
-      if (obj.checker_script != null) {
+      if (obj.checker_file_name != null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["checker_script"],

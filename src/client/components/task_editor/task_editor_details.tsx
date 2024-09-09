@@ -54,6 +54,8 @@ export const TaskEditorDetails = ({ task, setTask }: TaskEditorDetailsProps) => 
         <TaskEditorAttachments task={task} setTask={setTask} />
         <TaskEditorLabel label="Developer Credits" />
         <TaskEditorCredits task={task} setTask={setTask} />
+        <TaskEditorLabel label="UUID" />
+        <div className="text-gray-300">{task.id}</div>
       </div>
     </Scrollable>
   );

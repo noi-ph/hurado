@@ -45,6 +45,12 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
     .orderBy("order")
     .execute();
 
+  const scripts = await db
+    .selectFrom("task_scripts")
+    .select(["id", "file_name", "file_hash", "language", "argv"])
+    .where("task_id", "=", task.id)
+    .execute();
+
   const subtasks = await db
     .selectFrom("task_subtasks")
     .select(["id", "name", "order", "score_max"])
@@ -92,6 +98,13 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
       compile_memory_limit_byte: task.compile_memory_limit_byte,
       submission_size_limit_byte: task.submission_size_limit_byte,
       checker_kind: task.checker_kind,
+      scripts: scripts.map((script) => ({
+        id: script.id,
+        file_name: script.file_name,
+        file_hash: script.file_hash,
+        language: script.language,
+        argv: script.argv ?? undefined,
+      })),
       credits: credits.map((cred) => ({
         id: cred.id,
         name: cred.name,
@@ -124,6 +137,13 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
       is_public: task.is_public,
       submission_size_limit_byte: task.submission_size_limit_byte,
       checker_kind: task.checker_kind,
+      scripts: scripts.map((script) => ({
+        id: script.id,
+        file_name: script.file_name,
+        file_hash: script.file_hash,
+        language: script.language,
+        argv: script.argv ?? undefined,
+      })),
       credits: credits.map((cred) => ({
         id: cred.id,
         name: cred.name,

@@ -1,70 +1,116 @@
+import fs from "fs";
 import { UnreachableError } from "common/errors";
-import { TaskType, Verdict } from "common/types/constants";
+import { ProgrammingLanguage, TaskType, Verdict } from "common/types/constants";
 import {
   JudgeSubmission,
   JudgeSubtaskBatch,
+  JudgeSubtaskCommunication,
+  JudgeSubtaskOutput,
   JudgeTask,
   JudgeTaskBatch,
+  JudgeTaskCommunication,
   JudgeTaskDataBatch,
+  JudgeTaskDataCommunication,
+  JudgeTaskDataOutput,
   JudgeTaskOutput,
   JudgeVerdict,
   JudgeVerdictSubtask,
   JudgeVerdictTaskData,
 } from "common/types/judge";
 import { db } from "db";
-import { CompilationResult } from "server/evaluation";
 import {
+  CompilationResult,
   compileSubmission,
-  evaluateTaskData,
-  GoJudgeEvaluationContext,
-} from "server/evaluation/go-judge";
-import { runTaskTypeOutput } from "server/evaluation/output-judge";
+  evaluateTaskDataForBatch,
+  evaluateTaskDataForCommunication,
+  evaluateTaskDataForOutput,
+  EvaluationResult,
+  JudgeEvaluationContextBatch,
+  JudgeEvaluationContextCommunication,
+  JudgeEvaluationContextOutput,
+} from "server/evaluation";
 
 export class JudgeRunner {
   static async evaluate(
     task: JudgeTask,
     submission: JudgeSubmission,
-    taskDir: string,
-    submissionDir: string
+    taskRoot: string,
+    outputRoot: string,
+    submissionRoot: string
   ): Promise<JudgeVerdict> {
     switch (task.type) {
-      case TaskType.Batch:
-        return JudgeRunner.evaluateBatch(task, submission, taskDir, submissionDir);
-      case TaskType.OutputOnly:
-        return JudgeRunner.evaluateOutput(task, submission, taskDir, submissionDir);
+      case TaskType.Batch: {
+        const compilation = await compileSubmission(submission, submissionRoot);
+        const context: JudgeEvaluationContextBatch = {
+          task_root: taskRoot,
+          output_root: outputRoot,
+          submission_root: submissionRoot,
+          contestant: {
+            language: submission.language as ProgrammingLanguage,
+            exe_name: compilation.exe_name,
+          },
+          checker: task.checker,
+        };
+        return judgeTask(task.type, context, compilation, task, submission);
+      }
+      case TaskType.OutputOnly: {
+        const context: JudgeContextFor<TaskType.OutputOnly> = {
+          task_root: taskRoot,
+          submission_root: submissionRoot,
+          checker: task.checker,
+        };
+        return judgeTask(task.type, context, null, task, submission);
+      }
+      case TaskType.Communication: {
+        const compilation = await compileSubmission(submission, submissionRoot);
+        const context: JudgeEvaluationContextCommunication = {
+          task_root: taskRoot,
+          output_root: outputRoot,
+          submission_root: submissionRoot,
+          contestant: {
+            language: submission.language as ProgrammingLanguage,
+            exe_name: compilation.exe_name,
+          },
+          communicator: task.communicator,
+          checker: task.checker,
+        };
+        return judgeTask(task.type, context, compilation, task, submission);
+      }
       default:
         throw new UnreachableError(task);
     }
   }
-
-  private static async evaluateBatch(
-    task: JudgeTaskBatch,
-    submission: JudgeSubmission,
-    taskDir: string,
-    submissionDir: string
-  ): Promise<JudgeVerdict> {
-    const compilation = await compileSubmission(task, submission, taskDir, submissionDir);
-    const verdict = await runTaskBatch(compilation, task, submission);
-    return verdict;
-  }
-
-  private static async evaluateOutput(
-    task: JudgeTaskOutput,
-    submission: JudgeSubmission,
-    taskDir: string,
-    submissionDir: string
-  ): Promise<JudgeVerdict> {
-    const verdict = await runTaskTypeOutput(task, submission, {
-      taskDir,
-      submissionDir,
-    });
-    return verdict;
-  }
 }
 
-async function runTaskBatch(
-  compilation: CompilationResult<GoJudgeEvaluationContext>,
-  task: JudgeTaskBatch,
+type JudgeContextFor<Type extends TaskType> = {
+  [TaskType.Batch]: JudgeEvaluationContextBatch;
+  [TaskType.OutputOnly]: JudgeEvaluationContextOutput;
+  [TaskType.Communication]: JudgeEvaluationContextCommunication;
+}[Type];
+
+type JudgeTaskFor<Type extends TaskType> = {
+  [TaskType.Batch]: JudgeTaskBatch;
+  [TaskType.OutputOnly]: JudgeTaskOutput;
+  [TaskType.Communication]: JudgeTaskCommunication;
+}[Type];
+
+type JudgeSubtaskFor<Type extends TaskType> = {
+  [TaskType.Batch]: JudgeSubtaskBatch;
+  [TaskType.OutputOnly]: JudgeSubtaskOutput;
+  [TaskType.Communication]: JudgeSubtaskCommunication;
+}[Type];
+
+type JudgeTaskDataFor<Type extends TaskType> = {
+  [TaskType.Batch]: JudgeTaskDataBatch;
+  [TaskType.OutputOnly]: JudgeTaskDataOutput;
+  [TaskType.Communication]: JudgeTaskDataCommunication;
+}[Type];
+
+async function judgeTask<Type extends TaskType>(
+  type: Type,
+  context: JudgeContextFor<Type>,
+  compilation: CompilationResult | null,
+  task: JudgeTaskFor<Type>,
   submission: JudgeSubmission
 ): Promise<JudgeVerdict> {
   const dbVerdict = await db.transaction().execute(async (trx) => {
@@ -73,8 +119,8 @@ async function runTaskBatch(
       .values({
         submission_id: submission.id,
         is_official: true,
-        compile_memory_byte: compilation.compile_memory_byte,
-        compile_time_ms: compilation.compile_time_ms,
+        compile_memory_byte: compilation?.compile_memory_byte,
+        compile_time_ms: compilation?.compile_time_ms,
       })
       .returning(["id", "created_at"])
       .executeTakeFirstOrThrow();
@@ -97,7 +143,7 @@ async function runTaskBatch(
   let running_memory_byte = 0;
 
   for (const subtask of task.subtasks) {
-    const child = await runSubtaskBatch(compilation.context, dbVerdict.id, subtask);
+    const child = await jugeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id);
     allVerdictSubtasks.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -133,10 +179,11 @@ async function runTaskBatch(
   };
 }
 
-async function runSubtaskBatch(
-  context: GoJudgeEvaluationContext,
-  verdict_id: string,
-  subtask: JudgeSubtaskBatch
+async function jugeSubtask<Type extends TaskType>(
+  type: Type,
+  context: JudgeContextFor<Type>,
+  subtask: JudgeSubtaskFor<Type>,
+  verdict_id: string
 ): Promise<JudgeVerdictSubtask> {
   const dbSubtask = await db
     .insertInto("verdict_subtasks")
@@ -152,9 +199,8 @@ async function runSubtaskBatch(
   let raw_score = 1;
   let running_time_ms = 0;
   let running_memory_byte = 0;
-
   for (const data of subtask.data) {
-    const child = await runTestDataBatch(context, dbSubtask.id, data);
+    const child = await judgeTaskData(type, context, data as JudgeTaskDataFor<Type>, dbSubtask.id);
     allVerdictData.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -189,12 +235,35 @@ async function runSubtaskBatch(
   };
 }
 
-async function runTestDataBatch(
-  context: GoJudgeEvaluationContext,
-  verdict_subtask_id: string,
-  task_data: JudgeTaskDataBatch
+async function judgeTaskData<Type extends TaskType>(
+  type: Type,
+  context: JudgeContextFor<Type>,
+  task_data: JudgeTaskDataFor<Type>,
+  verdict_subtask_id: string
 ): Promise<JudgeVerdictTaskData> {
-  const result = await evaluateTaskData(context, task_data);
+  let result: EvaluationResult;
+  switch (type) {
+    case TaskType.Batch:
+      result = await evaluateTaskDataForBatch(
+        context as JudgeContextFor<TaskType.Batch>,
+        task_data as JudgeTaskDataFor<TaskType.Batch>
+      );
+      break;
+    case TaskType.OutputOnly:
+      result = await evaluateTaskDataForOutput(
+        context as JudgeContextFor<TaskType.OutputOnly>,
+        task_data as JudgeTaskDataFor<TaskType.OutputOnly>
+      );
+      break;
+    case TaskType.Communication:
+      result = await evaluateTaskDataForCommunication(
+        context as JudgeContextFor<TaskType.Communication>,
+        task_data as JudgeTaskDataFor<TaskType.Communication>
+      );
+      break;
+    default:
+      throw new UnreachableError(type);
+  }
 
   const dbTaskData = await db
     .insertInto("verdict_task_data")
