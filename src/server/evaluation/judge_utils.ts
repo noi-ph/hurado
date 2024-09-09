@@ -17,33 +17,85 @@ export class IsolateUtils {
   static async with<T>(callback: (isolate: IsolateInstance) => Promise<T>): Promise<T> {
     const isolate = await IsolateUtils.init();
     try {
-      return callback(isolate);
+      return await callback(isolate);
     } finally {
       await IsolateUtils.cleanup(isolate);
     }
   }
 
-  static async with2<T>(callback: (isolate1: IsolateInstance, isolate2: IsolateInstance) => Promise<T>): Promise<T> {
-    const [isolate1, isolate2] = await Promise.all([
-      IsolateUtils.init(),
-      IsolateUtils.init(),
-    ]);
+  static async with2<T>(
+    callback: (isolate1: IsolateInstance, isolate2: IsolateInstance) => Promise<T>
+  ): Promise<T> {
+    const [isolate1, isolate2] = await Promise.all([IsolateUtils.init(), IsolateUtils.init()]);
     try {
       return callback(isolate1, isolate2);
     } finally {
-      await Promise.all([
-        IsolateUtils.cleanup(isolate1),
-        IsolateUtils.cleanup(isolate2),
-      ]);
+      await Promise.all([IsolateUtils.cleanup(isolate1), IsolateUtils.cleanup(isolate2)]);
     }
   }
 
   static async readResult(instance: IsolateInstance): Promise<IsolateResult> {
-    return {
-      verdict: Verdict.Accepted,
-      running_memory_byte: 1227,
-      running_time_ms: 127,
+    const result: IsolateResult = {
+      verdict: Verdict.JudgeFailed,
+      running_time_ms: 0,
+      running_memory_byte: 0,
     };
+
+    let exitcode: string | null = null;
+    let exitsig: string | null = null;
+    let status: string | null = null;
+    let maxRSS: string | null = null;
+    let time: string | null = null;
+    let timeWall: string | null = null;
+
+    const data = await fs.promises.readFile(instance.meta, { encoding: "utf-8" });
+    for (const line of data.split("\n")) {
+      const splitter = line.indexOf(":");
+      const key = splitter >= 0 ? line.substring(0, splitter) : line;
+      const value = splitter >= 0 ? line.substring(splitter + 1).trim() : "";
+      switch (key) {
+        case "status":
+          status = value;
+          break;
+        case "exitsig":
+          exitsig = value;
+          break;
+        case "exitcode":
+          exitcode = value;
+          break;
+        case "max-rss":
+          maxRSS = value;
+          break;
+        case "time":
+          time = value;
+          break;
+        case "time-wall":
+          timeWall = value;
+          break;
+        default:
+          // Do nothing
+      }
+    }
+
+    if (status == "TO") {
+      result.verdict = Verdict.TimeLimitExceeded;
+    } else if (status === "RE") {
+      result.verdict = Verdict.RuntimeError;
+    } else if (status === "SG") {
+      result.verdict = Verdict.MemoryLimitExceeded;
+    } else if (exitcode === "0") {
+      result.verdict = Verdict.Accepted;
+    }
+
+    if (maxRSS != null && !isNaN(+maxRSS)) {
+      result.running_memory_byte = (+maxRSS) * 1000;
+    }
+
+    if (time != null && !isNaN(+time)) {
+      result.running_time_ms = (+time) * 1000;
+    }
+
+    return result;
   }
 
   private static async init(): Promise<IsolateInstance> {
@@ -81,7 +133,6 @@ export class IsolateUtils {
       }
     }
   }
-  
 }
 
 function generateRandomInt(min: number, max: number) {
@@ -102,6 +153,8 @@ export function makeContestantArgv(
     `--dir=/submission=${submissionRoot}`,
     "--chdir=/submission",
     `--meta=${isolate.meta}`,
+    "--time=3.00", // 3 seconds
+    "--mem=100000", // 100MB
     "--run",
     "--",
   ];

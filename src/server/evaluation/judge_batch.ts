@@ -34,7 +34,7 @@ export async function evaluateTaskDataForBatch(
         running_memory_byte: isolateResult.running_memory_byte,
       };
     case Verdict.Accepted: {
-      const checkerResult =  await checkSubmissionOutput({
+      const checkerResult = await checkSubmissionOutput({
         checker: context.checker,
         task_root: context.task_root,
         judge_file_name: data.judge_file_name,
@@ -46,7 +46,7 @@ export async function evaluateTaskDataForBatch(
         raw_score: checkerResult.raw_score,
         running_time_ms: isolateResult.running_time_ms,
         running_memory_byte: isolateResult.running_memory_byte,
-      }
+      };
     }
     default:
       throw new UnreachableError(isolateResult.verdict);
@@ -61,30 +61,36 @@ async function runContestantScript(
   stderr: WriteStream | null
 ): Promise<IsolateResult> {
   // TODO: Enable memory / time limits
-  return IsolateUtils.with(async(isolate) => {
+  return IsolateUtils.with(async (isolate) => {
     const argv = makeContestantArgv(script, isolate, submissionRoot);
 
     const inputFile = await fs.promises.open(inputPath, "r");
     const outputFile = await fs.promises.open(outputPath, "w");
 
-    const child = ChildProcess.spawn(ISOLATE_BIN, argv, {
-      stdio: [inputFile.fd, outputFile.fd, stderr],
-    });
-
-    return new Promise<IsolateResult>((resolve) => {
-      child.on("exit", async () => {
-        try {
-          const result = IsolateUtils.readResult(isolate);
-          resolve(result);
-        } catch (e) {
-          console.error("Failed to parse isolate result", e);
-          resolve({
-            verdict: Verdict.JudgeFailed,
-            running_memory_byte: 0,
-            running_time_ms: 0,
-          });
-        }
+    try {
+      const child = ChildProcess.spawn(ISOLATE_BIN, argv, {
+        stdio: [inputFile.fd, outputFile.fd, stderr],
       });
-    });
+
+      const promise = new Promise<IsolateResult>((resolve) => {
+        child.on("exit", async () => {
+          try {
+            const result = await IsolateUtils.readResult(isolate);
+            resolve(result);
+          } catch (e) {
+            console.error("Failed to parse isolate result", e);
+            resolve({
+              verdict: Verdict.JudgeFailed,
+              running_memory_byte: 0,
+              running_time_ms: 0,
+            });
+          }
+        });
+      });
+
+      return await promise;
+    } finally {
+      await Promise.all([inputFile.close(), outputFile.close()]);
+    }
   });
 }
