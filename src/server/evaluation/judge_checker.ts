@@ -6,9 +6,9 @@ import { UnreachableError } from "common/errors";
 import { runChildProcess } from "./judge_utils";
 
 export async function checkSubmissionOutput(
+  checker: JudgeChecker,
   judgePath: string,
-  answerPath: string,
-  checker: JudgeChecker
+  answerPath: string
 ): Promise<EvaluationResult> {
   try {
     await fs.promises.lstat(answerPath);
@@ -35,8 +35,7 @@ export async function checkSubmissionOutput(
       break;
     }
     case CheckerKind.Custom: {
-      return runCustomChecker(judgePath, answerPath, checker.script);
-      break;
+      return runCustomChecker(checker.script, judgePath, answerPath);
     }
     default:
       throw new UnreachableError(checker);
@@ -51,9 +50,9 @@ export async function checkSubmissionOutput(
 }
 
 async function runCustomChecker(
+  checker: JudgeScript,
   judgePath: string,
-  answerPath: string,
-  checker: JudgeScript
+  answerPath: string
 ): Promise<EvaluationResult> {
   switch (checker.language) {
     case Language.Python3: {

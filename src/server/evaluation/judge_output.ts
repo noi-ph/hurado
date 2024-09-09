@@ -9,5 +9,5 @@ export async function evaluateTaskDataForOutput(
 ): Promise<EvaluationResult> {
   const judgePath = path.join(context.judge_root, data.judge_file_name);
   const submissionPath = path.join(context.submission_root, data.judge_file_name);
-  return checkSubmissionOutput(judgePath, submissionPath, context.checker)
+  return checkSubmissionOutput(context.checker, judgePath, submissionPath)
 }

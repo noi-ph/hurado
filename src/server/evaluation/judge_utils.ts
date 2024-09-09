@@ -2,21 +2,13 @@ import fs from "fs";
 import { Verdict } from "common/types/constants";
 import { IsolateResult } from "./types";
 import ChildProcess from "child_process";
-
-export function runChildProcess(args: string[]): Promise<number> {
-  return new Promise((resolve) => {
-    const child = ChildProcess.spawn(args[0], args.slice(1));
-
-    child.on("close", (code) => {
-      resolve(code ?? 0);
-    });
-  });
-}
+import { ContestantScript } from "common/types/judge";
+import { LANGUAGE_SPECS } from "./judge_compile";
 
 export const ISOLATE_EXECUTABLE = "/usr/local/bin/isolate";
 const ISOLATE_DIRECTORY = "/var/local/lib/isolate";
 
-type IsolateInstance = {
+export type IsolateInstance = {
   name: string;
   meta: string;
 };
@@ -70,4 +62,43 @@ function generateIsolateID(taken: Set<string>): string {
       return id;
     }
   }
+}
+
+export function makeContestantArgv(
+  script: ContestantScript,
+  isolate: IsolateInstance,
+  submissionRoot: string
+): string[] {
+  // TODO Memory / Time limits
+  const spec = LANGUAGE_SPECS[script.language];
+
+  const argv: string[] = [
+    `--box-id=${isolate.name}`,
+    `--dir=/submission=${submissionRoot}`,
+    "--chdir=/submission",
+    `--meta=${isolate.meta}`,
+    "--run",
+    "--",
+  ];
+
+  if (spec.interpreter == null) {
+    argv.push(`/submission/${script.exe_name}`);
+  } else if (script.exe_name != null) {
+    argv.push(spec.interpreter);
+    argv.push(script.exe_name);
+  } else {
+    throw new Error("Missing script exe name");
+  }
+
+  return argv;
+}
+
+export function runChildProcess(args: string[]): Promise<number> {
+  return new Promise((resolve) => {
+    const child = ChildProcess.spawn(args[0], args.slice(1));
+
+    child.on("close", (code) => {
+      resolve(code ?? 0);
+    });
+  });
 }

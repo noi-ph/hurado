@@ -79,6 +79,7 @@ async function downloadTaskFiles(task: JudgeTask, dir: string): Promise<unknown>
       promises.push(downloadTaskScripts(dir, task.scripts));
       task.subtasks.forEach((subtask) => {
         subtask.data.forEach((data) => {
+          promises.push(downloadTaskFile(dir, data.input_file_name, data.input_file_hash));
           promises.push(downloadTaskFile(dir, data.judge_file_name, data.judge_file_hash));
         });
       });

@@ -8,7 +8,7 @@ import { LANGUAGE_SPECS } from "./judge_compile";
 import { checkSubmissionOutput } from "./judge_checker";
 import { Verdict } from "common/types/constants";
 import { UnreachableError } from "common/errors";
-import { ISOLATE_EXECUTABLE, IsolateUtils } from "./judge_utils";
+import { ISOLATE_EXECUTABLE, IsolateUtils, makeContestantArgv } from "./judge_utils";
 
 export async function evaluateTaskDataForBatch(
   context: JudgeEvaluationContextBatch,
@@ -36,7 +36,7 @@ export async function evaluateTaskDataForBatch(
         running_memory_byte: isolateResult.running_memory_byte,
       };
     case Verdict.Accepted:
-      return checkSubmissionOutput(judgePath, answerPath, context.checker);
+      return checkSubmissionOutput(context.checker, judgePath, answerPath);
     default:
       throw new UnreachableError(isolateResult.verdict);
   }
@@ -51,28 +51,7 @@ async function runContestantScript(
 ): Promise<IsolateResult> {
   // TODO: Enable memory / time limits
   const isolate = await IsolateUtils.init();
-  const spec = LANGUAGE_SPECS[script.language];
-  const argv: string[] = [
-    "--box-id",
-    isolate.name,
-    "--dir",
-    `/submission=${submissionRoot}`,
-    "--chdir",
-    "/submission",
-    "--meta",
-    isolate.meta,
-    "--run",
-    "--",
-  ];
-
-  if (spec.interpreter == null) {
-    argv.push(`/submission/${script.exe_name}`);
-  } else if (script.exe_name != null) {
-    argv.push(spec.interpreter);
-    argv.push(script.exe_name);
-  } else {
-    throw new Error("Missing script exe name");
-  }
+  const argv = makeContestantArgv(script, isolate, submissionRoot);
 
   const inputFile = await fs.promises.open(inputPath, "r");
   const outputFile = await fs.promises.open(answerPath, "w");
