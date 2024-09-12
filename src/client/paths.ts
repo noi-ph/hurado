@@ -4,17 +4,27 @@ import { uuidToHuradoID } from "common/utils/uuid";
 export enum Path {
   Home = "Home",
   Submission = "Submission",
+  TaskList = "TaskList",
   TaskView = "TaskView",
   TaskEdit = "TaskEdit",
   TaskAttachment = "TaskAttachment",
+  ContestList = "ContestList",
+  ContestView = "ContestView",
+  ContestEdit = "ContestEdit",
+  ContestAttachment = "ContestAttachment",
 }
 
 export type PathArguments =
   | { kind: Path.Home }
   | { kind: Path.Submission; uuid: string }
+  | { kind: Path.TaskList }
   | { kind: Path.TaskView; slug: string }
   | { kind: Path.TaskEdit; uuid: string }
-  | { kind: Path.TaskAttachment; slug: string; path: string };
+  | { kind: Path.TaskAttachment; slug: string; path: string }
+  | { kind: Path.ContestList }
+  | { kind: Path.ContestView; slug: string }
+  | { kind: Path.ContestEdit; uuid: string }
+  | { kind: Path.ContestAttachment; slug: string; path: string };
 
 export function getPath(args: PathArguments) {
   switch (args.kind) {
@@ -22,12 +32,22 @@ export function getPath(args: PathArguments) {
       return "/";
     case Path.Submission:
       return `/submissions/${uuidToHuradoID(args.uuid)}`;
+    case Path.TaskList:
+      return "/tasks";
     case Path.TaskView:
       return `/tasks/${args.slug}`;
     case Path.TaskEdit:
       return `/tasks/${uuidToHuradoID(args.uuid)}/edit`;
     case Path.TaskAttachment:
       return `/tasks/${args.slug}/attachments/${args.path}`;
+    case Path.ContestList:
+      return "/contests";
+    case Path.ContestView:
+      return `/contests/${args.slug}`;
+    case Path.ContestEdit:
+      return `/contests/${uuidToHuradoID(args.uuid)}/edit`;
+    case Path.ContestAttachment:
+      return `/contests/${args.slug}/attachments/${args.path}`;
     default:
       throw new UnreachableError(args);
   }

@@ -1,7 +1,7 @@
 import { Generated, Insertable, Selectable, Updateable } from "kysely";
 import { CheckerKind, JudgeLanguage, Language, TaskFlavor, TaskType } from "./constants";
 
-export type TaskFileTable = {
+export type FileTable = {
   id: Generated<string>;
   hash: string;
   size: number;

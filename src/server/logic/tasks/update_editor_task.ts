@@ -20,8 +20,8 @@ import {
   TaskSubtaskDTO,
 } from "common/validation/task_validation";
 import { normalizeAttachmentPath } from "common/utils/attachments";
-import { CheckerKind, JudgeLanguage, TaskFlavorOutput, TaskType } from "common/types/constants";
-import { NotYetImplementedError, UnreachableError } from "common/errors";
+import { JudgeLanguage, TaskFlavorOutput, TaskType } from "common/types/constants";
+import { UnreachableError } from "common/errors";
 import {
   dbToTaskDataBatchDTO,
   dbToTaskDataInteractiveDTO,

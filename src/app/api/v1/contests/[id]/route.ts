@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { zTaskSchema } from "common/validation/task_validation";
-import { canManageTasks } from "server/authorization";
-import { updateEditorTask } from "server/logic/tasks/update_editor_task";
+import { zContest } from "common/validation/contest_validation";
+import { canManageContests } from "server/authorization";
 import { getSession } from "server/sessions";
+import { updateContest } from "server/logic/contests/update_contest";
 
 export async function PUT(request: NextRequest) {
   const session = getSession(request);
-  if (!canManageTasks(session)) {
+  if (!canManageContests(session)) {
     return NextResponse.json({}, { status: 403 });
   }
 
   const data = await request.json();
-  const parsed = zTaskSchema.safeParse(data);
+  const parsed = zContest.safeParse(data);
   if (parsed.success) {
-    const task = await updateEditorTask(parsed.data);
-    return NextResponse.json(task);
+    const contest = await updateContest(parsed.data);
+    return NextResponse.json(contest);
   } else {
     return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
   }

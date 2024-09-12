@@ -1,10 +1,10 @@
-import { hashSync } from "bcryptjs";
-import { UserTable } from "common/types";
-import { TaskDTO } from "common/validation/task_validation";
-import { db } from "db";
-import { Insertable } from "kysely";
-import path from "path";
 import fs from "fs";
+import path from "path";
+import { hashSync } from "bcryptjs";
+import { Insertable } from "kysely";
+import { db } from "db";
+import { ContestTable, UserTable } from "common/types";
+import { TaskDTO } from "common/validation/task_validation";
 import { sha256 } from "common/utils/hashing";
 import { TaskFileStorage } from "server/files";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
@@ -34,6 +34,29 @@ const users: Insertable<UserTable>[] = [
     school: "Ateneo de Manila University",
     name: "Cisco Sugoi",
     role: "user",
+  },
+];
+
+const contests: Insertable<ContestTable>[] = [
+  {
+    slug: "noi-elims",
+    title: "NOI.PH Eliminations",
+    description: "The best elimination round",
+    statement: "Join this contest to get eliminated!",
+    owner_id: "kevinsogo",
+    is_public: true,
+    start_time: null,
+    end_time: null,
+  },
+  {
+    slug: "noi-finals",
+    title: "NOI.PH Finals",
+    description: "Secret final contest",
+    statement: "Join this contest to win the greatest prize of all!",
+    owner_id: "kevinsogo",
+    is_public: false,
+    start_time: null,
+    end_time: null,
   },
 ];
 
@@ -321,10 +344,10 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       compile_time_limit_ms: null,
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.Custom,
-      checker_file_name: 'crazy-problem-checker.py',
+      checker_file_name: "crazy-problem-checker.py",
       scripts: [
         {
-          file_name: 'crazy-problem-checker.py',
+          file_name: "crazy-problem-checker.py",
           file_hash: getOrThrow(hashes, "crazy-problem-checker.py"),
           language: Language.Python3,
         },
@@ -387,7 +410,8 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       id: getOrThrow(ids, "sum-of-n"),
       slug: "sum-of-n",
       title: "Sum of N",
-      statement: "Get the sum of the first n numbers. Subtask 1: n = 3. Subtask 2: n = 10, Subtask 3: n = 100",
+      statement:
+        "Get the sum of the first n numbers. Subtask 1: n = 3. Subtask 2: n = 10, Subtask 3: n = 100",
       description: "Solve a quadratic equation!",
       is_public: true,
       type: TaskType.OutputOnly,
@@ -451,7 +475,8 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       id: getOrThrow(ids, "please-add"),
       slug: "please-add",
       title: "Please Add",
-      statement: "Please add the numbers in the input files \\href{/tasks/please-add/attachments/please-add-1.in}{Subtask 1} \\href{/tasks/please-add/attachments/please-add-2.in}{Subtask 2}",
+      statement:
+        "Please add the numbers in the input files \\href{/tasks/please-add/attachments/please-add-1.in}{Subtask 1} \\href{/tasks/please-add/attachments/please-add-2.in}{Subtask 2}",
       description: "Follow instructions!",
       is_public: true,
       type: TaskType.OutputOnly,
@@ -459,10 +484,10 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       score_max: 100,
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.Custom,
-      checker_file_name: 'please-add-checker.py',
+      checker_file_name: "please-add-checker.py",
       scripts: [
         {
-          file_name: 'please-add-checker.py',
+          file_name: "please-add-checker.py",
           file_hash: getOrThrow(hashes, "please-add-checker.py"),
           language: Language.Python3,
         },
@@ -536,10 +561,10 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       compile_time_limit_ms: null,
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.LenientDiff,
-      communicator_file_name: 'hard-of-hearing-communicator.py',
+      communicator_file_name: "hard-of-hearing-communicator.py",
       scripts: [
         {
-          file_name: 'hard-of-hearing-communicator.py',
+          file_name: "hard-of-hearing-communicator.py",
           file_hash: getOrThrow(hashes, "hard-of-hearing-communicator.py"),
           language: Language.Python3,
         },
@@ -598,7 +623,12 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
 
 export class __DO_NOT_IMPORT__DeveloperSeeds {
   static async run() {
-    await db.insertInto("users").values(users).execute();
+    const dbUsers = await db
+      .insertInto("users")
+      .values(users)
+      .returning(["id", "username"])
+      .execute();
+
     const dbTasks = await db
       .insertInto("tasks")
       .values([
@@ -674,18 +704,34 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
       .returning(["id", "slug"])
       .execute();
 
-    const ids = new Map<string, string>(dbTasks.map((t) => [t.slug, t.id]));
-    const hashes = new Map<string, string>();
-    const hashset = new Set<string>();
+    const userIds = new Map<string, string>(dbUsers.map((u) => [u.username, u.id]));
+    const taskids = new Map<string, string>(dbTasks.map((t) => [t.slug, t.id]));
+    const fileHashMap = new Map<string, string>();
+    const fileHashSet = new Set<string>();
     for (const filename of filenames) {
-      const hash = await __DO_NOT_IMPORT__DeveloperSeeds.uploadFile(filename, hashset);
-      hashes.set(filename, hash);
-      hashset.add(hash);
+      const hash = await __DO_NOT_IMPORT__DeveloperSeeds.uploadFile(filename, fileHashSet);
+      fileHashMap.set(filename, hash);
+      fileHashSet.add(hash);
     }
-    const tasks = makeTasks(ids, hashes);
+    const tasks = makeTasks(taskids, fileHashMap);
     for (const task of tasks) {
       await updateEditorTask(task);
     }
+
+    const _dbContests = await db
+      .insertInto("contests")
+      .values(
+        contests.map((c) => ({
+          slug: c.slug,
+          title: c.title,
+          description: c.description,
+          statement: c.statement,
+          owner_id: getOrThrow(userIds, c.owner_id),
+          is_public: c.is_public,
+        }))
+      )
+      .returning(["id", "slug"])
+      .execute();
   }
 
   private static async uploadFile(filename: string, hashset: Set<string>): Promise<string> {
@@ -707,7 +753,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
     await blobClient.uploadData(buffer);
 
     await db
-      .insertInto("task_files")
+      .insertInto("files")
       .values({
         hash: hash,
         size: stats.size,
