@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   const hash = await sha256(buffer);
 
   const current = await db
-    .selectFrom("task_files")
+    .selectFrom("files")
     .select("hash")
     .where("hash", "=", hash)
     .executeTakeFirst();
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const file = await db
-      .insertInto("task_files")
+      .insertInto("files")
       .values({
         hash: hash,
         size: blob.size,

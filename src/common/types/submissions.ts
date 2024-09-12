@@ -5,6 +5,7 @@ export type SubmissionTable = {
   id: Generated<string>;
   user_id: string;
   task_id: string;
+  contest_id: string | null;
   language: string;
   created_at: ColumnType<Date, never, never>;
   official_verdict_id: string | null;
