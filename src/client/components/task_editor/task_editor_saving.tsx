@@ -271,6 +271,7 @@ function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
     score_max: ed.subtasks.reduce((acc, subtask) => acc + subtask.score_max, 0),
     credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
     attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
+    scripts: [],
     // Batch-only
     type: TaskType.Batch,
     time_limit_ms: 3000,
@@ -279,7 +280,7 @@ function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
     compile_memory_limit_byte: null,
     submission_size_limit_byte: null,
     checker_kind: ed.checker.kind,
-    checker_script: undefined,
+    checker_file_name: undefined,
     subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
   };
 }
@@ -348,13 +349,14 @@ function coerceTaskOutputDTO(ed: TaskED): TaskOutputDTO {
     score_max: ed.subtasks.reduce((acc, subtask) => acc + subtask.score_max, 0),
     credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
     attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
+    scripts: [],
     // OutputOnly-only
     type: TaskType.OutputOnly,
     flavor: ed.flavor ?? TaskFlavor.OutputText,
     submission_size_limit_byte: null,
     checker_kind: ed.checker.kind,
-    checker_script:
-      CheckerKind.Custom === ed.checker.kind ? coerceTaskScriptDTO(ed.checker.script) : undefined,
+    checker_file_name:
+      CheckerKind.Custom === ed.checker.kind ? ed.checker.script.file_name : undefined,
     subtasks: ed.subtasks.map(coerceSubtaskOutputDTO).filter(notNull),
   };
 }
@@ -384,8 +386,6 @@ function coerceTaskDataOutputDTO(ed: TaskDataED): TaskDataOutputDTO | null {
   if (ed.deleted) {
     return null;
   } else if (ed.judge_file == null || ed.judge_file.kind === EditorKind.Local) {
-    throw new UnsavedFileException();
-  } else if (ed.judge_file != null && ed.judge_file.kind === EditorKind.Local) {
     throw new UnsavedFileException();
   }
 
