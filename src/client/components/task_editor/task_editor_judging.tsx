@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import { useCallback } from "react";
-import { Scrollable } from "../scrollable";
-import { TaskED } from "./types";
-import { TaskEditorLabel, TaskEditorSelect } from "./task_editor_utils";
+import { Scrollable } from "client/components/scrollable";
+import { CommonEditorLabel, CommonEditorSelect } from "client/components/common_editor";
+import styles from "client/components/common_editor/common_editor.module.css";
 import { SelectChangeEvent } from "common/types/events";
 import { TaskFlavor, TaskType } from "common/types/constants";
-import styles from "./task_editor.module.css";
 import { TaskEditorSubtasks } from "./task_editor_subtasks";
+import { TaskED } from "./types";
 
 type TaskEditorJudgingProps = {
   task: TaskED;
@@ -57,24 +57,24 @@ const TaskTypeEditor = ({ task, setTask }: TaskEditorJudgingProps) => {
   return (
     <div className="grid grid-cols-2 items-center p-4 gap-x-8 gap-y-4">
       <div className="flex gap-8 items-center">
-        <TaskEditorLabel label="Task Type" />
-        <TaskEditorSelect className="flex-auto" value={task.type} onChange={onChangeTaskType}>
+        <CommonEditorLabel label="Task Type" />
+        <CommonEditorSelect className="flex-auto" value={task.type} onChange={onChangeTaskType}>
           <option value={TaskType.Batch}>Batch</option>
           <option value={TaskType.Communication}>Communication</option>
           <option value={TaskType.OutputOnly}>Output Only</option>
-        </TaskEditorSelect>
+        </CommonEditorSelect>
       </div>
       {task.type === TaskType.OutputOnly && (
         <div className="flex gap-8 items-center">
-          <TaskEditorLabel label="Task Flavor" />
-          <TaskEditorSelect
+          <CommonEditorLabel label="Task Flavor" />
+          <CommonEditorSelect
             className="flex-auto"
             value={task.flavor ?? TaskFlavor.OutputText}
             onChange={onChangeTaskFlavor}
           >
             <option value={TaskFlavor.OutputText}>Text Input</option>
             <option value={TaskFlavor.OutputFile}>File Upload</option>
-          </TaskEditorSelect>
+          </CommonEditorSelect>
         </div>
       )}
     </div>

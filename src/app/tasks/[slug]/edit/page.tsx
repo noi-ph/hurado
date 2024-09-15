@@ -1,9 +1,10 @@
 import { notFound, redirect } from "next/navigation";
-import { TaskEditor } from "client/components/task_editor/task_editor";
-import { getSession } from "server/sessions";
-import { getEditorTask } from "server/logic/tasks/get_editor_task";
-import { huradoIDToUUID, uuidToHuradoID } from "common/utils/uuid";
 import { db } from "db";
+import { huradoIDToUUID, uuidToHuradoID } from "common/utils/uuid";
+import { TaskEditor } from "client/components/task_editor/task_editor";
+import { ForbiddenPage } from "server/errors/forbidden";
+import { getEditorTask } from "server/logic/tasks/get_editor_task";
+import { getSession } from "server/sessions";
 
 type TaskEditPageProps = {
   params: {
@@ -14,8 +15,9 @@ type TaskEditPageProps = {
 export default async function TaskEditPage(props: TaskEditPageProps) {
   const session = getSession();
   if (session == null || session.user.role != "admin") {
-    return { errorCode: 403 };
+    return <ForbiddenPage/>;
   }
+
   const uuid = huradoIDToUUID(props.params.slug);
   if (uuid == null) {
     const task = await db

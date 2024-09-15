@@ -1,7 +1,10 @@
 import { notFound, redirect } from "next/navigation";
-import { getSession } from "server/sessions";
-import { huradoIDToUUID, uuidToHuradoID } from "common/utils/uuid";
 import { db } from "db";
+import { huradoIDToUUID, uuidToHuradoID } from "common/utils/uuid";
+import { ContestEditor } from "client/components/contest_editor";
+import { ForbiddenPage } from "server/errors/forbidden";
+import { getEditorContest } from "server/logic/contests/get_editor_contest";
+import { getSession } from "server/sessions";
 
 type ContestEditPageProps = {
   params: {
@@ -12,8 +15,9 @@ type ContestEditPageProps = {
 export default async function ContestEditPage(props: ContestEditPageProps) {
   const session = getSession();
   if (session == null || session.user.role != "admin") {
-    return { errorCode: 403 };
+    return <ForbiddenPage/>;
   }
+
   const uuid = huradoIDToUUID(props.params.slug);
   if (uuid == null) {
     const contest = await db
@@ -30,12 +34,11 @@ export default async function ContestEditPage(props: ContestEditPageProps) {
     return redirect(`/contests/${hid}/edit`);
   }
 
-  return 'Nothing here yet';
-  // const contest = await getEditorContest(uuid);
+  const contest = await getEditorContest(uuid);
 
-  // if (contest == null) {
-  //   return notFound();
-  // }
+  if (contest == null) {
+    return notFound();
+  }
 
-  // return <ContestEditor dto={contest} />;
+  return <ContestEditor dto={contest} />;
 }

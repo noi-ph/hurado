@@ -1,20 +1,28 @@
 "use client";
-import classNames from "classnames";
+
 import { memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Navbar } from "client/components/navbar";
-import { TaskDTO } from "common/validation/task_validation";
+import {
+  CommonEditorFooter,
+  CommonEditorPage,
+  CommonEditorStatement,
+  CommonEditorTabComponent,
+  CommonEditorTabItem,
+  CommonEditorTitle,
+  CommonEditorViewLink,
+  getLocationHash,
+} from "client/components/common_editor";
+import commonStyles from "client/components/common_editor/common_editor.module.css";
+import { getPath, Path } from "client/paths";
 import { TaskSubmissionsCache } from "client/submissions";
-import { TaskEditorStatement } from "./task_editor_statement";
-import { coerceTaskEditorTab, TaskEditorTab, TaskEditorTabComponent } from "./task_editor_tabs";
+import { TaskDTO } from "common/validation/task_validation";
 import { TaskEditorDetails } from "./task_editor_details";
+import { TaskEditorJudging } from "./task_editor_judging";
+import { TaskEditorSubmissions } from "./task_editor_submissions";
+import { saveTask } from "./task_editor_saving";
 import { coerceTaskED } from "./coercion";
 import { TaskED } from "./types";
-import { TaskEditorJudging } from "./task_editor_judging";
-import { IncompleteHashesException, saveTask } from "./task_editor_saving";
-import { TaskEditorSubmissions } from "./task_editor_submissions";
-import styles from "./task_editor.module.css";
-
 
 type TaskEditorProps = {
   dto: TaskDTO;
@@ -71,78 +79,72 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
   // with OverlayScrollbars. Yeah. The code is scuffed. It's the only place in the world
   // that does this!
   return (
-    <div
-      className={classNames(styles.main, tab === TaskEditorTab.Statement && styles.isStatement)}
-    >
-      <Navbar className={styles.header} />
-      <TaskTitleDisplay title={task.title} slug={task.slug} />
-      <TaskEditorTabComponent className={styles.tabs} tab={tab} slug={task.slug} />
+    <CommonEditorPage isStatement={tab === TaskEditorTab.Statement}>
+      <Navbar className={commonStyles.header} />
+      <CommonEditorTitle title={task.title} slug={task.slug} />
+      <TaskEditorTabComponent tab={tab} slug={task.slug} />
       {content}
-      <TaskEditorFooter task={task} setTask={setTask} initial={initialTask} />
-    </div>
+      <CommonEditorFooter
+        object={task}
+        setObject={setTask}
+        initial={initialTask}
+        saveObject={saveTask}
+      />
+    </CommonEditorPage>
   );
 };
 
-type TaskTitleDisplayProps = {
-  title: string;
-  slug: string;
-};
-
-const TaskTitleDisplay = memo(({ title, slug }: TaskTitleDisplayProps) => {
-  return (
-    <div className={classNames(styles.title, "flex flex-row justify-between mx-4")}>
-      <div className={classNames("font-sans text-2xl", title ? "text-black" : "text-gray-300")}>
-        {title || "Title"}
-      </div>
-      <div className={classNames("font-mono text-2xl", slug ? "text-gray-500" : "text-gray-300")}>
-        {slug || "Slug"}
-      </div>
-    </div>
-  );
-});
-
-type TaskEditorFooterProps = {
-  initial: TaskED;
+type TaskCommonProps = {
   task: TaskED;
   setTask(task: TaskED): void;
 };
 
-const TaskEditorFooter = memo(({ task, setTask, initial }: TaskEditorFooterProps) => {
-  const [saving, setSaving] = useState(false);
-  const handleSave = useCallback(async () => {
-    setSaving(true);
-    try {
-      const newTask = await saveTask(task);
-      setTask(newTask);
-    } catch (e) {
-      if (e instanceof IncompleteHashesException) {
-        alert(`Try again in a few seconds. Error: ${e.message}.`);
-      } else {
-        throw e;
-      }
-    } finally {
-      setSaving(false);
-    }
-  }, [task]);
+export function TaskEditorStatement({ task, setTask }: TaskCommonProps) {
+  const setStatement = useCallback(
+    (statement: string) => {
+      setTask({ ...task, statement });
+    },
+    [task, setTask]
+  );
+  return <CommonEditorStatement statement={task.statement} setStatement={setStatement} />;
+}
+
+export enum TaskEditorTab {
+  Statement = "statement",
+  Details = "details",
+  Judging = "judging",
+  Submissions = "submissions",
+}
+
+type TaskEditorTabProps = {
+  tab: TaskEditorTab;
+  slug: string;
+};
+
+export const TaskEditorTabComponent = memo(({ tab, slug }: TaskEditorTabProps) => {
+  const viewURL = getPath({ kind: Path.TaskView, slug: slug });
 
   return (
-    <div
-      className={classNames(
-        styles.footer,
-        "flex flex-row justify-end px-4 py-2 border-t border-gray-300"
-      )}
-    >
-      <button
-        disabled={task === initial || saving}
-        onClick={handleSave}
-        className="py-2 px-4 rounded font-bold text-white bg-blue-300 enabled:hover:bg-blue-500 disabled:bg-gray-300 disabled:cursor-default"
-      >
-        Save Changes
-      </button>
-    </div>
+    <CommonEditorTabComponent>
+      <CommonEditorTabItem tab={TaskEditorTab.Statement} current={tab} label="Statement"/>
+      <CommonEditorTabItem tab={TaskEditorTab.Details} current={tab} label="Details"/>
+      <CommonEditorTabItem tab={TaskEditorTab.Judging} current={tab} label="Judging"/>
+      <CommonEditorTabItem tab={TaskEditorTab.Submissions} current={tab} label="Submissions"/>
+      <CommonEditorViewLink slug={slug} label="View" url={viewURL} />
+    </CommonEditorTabComponent>
   );
 });
 
-function getLocationHash(): string {
-  return typeof window !== "undefined" ? window.location.hash : "";
+export function coerceTaskEditorTab(hash: string): TaskEditorTab {
+  const split = hash.split("#");
+  const real = split.length >= 2 ? split[1] : "";
+  switch (real) {
+    case TaskEditorTab.Statement:
+    case TaskEditorTab.Details:
+    case TaskEditorTab.Judging:
+    case TaskEditorTab.Submissions:
+      return real;
+    default:
+      return TaskEditorTab.Statement;
+  }
 }

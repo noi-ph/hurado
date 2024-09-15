@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { SubmissionsTable } from "client/components/submissions_table";
-import styles from './task_editor.module.css';
+import commonStyles from 'client/components/common_editor/common_editor.module.css';
 import { TaskSubmissionsCache } from "client/submissions";
 
 type TaskViewerSubmissionsProps = {
@@ -17,7 +17,7 @@ export const TaskEditorSubmissions = ({ taskId, cache, setCache }: TaskViewerSub
   }, [cache]);
 
   return (
-    <div className={styles.content}>
+    <div className={commonStyles.content}>
       <div className="max-w-[64rem] mx-auto mt-4">
         <SubmissionsTable
           loaded={cache.loaded}

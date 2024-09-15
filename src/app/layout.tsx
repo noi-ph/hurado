@@ -1,9 +1,12 @@
 import "@root/reset.css";
 import "@root/global.css";
+import "react-toastify/dist/ReactToastify.css";
+
 import { Montserrat, Roboto, Space_Mono } from "next/font/google";
 
 import type { FunctionComponent, ReactNode } from "react";
 import type { Metadata } from "next";
+import { ToastContainer, Zoom } from "react-toastify";
 
 import { SessionProvider } from "client/sessions";
 import { getSession } from "server/sessions";
@@ -49,7 +52,16 @@ const RootLayout: FunctionComponent<RootLayoutProps> = ({ children }) => {
         lang="en"
         className={classNames(fontMontserrat.variable, fontRoboto.variable, fontSpaceMono.variable)}
       >
-        <body className="flex flex-col min-h-full items-stretch">{children}</body>
+        <body className="flex flex-col min-h-full items-stretch">
+          <ToastContainer
+            position="top-center"
+            hideProgressBar={true}
+            transition={Zoom}
+            closeOnClick
+            closeButton={false}
+          />
+          {children}
+        </body>
       </html>
     </SessionProvider>
   );

@@ -1,6 +1,19 @@
 import { AxiosResponse } from "axios";
 import http from "client/http";
-import { notNull } from "common/utils/guards";
+import { APIPath, getAPIPath } from "client/paths";
+import {
+  CommonAttachmentED,
+  CommonFileED,
+  CommonFileLocal,
+  CommonFileSaved,
+  CommonFileSaveResult,
+  EditorKind,
+  getExistingHashes,
+  IncompleteHashesException,
+  saveLocalFiles,
+  SaveResult,
+  UnsavedFileException,
+} from "client/components/common_editor";
 import {
   TaskAttachmentDTO,
   TaskBatchDTO,
@@ -13,37 +26,21 @@ import {
   TaskSubtaskBatchDTO,
   TaskSubtaskOutputDTO,
 } from "common/validation/task_validation";
-import { FileHashesResponse, FileUploadResponse } from "common/types/files";
-import {
-  EditorKind,
-  TaskAttachmentED,
-  TaskCreditED,
-  TaskED,
-  TaskFileED,
-  TaskFileLocal,
-  TaskFileSaved,
-  TaskSubtaskED,
-  TaskDataED,
-  TaskScriptED,
-} from "./types";
-import { APIPath, getAPIPath } from "client/paths";
-import { CheckerKind, TaskFlavor, TaskType } from "common/types/constants";
 import { NotYetImplementedError, UnreachableError } from "common/errors";
+import { CheckerKind, TaskFlavor, TaskType } from "common/types/constants";
+import { notNull } from "common/utils/guards";
+import { TaskCreditED, TaskED, TaskSubtaskED, TaskDataED, TaskScriptED } from "./types";
 import { coerceTaskED } from "./coercion";
 
-export class IncompleteHashesException extends Error {
-  constructor() {
-    super("Not all hashes have completed hashing");
+export async function saveTask(task: TaskED): Promise<SaveResult<TaskED>> {
+  const errors = validateTask(task);
+  if (errors.length > 0) {
+    return {
+      success: false,
+      errors,
+    };
   }
-}
 
-export class UnsavedFileException extends Error {
-  constructor() {
-    super("Tried saving task with unsaved file");
-  }
-}
-
-export async function saveTask(task: TaskED): Promise<TaskED> {
   const unsavedFiles = extractLocalFiles(task);
   for (const unsaved of unsavedFiles) {
     if (unsaved.hash == "") {
@@ -58,12 +55,20 @@ export async function saveTask(task: TaskED): Promise<TaskED> {
   const dto = coerceTaskDTO(updatedTask);
   const taskUpdateURL = getAPIPath({ kind: APIPath.TaskUpdate, id: task.id });
   const response: AxiosResponse<TaskDTO> = await http.put(taskUpdateURL, dto);
-  return coerceTaskED(response.data);
+
+  return {
+    success: true,
+    value: coerceTaskED(response.data),
+  };
 }
 
-function extractLocalFiles(task: TaskED): TaskFileLocal[] {
-  const result: TaskFileLocal[] = [];
-  function maybeAddFile(file: TaskFileED | null) {
+function validateTask(task: TaskED): string[] {
+  return [];
+}
+
+function extractLocalFiles(task: TaskED): CommonFileLocal[] {
+  const result: CommonFileLocal[] = [];
+  function maybeAddFile(file: CommonFileED | null) {
     if (file != null && file.kind === EditorKind.Local) {
       result.push(file);
     }
@@ -85,8 +90,8 @@ function extractLocalFiles(task: TaskED): TaskFileLocal[] {
   return result;
 }
 
-function applySavedFileChanges(ed: TaskED, changes: TaskFileSaveResult[]): TaskED {
-  function maybeReplaceFile(file: TaskFileED | null): TaskFileSaved | null {
+function applySavedFileChanges(ed: TaskED, changes: CommonFileSaveResult[]): TaskED {
+  function maybeReplaceFile(file: CommonFileED | null): CommonFileSaved | null {
     if (file == null) {
       return file;
     } else if (file.kind === EditorKind.Saved) {
@@ -128,59 +133,6 @@ function applySavedFileChanges(ed: TaskED, changes: TaskFileSaveResult[]): TaskE
   };
 }
 
-type TaskFileSaveResult = {
-  local: TaskFileLocal;
-  saved: TaskFileSaved;
-};
-
-function saveLocalFiles(
-  locals: TaskFileLocal[],
-  savedHashes: Set<string>
-): Promise<TaskFileSaveResult>[] {
-  return locals.map((local) => {
-    if (savedHashes.has(local.hash)) {
-      return Promise.resolve<TaskFileSaveResult>({
-        local,
-        saved: {
-          kind: EditorKind.Saved,
-          hash: local.hash,
-        },
-      });
-    } else {
-      return new Promise<TaskFileSaveResult>(async (resolve, reject) => {
-        try {
-          const saved = await saveLocalFileSingle(local);
-          resolve({ local, saved });
-        } catch (e) {
-          reject(e);
-        }
-      });
-    }
-  });
-}
-
-async function getExistingHashes(locals: TaskFileLocal[]): Promise<string[]> {
-  const localHashes = locals.map((f) => f.hash);
-  const fileHashesURL = getAPIPath({ kind: APIPath.FileHashes });
-  const response: AxiosResponse<FileHashesResponse> = await http.post(fileHashesURL, localHashes, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  return response.data.saved;
-}
-
-async function saveLocalFileSingle(local: TaskFileLocal): Promise<TaskFileSaved> {
-  const fileUploadURL = getAPIPath({ kind: APIPath.FileUpload });
-  const response: AxiosResponse<FileUploadResponse> = await http.post(fileUploadURL, local.file);
-
-  return {
-    kind: EditorKind.Saved,
-    hash: response.data.hash,
-  };
-}
-
 function coerceTaskDTO(ed: TaskED): TaskDTO {
   const locals = extractLocalFiles(ed);
   if (locals.length > 0) {
@@ -217,7 +169,7 @@ function coerceTaskCreditDTO(ed: TaskCreditED, idx: number): TaskCreditDTO | nul
   }
 }
 
-function coerceTaskAttachmentDTO(ed: TaskAttachmentED): TaskAttachmentDTO | null {
+function coerceTaskAttachmentDTO(ed: CommonAttachmentED): TaskAttachmentDTO | null {
   if (ed.deleted) {
     return null;
   } else if (ed.file == null || ed.file.kind === EditorKind.Local) {

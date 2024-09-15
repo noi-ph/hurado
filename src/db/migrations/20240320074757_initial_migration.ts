@@ -277,6 +277,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable("contest_tasks")
     .addColumn("contest_id", "uuid", (col) => col.notNull().references("contests.id"))
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
+    .addColumn("score_max", "double precision", (col) => col.notNull())
     .addColumn("letter", "text", (col) => col.notNull())
     .addColumn("order", "integer", (col) => col.notNull())
     .execute();

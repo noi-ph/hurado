@@ -1,10 +1,5 @@
 import { CheckerKind, Language, TaskFlavor, TaskType } from "common/types/constants";
-
-// These ED types represent the internal state of the task editor
-export enum EditorKind {
-  Saved = "Saved",
-  Local = "Local",
-}
+import { CommonAttachmentED, CommonFileED, EditorKind } from "../common_editor/types";
 
 export type TaskED = {
   id: string;
@@ -16,7 +11,7 @@ export type TaskED = {
   flavor: TaskFlavor | null;
   checker: TaskCheckerED;
   credits: TaskCreditED[];
-  attachments: TaskAttachmentED[];
+  attachments: CommonAttachmentED[];
   subtasks: TaskSubtaskED[];
 };
 
@@ -64,26 +59,6 @@ export type TaskCreditLocal = {
 
 export type TaskCreditED = TaskCreditSaved | TaskCreditLocal;
 
-export type TaskAttachmentSaved = {
-  kind: EditorKind.Saved;
-  id: string;
-  path: string;
-  mime_type: string;
-  file: TaskFileED | null;
-  deleted: boolean;
-};
-
-export type TaskAttachmentLocal = {
-  kind: EditorKind.Local;
-  path: string;
-  mime_type: string;
-  filename: string;
-  file: TaskFileED | null;
-  deleted: boolean;
-};
-
-export type TaskAttachmentED = TaskAttachmentSaved | TaskAttachmentLocal;
-
 export type TaskSubtaskSaved = {
   kind: EditorKind.Saved;
   id: string;
@@ -103,27 +78,14 @@ export type TaskSubtaskLocal = {
 
 export type TaskSubtaskED = TaskSubtaskSaved | TaskSubtaskLocal;
 
-export type TaskFileSaved = {
-  kind: EditorKind.Saved;
-  hash: string;
-};
-
-export type TaskFileLocal = {
-  kind: EditorKind.Local;
-  file: File;
-  hash: string;
-};
-
-export type TaskFileED = TaskFileSaved | TaskFileLocal;
-
 export type TaskDataSaved = {
   kind: EditorKind.Saved;
   id: string;
   name: string;
   input_file_name: string | null;
-  input_file: TaskFileED | null;
+  input_file: CommonFileED | null;
   judge_file_name: string;
-  judge_file: TaskFileED | null;
+  judge_file: CommonFileED | null;
   is_sample: boolean;
   deleted: boolean;
 };
@@ -132,9 +94,9 @@ export type TaskDataLocal = {
   kind: EditorKind.Local;
   name: string;
   input_file_name: string | null;
-  input_file: TaskFileED | null;
+  input_file: CommonFileED | null;
   judge_file_name: string;
-  judge_file: TaskFileED | null;
+  judge_file: CommonFileED | null;
   is_sample: boolean;
   deleted: boolean;
 };
