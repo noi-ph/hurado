@@ -116,3 +116,4 @@ export type TaskViewerCreditDTO = {
 };
 
 export type TaskSummaryDTO = Pick<Task, "title" | "slug" | "description">;
+export type TaskLookupDTO = Pick<Task, "id" | "slug" | "title">;

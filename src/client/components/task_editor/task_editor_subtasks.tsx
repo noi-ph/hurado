@@ -1,25 +1,21 @@
 import classNames from "classnames";
-import {
-  destructivelyComputeSHA1,
-  TaskEditorActionButton,
-  TaskEditorActionLink,
-  TaskEditorAddButton,
-  TaskEditorInputSubtle,
-  TaskEditorTableCell,
-} from "./task_editor_utils";
 import { useCallback, useRef, useState } from "react";
 import { InputChangeEvent } from "common/types/events";
-import {
-  EditorKind,
-  TaskDataED,
-  TaskDataLocal,
-  TaskED,
-  TaskFileED,
-  TaskFileLocal,
-  TaskSubtaskED,
-} from "./types";
+import { TaskDataED, TaskDataLocal, TaskED, TaskSubtaskED } from "./types";
 import { Arrays } from "common/utils/arrays";
 import { TaskType } from "common/types/constants";
+import {
+  CommonEditorActionButton,
+  CommonEditorActionLink,
+  CommonEditorAddButton,
+  CommonEditorInputSubtle,
+  CommonEditorTableCell,
+  CommonEditorTableHeader,
+  CommonFileED,
+  CommonFileLocal,
+  destructivelyComputeSHA1,
+  EditorKind,
+} from "client/components/common_editor";
 import styles from "./task_editor.module.css";
 
 type TaskEditorSubtasksProps = {
@@ -57,7 +53,7 @@ export const TaskEditorSubtasks = ({ task, setTask }: TaskEditorSubtasksProps) =
         />
       ))}
       <div className="text-center">
-        <TaskEditorAddButton label="Add Subtask" onClick={onAddSubtask} />
+        <CommonEditorAddButton label="Add Subtask" onClick={onAddSubtask} />
       </div>
     </>
   );
@@ -132,14 +128,14 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
   return (
     <div className="mb-4">
       <div className="flex flex-row mb-2">
-        <TaskEditorInputSubtle
+        <CommonEditorInputSubtle
           value={subtask.name}
           onChange={onSubtaskNameChange}
           placeholder="Subtask Name"
           className="flex-auto mr-2"
         />
         <span className="text-gray-500 mr-2">Score Max:</span>
-        <TaskEditorInputSubtle
+        <CommonEditorInputSubtle
           value={textScoreMax}
           onChange={onSubtaskScoreMaxChange}
           className="font-bold max-w-[100px]"
@@ -152,12 +148,10 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
           "border border-gray-300 rounded-lg text-center"
         )}
       >
-        <div className="text-gray-500 font-roboto font-medium">Name</div>
-        {task.type !== TaskType.OutputOnly && (
-          <div className="text-gray-500 font-roboto font-medium">Input Data</div>
-        )}
-        <div className="text-gray-500 font-roboto font-medium">Judge Data</div>
-        <div className="text-gray-500 font-roboto font-medium">Actions</div>
+        <CommonEditorTableHeader text="Name" />
+        {task.type !== TaskType.OutputOnly && <CommonEditorTableHeader text="Input Data" />}
+        <CommonEditorTableHeader text="Judge Data" />
+        <CommonEditorTableHeader text="Actions" />
         {subtask.data.map((data, dataIndex) => (
           <TaskDataEditor
             key={dataIndex}
@@ -171,7 +165,11 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
         ))}
       </div>
       <div className="flex justify-center mt-2">
-        <TaskEditorAddButton onClick={onAddTaskData} disabled={addDisabled} label="Add Test Data" />
+        <CommonEditorAddButton
+          onClick={onAddTaskData}
+          disabled={addDisabled}
+          label="Add Test Data"
+        />
       </div>
     </div>
   );
@@ -234,7 +232,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
   );
 
   const onInputFileChange = useCallback(
-    (file: TaskFileED | null, filename: string) => {
+    (file: CommonFileED | null, filename: string) => {
       replaceThisTaskData({
         ...data,
         input_file_name: filename,
@@ -245,7 +243,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
   );
 
   const onJudgeFileChange = useCallback(
-    (file: TaskFileED | null, filename: string) => {
+    (file: CommonFileED | null, filename: string) => {
       replaceThisTaskData({
         ...data,
         judge_file_name: filename,
@@ -284,17 +282,17 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
 
   return (
     <>
-      <TaskEditorTableCell>
-        <TaskEditorInputSubtle
+      <CommonEditorTableCell>
+        <CommonEditorInputSubtle
           value={data.name}
           onChange={onTaskDataNameChange}
           placeholder={`Test #${dataIndex + 1}`}
           className="w-full"
           disabled={data.deleted}
         />
-      </TaskEditorTableCell>
+      </CommonEditorTableCell>
       {task.type !== TaskType.OutputOnly && (
-        <TaskEditorTableCell deleted={data.deleted}>
+        <CommonEditorTableCell deleted={data.deleted}>
           <TaskDataFileEditor
             file={data.input_file}
             onFileChange={onInputFileChange}
@@ -302,9 +300,9 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
             onFilenameChange={onInputFilenameChange}
             disabled={data.deleted}
           />
-        </TaskEditorTableCell>
+        </CommonEditorTableCell>
       )}
-      <TaskEditorTableCell deleted={data.deleted}>
+      <CommonEditorTableCell deleted={data.deleted}>
         <TaskDataFileEditor
           file={data.judge_file}
           onFileChange={onJudgeFileChange}
@@ -312,19 +310,23 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
           onFilenameChange={onJudgeFilenameChange}
           disabled={data.deleted}
         />
-      </TaskEditorTableCell>
-      <TaskEditorTableCell>
-        <TaskEditorActionButton size="bx-sm" icon="bx-chevron-up" onClick={onTaskDataMoveUp} />
-        <TaskEditorActionButton size="bx-sm" icon="bx-chevron-down" onClick={onTaskDataMoveDown} />
-        <TaskEditorActionButton size="bx-sm" icon="bx-x" onClick={onTaskDataRemove} />
-      </TaskEditorTableCell>
+      </CommonEditorTableCell>
+      <CommonEditorTableCell>
+        <CommonEditorActionButton size="bx-sm" icon="bx-chevron-up" onClick={onTaskDataMoveUp} />
+        <CommonEditorActionButton
+          size="bx-sm"
+          icon="bx-chevron-down"
+          onClick={onTaskDataMoveDown}
+        />
+        <CommonEditorActionButton size="bx-sm" icon="bx-x" onClick={onTaskDataRemove} />
+      </CommonEditorTableCell>
     </>
   );
 };
 
 type TaskDataFileEditor = {
-  file: TaskFileED | null;
-  onFileChange(file: TaskFileED | null, filename: string): void;
+  file: CommonFileED | null;
+  onFileChange(file: CommonFileED | null, filename: string): void;
   filename: string | null;
   onFilenameChange(filename: string): void;
   disabled: boolean;
@@ -343,7 +345,7 @@ const TaskDataFileEditor = (props: TaskDataFileEditor) => {
   const onFileSelect = useCallback(() => {
     if (pickerRef.current?.files != null && pickerRef.current.files?.length > 0) {
       const curr = pickerRef.current.files[0];
-      const newFile: TaskFileLocal = {
+      const newFile: CommonFileLocal = {
         kind: EditorKind.Local,
         file: curr,
         hash: "",
@@ -381,7 +383,7 @@ const TaskDataFileEditor = (props: TaskDataFileEditor) => {
   } else {
     return (
       <div className="flex flex-row gap-2">
-        <TaskEditorInputSubtle
+        <CommonEditorInputSubtle
           className="flex-auto"
           value={filename ?? ""}
           onChange={onNameChange}
@@ -389,8 +391,8 @@ const TaskDataFileEditor = (props: TaskDataFileEditor) => {
         />
         {!disabled && (
           <>
-            <TaskEditorActionLink icon="bx-download" href="#" tabIndex={-1} />
-            <TaskEditorActionButton icon="bx-x" onClick={onFileRemove} tabIndex={-1} />
+            <CommonEditorActionLink icon="bx-download" href="#" tabIndex={-1} />
+            <CommonEditorActionButton icon="bx-x" onClick={onFileRemove} tabIndex={-1} />
           </>
         )}
       </div>

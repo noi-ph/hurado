@@ -1,12 +1,16 @@
-import { Selectable, Transaction } from "kysely";
+import { Transaction } from "kysely";
 import { db } from "db";
-import { ContestAttachmentTable, Models } from "common/types";
+import { Models } from "common/types";
 import { normalizeAttachmentPath } from "common/utils/attachments";
 import {
-  ContestAttachmentDTO,
-  ContestDTO,
-  ContestTaskDTO,
+  ContestAttachmentUpdateDTO,
+  ContestUpdateDTO,
+  ContestEditorDTO,
+  ContestTaskUpdateDTO,
+  ContestTaskEditorDTO,
+  ContestAttachmentEditorDTO,
 } from "common/validation/contest_validation";
+import { notNull } from "common/utils/guards";
 
 type Ordered<T> = T & {
   order: number;
@@ -22,8 +26,8 @@ function makeOrdered<T>(arr: T[]): Ordered<T>[] {
 async function upsertContestAttachments(
   trx: Transaction<Models>,
   contestId: string,
-  attachments: ContestAttachmentDTO[]
-): Promise<Selectable<ContestAttachmentTable>[]> {
+  attachments: ContestAttachmentUpdateDTO[]
+): Promise<ContestAttachmentEditorDTO[]> {
   const attachmentsNew = attachments.filter((attachment) => attachment.id == null);
   const attachmentsOld = attachments.filter((attachment) => attachment.id != null);
 
@@ -79,14 +83,19 @@ async function upsertContestAttachments(
           .returningAll()
           .execute();
 
-  return [...dbAttachmentsNew, ...dbAttachmentsUpdate];
+  return [...dbAttachmentsNew, ...dbAttachmentsUpdate].map((att) => ({
+    id: att.id,
+    path: att.path,
+    file_hash: att.file_hash,
+    mime_type: att.mime_type,
+  }));
 }
 
 async function upsertContestTasks(
   trx: Transaction<Models>,
   contestId: string,
-  tasks: ContestTaskDTO[]
-): Promise<ContestTaskDTO[]> {
+  tasks: ContestTaskUpdateDTO[]
+): Promise<ContestTaskEditorDTO[]> {
   const tasksOrdered = makeOrdered(tasks);
   await trx.deleteFrom("contest_tasks").where("contest_id", "=", contestId).execute();
 
@@ -100,59 +109,91 @@ async function upsertContestTasks(
               contest_id: contestId,
               task_id: task.task_id,
               letter: task.letter,
+              score_max: task.score_max,
               order: task.order,
             }))
           )
-          .returning(["task_id", "letter", "order"])
+          .returning(["task_id", "letter", "score_max", "order"])
           .execute();
 
   dbContestTasks.sort((a, b) => a.order - b.order);
-  const dtos: ContestTaskDTO[] = dbContestTasks.map((ct) => ({
-    task_id: ct.task_id,
-    letter: ct.letter,
-  }));
+  const dbTasks =
+    tasksOrdered.length <= 0
+      ? []
+      : await trx
+          .selectFrom("tasks")
+          .where(
+            "id",
+            "in",
+            dbContestTasks.map((t) => t.task_id)
+          )
+          .select(["id", "slug", "title"])
+          .execute();
+
+  const taskMap = new Map(dbTasks.map((t) => [t.id, t]));
+
+  const dtos: ContestTaskEditorDTO[] = dbContestTasks
+    .map((ct, index) => {
+      const task = taskMap.get(ct.task_id);
+      if (task == null) {
+        return null;
+      }
+      return {
+        task_id: task.id,
+        slug: task.slug!,
+        title: task.title!,
+        score_max: ct.score_max,
+        letter: ct.letter,
+        order: index,
+      };
+    })
+    .filter(notNull);
 
   return dtos;
 }
 
-export async function updateContest(contest: ContestDTO): Promise<ContestDTO> {
-  return db.transaction().execute(async (trx): Promise<ContestDTO> => {
+export async function updateContest(contest: ContestUpdateDTO): Promise<ContestEditorDTO> {
+  return db.transaction().execute(async (trx): Promise<ContestEditorDTO> => {
     const dbContest = await trx
       .updateTable("contests")
       .set({
         slug: contest.slug,
         title: contest.title,
-        description: contest.description ?? undefined,
+        description: contest.description,
+        statement: contest.statement,
         is_public: contest.is_public,
         start_time: contest.start_time,
         end_time: contest.end_time,
       })
       .where("id", "=", contest.id)
-      .returning(["id", "slug", "title", "description", "is_public", "start_time", "end_time"])
+      .returning([
+        "id",
+        "owner_id",
+        "slug",
+        "title",
+        "description",
+        "statement",
+        "is_public",
+        "start_time",
+        "end_time",
+      ])
       .executeTakeFirstOrThrow();
 
-    const dbContestAttachments = await upsertContestAttachments(
-      trx,
-      contest.id,
-      contest.attachments
-    );
-    const dbContestTasks = await upsertContestTasks(trx, contest.id, contest.tasks);
+    const contestAttachments = await upsertContestAttachments(trx, contest.id, contest.attachments);
+    const contestTasks = await upsertContestTasks(trx, contest.id, contest.tasks);
 
     return {
       id: dbContest.id,
+      owner_id: dbContest.owner_id,
       slug: dbContest.slug,
       title: dbContest.title,
       description: dbContest.description,
+      statement: dbContest.statement,
       is_public: dbContest.is_public,
       start_time: dbContest.start_time,
       end_time: dbContest.end_time,
-      attachments: dbContestAttachments.map((att) => ({
-        id: att.id,
-        path: att.path,
-        file_hash: att.file_hash,
-        mime_type: att.mime_type,
-      })),
-      tasks: dbContestTasks,
+      attachments: contestAttachments,
+      tasks: contestTasks,
     };
   });
 }

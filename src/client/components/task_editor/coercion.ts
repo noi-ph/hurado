@@ -6,14 +6,13 @@ import {
   TaskDataDTO,
 } from "common/validation/task_validation";
 import {
-  EditorKind,
-  TaskAttachmentED,
   TaskCreditED,
   TaskED,
   TaskSubtaskED,
   TaskDataED,
 } from "./types";
 import { CheckerKind } from "common/types/constants";
+import { CommonAttachmentED, EditorKind } from "../common_editor";
 
 export function coerceTaskED(dto: TaskDTO): TaskED {
   const task: TaskED = {
@@ -25,7 +24,7 @@ export function coerceTaskED(dto: TaskDTO): TaskED {
     checker:
       dto.checker_kind !== CheckerKind.Custom
         ? { kind: dto.checker_kind }
-        : { kind: dto.checker_kind, script: dto.checker_script as any },
+        : { kind: dto.checker_kind, script: dto.checker_file_name as any },
     credits: dto.credits.map(coerceTaskCreditED),
     attachments: dto.attachments.map((x) => coerceTaskAttachmentED(x)),
     type: dto.type,
@@ -45,7 +44,7 @@ function coerceTaskCreditED(dto: TaskCreditDTO): TaskCreditED {
   };
 }
 
-function coerceTaskAttachmentED(dto: TaskAttachmentDTO): TaskAttachmentED {
+function coerceTaskAttachmentED(dto: TaskAttachmentDTO): CommonAttachmentED {
   return {
     kind: EditorKind.Saved,
     id: dto.id as string,

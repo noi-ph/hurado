@@ -15,6 +15,7 @@ export type ContestTable = {
 export type ContestTaskTable = {
   contest_id: string;
   task_id: string;
+  score_max: number;
   letter: string;
   order: number;
 };
@@ -38,5 +39,5 @@ export type ParticipationTable = {
 export type Contest = Selectable<ContestTable>;
 export type ContestSummaryDTO = Pick<Contest, "title" | "slug" | "description">;
 
-type ContestViewerKeys = "id" | "slug" | "title" | "description" | "start_time" | "end_time";
+export type ContestViewerKeys = "id" | "slug" | "title" | "description" | "statement" | "start_time" | "end_time";
 export type ContestViewerDTO = Pick<Contest, ContestViewerKeys>;

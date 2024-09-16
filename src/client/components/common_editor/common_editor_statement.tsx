@@ -4,8 +4,7 @@ import MonacoEditor from "@monaco-editor/react";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
 import { LatexDisplay } from "client/components/latex_display";
-import styles from "./task_editor.module.css";
-import { TaskED } from "./types";
+import styles from "./common_editor.module.css";
 
 const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
   language: 'latex',
@@ -15,27 +14,24 @@ const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
   },
 };
 
-type TaskEditorStatementProps = {
-  task: TaskED;
-  setTask(task: TaskED): void;
+type CommonEditorStatementProps = {
+  statement: string;
+  setStatement(statement: string): void;
 };
 
-export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps) => {
+export const CommonEditorStatement = ({ statement, setStatement }: CommonEditorStatementProps) => {
   const onChangeStatement = useCallback(
     (value: string | undefined) => {
-      setTask({
-        ...task,
-        statement: value ?? "",
-      });
+      setStatement(value ?? "");
     },
-    [task, setTask]
+    [statement, setStatement]
   );
 
   return (
     <>
       <div className={classNames(styles.statementEditor, 'pt-3 bg-gray-200')}>
         <MonacoEditor
-          defaultValue={task.statement}
+          defaultValue={statement}
           onChange={onChangeStatement}
           options={MonacoOptions}
           theme="light"
@@ -43,7 +39,7 @@ export const TaskEditorStatement = ({ task, setTask }: TaskEditorStatementProps)
       </div>
       <Scrollable className={styles.statementPreview} defer>
         <div className='p-3 bg-white flex-auto min-h-full'>
-          <LatexDisplay>{task.statement}</LatexDisplay>
+          <LatexDisplay>{statement}</LatexDisplay>
         </div>
       </Scrollable>
     </>
