@@ -89,7 +89,7 @@ async function updateKgTask(task: KgTaskDTO) {
       task.id,
       task.subtasks
     );
-    const dbTaskData = await upsertTaskData(trx, subtasksWithData);
+    // const dbTaskData = await upsertTaskData(trx, subtasksWithData);
 
     return {
       id: dbTask.id,
