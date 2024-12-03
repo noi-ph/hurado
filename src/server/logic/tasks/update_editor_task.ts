@@ -27,6 +27,8 @@ import {
   dbToTaskDataInteractiveDTO,
   dbToTaskDataOutputDTO,
 } from "./editor_utils";
+import { UUID } from "crypto";
+import { lookupFromSlugOrId } from "@root/api/v1/tasks/[id]/utils";
 
 type Ordered<T> = T & {
   order: number;
@@ -236,7 +238,7 @@ type UpsertTaskSubtasksResult = {
   subtasksWithData: TaskSubtaskWithData[];
 };
 
-async function upsertTaskSubtasks(
+export async function upsertTaskSubtasks(
   trx: Transaction<Models>,
   taskId: string,
   subtasks: TaskSubtaskDTO[]
@@ -331,7 +333,7 @@ type TaskDataWithExtras = TaskDataDTO & {
   order: number;
 };
 
-async function upsertTaskData(
+export async function upsertTaskData(
   trx: Transaction<Models>,
   subtasks: TaskSubtaskWithData[]
 ): Promise<Selectable<TaskDataTable>[]> {

@@ -10,6 +10,8 @@ export const POSTGRES_HOSTNAME =
     ? process.env.DOCKER_POSTGRES_HOSTNAME
     : process.env.POSTGRES_HOSTNAME;
 
+export const KOMPGEN_SECRET = process.env.KOMPGEN_SECRET;
+
 export const POSTGRES_DB = process.env.POSTGRES_DB;
 export const POSTGRES_USER = process.env.POSTGRES_USER;
 export const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD;

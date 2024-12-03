@@ -5,18 +5,27 @@ import { db } from "db";
 import { canManageTasks } from "server/authorization";
 import { TaskFileStorage } from "server/files";
 import { getSession } from "server/sessions";
+import { KOMPGEN_SECRET } from "server/secrets";
+
+function isFile(obj: FormDataEntryValue): obj is File {
+  return typeof (obj as any)['arrayBuffer'] === 'function';
+}
 
 export async function POST(request: NextRequest) {
   // This accepts one uploaded file, hashes it, and stores it in blob storage
   // if the file hash already exists, it just returns the hash of the file
   // with status code 409_Conflict
   const session = getSession(request);
-  if (!canManageTasks(session)) {
+  if (!canManageTasks(session) && request.headers.get('Authorization') !== KOMPGEN_SECRET) {
     return NextResponse.json({}, { status: 401 });
   }
 
-  const blob = await request.blob();
-  const buffer = await blob.arrayBuffer();
+  const formData = await request.formData();
+  const file = formData.get('file');
+  if (file == null || !isFile(file)) {
+    return NextResponse.json({ error: "File not attached" }, { status: 400 });
+  }
+  const buffer = await file.arrayBuffer();
   const hash = await sha256(buffer);
 
   const current = await db
@@ -38,17 +47,16 @@ export async function POST(request: NextRequest) {
   await blobClient.uploadData(buffer);
 
   try {
-    const file = await db
+    const uploadedFile = await db
       .insertInto("files")
       .values({
         hash: hash,
-        size: blob.size,
+        size: file.size,
       })
       .returning("hash")
       .executeTakeFirstOrThrow();
-
     return NextResponse.json<FileUploadResponse>({
-      hash: file.hash,
+      hash: uploadedFile.hash,
     });
   } catch {
     return NextResponse.json<FileUploadResponse>({

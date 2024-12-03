@@ -1,6 +1,7 @@
 import { db } from "db";
 import { NextRequest, NextResponse } from "next/server";
 import { canManageTasks } from "server/authorization";
+import { KOMPGEN_SECRET } from "server/secrets";
 import { getSession } from "server/sessions";
 import { z } from "zod";
 
@@ -10,7 +11,7 @@ export async function POST(request: NextRequest) {
   // This function accepts an array of hashes (string[]) and finds all hashes
   // in that list that are already in the database, so you can skip re-uploading them.
   const session = getSession(request);
-  if (!canManageTasks(session)) {
+  if (!canManageTasks(session) && request.headers.get('Authorization') !== KOMPGEN_SECRET) {
     return NextResponse.json({}, { status: 401 });
   }
 

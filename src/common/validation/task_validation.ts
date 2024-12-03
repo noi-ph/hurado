@@ -67,7 +67,7 @@ const zTaskDataBatch = z.object({
   judge_file_name: z.string().min(1),
 });
 
-const zTaskSubtaskBatch = z.object({
+export const zTaskSubtaskBatch = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
   score_max: z.number().nonnegative(),
@@ -96,7 +96,7 @@ const zTaskDataOutput = z.object({
   judge_file_name: z.string().min(1),
 });
 
-const zTaskSubtaskOutput = z.object({
+export const zTaskSubtaskOutput = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
   score_max: z.number().nonnegative(),
@@ -123,7 +123,7 @@ const zTaskDataCommunication = z.object({
   judge_file_name: z.string().min(1),
 });
 
-const zTaskSubtaskCommunication = z.object({
+export const zTaskSubtaskCommunication = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
   score_max: z.number().nonnegative(),
