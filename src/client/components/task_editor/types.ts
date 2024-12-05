@@ -8,6 +8,7 @@ export type TaskED = {
   description: string | null;
   statement: string;
   type: TaskType;
+  communicator: TaskScriptED | null;
   flavor: TaskFlavor | null;
   checker: TaskCheckerED;
   credits: TaskCreditED[];
@@ -15,7 +16,7 @@ export type TaskED = {
   subtasks: TaskSubtaskED[];
 };
 
-type TaskCheckerED = {
+export type TaskCheckerED = {
   kind: Exclude<CheckerKind, CheckerKind.Custom>,
 } | {
   kind: CheckerKind.Custom,
@@ -24,20 +25,19 @@ type TaskCheckerED = {
 
 export type TaskScriptED = TaskScriptSaved | TaskScriptLocal;
 
-type TaskScriptSaved = {
+export type TaskScriptSaved = {
   kind: EditorKind.Saved;
   id: string;
   file_name: string;
-  file_hash: string;
+  file: CommonFileED;
   language: Language;
   argv: string[];
 }
 
-type TaskScriptLocal = {
+export type TaskScriptLocal = {
   kind: EditorKind.Local;
-  id: string;
   file_name: string;
-  file_hash: string;
+  file: CommonFileED | null;
   language: Language;
   argv: string[];
 }

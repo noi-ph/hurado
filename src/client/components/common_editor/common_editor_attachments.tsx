@@ -123,19 +123,19 @@ const CommonAttachmentLocalX = ({
   );
 };
 
-type CommonEditorAttachmentsProps<T> = {
+type CommonEditorAttachmentsProps = {
   attachments: CommonAttachmentED[];
   setAttachments(attachments: CommonAttachmentED[]): void;
   getAttachmentURL(attachment: CommonAttachmentED): string;
   hint: React.ReactNode;
 };
 
-export function CommonEditorAttachments<T>({
+export function CommonEditorAttachments({
   attachments,
   setAttachments,
   getAttachmentURL,
   hint,
-}: CommonEditorAttachmentsProps<T>): ReactNode {
+}: CommonEditorAttachmentsProps): ReactNode {
   const pickerRef = useRef<HTMLInputElement>(null);
   const onFileSelect = useCallback(() => {
     if (pickerRef.current?.files == null) {

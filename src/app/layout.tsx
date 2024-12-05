@@ -15,21 +15,21 @@ import classNames from "classnames";
 const fontMontserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
-  preload: false,
+  preload: true,
 });
 
 const fontRoboto = Roboto({
   subsets: ["latin"],
   weight: ["100", "300", "400", "500", "700"],
   variable: "--font-roboto",
-  preload: false,
+  preload: true,
 });
 
 const fontSpaceMono = Space_Mono({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-space-mono",
-  preload: false,
+  preload: true,
 });
 
 export const metadata: Metadata = {

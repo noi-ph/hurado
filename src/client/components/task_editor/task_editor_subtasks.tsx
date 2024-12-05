@@ -6,14 +6,12 @@ import { Arrays } from "common/utils/arrays";
 import { TaskType } from "common/types/constants";
 import {
   CommonEditorActionButton,
-  CommonEditorActionLink,
   CommonEditorAddButton,
+  CommonEditorFileInput,
   CommonEditorInputSubtle,
   CommonEditorTableCell,
   CommonEditorTableHeader,
   CommonFileED,
-  CommonFileLocal,
-  destructivelyComputeSHA1,
   EditorKind,
 } from "client/components/common_editor";
 import styles from "./task_editor.module.css";
@@ -24,7 +22,7 @@ type TaskEditorSubtasksProps = {
 };
 
 export const TaskEditorSubtasks = ({ task, setTask }: TaskEditorSubtasksProps) => {
-  const onAddSubtask = useCallback(() => {
+  const onSubtaskAdd = useCallback(() => {
     setTask({
       ...task,
       subtasks: [
@@ -53,7 +51,7 @@ export const TaskEditorSubtasks = ({ task, setTask }: TaskEditorSubtasksProps) =
         />
       ))}
       <div className="text-center">
-        <CommonEditorAddButton label="Add Subtask" onClick={onAddSubtask} />
+        <CommonEditorAddButton label="Add Subtask" onClick={onSubtaskAdd} />
       </div>
     </>
   );
@@ -108,7 +106,7 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
     [subtask, replaceThisSubtask]
   );
 
-  const onAddTaskData = useCallback(() => {
+  const onTaskDataAdd = useCallback(() => {
     const newTaskData: TaskDataLocal = {
       kind: EditorKind.Local,
       name: "Data",
@@ -166,7 +164,7 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
       </div>
       <div className="flex justify-center mt-2">
         <CommonEditorAddButton
-          onClick={onAddTaskData}
+          onClick={onTaskDataAdd}
           disabled={addDisabled}
           label="Add Test Data"
         />
@@ -293,7 +291,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
       </CommonEditorTableCell>
       {task.type !== TaskType.OutputOnly && (
         <CommonEditorTableCell deleted={data.deleted}>
-          <TaskDataFileEditor
+          <CommonEditorFileInput
             file={data.input_file}
             onFileChange={onInputFileChange}
             filename={data.input_file_name}
@@ -303,7 +301,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
         </CommonEditorTableCell>
       )}
       <CommonEditorTableCell deleted={data.deleted}>
-        <TaskDataFileEditor
+        <CommonEditorFileInput
           file={data.judge_file}
           onFileChange={onJudgeFileChange}
           filename={data.judge_file_name}
@@ -322,80 +320,4 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
       </CommonEditorTableCell>
     </>
   );
-};
-
-type TaskDataFileEditor = {
-  file: CommonFileED | null;
-  onFileChange(file: CommonFileED | null, filename: string): void;
-  filename: string | null;
-  onFilenameChange(filename: string): void;
-  disabled: boolean;
-};
-
-const TaskDataFileEditor = (props: TaskDataFileEditor) => {
-  const { filename, file, onFilenameChange, onFileChange, disabled } = props;
-  const pickerRef = useRef<HTMLInputElement>(null);
-
-  const onPickerClick = useCallback(() => {
-    if (pickerRef.current != null) {
-      pickerRef.current.click();
-    }
-  }, []);
-
-  const onFileSelect = useCallback(() => {
-    if (pickerRef.current?.files != null && pickerRef.current.files?.length > 0) {
-      const curr = pickerRef.current.files[0];
-      const newFile: CommonFileLocal = {
-        kind: EditorKind.Local,
-        file: curr,
-        hash: "",
-      };
-      destructivelyComputeSHA1(newFile);
-      onFileChange(newFile, curr.name);
-    }
-  }, [file, filename, onFileChange]);
-
-  const onFileRemove = useCallback(() => {
-    onFileChange(null, "");
-  }, [file, filename, onFileChange]);
-
-  const onNameChange = useCallback(
-    (event: InputChangeEvent) => {
-      onFilenameChange(event.target.value);
-    },
-    [onFilenameChange]
-  );
-
-  if (file == null) {
-    return (
-      <>
-        <button
-          type="button"
-          onClick={onPickerClick}
-          disabled={disabled}
-          className={classNames(disabled ? "text-gray-300 hover:cursor-default" : "text-gray-500")}
-        >
-          Select file...
-        </button>
-        <input type="file" className="hidden" onChange={onFileSelect} ref={pickerRef} />
-      </>
-    );
-  } else {
-    return (
-      <div className="flex flex-row gap-2">
-        <CommonEditorInputSubtle
-          className="flex-auto"
-          value={filename ?? ""}
-          onChange={onNameChange}
-          disabled={disabled}
-        />
-        {!disabled && (
-          <>
-            <CommonEditorActionLink icon="bx-download" href="#" tabIndex={-1} />
-            <CommonEditorActionButton icon="bx-x" onClick={onFileRemove} tabIndex={-1} />
-          </>
-        )}
-      </div>
-    );
-  }
 };

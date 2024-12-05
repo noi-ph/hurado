@@ -141,6 +141,12 @@ async function makeCommunicationVerdict(opts: {
     case Verdict.MemoryLimitExceeded:
     case Verdict.TimeLimitExceeded:
     case Verdict.RuntimeError:
+      return {
+        verdict: contestantResult.verdict,
+        raw_score: 0,
+        running_time_ms: contestantResult.running_time_ms,
+        running_memory_byte: contestantResult.running_memory_byte,
+      };
     case Verdict.JudgeFailed:
       return {
         verdict: Verdict.JudgeFailed,

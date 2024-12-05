@@ -4,27 +4,52 @@ import {
   TaskDTO,
   TaskSubtaskDTO,
   TaskDataDTO,
+  TaskScriptDTO,
 } from "common/validation/task_validation";
 import {
   TaskCreditED,
   TaskED,
   TaskSubtaskED,
   TaskDataED,
+  TaskScriptED,
+  TaskCheckerED,
 } from "./types";
-import { CheckerKind } from "common/types/constants";
+import { CheckerKind, Language, TaskType } from "common/types/constants";
 import { CommonAttachmentED, EditorKind } from "../common_editor";
+import { createEmptyScript } from "./task_editor_utils";
 
 export function coerceTaskED(dto: TaskDTO): TaskED {
+  let checker: TaskCheckerED;
+  if (dto.checker_kind !== CheckerKind.Custom) {
+    checker =  {
+      kind: dto.checker_kind,
+    }
+  } else {
+    const checkerScript = dto.scripts.find(x => x.file_name === dto.checker_file_name);
+    checker = {
+      kind: dto.checker_kind,
+      script: checkerScript == null
+        ? createEmptyScript()
+        : coerceTaskScriptED(checkerScript),
+    };
+  }
+
+  let communicator: TaskScriptED | null = null;
+  if (dto.type === TaskType.Communication) {
+    const communicatorScript = dto.scripts.find(x => x.file_name === dto.communicator_file_name);
+    communicator = communicatorScript == null
+      ? createEmptyScript()
+      : coerceTaskScriptED(communicatorScript);
+  }
+
   const task: TaskED = {
     id: dto.id,
     slug: dto.slug,
     title: dto.title,
     description: dto.description,
     statement: dto.statement,
-    checker:
-      dto.checker_kind !== CheckerKind.Custom
-        ? { kind: dto.checker_kind }
-        : { kind: dto.checker_kind, script: dto.checker_file_name as any },
+    checker: checker,
+    communicator: communicator,
     credits: dto.credits.map(coerceTaskCreditED),
     attachments: dto.attachments.map((x) => coerceTaskAttachmentED(x)),
     type: dto.type,
@@ -90,4 +115,18 @@ function coerceTaskDataED(dto: TaskDataDTO): TaskDataED {
     judge_file_name: dto.judge_file_name,
     deleted: false,
   };
+}
+
+function coerceTaskScriptED(dto: TaskScriptDTO): TaskScriptED {
+  return {
+    kind: EditorKind.Saved,
+    id: dto.id as string,
+    file_name: dto.file_name,
+    argv: dto.argv ?? [],
+    language: dto.language,
+    file: {
+      kind: EditorKind.Saved,
+      hash: dto.file_hash,
+    },
+  }
 }

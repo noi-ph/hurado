@@ -12,7 +12,7 @@ export const zLanguageKind = z.union([
 export const zTaskType = z.union([
   z.literal(TaskType.Batch),
   z.literal(TaskType.OutputOnly),
-  z.literal(TaskType.Interactive),
+  z.literal(TaskType.Communication),
 ]);
 
 export const zTaskFlavorOutput = z.union([

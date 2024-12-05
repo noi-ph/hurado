@@ -24,7 +24,7 @@ import { JudgeLanguage, TaskFlavorOutput, TaskType } from "common/types/constant
 import { UnreachableError } from "common/errors";
 import {
   dbToTaskDataBatchDTO,
-  dbToTaskDataInteractiveDTO,
+  dbToTaskDataCommunicationDTO,
   dbToTaskDataOutputDTO,
 } from "./editor_utils";
 
@@ -110,17 +110,6 @@ async function upsertTaskScripts(
 ): Promise<Selectable<TaskScriptTable>[]> {
   const scriptsNew = scripts.filter((script) => script.id == null);
   const scriptsOld = scripts.filter((script) => script.id != null);
-
-  const scriptsOldIds = scriptsOld.map((script) => script.id as string);
-  if (scriptsOldIds.length <= 0) {
-    await trx.deleteFrom("task_scripts").where("task_id", "=", taskId).execute();
-  } else {
-    await trx
-      .deleteFrom("task_scripts")
-      .where("task_id", "=", taskId)
-      .where("id", "not in", scriptsOldIds)
-      .execute();
-  }
 
   const dbScriptsNew =
     scriptsNew.length <= 0
@@ -516,6 +505,17 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
     );
     const dbTaskData = await upsertTaskData(trx, subtasksWithData);
 
+    const currentScriptIds = dbTaskScripts.map((script) => script.id);
+    if (currentScriptIds.length <= 0) {
+      await trx.deleteFrom("task_scripts").where("task_id", "=", task.id).execute();
+    } else {
+      await trx
+        .deleteFrom("task_scripts")
+        .where("task_id", "=", task.id)
+        .where("id", "not in", currentScriptIds)
+        .execute();
+    }
+  
     if (dbTask.type === TaskType.Batch) {
       const result: TaskBatchDTO = {
         type: dbTask.type as TaskType.Batch,
@@ -591,7 +591,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           id: sub.id,
           name: sub.name,
           score_max: sub.score_max,
-          data: dbTaskData.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataInteractiveDTO),
+          data: dbTaskData.filter((d) => d.subtask_id === sub.id).map(dbToTaskDataCommunicationDTO),
         })),
         scripts: dbTaskScripts.map((script) => ({
           file_name: script.file_name,

@@ -7,13 +7,15 @@ import {
   DetailedHTMLProps,
   ReactNode,
   PropsWithChildren,
+  useRef,
 } from "react";
 import BoxIcon from "client/components/box_icon";
 import { InputChangeEvent, SelectChangeEvent, TextAreaChangeEvent } from "common/types/events";
-import { IncompleteHashesException } from "./common_editor_utils";
+import { destructivelyComputeSHA1, IncompleteHashesException } from "./common_editor_utils";
 import styles from "./common_editor.module.css";
 import { Scrollable } from "../scrollable";
 import { toast } from "react-toastify";
+import { CommonFileED, CommonFileLocal, EditorKind } from "./types";
 
 type CommonEditorPageProps = {
   isStatement: boolean;
@@ -76,6 +78,7 @@ export const CommonEditorFooter = <T extends {}>({
       const result = await saveObject(object);
       if (result.success) {
         setObject(result.value);
+        toast("Great success!", { type: "success" });
       } else {
         toast("Errors:\n" + result.errors.join("\n"), { type: "error" });
       }
@@ -113,7 +116,7 @@ export const CommonEditorContent = ({ children }: PropsWithChildren) => {
 };
 
 export const CommonEditorDetails = ({ children }: PropsWithChildren) => {
-  return <div className={classNames(styles.detailEditor, "p-4 gap-12")}>{children}</div>;
+  return <div className={classNames(styles.detailEditor, "p-4 gap-x-12 gap-y-6")}>{children}</div>;
 };
 
 type CommonEditorAddButtonProps = {
@@ -179,6 +182,7 @@ type CommonEditorInputProps = {
   onChange(event: InputChangeEvent | TextAreaChangeEvent): void;
   placeholder?: string;
   type: "text" | "textarea";
+  className?: string;
 };
 
 export const CommonEditorInput = ({
@@ -186,11 +190,12 @@ export const CommonEditorInput = ({
   value,
   onChange,
   placeholder,
+  className,
 }: CommonEditorInputProps) => {
   if (type == "text") {
     return (
       <input
-        className="font-mono p-2 border border-gray-300 rounded-lg"
+        className={classNames("font-mono p-2 border border-gray-300 rounded-lg", className)}
         type="text"
         value={value}
         onChange={onChange}
@@ -284,4 +289,81 @@ export const CommonEditorTableCell = ({ deleted, children }: CommonEditorTableCe
       {children}
     </div>
   );
+};
+
+
+type CommonEditorFileInputProps = {
+  file: CommonFileED | null;
+  onFileChange(file: CommonFileED | null, filename: string): void;
+  filename: string | null;
+  onFilenameChange(filename: string): void;
+  disabled: boolean;
+};
+
+export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
+  const { filename, file, onFilenameChange, onFileChange, disabled } = props;
+  const pickerRef = useRef<HTMLInputElement>(null);
+
+  const onPickerClick = useCallback(() => {
+    if (pickerRef.current != null) {
+      pickerRef.current.click();
+    }
+  }, []);
+
+  const onFileSelect = useCallback(() => {
+    if (pickerRef.current?.files != null && pickerRef.current.files?.length > 0) {
+      const curr = pickerRef.current.files[0];
+      const newFile: CommonFileLocal = {
+        kind: EditorKind.Local,
+        file: curr,
+        hash: "",
+      };
+      destructivelyComputeSHA1(newFile);
+      onFileChange(newFile, curr.name);
+    }
+  }, [file, filename, onFileChange]);
+
+  const onFileRemove = useCallback(() => {
+    onFileChange(null, "");
+  }, [file, filename, onFileChange]);
+
+  const onNameChange = useCallback(
+    (event: InputChangeEvent) => {
+      onFilenameChange(event.target.value);
+    },
+    [onFilenameChange]
+  );
+
+  if (file == null) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={onPickerClick}
+          disabled={disabled}
+          className={classNames(disabled ? "text-gray-300 hover:cursor-default" : "text-gray-500")}
+        >
+          Select file...
+        </button>
+        <input type="file" className="hidden" onChange={onFileSelect} ref={pickerRef} />
+      </>
+    );
+  } else {
+    return (
+      <div className="flex flex-row gap-2">
+        <CommonEditorInputSubtle
+          className="flex-auto"
+          value={filename ?? ""}
+          onChange={onNameChange}
+          disabled={disabled}
+        />
+        {!disabled && (
+          <>
+            <CommonEditorActionLink icon="bx-download" href="#" tabIndex={-1} />
+            <CommonEditorActionButton icon="bx-x" onClick={onFileRemove} tabIndex={-1} />
+          </>
+        )}
+      </div>
+    );
+  }
 };
