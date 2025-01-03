@@ -14,7 +14,7 @@ type RouteParams = {
 
 export async function PUT(request: NextRequest) {
   const session = getSession(request);
-  if (!canManageTasks(session) && request.headers.get('Authorization') !== KOMPGEN_SECRET) {
+  if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 403 });
   }
 
@@ -30,7 +30,7 @@ export async function PUT(request: NextRequest) {
 
 export async function GET(request: NextRequest, context: NextContext<RouteParams>) {
   const session = getSession(request);
-  if (!canManageTasks(session) && request.headers.get('Authorization') !== KOMPGEN_SECRET) {
+  if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 403 });
   }
 

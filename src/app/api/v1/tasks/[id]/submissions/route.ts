@@ -12,7 +12,7 @@ type RouteParams = {
 
 export async function GET(request: NextRequest, context: NextContext<RouteParams>) {
   const session = getSession(request);
-  if (!canManageTasks(session)) {
+  if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 401 });
   }
 

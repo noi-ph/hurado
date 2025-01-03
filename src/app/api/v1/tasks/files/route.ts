@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   // if the file hash already exists, it just returns the hash of the file
   // with status code 409_Conflict
   const session = getSession(request);
-  if (!canManageTasks(session) && request.headers.get('Authorization') !== KOMPGEN_SECRET) {
+  if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 401 });
   }
 

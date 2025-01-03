@@ -8,7 +8,7 @@ import { canManageTasks } from "server/authorization";
 
 export async function POST(request: NextRequest) {
   const session = getSession(request);
-  if (!canManageTasks(session) && request.headers.get('Authorization') !== KOMPGEN_SECRET) {
+  if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 401 });
   }
 

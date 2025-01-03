@@ -13,7 +13,7 @@ import { z } from "zod";
 //   DOESN'T OVERWRITE THE OTHER PROPERTIES!!!
 export async function PUT(request: NextRequest) {
   const session = getSession(request);
-  if (!canManageTasks(session) && request.headers.get('Authorization') !== KOMPGEN_SECRET) {
+  if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 403 });
   }
 
