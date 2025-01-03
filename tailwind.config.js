@@ -32,6 +32,10 @@ module.exports = {
         800: "#2C2C2C",
         900: "#0E0E2C",
       },
+      yellow: {
+        800: "#F9A825",
+        900: "#F57F17",
+      },
     },
   },
   plugins: [

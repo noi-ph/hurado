@@ -24,6 +24,7 @@ export type JudgeLanguage = Language.Python3 | Language.CPP;
 
 export enum Verdict {
   Accepted = "ac",
+  Partial = "pa",
   WrongAnswer = "wa",
   RuntimeError = "re",
   TimeLimitExceeded = "tle",
@@ -55,10 +56,17 @@ export function humanizeLanguage(language: Language): string {
   }
 }
 
-export function humanizeVerdict(verdict: Verdict): string {
+export function humanizeVerdict(verdict: Verdict, score: number | null): string {
   switch (verdict) {
     case Verdict.Accepted:
       return "Accepted";
+    case Verdict.Partial: {
+      if (score == null) {
+        return 'Partial';
+      } else {
+        return `Partial: ${score} point${score == 1 ? '' : 's'}`; // TODO: i18n
+      }
+    }
     case Verdict.WrongAnswer:
       return "Wrong Answer";
     case Verdict.RuntimeError:

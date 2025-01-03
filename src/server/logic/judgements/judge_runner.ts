@@ -142,6 +142,7 @@ async function judgeTask<Type extends TaskType>(
   let running_time_ms = 0;
   let running_memory_byte = 0;
 
+  var max_score = 0;
   for (const subtask of task.subtasks) {
     const child = await judgeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id);
     allVerdictSubtasks.push(child);
@@ -153,6 +154,10 @@ async function judgeTask<Type extends TaskType>(
     } else {
       raw_score += child.raw_score;
     }
+    max_score += subtask.score_max;
+  }
+  if (0 < raw_score && raw_score < max_score) {
+    verdict = Verdict.Partial;
   }
 
   await db

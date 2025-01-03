@@ -56,7 +56,7 @@ const SubmissionRow = memo(({ submission, showUser }: SubmissionRowProps) => {
       ? "In Queue"
       : submission.verdict == null
         ? "In Progress"
-        : humanizeVerdict(submission.verdict);
+        : humanizeVerdict(submission.verdict, submission.score);
 
   return (
     <>

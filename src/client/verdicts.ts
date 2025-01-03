@@ -4,6 +4,8 @@ export function getVerdictColorClass(verdict: Verdict | null): string | undefine
   switch (verdict) {
     case Verdict.Accepted:
       return "text-green-500";
+    case Verdict.Partial:
+      return "text-yellow-900";
     case Verdict.WrongAnswer:
     case Verdict.RuntimeError:
     case Verdict.TimeLimitExceeded:

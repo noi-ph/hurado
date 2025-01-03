@@ -180,6 +180,7 @@ const TaskDataVerdictViewer = ({ data, dataIndex }: TaskDataVerdictViewerProps) 
   let iconName = "";
   switch (data.verdict) {
     case Verdict.Accepted:
+    case Verdict.Partial:
       iconName = "bx-check";
       break;
     case Verdict.WrongAnswer:
@@ -285,7 +286,7 @@ function getScoreClassName(raw: number, max: number): string | undefined {
   if (raw == max) {
     return "text-green-500";
   } else if (raw > 0) {
-    return "text-blue-500";
+    return "text-yellow-900";
   } else {
     return undefined;
   }
@@ -295,6 +296,8 @@ function getVerdictIconClassName(verdict: Verdict | null): string | undefined {
   switch (verdict) {
     case Verdict.Accepted:
       return "bx-sm text-green-500";
+    case Verdict.Partial:
+      return "bx-sm text-yellow-900";
     case Verdict.WrongAnswer:
     case Verdict.RuntimeError:
     case Verdict.TimeLimitExceeded:
