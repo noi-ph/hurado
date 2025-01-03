@@ -90,7 +90,7 @@ async function uploadSubmissionSources(
   const uploaded = new Set(dbsubfiles.map((s) => s.hash));
 
   return Promise.all(hashes.map(async (source) => {
-    if (uploaded.has(source.hash)) {
+    if (!uploaded.has(source.hash)) {
       await uploadSubmissionFile(source.buffer, source.hash);
     }
     return {
