@@ -138,19 +138,20 @@ async function judgeTask<Type extends TaskType>(
 
   const allVerdictSubtasks: JudgeVerdictSubtask[] = [];
   let verdict: Verdict = Verdict.Accepted;
-  let raw_score = 1;
+  let raw_score = 0;
   let running_time_ms = 0;
   let running_memory_byte = 0;
 
   for (const subtask of task.subtasks) {
-    const child = await jugeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id);
+    const child = await judgeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id);
     allVerdictSubtasks.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
     running_time_ms = Math.max(running_time_ms, child.running_time_ms);
     if (child.verdict != Verdict.Accepted) {
       verdict = child.verdict;
-      raw_score = 0;
+    } else {
+      raw_score += child.raw_score;
     }
   }
 
@@ -179,7 +180,7 @@ async function judgeTask<Type extends TaskType>(
   };
 }
 
-async function jugeSubtask<Type extends TaskType>(
+async function judgeSubtask<Type extends TaskType>(
   type: Type,
   context: JudgeContextFor<Type>,
   subtask: JudgeSubtaskFor<Type>,
@@ -196,7 +197,7 @@ async function jugeSubtask<Type extends TaskType>(
 
   const allVerdictData: JudgeVerdictTaskData[] = [];
   let verdict: Verdict = Verdict.Accepted;
-  let raw_score = 1;
+  let raw_score = subtask.score_max;
   let running_time_ms = 0;
   let running_memory_byte = 0;
   for (const data of subtask.data) {

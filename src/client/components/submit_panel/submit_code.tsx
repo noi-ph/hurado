@@ -1,20 +1,20 @@
 "use client";
 
 import classNames from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import type { editor } from "monaco-editor";
 import MonacoEditor from "@monaco-editor/react";
 import http from "client/http";
-import { APIPath, getAPIPath } from "client/paths";
+import { APIPath, Path, getAPIPath, getPath } from "client/paths";
 import { SubmissionRequestDTO } from "common/validation/submission_validation";
 import { humanizeLanguage, Language } from "common/types/constants";
 import { SelectChangeEvent } from "common/types/events";
 import styles from "./submit_panel.module.css";
 import "./submit_panel.css"; // This is not a mistake
-import { useRouter } from "next/navigation";
-import { TaskViewerTab, coerceTaskViewerTab } from "../task_viewer/task_viewer_tabs";
-import { getLocationHash } from "../common_editor";
+import { redirect, useRouter } from "next/navigation";
 import { RefreshSubmissionsContext } from "../task_viewer/task_viewer";
+import { SubmissionSummaryDTO } from "common/types";
+import { AxiosResponse } from "axios";
 
 
 const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
@@ -63,14 +63,15 @@ export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
       data.set("source", blobSource);
 
       const submissionCreateURL = getAPIPath({ kind: APIPath.SubmissionCreate });
-      const response = await http.post(submissionCreateURL, data, {
+      const response: AxiosResponse<SubmissionSummaryDTO> = await http.post(submissionCreateURL, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       if (response.status == 200) {
+        const submission = response.data;
         setRefresh(true);
-        router.push(`#${TaskViewerTab.Submissions}`);
+        router.push(getPath({ kind: Path.Submission, uuid: submission.id }));
       }
     } finally {
       setSubmitting(false);

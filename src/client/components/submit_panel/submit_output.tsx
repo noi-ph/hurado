@@ -1,19 +1,18 @@
 "use client";
 
-import classNames from "classnames";
 import { useCallback, useContext, useState } from "react";
-import { TaskViewerOutputDTO } from "common/types";
-import { Language, TaskFlavor, TaskFlavorOutput, TaskType } from "common/types/constants";
+import { SubmissionSummaryDTO, TaskViewerOutputDTO } from "common/types";
+import { Language, TaskFlavor, TaskFlavorOutput } from "common/types/constants";
 import { SubmissionRequestDTO } from "common/validation/submission_validation";
 import http from "client/http";
-import { APIPath, getAPIPath } from "client/paths";
+import { APIPath, Path, getAPIPath, getPath } from "client/paths";
 import styles from "./submit_panel.module.css";
 import { UnreachableError } from "common/errors";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
 import { RefreshSubmissionsContext } from "../task_viewer/task_viewer";
 import { useRouter } from "next/navigation";
-import { TaskViewerTab } from "../task_viewer/task_viewer_tabs";
+import { AxiosResponse } from "axios";
 
 type SubtaskState = {
   text: string;
@@ -75,14 +74,15 @@ export function SubmitOutput({ task }: SubmitOutputProps) {
       }
 
       const submissionCreateURL = getAPIPath({ kind: APIPath.SubmissionCreate });
-      const response = await http.post(submissionCreateURL, data, {
+      const response: AxiosResponse<SubmissionSummaryDTO> = await http.post(submissionCreateURL, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       if (response.status == 200) {
+        const submission = response.data;
         setRefresh(true);
-        router.push(`#${TaskViewerTab.Submissions}`);
+        router.push(getPath({ kind: Path.Submission, uuid: submission.id }));
       }
     } finally {
       setSubmitting(false);
