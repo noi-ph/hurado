@@ -44,6 +44,7 @@ const Page: FunctionComponent = () => {
       }
 
       router.push("/login");
+      router.refresh();
     } catch (error) {}
 
     setThrottle(false);

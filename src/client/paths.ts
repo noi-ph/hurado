@@ -3,6 +3,9 @@ import { uuidToHuradoID } from "common/utils/uuid";
 
 export enum Path {
   Home = "Home",
+  AccountLogin = "AccountLogin",
+  AccountLogout = "AccountLogout",
+  AccountRegister = "AccountRegister",
   Submission = "Submission",
   TaskList = "TaskList",
   TaskView = "TaskView",
@@ -16,6 +19,9 @@ export enum Path {
 
 export type PathArguments =
   | { kind: Path.Home }
+  | { kind: Path.AccountLogin }
+  | { kind: Path.AccountLogout }
+  | { kind: Path.AccountRegister }
   | { kind: Path.Submission; uuid: string }
   | { kind: Path.TaskList }
   | { kind: Path.TaskView; slug: string }
@@ -30,6 +36,12 @@ export function getPath(args: PathArguments) {
   switch (args.kind) {
     case Path.Home:
       return "/";
+    case Path.AccountLogin:
+      return "/login";
+    case Path.AccountLogout:
+      return "/logout";
+    case Path.AccountRegister:
+      return "/register";
     case Path.Submission:
       return `/submissions/${uuidToHuradoID(args.uuid)}`;
     case Path.TaskList:

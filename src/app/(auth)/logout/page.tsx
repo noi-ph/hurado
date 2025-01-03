@@ -17,6 +17,7 @@ const Page: FunctionComponent = () => {
     http.delete("/api/v1/auth/logout").then(() => {
       setSession(null);
       router.push("/login");
+      router.refresh();
     });
   });
 

@@ -36,8 +36,9 @@ const LoginPage: FunctionComponent = () => {
       throw new Error(response.data);
     }
     const homeURL = getPath({ kind: Path.Home });
-    router.push(homeURL);
     setSession(response.data);
+    router.push(homeURL);
+    router.refresh();
   }, [router, username, password, setSession]);
 
   const throttledLogin = useCallback(async () => {

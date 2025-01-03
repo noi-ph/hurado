@@ -28,15 +28,15 @@ export const NavbarAccount = memo(() => {
   if (session == null || session.user == null) {
     return (
       <>
-        <NavbarLink href="/login" className="ml-auto">Login</NavbarLink>
-        <NavbarLink href="/register">Register</NavbarLink>
+        <NavbarLink href={getPath({kind: Path.AccountLogin })} className="ml-auto">Login</NavbarLink>
+        <NavbarLink href={getPath({kind: Path.AccountRegister })}>Register</NavbarLink>
       </>
     );
   }
   return (
     <>
       <div className="text-2xl px-1 py-3 ml-auto">{session?.user.name}</div>
-      <NavbarLink href="/logout">Logout</NavbarLink>
+      <NavbarLink href={getPath({kind: Path.AccountLogout })}>Logout</NavbarLink>
     </>
   );
 });
