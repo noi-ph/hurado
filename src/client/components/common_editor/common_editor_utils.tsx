@@ -83,8 +83,14 @@ export async function getExistingHashes(locals: CommonFileLocal[]): Promise<stri
 }
 
 async function saveLocalFileSingle(local: CommonFileLocal): Promise<CommonFileSaved> {
+  const formData = new FormData();
+  formData.append('file', local.file);
   const fileUploadURL = getAPIPath({ kind: APIPath.FileUpload });
-  const response: AxiosResponse<FileUploadResponse> = await http.post(fileUploadURL, local.file);
+  const response: AxiosResponse<FileUploadResponse> = await http.post(fileUploadURL, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 
   return {
     kind: EditorKind.Saved,
