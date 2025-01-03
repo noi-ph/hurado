@@ -1,7 +1,6 @@
 import { db } from "db";
 import { NextRequest, NextResponse } from "next/server";
 import { canManageTasks } from "server/authorization";
-import { KOMPGEN_SECRET } from "server/secrets";
 import { getSession } from "server/sessions";
 import { z } from "zod";
 

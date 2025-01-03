@@ -5,7 +5,6 @@ import { db } from "db";
 import { canManageTasks } from "server/authorization";
 import { TaskFileStorage } from "server/files";
 import { getSession } from "server/sessions";
-import { KOMPGEN_SECRET } from "server/secrets";
 
 function isFile(obj: FormDataEntryValue): obj is File {
   return typeof (obj as any)['arrayBuffer'] === 'function';

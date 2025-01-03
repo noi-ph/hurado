@@ -1,8 +1,8 @@
-import { Models } from "common/types";
 import { checkUUIDv4, huradoIDToUUID } from "common/utils/uuid";
 import { db } from "db";
-import { SelectExpression } from "kysely";
-export async function lookupFromSlugOrId(slug: string, columns: ReadonlyArray<SelectExpression<Models, 'tasks'>>) {
+
+
+export async function lookupFromSlugOrId(slug: string) {
   const uuid = huradoIDToUUID(slug) ?? checkUUIDv4(slug);
 
   const lookups = await db
@@ -14,7 +14,7 @@ export async function lookupFromSlugOrId(slug: string, columns: ReadonlyArray<Se
         return eb("slug", "=", slug);
       }
     })
-    .select(columns)
+    .select(["id", "slug", "title"])
     .execute();
 
 

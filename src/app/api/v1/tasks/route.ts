@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { zTaskSchema } from "common/validation/task_validation";
-import { KOMPGEN_SECRET } from "server/secrets";
 import { db } from "db";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
 import { getSession } from "server/sessions";

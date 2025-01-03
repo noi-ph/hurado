@@ -5,7 +5,6 @@ import { updateEditorTask } from "server/logic/tasks/update_editor_task";
 import { getSession } from "server/sessions";
 import { NextContext } from "types/nextjs";
 import { TaskLookupDTO } from "common/types";
-import { KOMPGEN_SECRET } from "server/secrets";
 import { lookupFromSlugOrId } from "./utils";
 
 type RouteParams = {
@@ -36,7 +35,7 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
 
   // Accept any of slug, uuid, or hurado id
   const slug = context.params.id;
-  const first = await lookupFromSlugOrId(slug, ["id", "slug", "title"]);
+  const first = await lookupFromSlugOrId(slug);
   if (first == null) {
     return NextResponse.json(null, { status: 404 });
   }

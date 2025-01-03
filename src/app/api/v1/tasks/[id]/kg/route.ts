@@ -5,7 +5,6 @@ import { db } from "db";
 import { NextRequest, NextResponse } from "next/server";
 import { canManageTasks } from "server/authorization";
 import { upsertTaskData, upsertTaskSubtasks } from "server/logic/tasks/update_editor_task";
-import { KOMPGEN_SECRET } from "server/secrets";
 import { getSession } from "server/sessions";
 import { z } from "zod";
 
