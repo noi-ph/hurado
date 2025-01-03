@@ -248,7 +248,6 @@ export async function upsertTaskSubtasks(
   const subtasksOld = subtasksOrdered.filter((subtask) => subtask.id != null);
 
   const subtasksOldIds = subtasksOld.map((subtask) => subtask.id as string);
-  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', subtasksOldIds);
   if (subtasksOldIds.length <= 0) {
     await trx.deleteFrom("task_subtasks").where("task_id", "=", taskId).execute();
   } else {
@@ -258,8 +257,6 @@ export async function upsertTaskSubtasks(
       .where("id", "not in", subtasksOldIds)
       .execute();
   }
-  
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 
   const dbSubtasksNew =
     subtasksNew.length <= 0

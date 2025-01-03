@@ -201,8 +201,8 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("verdict_subtasks")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
-    .addColumn("verdict_id", "uuid", (col) => col.notNull().references("verdicts.id"))
-    .addColumn("subtask_id", "uuid", (col) => col.notNull().references("task_subtasks.id"))
+    .addColumn("verdict_id", "uuid", (col) => col.notNull().references("verdicts.id").onDelete('cascade'))
+    .addColumn("subtask_id", "uuid", (col) => col.notNull().references("task_subtasks.id").onDelete('cascade'))
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("verdict", "text")
     .addColumn("raw_score", "real")
@@ -216,7 +216,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("verdict_subtask_id", "uuid", (col) =>
       col.notNull().references("verdict_subtasks.id")
     )
-    .addColumn("task_data_id", "uuid", (col) => col.notNull().references("task_data.id"))
+    .addColumn("task_data_id", "uuid", (col) => col.notNull().references("task_data.id").onDelete('cascade'))
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("verdict", "text")
     .addColumn("raw_score", "real")
