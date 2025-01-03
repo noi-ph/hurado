@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import Link from "next/link";
-import { memo, ReactNode, useEffect } from "react";
+import { memo, ReactNode, useContext, useEffect } from "react";
 import { SubmissionSummaryDTO } from "common/types";
 import { humanizeLanguage, humanizeVerdict } from "common/types/constants";
 import { uuidToHuradoID } from "common/utils/uuid";
@@ -8,6 +8,7 @@ import { humanizeTimeAgo } from "common/utils/dates";
 import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
 import styles from "./submission_table.module.css";
+import { RefreshSubmissionsContext } from "../task_viewer/task_viewer";
 
 type SubmissionTableProps = {
   loaded: boolean;
@@ -22,9 +23,11 @@ export const SubmissionsTable = ({
   loadSubmissions,
   showUser,
 }: SubmissionTableProps) => {
+  const {refresh, setRefresh} = useContext(RefreshSubmissionsContext);
   useEffect(() => {
-    if (!loaded) {
+    if (!loaded || refresh) {
       loadSubmissions();
+      setRefresh(false);
     }
   }, [submissions]);
 

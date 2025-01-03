@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { TaskViewerOutputDTO } from "common/types";
 import { Language, TaskFlavor, TaskFlavorOutput, TaskType } from "common/types/constants";
 import { SubmissionRequestDTO } from "common/validation/submission_validation";
@@ -11,6 +11,9 @@ import styles from "./submit_panel.module.css";
 import { UnreachableError } from "common/errors";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
+import { RefreshSubmissionsContext } from "../task_viewer/task_viewer";
+import { useRouter } from "next/navigation";
+import { TaskViewerTab } from "../task_viewer/task_viewer_tabs";
 
 type SubtaskState = {
   text: string;
@@ -22,6 +25,9 @@ type SubmitOutputProps = {
 };
 
 export function SubmitOutput({ task }: SubmitOutputProps) {
+  const router = useRouter();
+  const {refresh, setRefresh} = useContext(RefreshSubmissionsContext);
+
   const [subtasks, setSubtasks] = useState<SubtaskState[]>(
     task.subtasks.map(() => ({
       file: null,
@@ -69,11 +75,15 @@ export function SubmitOutput({ task }: SubmitOutputProps) {
       }
 
       const submissionCreateURL = getAPIPath({ kind: APIPath.SubmissionCreate });
-      await http.post(submissionCreateURL, data, {
+      const response = await http.post(submissionCreateURL, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      if (response.status == 200) {
+        setRefresh(true);
+        router.push(`#${TaskViewerTab.Submissions}`);
+      }
     } finally {
       setSubmitting(false);
     }

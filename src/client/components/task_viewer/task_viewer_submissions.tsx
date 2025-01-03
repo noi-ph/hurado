@@ -1,8 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { TaskViewerDTO } from "common/types";
 import { TaskSubmissionsCache } from "client/submissions";
 import { TaskViewerTitle } from "./task_viewer_utils";
 import { SubmissionsTable } from "client/components/submissions_table";
+import { RefreshSubmissionsContext } from "./task_viewer";
 
 type TaskViewerSubmissionsProps = {
   task: TaskViewerDTO;

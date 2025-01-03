@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, createContext, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { TaskViewerDTO } from "common/types";
 import { TaskSubmissionsCache } from "client/submissions";
@@ -8,6 +8,12 @@ import { TaskViewerStatement } from "./task_viewer_statement";
 import { TaskViewerEditorial } from "./task_viewer_editorial";
 import { TaskViewerSubmissions } from "./task_viewer_submissions";
 
+type RefreshProvidedValue = {
+  refresh: boolean,
+  setRefresh (refresh: boolean): void,
+};
+export const RefreshSubmissionsContext = createContext(undefined as unknown as RefreshProvidedValue);
+
 type TaskViewerProps = {
   task: TaskViewerDTO;
   canEdit: boolean;
@@ -15,6 +21,7 @@ type TaskViewerProps = {
 
 export const TaskViewer = ({ task, canEdit }: TaskViewerProps) => {
   const [tab, setTab] = useState(coerceTaskViewerTab(getLocationHash()));
+  const [refresh, setRefresh] = useState<boolean>(false);
   const [submissions, setSubmissions] = useState<TaskSubmissionsCache>(
     TaskSubmissionsCache.empty()
   );
@@ -57,13 +64,18 @@ export const TaskViewer = ({ task, canEdit }: TaskViewerProps) => {
 
   return (
     <>
-      <TaskViewerTabComponent
-        className="flex gap-2"
-        tab={tab}
-        taskId={task.id}
-        canEdit={canEdit}
-      />
-      {content}
+      <RefreshSubmissionsContext.Provider value={{
+        refresh,
+        setRefresh,
+      }}>
+        <TaskViewerTabComponent
+          className="flex gap-2"
+          tab={tab}
+          taskId={task.id}
+          canEdit={canEdit}
+        />
+        {content}
+      </RefreshSubmissionsContext.Provider>
     </>
   );
 };
