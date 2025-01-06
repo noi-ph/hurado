@@ -1,0 +1,12 @@
+.hero {
+  background: linear-gradient(115deg, white 70%, var(--color-blue-100) 70% 72%, var(--color-blue-300) 72%);
+}
+
+.chevron {
+  transform: rotate(-90deg);
+  transition: transform 100ms;
+}
+
+.chevron.expanded {
+  transform: rotate(0deg);
+}
