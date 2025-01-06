@@ -11,6 +11,9 @@ export enum Path {
   TaskView = "TaskView",
   TaskEdit = "TaskEdit",
   TaskAttachment = "TaskAttachment",
+  ProblemSetList = "ProblemSetList",
+  ProblemSetView = "ProblemSetView",
+  ProblemSetEdit = "ProblemSetEdit",
   ContestList = "ContestList",
   ContestView = "ContestView",
   ContestEdit = "ContestEdit",
@@ -27,6 +30,9 @@ export type PathArguments =
   | { kind: Path.TaskView; slug: string }
   | { kind: Path.TaskEdit; uuid: string }
   | { kind: Path.TaskAttachment; slug: string; path: string }
+  | { kind: Path.ProblemSetList }
+  | { kind: Path.ProblemSetView; slug: string }
+  | { kind: Path.ProblemSetEdit; uuid: string }
   | { kind: Path.ContestList }
   | { kind: Path.ContestView; slug: string }
   | { kind: Path.ContestEdit; uuid: string }
@@ -52,6 +58,12 @@ export function getPath(args: PathArguments) {
       return `/tasks/${uuidToHuradoID(args.uuid)}/edit`;
     case Path.TaskAttachment:
       return `/tasks/${args.slug}/attachments/${args.path}`;
+    case Path.ProblemSetList:
+      return "/sets";
+    case Path.ProblemSetView:
+      return `/sets/${args.slug}`;
+    case Path.ProblemSetEdit:
+      return `/sets/${uuidToHuradoID(args.uuid)}/edit`;
     case Path.ContestList:
       return "/contests";
     case Path.ContestView:
@@ -76,6 +88,8 @@ export enum APIPath {
   TaskUpdate = "TaskUpdate",
   TaskLookup = "TaskLookup",
   TaskSubmissions = "TaskSubmissions",
+  ProblemSetCreate = "ProblemSetCreate",
+  ProblemSetUpdate = "ProblemSetUpdate",
   ContestCreate = "ContestCreate",
   ContestUpdate = "ContestUpdate",
 }
@@ -90,6 +104,8 @@ export type APIPathArguments =
   | { kind: APIPath.TaskUpdate; id: string }
   | { kind: APIPath.TaskLookup; id: string }
   | { kind: APIPath.TaskSubmissions; id: string }
+  | { kind: APIPath.ProblemSetCreate }
+  | { kind: APIPath.ProblemSetUpdate; id: string }
   | { kind: APIPath.ContestCreate }
   | { kind: APIPath.ContestUpdate; id: string };
 
@@ -111,6 +127,10 @@ export function getAPIPath(args: APIPathArguments) {
       return `/api/v1/tasks/${args.id}`;
     case APIPath.TaskSubmissions:
       return `/api/v1/tasks/${args.id}/submissions`;
+    case APIPath.ProblemSetCreate:
+      return "/api/v1/sets";
+    case APIPath.ProblemSetUpdate:
+      return `/api/v1/sets/${args.id}`;
     case APIPath.ContestCreate:
       return "/api/v1/contests";
     case APIPath.ContestUpdate:

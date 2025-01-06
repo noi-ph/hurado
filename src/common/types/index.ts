@@ -10,6 +10,7 @@ import {
 import { SubmissionFileTable, SubmissionTable } from "./submissions";
 import { VerdictSubtaskTable, VerdictTable, VerdictTaskDataTable } from "./verdicts";
 import { UserTable } from "./users";
+import { ProblemSetTable, ProblemSetTaskTable } from "./problem_sets";
 import {
   ContestAttachmentTable,
   ContestTable,
@@ -31,6 +32,8 @@ export interface Models {
   verdicts: VerdictTable;
   verdict_subtasks: VerdictSubtaskTable;
   verdict_task_data: VerdictTaskDataTable;
+  problem_sets: ProblemSetTable;
+  problem_set_tasks: ProblemSetTaskTable;
   contests: ContestTable;
   contest_attachments: ContestAttachmentTable;
   contest_tasks: ContestTaskTable;
@@ -40,5 +43,6 @@ export interface Models {
 export * from "./users";
 export * from "./tasks";
 export * from "./submissions";
+export * from "./problem_sets";
 export * from "./contests";
 export * from "./auth";

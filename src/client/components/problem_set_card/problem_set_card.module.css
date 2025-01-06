@@ -1,0 +1,12 @@
+.card {
+  width: 50rem;
+  max-width: 100%;
+  padding: 1rem;
+
+  border: 1px solid black;
+  border-radius: 1rem;
+}
+
+.card:hover {
+  background-color: var(--darken);
+}

@@ -11,11 +11,14 @@ type NavbarProps = {
 };
 
 export const Navbar = memo(({ className }: NavbarProps) => {
+  const session = useSession();
+  const loggedOut = session == null || session.user == null;
+
   return (
     <div className={classNames("flex bg-blue-400 text-white", className)}>
       <div className="flex items-center gap-2 w-full max-w-[64rem] px-4 mx-auto">
         <NavbarLink href={getPath({ kind: Path.Home })}>Home</NavbarLink>
-        <NavbarLink href={getPath({ kind: Path.TaskList })}>Tasks</NavbarLink>
+        <NavbarLink href={getPath({ kind: Path.ProblemSetList })}>Problems</NavbarLink>
         <NavbarLink href={getPath({ kind: Path.ContestList })}>Contests</NavbarLink>
         <NavbarAccount />
       </div>

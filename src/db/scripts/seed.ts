@@ -3,7 +3,7 @@ import path from "path";
 import { hashSync } from "bcryptjs";
 import { Insertable } from "kysely";
 import { db } from "db";
-import { ContestTable, UserTable } from "common/types";
+import { ContestTable, ProblemSetTable, UserTable } from "common/types";
 import { TaskDTO } from "common/validation/task_validation";
 import { sha256 } from "common/utils/hashing";
 import { TaskFileStorage } from "server/files";
@@ -57,6 +57,23 @@ const contests: Insertable<ContestTable>[] = [
     is_public: false,
     start_time: null,
     end_time: null,
+  },
+];
+
+const psets: Insertable<ProblemSetTable>[] = [
+  {
+    slug: "beginner",
+    title: "Beginner Problems",
+    description: "Problems for beginners",
+    is_public: true,
+    order: 0,
+  },
+  {
+    slug: "advanced",
+    title: "Advanced Problems",
+    description: "Problems for advanced users",
+    is_public: true,
+    order: 1,
   },
 ];
 
@@ -732,6 +749,20 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
       )
       .returning(["id", "slug"])
       .execute();
+
+      const _dbProblemSets = await db
+        .insertInto("problem_sets")
+        .values(
+          psets.map((p) => ({
+            slug: p.slug,
+            title: p.title,
+            description: p.description,
+            is_public: p.is_public,
+            order: p.order,
+          }))
+        )
+        .returning(["id", "slug"])
+        .execute();
   }
 
   private static async uploadFile(filename: string, hashset: Set<string>): Promise<string> {

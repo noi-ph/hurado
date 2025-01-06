@@ -253,6 +253,42 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
+    .createTable("problem_sets")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("slug", "text", (col) => col.notNull().unique())
+    .addColumn("title", "text", (col) => col.notNull())
+    .addColumn("description", "text", (col) => col.notNull())
+    .addColumn("is_public", "boolean", (col) => col.notNull())
+    .addColumn("order", "integer", (col) => col.notNull())
+    .execute();
+
+  await db.schema
+    .createIndex("idx_problem_sets_order")
+    .on("problem_sets")
+    .where(sql.ref("is_public"), "=", true)
+    .columns(["order"])
+    .execute();
+
+  await db.schema
+    .createTable("problem_set_tasks")
+    .addColumn("set_id", "uuid", (col) => col.notNull().references("problem_sets.id"))
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id"))
+    .addColumn("order", "integer", (col) => col.notNull())
+    .execute();
+
+  await db.schema
+    .createIndex("idx_problem_set_tasks_set_id_order")
+    .on("problem_set_tasks")
+    .columns(["set_id", "order"])
+    .execute();
+
+  await db.schema
+    .createIndex("idx_problem_set_tasks_task_id")
+    .on("problem_set_tasks")
+    .columns(["task_id"])
+    .execute();
+
+  await db.schema
     .createTable("contests")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("slug", "text", (col) => col.notNull().unique())

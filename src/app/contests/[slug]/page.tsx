@@ -3,14 +3,14 @@ import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { canManageContests } from "server/authorization";
 import { getSession } from "server/sessions";
-import { ContestViewerDTO } from "common/types";
+import { ContestViewerDTO, TaskSummaryDTO } from "common/types";
 import { ContestViewer } from "client/components/contest_viewer/contest_viewer";
 
 async function getContestData(slug: string): Promise<ContestViewerDTO | null> {
   return db.transaction().execute(async (trx) => {
     const contest = await trx
       .selectFrom("contests")
-      .select(["id", "slug", "title", "description", "start_time", "end_time"])
+      .select(["id", "slug", "title", "description", "statement", "start_time", "end_time"])
       .where("slug", "=", slug)
       .executeTakeFirst();
 
@@ -18,14 +18,36 @@ async function getContestData(slug: string): Promise<ContestViewerDTO | null> {
       return null;
     }
 
+    const dbTasks = await trx
+      .selectFrom("tasks")
+      .innerJoin("contest_tasks", "tasks.id", "contest_tasks.task_id")
+      .orderBy(["contest_tasks.order", "tasks.title"])
+      .where("contest_tasks.contest_id", "=", contest.id)
+      .select([
+        "tasks.id",
+        "tasks.slug",
+        "tasks.title",
+        "tasks.description",
+      ])
+      .execute();
+
+    const tasks: TaskSummaryDTO[] = dbTasks.map((t) => ({
+      id: t.id,
+      slug: t.slug,
+      title: t.title,
+      description: t.description,
+    }));
+
     return {
       id: contest.id,
       slug: contest.slug,
       title: contest.title,
       description: contest.description,
+      statement: contest.statement,
       start_time: contest.start_time,
       end_time: contest.end_time,
-    };
+      tasks: tasks,
+    } satisfies ContestViewerDTO;
   });
 }
 

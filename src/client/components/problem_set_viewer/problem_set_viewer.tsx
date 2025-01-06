@@ -5,15 +5,15 @@ import Link from "next/link";
 import { memo } from "react";
 import { LatexDisplay } from "client/components/latex_display";
 import { getPath, Path } from "client/paths";
-import { ContestViewerDTO } from "common/types";
+import { ProblemSetViewerDTO } from "common/types";
 import { TaskCard } from "../task_card";
 
-type ContestTitleDisplayProps = {
+type ProblemSetTitleDisplayProps = {
   title: string;
   className?: string;
 };
 
-export const ContestViewerTitle = memo(({ title, className }: ContestTitleDisplayProps) => {
+export const ProblemSetViewerTitle = memo(({ title, className }: ProblemSetTitleDisplayProps) => {
   return (
     <div
       className={classNames(
@@ -27,13 +27,13 @@ export const ContestViewerTitle = memo(({ title, className }: ContestTitleDispla
   );
 });
 
-type ContestEditLinkProps = {
-  contestId: string;
+type ProblemSetEditLinkProps = {
+  id: string;
   label: string;
 };
 
-const ContestEditLink = ({ contestId, label }: ContestEditLinkProps) => {
-  const url = getPath({ kind: Path.ContestEdit, uuid: contestId });
+const ProblemSetEditLink = ({ id, label }: ProblemSetEditLinkProps) => {
+  const url = getPath({ kind: Path.ProblemSetEdit, uuid: id });
   return (
     <Link href={url} className="text-lg font-light px-1 first:pl-0 text-gray-800 ml-auto">
       {label}
@@ -41,23 +41,23 @@ const ContestEditLink = ({ contestId, label }: ContestEditLinkProps) => {
   );
 };
 
-type ContestViewerProps = {
-  contest: ContestViewerDTO;
+type ProblemSetViewerProps = {
+  set: ProblemSetViewerDTO;
   canEdit: boolean;
 };
 
-export const ContestViewer = ({ contest, canEdit }: ContestViewerProps) => {
+export const ProblemSetViewer = ({ set, canEdit }: ProblemSetViewerProps) => {
   return (
     <>
       <div className="flex items-center">
-        <ContestViewerTitle title={contest.title} />
-        {canEdit && <ContestEditLink contestId={contest.id} label="Edit" />}
+        <ProblemSetViewerTitle title={set.title} />
+        {canEdit && <ProblemSetEditLink id={set.id} label="Edit" />}
       </div>
       <div className="mt-4">
-        {contest.description && <LatexDisplay>{contest.description}</LatexDisplay>}
+        {set.description && <LatexDisplay>{set.description}</LatexDisplay>}
       </div>
       <div className="flex flex-col items-center gap-4 mt-8">
-        {contest.tasks.map(task => <TaskCard key={task.slug} task={task}/>)}
+        {set.tasks.map(task => <TaskCard key={task.slug} task={task}/>)}
       </div>
     </>
   );

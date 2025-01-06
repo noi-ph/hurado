@@ -18,7 +18,6 @@ import { ContestED } from "./types";
 import { saveContest } from "./contest_editor_saving";
 import { coerceContestED } from "./contest_coercion";
 import { ContestEditorDetails } from "./contest_editor_details";
-import { ContestEditorTasks } from "./contest_editor_tasks";
 import { getPath, Path } from "client/paths";
 
 type ContestEditorProps = {
