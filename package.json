@@ -5,6 +5,7 @@
   "scripts": {
     "build": "next build",
     "start": "next start -- -p 10001",
+    "worker": "node --conditions=react-server -r ts-node/register ./src/worker/worker.ts",
     "dev": "next dev -p 10000",
     "dev:worker": "nodemon --watch 'src/**' --ext '*' --exec 'node --conditions=react-server -r ts-node/register ./src/worker/worker.ts'",
     "storage:init": "node --conditions=react-server -r ts-node/register src/db/scripts/devtools.ts storage:init",

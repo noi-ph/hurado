@@ -5,7 +5,7 @@ services:
     container_name: hurado-main
     image: noiph/hurado:latest
     working_dir: /app
-    command: npm run dev
+    command: node /app/.next/standalone/server.js
     environment:
       - IS_UNDER_DOCKER=true
     env_file:
@@ -18,13 +18,13 @@ services:
     links:
       - hurado-postgres
     volumes:
-      - ./:/app/
+      - .:/app
   hurado-judge:
     container_name: hurado-judge
     image: noiph/hurado:latest
     privileged: true
     working_dir: /app
-    command: npm run dev:worker
+    command: npm run worker
     environment:
       - IS_UNDER_DOCKER=true
     env_file:
@@ -51,18 +51,15 @@ services:
     container_name: hurado-redis
     image: redis:7-alpine
     ports:
-      - "6379"  # Blob service
+      - "6379"
     volumes:
       - ./volumes/redis:/data
-  hurado-minio:
-    container_name: minio
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
-    environment:
-      - MINIO_ROOT_USER=hurado
-      - MINIO_ROOT_PASSWORD=password
+  hurado-nginx:
+    container_name: hurado-nginx
+    image: nginx:1-alpine
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "443:443"
     volumes:
-      - ./volumes/minio:/data
+      - ./config/production/nginx/:/etc/nginx/
+      - ./private/nginx-certs/:/etc/nginx-certs/
+      - ./.next/:/var/www/hurado/:ro

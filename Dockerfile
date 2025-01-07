@@ -1,5 +1,10 @@
 FROM node:20-bullseye
 
+# Local development only. Manage your own dependencies.
+
+# Disable Next.js telemetry
+ENV NEXT_TELEMETRY_DISABLED=1
+
 # Setup workdir
 RUN mkdir /isolate/
 WORKDIR /isolate/
