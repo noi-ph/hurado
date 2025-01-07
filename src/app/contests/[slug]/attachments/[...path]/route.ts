@@ -30,8 +30,7 @@ export async function GET(_request: NextRequest, context: NextContext<RouteParam
   // Fetch the blob from TaskFileStorage and load it into memory
   // TODO(Bonus): Make this part streaming to avoid occupying the memory
   // or use some presigned url shenanigans
-  const blob = TaskFileStorage.getBlobClient(attachment.file_hash);
-  const buffer = await blob.downloadToBuffer();
+  const buffer = await TaskFileStorage.downloadToBuffer(attachment.file_hash);
 
   // Send the response out
   return new NextResponse(buffer, {

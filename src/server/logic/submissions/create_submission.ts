@@ -62,7 +62,7 @@ async function uploadSubmissionSources(
 ): Promise<SubmissionFileUpload[]> {
   const hashes = await Promise.all(
     sources.map(async (source) => {
-      const buffer = await source.file.arrayBuffer();
+      const buffer = Buffer.from(await source.file.arrayBuffer());
       const hash = await sha256(buffer);
       return {
         buffer,
@@ -101,8 +101,7 @@ async function uploadSubmissionSources(
   }));
 }
 
-async function uploadSubmissionFile(buffer: ArrayBuffer, hash: string): Promise<string> {
-  const blobClient = SubmissionFileStorage.getBlockBlobClient(hash);
-  await blobClient.uploadData(buffer);
+async function uploadSubmissionFile(buffer: Buffer, hash: string): Promise<string> {
+  await SubmissionFileStorage.uploadFromBuffer(hash, buffer);
   return hash;
 }

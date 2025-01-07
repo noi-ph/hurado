@@ -780,8 +780,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
 
     console.log(`Uploading '${filename}' (${hash})`);
 
-    const blobClient = TaskFileStorage.getBlockBlobClient(hash);
-    await blobClient.uploadData(buffer);
+    await TaskFileStorage.uploadFromBuffer(hash, buffer);
 
     await db
       .insertInto("files")

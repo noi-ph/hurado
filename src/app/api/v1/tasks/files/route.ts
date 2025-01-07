@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   if (file == null || !isFile(file)) {
     return NextResponse.json({ error: "File not attached" }, { status: 400 });
   }
-  const buffer = await file.arrayBuffer();
+  const buffer = Buffer.from(await file.arrayBuffer());
   const hash = await sha256(buffer);
 
   const current = await db
@@ -42,8 +42,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const blobClient = TaskFileStorage.getBlockBlobClient(hash);
-  await blobClient.uploadData(buffer);
+  await TaskFileStorage.uploadFromBuffer(hash, buffer);
 
   try {
     const uploadedFile = await db

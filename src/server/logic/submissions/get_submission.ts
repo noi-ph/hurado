@@ -109,10 +109,9 @@ async function loadSubmissionViewerFile(
   hash: string,
   subtask: number | null
 ): Promise<SubmissionViewerFileDTO> {
-  const client = SubmissionFileStorage.getBlobClient(hash);
   let buffer: Buffer | null = null;
   try {
-    buffer = await client.downloadToBuffer();
+    buffer = await SubmissionFileStorage.downloadToBuffer(hash);
   } catch {
     // File does not exist
   }

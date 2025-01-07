@@ -47,16 +47,18 @@ services:
       - 5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
-  hurado-azurite:
-    container_name: hurado-azurite
-    image: mcr.microsoft.com/azure-storage/azurite
-    ports:
-      - "10000"  # Blob service
+  hurado-minio:
+    container_name: minio
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
     environment:
-      - AZURITE_ACCOUNTS=hurado:password
+      - MINIO_ROOT_USER=hurado
+      - MINIO_ROOT_PASSWORD=password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
     volumes:
-      - ./volumes/azurite:/data
-    command: "azurite-blob -l /data --blobHost 0.0.0.0 --blobPort 10000"
+      - ./volumes/minio:/data
   hurado-redis:
     container_name: hurado-redis
     image: redis:7.4-bookworm

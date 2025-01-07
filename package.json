@@ -31,11 +31,12 @@
   },
   "homepage": "https://github.com/noiph/hurado#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.723.0",
+    "@aws-sdk/lib-storage": "^3.723.0",
     "@azure/storage-blob": "^12.24.0",
     "@monaco-editor/react": "^4.6.0",
     "@types/bcryptjs": "^2.4.6",
     "@unified-latex/unified-latex": "^1.7.1",
-    "aws-sdk": "^2.1673.0",
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "boxicons": "^2.1.4",

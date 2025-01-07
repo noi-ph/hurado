@@ -96,13 +96,13 @@ async function downloadTaskScripts(directory: string, scripts: JudgeScript[]): P
 }
 
 async function downloadTaskFile(directory: string, filename: string, hash: string) {
-  const client = TaskFileStorage.getBlobClient(hash);
-  await client.downloadToFile(path.join(directory, filename));
+  const dest = path.join(directory, filename);
+  await TaskFileStorage.downloadToFile(hash, dest);
 }
 
 async function downloadSubmissionFile(directory: string, filename: string, hash: string) {
-  const client = SubmissionFileStorage.getBlobClient(hash);
-  await client.downloadToFile(path.join(directory, filename));
+  const dest = path.join(directory, filename);
+  await SubmissionFileStorage.downloadToFile(hash, dest);
 }
 
 async function compileTaskScripts(task: JudgeTask, dir: string): Promise<unknown> {
