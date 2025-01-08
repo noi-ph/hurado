@@ -13,5 +13,3 @@ export type UserTable = {
 
 export type User = Selectable<UserTable>;
 export type UserPublic = Pick<User, "id" | "email" | "username" | "name" | "role">;
-export type UserCreate = Pick<Insertable<UserTable>, "email" | "username" | "hashed_password">;
-export type UserUpdate = Updateable<UserTable>;

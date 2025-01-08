@@ -1,19 +1,19 @@
 import { promises as fs } from "fs";
+import { FileMigrationProvider, Migrator, sql } from "kysely";
 import path from "path";
-import { FileMigrationProvider, Insertable, Migrator, sql } from "kysely";
 import { db } from "db";
-import { TaskCreate, UserTable } from "common/types";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
-import { __DO_NOT_IMPORT__DeveloperSeeds } from "./seed";
+import { __DO_NOT_IMPORT__DeveloperSeeds } from "../seed";
 
-class DeveloperTools {
+
+export class DeveloperToolsDatabase {
   static async resetDatabase() {
     console.log("Creating");
-    await DeveloperTools.recreateDatabase();
+    await DeveloperToolsDatabase.recreateDatabase();
     console.log("Migrating");
-    await DeveloperTools.migrateDatabase();
+    await DeveloperToolsDatabase.migrateDatabase();
     console.log("Seeding");
-    await DeveloperTools.seedDatabase();
+    await DeveloperToolsDatabase.seedDatabase();
   }
 
   static async recreateDatabase(): Promise<void> {
@@ -83,28 +83,3 @@ class DeveloperTools {
     await SubmissionFileStorage.createIfNotExists();
   }
 }
-
-function main() {
-  if (process.argv.length < 3) {
-    console.error(`Missing positional argument: mode`);
-    process.exit(1);
-  }
-
-  const mode = process.argv[2];
-  switch (mode) {
-    case "db:recreate":
-      return DeveloperTools.recreateDatabase();
-    case "db:migrate":
-      return DeveloperTools.migrateDatabase();
-    case "db:seed":
-      return DeveloperTools.seedDatabase();
-    case "db:reset":
-      return DeveloperTools.resetDatabase();
-    case "storage:init":
-      return DeveloperTools.initStorage();
-    default:
-      console.error(`Invalid argument: '${mode}'`);
-  }
-}
-
-main();

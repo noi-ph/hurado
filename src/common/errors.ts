@@ -29,3 +29,10 @@ export class TaskConfigurationError extends Error {
     this.message = `Invalid Task '${id}': ${hint}`;
   }
 }
+
+export class UniquenessConflictError extends Error {
+  constructor(value: unknown) {
+    super();
+    this.message = `Uniqueness Conflict: ${value}`;
+  }
+}
