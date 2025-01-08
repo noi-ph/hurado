@@ -123,7 +123,6 @@ async function loadSubmissionViewerFile(
     };
   } else {
     const content = buffer.toString("utf8");
-
     return {
       subtask: subtask,
       hash: hash,
