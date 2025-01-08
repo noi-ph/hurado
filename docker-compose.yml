@@ -44,7 +44,7 @@ services:
     env_file:
       - .env
     ports:
-      - 1235:5321
+      - 5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
   hurado-redis:
