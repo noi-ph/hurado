@@ -3,6 +3,8 @@
 # Runs the `next build`` command inside a docker container
 # The final output will be at ~/.next/ which docker-compose.production.yml will know how to use
 
+set -e
+
 function run_inside() {
     cd /app
 

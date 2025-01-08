@@ -72,7 +72,7 @@ function hrd_connect() {
         ssh -t root@$HOSTNAME "cd /hurado; exec \$SHELL"
     else
         shift
-        ssh root@$HOSTNAME $@
+        ssh -t root@$HOSTNAME $@
     fi
 }
 
@@ -114,12 +114,12 @@ function hrd_deploy() {
     # 123.123.123.123  production.practice.noi.ph
     #
 
-    if [ -z "$2" ]; then
+    if [ -z "$1" ]; then
         echo "Usage: hrd deploy [staging|production]"
         return 1
     fi
 
-    read -p "Are you sure you want to deploy to $2? (Y/n) " -n 1 -r
+    read -p "Are you sure you want to deploy to $1? (Y/n) " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         echo "Deploy aborted."
@@ -128,12 +128,12 @@ function hrd_deploy() {
 
     cd $PROJECT_ROOT
 
-    case "$2" in
+    case "$1" in
         production)
-            ./tools/hrd.sh connect production -c "hrd deploy_serverside"
+            hrd connect production hrd deploy_serverside
             ;;
         *)
-            echo "Unknown server: $2"
+            echo "Unknown server: $1"
             return 1
             ;;
     esac
@@ -142,9 +142,9 @@ function hrd_deploy() {
 function hrd_deploy_serverside() {
     # Server-side script for deploying the latest changes to the production server
     set -e
-    cd /app/
+    cd /hurado/
     git pull --ff-only origin main
-    ./tools/next_build.sh
+    ./scripts/next_build.sh
     hrd compose restart
     hrd shell npm run db:migrate
 }
