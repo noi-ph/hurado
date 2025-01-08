@@ -88,18 +88,18 @@ export async function POST(request: NextRequest) {
     }
 
     // load the old submission as well
-    const recentSubmissionDb = await db
-      .selectFrom('submissions')
-      .where('task_id', '=', submissionReq.task_id)
-      .where('user_id', '=', session.user.id)
-      .orderBy('created_at', 'desc')
-      .select(['id'])
-      .executeTakeFirst()
-    ;
-    if (recentSubmissionDb != undefined) {
-      const recentSubmissionFilesDb = await db
-      .selectFrom("submission_files")
-      .where("submission_files.submission_id", "=", recentSubmissionDb.id)
+    const recentSubmissionFilesDb = await db
+      .selectFrom(
+        (qb) => qb
+          .selectFrom('submissions')
+          .where('task_id', '=', submissionReq.task_id)
+          .where('user_id', '=', session.user.id)
+          .orderBy('created_at', 'desc')
+          .select(['id'])
+          .limit(1)
+          .as('previousSubmission')
+      )
+      .innerJoin('submission_files', 'submission_files.submission_id', 'previousSubmission.id')
       .innerJoin(
         (eb) =>
           eb
@@ -114,9 +114,10 @@ export async function POST(request: NextRequest) {
       .select(["submission_files.hash", "task_info.subtask_order"])
       .execute();
 
-      
     for (const { hash, subtask_order } of recentSubmissionFilesDb) {
       const filename = allowedFileNameList.at(subtask_order-1);
+      console.log('**********************************************************************');
+      console.log(hash, subtask_order, filename);
       if (filename == undefined) {
         continue;
       }
@@ -124,20 +125,22 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
+      let buffer: Buffer | null;
       try {
-        const client = SubmissionFileStorage.getBlobClient(hash);
-        const buffer = await client.downloadToBuffer();
-        const file = new File([buffer], filename, { type: "application/octet-stream" });
-
-        sources.push({
-          file,
-          filename,
-        });
-
-      } catch (e) {
-        // skip
+        buffer = await SubmissionFileStorage.downloadToBuffer(hash);
+      } catch {
+        buffer = null;
       }
-    }
+
+      if (buffer == null) {
+        continue;
+      }
+
+      const file = new File([buffer], filename, { type: "application/octet-stream" });
+      sources.push({
+        file,
+        filename,
+      });
     }
     
   } else {
