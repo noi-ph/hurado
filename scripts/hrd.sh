@@ -60,7 +60,7 @@ function hrd_connect() {
 
     case "$1" in
         production)
-            HOSTNAME="production.hurado.noi.ph"
+            HOSTNAME="production.practice.noi.ph"
             ;;
         *)
             echo "Unknown server: $1"
@@ -95,14 +95,14 @@ function hrd_deploy() {
     # Pre-requisites for this command:
     # You need to add something like the following to your ~/.ssh/config file:
     #
-    # Host production.hurado.noi.ph
-    #   HostName production.hurado.noi.ph
+    # Host production.practice.noi.ph
+    #   HostName production.practice.noi.ph
     #   User root
     #   IdentityFile ~/.ssh/my_ssh_key
     #   IdentitiesOnly yes
     #
-    # Host staging.hurado.noi.ph
-    #   HostName web-app-staging
+    # Host staging.practice.noi.ph
+    #   HostName staging.practice.noi.ph
     #   User root
     #   IdentityFile ~/.ssh/my_ssh_key
     #   IdentitiesOnly yes
@@ -111,7 +111,7 @@ function hrd_deploy() {
     # Then you need to add the following to your /etc/hosts file:
     # Get the actual IP address from someone else, the DNS configuration, or the VPS provider
     #
-    # 123.123.123.123  production.hurado.noi.ph
+    # 123.123.123.123  production.practice.noi.ph
     #
 
     if [ -z "$2" ]; then
