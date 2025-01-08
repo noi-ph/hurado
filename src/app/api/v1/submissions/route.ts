@@ -116,8 +116,6 @@ export async function POST(request: NextRequest) {
 
     for (const { hash, subtask_order } of recentSubmissionFilesDb) {
       const filename = allowedFileNameList.at(subtask_order-1);
-      console.log('**********************************************************************');
-      console.log(hash, subtask_order, filename);
       if (filename == undefined) {
         continue;
       }
