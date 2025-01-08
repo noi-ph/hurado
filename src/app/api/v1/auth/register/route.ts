@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { hashSync } from "bcryptjs";
 
 import { db } from "db";
 import { SessionData } from "common/types";
@@ -19,11 +18,12 @@ export async function POST(request: NextRequest) {
     username,
     password,
   });
+
   if (!parsed.success) {
     return NextResponse.json({}, { status: 400 });
   }
 
-  db.transaction().execute(async (trx) => {
+  return db.transaction().execute(async (trx) => {
     try {
       const user = await createUser(trx, {
         email: parsed.data.email,

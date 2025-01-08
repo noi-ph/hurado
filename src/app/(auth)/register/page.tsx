@@ -1,12 +1,11 @@
 "use client";
 
-import type { FunctionComponent } from "react";
-
+import { useEffect, useState, useRef, useCallback, FunctionComponent } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef, useCallback } from "react";
-
-import styles from "./page.module.css";
+import http from "client/http";
 import { DefaultLayout } from "client/components/layouts/default_layout";
+import { APIPath, getAPIPath } from "client/paths";
+import styles from "./page.module.css";
 
 const Page: FunctionComponent = () => {
   const [throttle, setThrottle] = useState<boolean>(false);
@@ -26,20 +25,14 @@ const Page: FunctionComponent = () => {
 
   const register = useCallback(async () => {
     try {
-      const response = await fetch("api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-          confirmPassword,
-        }),
+      const response = await http.post(getAPIPath({ kind: APIPath.Register }), {
+        email,
+        username,
+        password,
+        confirmPassword,
       });
 
-      if (!response.ok) {
+      if (response.status != 200) {
         throw new Error("");
       }
 
