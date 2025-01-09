@@ -8,7 +8,7 @@ import { humanizeTimeAgo } from "common/utils/dates";
 import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
 import styles from "./submission_table.module.css";
-import { RefreshSubmissionsContext } from "../task_viewer/task_viewer";
+import { RefreshProvidedValue, RefreshSubmissionsContext } from "../task_viewer/task_viewer";
 
 type SubmissionTableProps = {
   loaded: boolean;
@@ -23,11 +23,22 @@ export const SubmissionsTable = ({
   loadSubmissions,
   showUser,
 }: SubmissionTableProps) => {
-  const {refresh, setRefresh} = useContext(RefreshSubmissionsContext);
+  const context: RefreshProvidedValue | undefined = useContext(RefreshSubmissionsContext);
+  let refresh: boolean | undefined, setRefresh: ((refresh: boolean) => void) | undefined;
+  if (context == undefined) {
+    refresh = undefined;
+    setRefresh = undefined;
+  } else {
+    refresh = context.refresh;
+    setRefresh = context.setRefresh;
+  }
+
   useEffect(() => {
     if (!loaded || refresh) {
       loadSubmissions();
-      setRefresh(false);
+      if (setRefresh) {
+        setRefresh(false);
+      }
     }
   }, [submissions]);
 

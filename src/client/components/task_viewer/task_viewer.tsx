@@ -8,7 +8,7 @@ import { TaskViewerStatement } from "./task_viewer_statement";
 import { TaskViewerEditorial } from "./task_viewer_editorial";
 import { TaskViewerSubmissions } from "./task_viewer_submissions";
 
-type RefreshProvidedValue = {
+export type RefreshProvidedValue = {
   refresh: boolean,
   setRefresh (refresh: boolean): void,
 };
