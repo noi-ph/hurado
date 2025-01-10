@@ -1,6 +1,7 @@
-import { ButtonHTMLAttributes, DetailedHTMLProps, forwardRef, InputHTMLAttributes } from "react";
 import classNames from "classnames";
+import { ButtonHTMLAttributes, DetailedHTMLProps, forwardRef, InputHTMLAttributes } from "react";
 import { FieldError } from "react-hook-form";
+
 
 export function FormLabel(props: DetailedHTMLProps<InputHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>) {
   return <label {...props} className={classNames('block text-lg', props.className)}/>;
@@ -27,6 +28,10 @@ export function FormError({ error, className }: FormErrorProps) {
 
 export function FormButton(props: DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) {
   return (
-    <button {...props} type={props.type || "submit"} className={classNames(props.className)}/>
+    <button
+      {...props}
+      type={props.type || "submit"}
+      className={classNames('text-white bg-blue-400 hover:bg-blue-500 rounded-lg text-lg px-4 py-1 disabled:bg-blue-200 disabled:hover:bg-blue-200 disabled:cursor-auto', props.className)}
+    />
   );
 }

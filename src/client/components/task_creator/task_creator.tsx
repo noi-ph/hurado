@@ -10,8 +10,8 @@ import http from 'client/http';
 import { APIPath, getAPIPath, getPath, Path } from 'client/paths';
 import type { TaskCreateSimpleError, TaskCreateSimplePayload } from '@root/api/v1/tasks/simple/route';
 import { APISuccessResponse, ResponseKind, applyValidationErrors } from 'common/responses';
-import { Modal } from '../modal/modal';
-import { FormError, FormInput, FormLabel } from '../form/form';
+import { Modal } from '../modal';
+import { FormButton, FormError, FormInput, FormLabel } from '../form';
 import { zTaskCreateSimple } from 'common/validation/task_validation';
 
 
@@ -69,9 +69,9 @@ const TaskCreator = () => {
 
   return (
     <>
-      <button onClick={onButtonClick} className='text-blue-400 hover:text-blue-500'>
+      <FormButton onClick={onButtonClick}>
         New Task
-      </button>
+      </FormButton>
 
       <Modal show={showModal} onBackgroundClick={onModalHide}>
         <div className='w-96 max-w-full'>
@@ -84,9 +84,9 @@ const TaskCreator = () => {
             <FormInput type='text' {...register('title')} />
             <FormError error={errors.title} className='mb-4' />
             <div className='text-center'>
-              <button type="button" className='hover:opacity-70 disabled:opacity-25' onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+              <FormButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
                 Create
-              </button>
+              </FormButton>
             </div>
           </div>
         </div>
