@@ -29,19 +29,21 @@ function main() {
 }
 
 function fastMain() {
-  const pMain = main();
-  if (pMain instanceof Promise) {
-    pMain
-      .then(() => process.exit(0))
-      .catch((e) => {
-        if (e instanceof Error && e.stack) {
-          console.error(e.stack);
-        } else {
-          console.error(e);
-        }
-        process.exit(1)
-     });
+  const promise = main();
+  if (promise == null) {
+    process.exit(0);
   }
+
+  promise.then(() => {
+    process.exit(0);
+  }).catch((e) => {
+    if (e instanceof Error && e.stack) {
+      console.error(e.stack);
+    } else {
+      console.error(e);
+    }
+    process.exit(1);
+  });
 }
 
 fastMain();

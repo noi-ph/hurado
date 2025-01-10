@@ -45,9 +45,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("checker_id", "uuid")
     .addColumn("communicator_id", "uuid")
     .addColumn("allowed_languages", sql`text[]`)
+    .addColumn("owner_id", "uuid", (col) => col.notNull().references("users.id"))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .execute();
 
   await db.schema.createIndex("idx_tasks_slug").on("tasks").columns(["slug"]).execute();
+  await db.schema.createIndex("idx_tasks_owner_id_created_at").on("tasks").columns(["owner_id", "created_at"]).execute();
 
   await db.schema
     .createTable("task_scripts")

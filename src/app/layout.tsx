@@ -61,6 +61,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = ({ children }) => {
             closeButton={false}
           />
           {children}
+          <div id="modal-root"/>
         </body>
       </html>
     </SessionProvider>

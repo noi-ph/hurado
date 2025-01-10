@@ -7,6 +7,7 @@ async function getTasksData(): Promise<TaskSummaryDTO[]> {
   const tasks = await db
     .selectFrom("tasks")
     .select(["title", "slug", "description"])
+    .where("is_public", "=", true)
     .limit(1000)
     .execute();
 

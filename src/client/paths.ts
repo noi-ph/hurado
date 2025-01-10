@@ -18,6 +18,9 @@ export enum Path {
   ContestView = "ContestView",
   ContestEdit = "ContestEdit",
   ContestAttachment = "ContestAttachment",
+  AdminTaskList = "AdminTaskList",
+  AdminProblemSetList = "AdminProblemSetList",
+  AdminContestList = "AdminContestList",
 }
 
 export type PathArguments =
@@ -36,7 +39,10 @@ export type PathArguments =
   | { kind: Path.ContestList }
   | { kind: Path.ContestView; slug: string }
   | { kind: Path.ContestEdit; uuid: string }
-  | { kind: Path.ContestAttachment; slug: string; path: string };
+  | { kind: Path.ContestAttachment; slug: string; path: string }
+  | { kind: Path.AdminTaskList }
+  | { kind: Path.AdminProblemSetList }
+  | { kind: Path.AdminContestList };
 
 export function getPath(args: PathArguments) {
   switch (args.kind) {
@@ -72,6 +78,12 @@ export function getPath(args: PathArguments) {
       return `/contests/${uuidToHuradoID(args.uuid)}/edit`;
     case Path.ContestAttachment:
       return `/contests/${args.slug}/attachments/${args.path}`;
+    case Path.AdminTaskList:
+      return "/admin/tasks";
+    case Path.AdminProblemSetList:
+      return "/admin/sets";
+    case Path.AdminContestList:
+      return "/admin/contests";
     default:
       throw new UnreachableError(args);
   }

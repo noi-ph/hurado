@@ -1,5 +1,5 @@
 {
-  "name": "algurado.com.ph",
+  "name": "hurado",
   "version": "2.0.0",
   "description": "NOI.PH's online judge",
   "scripts": {
@@ -42,6 +42,7 @@
     "@inquirer/prompts": "^7.2.1",
     "@monaco-editor/react": "^4.6.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/react-dom": "^18.3.5",
     "@unified-latex/unified-latex": "^1.7.1",
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
@@ -59,7 +60,7 @@
     "pg": "^8.11.5",
     "pg-query-stream": "^4.5.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-toastify": "^10.0.5",
     "sharp": "^0.33.2",
     "zod": "^3.23.8"

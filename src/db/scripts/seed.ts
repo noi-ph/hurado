@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { hashSync } from "bcryptjs";
-import { Insertable } from "kysely";
+import { Insertable, Selectable } from "kysely";
 import { db } from "db";
 import { ContestTable, ProblemSetTable, UserTable } from "common/types";
 import { TaskDTO } from "common/validation/task_validation";
@@ -646,6 +646,8 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
       .returning(["id", "username"])
       .execute();
 
+    const userIds = new Map<string, string>(dbUsers.map((u) => [u.username, u.id]));
+
     const dbTasks = await db
       .insertInto("tasks")
       .values([
@@ -659,6 +661,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           time_limit_ms: 2000,
           memory_limit_byte: 1_073_741_824,
           checker_kind: CheckerKind.LenientDiff,
+          owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
           title: "Sharing Chocolates",
@@ -670,6 +673,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           time_limit_ms: 2000,
           memory_limit_byte: 1_073_741_824,
           checker_kind: CheckerKind.LenientDiff,
+          owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
           title: "Crazy Problem",
@@ -681,6 +685,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           time_limit_ms: 2000,
           memory_limit_byte: 1_073_741_824,
           checker_kind: CheckerKind.LenientDiff,
+          owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
           title: "Sum of N",
@@ -693,6 +698,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           time_limit_ms: 2000,
           memory_limit_byte: 1_073_741_824,
           checker_kind: CheckerKind.LenientDiff,
+          owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
           title: "Please Add",
@@ -705,6 +711,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           time_limit_ms: 2000,
           memory_limit_byte: 1_073_741_824,
           checker_kind: CheckerKind.LenientDiff,
+          owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
           title: "Hard of Hearing",
@@ -716,12 +723,12 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           time_limit_ms: 2000,
           memory_limit_byte: 1_073_741_824,
           checker_kind: CheckerKind.LenientDiff,
+          owner_id: getOrThrow(userIds, "kevinsogo"),
         },
       ])
       .returning(["id", "slug"])
       .execute();
 
-    const userIds = new Map<string, string>(dbUsers.map((u) => [u.username, u.id]));
     const taskids = new Map<string, string>(dbTasks.map((t) => [t.slug, t.id]));
     const fileHashMap = new Map<string, string>();
     const fileHashSet = new Set<string>();

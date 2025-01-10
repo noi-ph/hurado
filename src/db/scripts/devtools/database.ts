@@ -43,7 +43,7 @@ export class DeveloperToolsDatabase {
         fs,
         path,
         // This needs to be an absolute path.
-        migrationFolder: path.join(__dirname, "../migrations"),
+        migrationFolder: path.join(__dirname, "../../migrations"),
       }),
     });
 
@@ -66,12 +66,7 @@ export class DeveloperToolsDatabase {
 
   static async seedDatabase(): Promise<void> {
     if (process.env.ENVIRONMENT === "development") {
-      try {
-        __DO_NOT_IMPORT__DeveloperSeeds.run();
-      } catch (err) {
-        console.error(err);
-        process.exit(1);
-      }
+      await __DO_NOT_IMPORT__DeveloperSeeds.run();
     } else {
       console.error("Seeding the database only works on development");
       process.exit(2);

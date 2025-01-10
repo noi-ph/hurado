@@ -26,6 +26,8 @@ export type TaskTable = {
   checker_kind: CheckerKind;
   checker_id: string | null;
   communicator_id: string | null;
+  created_at: Date;
+  owner_id: string;
 };
 
 export type TaskCreditTable = {
