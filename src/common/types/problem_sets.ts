@@ -5,7 +5,7 @@ export type ProblemSetTable = {
   id: Generated<string>;
   slug: string;
   title: string;
-  description: string | null;
+  description: string;
   is_public: boolean;
   order: number;
 };
@@ -24,7 +24,7 @@ export type ProblemSetViewerDTO = {
   id: string;
   slug: string;
   title: string;
-  description: string | null;
+  description: string;
   is_public: boolean;
   order: number;
   tasks: TaskSummaryDTO[];
@@ -33,6 +33,6 @@ export type ProblemSetViewerDTO = {
 export type ProblemSetSummaryDTO = {
   slug: string;
   title: string;
-  description: string | null;
+  description: string;
   order: number;
 };

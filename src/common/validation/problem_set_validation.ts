@@ -38,3 +38,8 @@ export type ProblemSetTaskEditorDTO = {
 export type ProblemSetEditorDTO = Pick<ProblemSet, ProblemSetEditorKeys> & {
   tasks: ProblemSetTaskEditorDTO[];
 };
+
+export const zProblemSetCreate = zProblemSet.pick({
+  slug: true,
+  title: true,
+});

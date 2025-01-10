@@ -6,21 +6,21 @@ import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { TaskCreateSimpleError, TaskCreateSimpleSuccess } from '@root/api/v1/tasks/simple/route';
+import type { ProblemSetCreateError, ProblemSetCreateSuccess } from '@root/api/v1/sets/route';
 import http from 'client/http';
 import { APIPath, getAPIPath, getPath, Path } from 'client/paths';
 import { ResponseKind, applyValidationErrors } from 'common/responses';
-import { zTaskCreateSimple } from 'common/validation/task_validation';
+import { zProblemSetCreate } from 'common/validation/problem_set_validation';
 import { Modal } from '../modal';
 import { FormButton, FormError, FormInput, FormLabel } from '../form';
 
 
-type TaskForm = {
+type ProblemSetForm = {
   slug: string;
   title: string;
 };
 
-export function TaskCreator() {
+export function ProblemSetCreator() {
   const router = useRouter();
 
   const [showModal, setShowModal] = useState(false);
@@ -38,21 +38,21 @@ export function TaskCreator() {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<TaskForm>({
-    resolver: zodResolver(zTaskCreateSimple),
+  } = useForm<ProblemSetForm>({
+    resolver: zodResolver(zProblemSetCreate),
   });
 
-  const onSubmit = async (data: TaskForm) => {
+  const onSubmit = async (data: ProblemSetForm) => {
     try {
-      const response: AxiosResponse<TaskCreateSimpleSuccess> = await http.post(getAPIPath({ kind: APIPath.TaskCreateSimple }), data);
-      router.push(getPath({ kind: Path.TaskEdit, uuid: response.data.data.id }));
+      const response: AxiosResponse<ProblemSetCreateSuccess> = await http.post(getAPIPath({ kind: APIPath.ProblemSetCreate }), data);
+      router.push(getPath({ kind: Path.ProblemSetEdit, uuid: response.data.data.id }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
-        const response: AxiosResponse<TaskCreateSimpleError> = e.response;
+        const response: AxiosResponse<ProblemSetCreateError> = e.response;
         const data = response.data;
         switch(data.kind) {
           case ResponseKind.ForbiddenError:
-            toast.error('You are not allowed to create tasks');
+            toast.error('You are not allowed to create problem sets');
             break;
           case ResponseKind.ValidationError:
             applyValidationErrors(setError, data.errors);
@@ -70,13 +70,13 @@ export function TaskCreator() {
   return (
     <>
       <FormButton onClick={onButtonClick}>
-        New Task
+        New Problem Set
       </FormButton>
 
       <Modal show={showModal} onBackgroundClick={onModalHide}>
         <div className='w-96 max-w-full'>
           <div>
-            <h3 className='text-center text-xl mb-4'>Create Task</h3>
+            <h3 className='text-center text-xl mb-4'>Create ProblemSet</h3>
             <FormLabel>Slug</FormLabel>
             <FormInput type='text' {...register('slug')} />
             <FormError error={errors.slug}  className='mb-4'/>

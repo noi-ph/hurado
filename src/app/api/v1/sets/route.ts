@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { zTaskCreateSimple } from "common/validation/task_validation";
+import { zProblemSetCreate } from "common/validation/problem_set_validation";
 import { db } from "db";
 import { getSession } from "server/sessions";
-import { canManageTasks } from "server/authorization";
-import { CheckerKind, TaskType } from "common/types/constants";
+import { canManageProblemSets } from "server/authorization";
 import {
   APIForbiddenError,
   APIForbiddenErrorType,
@@ -13,27 +12,26 @@ import {
   APISuccessResponse,
   customValidationError,
 } from "common/responses";
-import { z } from "zod";
 
-export type TaskCreateSimpleError =
+export type ProblemSetCreateError =
   | APIForbiddenErrorType
-  | APIValidationErrorType<typeof zTaskCreateSimple>;
+  | APIValidationErrorType<typeof zProblemSetCreate>;
 
-export type TaskCreateSimpleSuccess = APISuccessResponse<{ id: string }>;
+export type ProblemSetCreateSuccess = APISuccessResponse<{ id: string }>
 
-export type TaskCreateSimpleResponse =
-  | TaskCreateSimpleError
-  | TaskCreateSimpleSuccess;
+export type ProblemSetCreateResponse =
+  | ProblemSetCreateError
+  | ProblemSetCreateSuccess;
 
 
-export async function POST(request: NextRequest): Promise<NextResponse<TaskCreateSimpleResponse>> {
+export async function POST(request: NextRequest): Promise<NextResponse<ProblemSetCreateResponse>> {
   const session = getSession(request);
-  if (session == null || !canManageTasks(session, request)) {
+  if (session == null || !canManageProblemSets(session)) {
     return NextResponse.json(APIForbiddenError, { status: 401 });
   }
 
   const data = await request.json();
-  const parsed = zTaskCreateSimple.safeParse(data);
+  const parsed = zProblemSetCreate.safeParse(data);
 
   if (!parsed.success) {
     const errors = makeValidationError(parsed.error);
@@ -42,7 +40,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<TaskCreat
 
   return db.transaction().execute(async (trx) => {
     const current = await trx
-      .selectFrom("tasks")
+      .selectFrom("problem_sets")
       .where("slug", "=", parsed.data.slug)
       .select("id")
       .execute();
@@ -53,25 +51,22 @@ export async function POST(request: NextRequest): Promise<NextResponse<TaskCreat
       }), { status: 400 });
     }
 
-    const dbTask = await trx
-      .insertInto("tasks")
+    const dbProblemSet = await trx
+      .insertInto("problem_sets")
       .values([
         {
           title: parsed.data.title,
           slug: parsed.data.slug,
-          statement: '',
+          description: "",
           is_public: false,
-          type: TaskType.Batch,
-          score_max: 0,
-          checker_kind: CheckerKind.LenientDiff,
-          owner_id: session.user.id,
+          order: 0,
         },
       ])
       .returning(["id"])
       .executeTakeFirstOrThrow();
 
     return NextResponse.json(makeSuccessResponse({
-      id: dbTask.id,
+      id: dbProblemSet.id,
     }));
   });
 }
