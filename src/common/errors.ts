@@ -1,3 +1,5 @@
+import { UseFormSetError } from "react-hook-form";
+
 export class UnreachableError extends Error {
   constructor(value: never) {
     super();

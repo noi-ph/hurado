@@ -49,7 +49,7 @@ async function Page() {
 
   return (
     <DefaultLayout>
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <h2 className="text-3xl">Tasks</h2>
         <TaskCreator/>
       </div>

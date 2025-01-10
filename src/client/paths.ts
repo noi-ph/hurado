@@ -98,6 +98,7 @@ export enum APIPath {
   FileHashes = "FileHashes",
   FileUpload = "FileUpload",
   TaskCreate = "TaskCreate",
+  TaskCreateSimple = "TaskCreateSimple",
   TaskUpdate = "TaskUpdate",
   TaskLookup = "TaskLookup",
   TaskSubmissions = "TaskSubmissions",
@@ -115,6 +116,7 @@ export type APIPathArguments =
   | { kind: APIPath.FileHashes }
   | { kind: APIPath.FileUpload }
   | { kind: APIPath.TaskCreate }
+  | { kind: APIPath.TaskCreateSimple }
   | { kind: APIPath.TaskUpdate; id: string }
   | { kind: APIPath.TaskLookup; id: string }
   | { kind: APIPath.TaskSubmissions; id: string }
@@ -137,6 +139,8 @@ export function getAPIPath(args: APIPathArguments) {
       });
     case APIPath.TaskCreate:
       return "/api/v1/tasks";
+    case APIPath.TaskCreateSimple:
+      return "/api/v1/tasks/simple";
     case APIPath.TaskUpdate:
       return `/api/v1/tasks/${args.id}`;
     case APIPath.TaskLookup:

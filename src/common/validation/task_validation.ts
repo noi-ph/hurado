@@ -46,7 +46,7 @@ const zTaskScript = z.object({
 
 const zTaskCommon = {
   id: z.string().uuid(),
-  slug: z.string().min(1).regex(REGEX_SLUG),
+  slug: z.string().min(1).regex(REGEX_SLUG, "Must be alphanumeric or dashes"),
   title: z.string().min(1),
   description: z.string().nullable(),
   statement: z.string(),
@@ -146,7 +146,7 @@ export const zTaskTypeCommunication = z.object({
   subtasks: z.array(zTaskSubtaskCommunication),
 });
 
-export const zTaskSchema = z
+export const zTask = z
   .discriminatedUnion("type", [zTaskTypeBatch, zTaskTypeOutput, zTaskTypeCommunication])
   .superRefine((obj, ctx) => {
     if (obj.checker_kind === CheckerKind.Custom) {
@@ -167,3 +167,8 @@ export const zTaskSchema = z
       }
     }
   });
+
+export const zTaskCreateSimple = z.object({
+  slug: zTaskCommon.slug,
+  title: zTaskCommon.title,
+});
