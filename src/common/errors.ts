@@ -8,6 +8,8 @@ export class UnreachableError extends Error {
 }
 
 export function UnreachableCheck(_value: never): null {
+  // This is a noop function that lets you tell typescript that you expect
+  // a value to be unreachable. This is useful for exhaustiveness checks.
   return null;
 }
 

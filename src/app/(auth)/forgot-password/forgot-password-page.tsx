@@ -1,16 +1,24 @@
 "use client";
 
+import { AxiosError, AxiosResponse } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import http from "client/http";
 import { APIPath, getAPIPath } from "client/paths";
+import {
+  AuthButton,
+  AuthError,
+  AuthForm,
+  AuthGroup,
+  AuthInput,
+  AuthLabel,
+  AuthTitle,
+} from "client/components/auth/auth";
 import { zUserForgotPassword } from "common/validation/user_validation";
-import { AuthButton, AuthError, AuthForm, AuthGroup, AuthInput, AuthLabel, AuthTitle } from "client/components/auth/auth";
-import { AxiosError, AxiosResponse } from "axios";
-import { PasswordResetError, PasswordResetSuccess } from "@root/api/v1/auth/password_reset/route";
 import { applyValidationErrors, ResponseKind } from "common/responses";
 import { UnreachableCheck } from "common/errors";
+import { ForgotPasswordError, ForgotPasswordSuccess } from "@root/api/v1/auth/forgot-password/route";
 
 type ForgotPasswordForm = {
   username: string;
@@ -29,13 +37,14 @@ export function ForgotPasswordPage() {
 
   const onSubmit = async (data: ForgotPasswordForm) => {
     try {
-      const response: AxiosResponse<PasswordResetSuccess> = await http.post(getAPIPath({ kind: APIPath.PasswordReset }), {
+      const url = getAPIPath({ kind: APIPath.ForgotPassword });
+      const response: AxiosResponse<ForgotPasswordSuccess> = await http.post(url, {
         username: data.username,
       });
       toast.success(`Email sent to ${response.data.data.email}`);
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
-        const response: AxiosResponse<PasswordResetError> = e.response;
+        const response: AxiosResponse<ForgotPasswordError> = e.response;
         const data = response.data;
         switch(data.kind) {
           case ResponseKind.ValidationError:
@@ -47,14 +56,14 @@ export function ForgotPasswordPage() {
         }
       } else {
         toast.error('An network error occurred. Please try again.');
-        return;
+        throw e;
       }
     }
   };
 
   return (
     <AuthForm>
-      <AuthTitle>Password Reset</AuthTitle>
+      <AuthTitle>Forgot Password</AuthTitle>
       <AuthGroup>
         <AuthLabel>Username:</AuthLabel>
         <AuthInput {...register('username')}/>

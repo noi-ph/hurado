@@ -1,7 +1,7 @@
 
 import { redirect } from "next/navigation";
 import { getSession } from "server/sessions";
-import PasswordResetPage from "./password_reset_page";
+import { ForgotPasswordPage } from "./forgot-password-page";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 
 function Page() {
@@ -12,7 +12,7 @@ function Page() {
 
   return (
     <DefaultLayout>
-      <PasswordResetPage />
+      <ForgotPasswordPage />
     </DefaultLayout>
   );
 };

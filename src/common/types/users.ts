@@ -4,13 +4,13 @@ export type UserTable = {
   id: Generated<string>;
   email: string;
   username: string;
-  hashed_password: ColumnType<string, string, never>;
+  hashed_password: string;
   created_at: ColumnType<Date, never, never>;
   school: string | null;
   name: string | null;
   role: string;
   password_reset_token: string | null;
-  password_reset_token_expires_at: Date | null;
+  password_reset_expires_at: Date | null;
 };
 
 export type User = Selectable<UserTable>;

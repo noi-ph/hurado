@@ -1,14 +1,15 @@
 import fs from "fs";
 import path from "path";
-import { hashSync } from "bcryptjs";
-import { Insertable, Selectable } from "kysely";
+import { Insertable } from "kysely";
 import { db } from "db";
 import { ContestTable, ProblemSetTable, UserTable } from "common/types";
 import { TaskDTO } from "common/validation/task_validation";
 import { sha256 } from "common/utils/hashing";
+import { CheckerKind, Language, ReducerKind, TaskFlavor, TaskType } from "common/types/constants";
 import { TaskFileStorage } from "server/files";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
-import { CheckerKind, Language, ReducerKind, TaskFlavor, TaskType } from "common/types/constants";
+import { hashPassword } from "server/logic/users";
+
 
 const users: Insertable<UserTable>[] = [
   {
@@ -808,10 +809,6 @@ function getOrThrow<K, T>(map: Map<K, T>, key: K): T {
   }
 
   return map.get(key)!;
-}
-
-function hashPassword(password: string) {
-  return hashSync(password, 10);
 }
 
 function readFileSync(filename: string): string {

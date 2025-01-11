@@ -6,6 +6,7 @@ export enum Path {
   AccountLogin = "AccountLogin",
   AccountLogout = "AccountLogout",
   AccountRegister = "AccountRegister",
+  AccountPasswordReset = "AccountPasswordReset",
   Submission = "Submission",
   TaskList = "TaskList",
   TaskView = "TaskView",
@@ -29,6 +30,7 @@ export type PathArguments =
   | { kind: Path.AccountLogin }
   | { kind: Path.AccountLogout }
   | { kind: Path.AccountRegister }
+  | { kind: Path.AccountPasswordReset, token: string }
   | { kind: Path.Submission; uuid: string }
   | { kind: Path.TaskList }
   | { kind: Path.TaskView; slug: string }
@@ -56,6 +58,8 @@ export function getPath(args: PathArguments) {
       return "/logout";
     case Path.AccountRegister:
       return "/register";
+    case Path.AccountPasswordReset:
+      return `/password-reset?token=${args.token}`;
     case Path.Submission:
       return `/submissions/${uuidToHuradoID(args.uuid)}`;
     case Path.TaskList:
@@ -96,7 +100,8 @@ export function getPath(args: PathArguments) {
 export enum APIPath {
   Login = "Login",
   Register = "Register",
-  PasswordReset = "PasswordReset",
+  ForgotPassword = "ForgotPassword",
+  ResetPassword = "ResetPassword",
   AttachmentFile = "AttachmentFile",
   SubmissionCreate = "SubmissionCreate",
   UserSubmissions = "UserSubmissions",
@@ -116,7 +121,8 @@ export enum APIPath {
 export type APIPathArguments =
   | { kind: APIPath.Login }
   | { kind: APIPath.Register }
-  | { kind: APIPath.PasswordReset }
+  | { kind: APIPath.ForgotPassword }
+  | { kind: APIPath.ResetPassword }
   | { kind: APIPath.SubmissionCreate }
   | { kind: APIPath.UserSubmissions; taskId?: string }
   | { kind: APIPath.FileHashes }
@@ -137,8 +143,10 @@ export function getAPIPath(args: APIPathArguments) {
       return "/api/v1/auth/login";
     case APIPath.Register:
       return "api/v1/auth/register";
-    case APIPath.PasswordReset:
-      return "api/v1/auth/password_reset";
+    case APIPath.ForgotPassword:
+      return "api/v1/auth/forgot-password";
+    case APIPath.ResetPassword:
+      return "api/v1/auth/reset-password";
     case APIPath.SubmissionCreate:
       return "/api/v1/submissions";
     case APIPath.UserSubmissions:

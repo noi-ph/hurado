@@ -17,6 +17,16 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("name", "text")
     .addColumn("country", "text")
     .addColumn("role", "text", (col) => col.notNull())
+    .addColumn("password_reset_token", "text")
+    .addColumn("password_reset_expires_at", "text")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_users_password_reset_token")
+    .on("users")
+    .columns(["password_reset_token"])
+    .where("password_reset_token", "is not", null)
+    .unique()
     .execute();
 
   await db.schema

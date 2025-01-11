@@ -15,6 +15,8 @@ function parseEmailProvider(): "console" | "ses" {
   return process.env.EMAIL_PROVIDER;
 }
 
+export const WEB_ACCESSIBLE_ORIGIN = process.env.WEB_ACCESSIBLE_ORIGIN;
+
 // Maybe have some validation here for various process.env variables
 export const JWT_SECRET = process.env.JWT_SECRET!;
 export const JWT_EXPIRE = process.env.JWT_EXPIRE!;

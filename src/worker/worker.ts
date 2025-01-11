@@ -3,7 +3,8 @@ import { StandaloneConnectionOptions } from 'ioredis';
 import { UnreachableDefault } from 'common/errors';
 import { REDIS_HOST, REDIS_PORT } from 'server/secrets';
 import { judgeSubmission } from 'server/logic/submissions/judge_submission';
-import { __MAIN_QUEUE_NAME__, JobName, SubmissionJudgementData } from './types';
+import { resetPassword } from 'server/logic/users';
+import { __MAIN_QUEUE_NAME__, JobName, PasswordResetData, SubmissionJudgementData } from './types';
 
 const connection: StandaloneConnectionOptions = {
   host: REDIS_HOST,
@@ -33,6 +34,8 @@ async function handleIncomingJob(job: Job) {
   switch(name) {
     case JobName.SubmissionJudgement:
       return handleSubmissionJudgement(job.data);
+    case JobName.PasswordReset:
+      return handlePasswordReset(job.data);
     default:
       console.error(`Invalid job name: ${UnreachableDefault(name)} -- ${JSON.stringify(job.data)}`);
       return;
@@ -41,4 +44,8 @@ async function handleIncomingJob(job: Job) {
 
 async function handleSubmissionJudgement(data: SubmissionJudgementData) {
   return judgeSubmission(data.id);
+}
+
+async function handlePasswordReset(data: PasswordResetData) {
+  return resetPassword(data.username);
 }

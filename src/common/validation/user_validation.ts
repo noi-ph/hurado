@@ -26,5 +26,23 @@ export const zUserForgotPassword = zUserBase.pick({
   username: true,
 });
 
+export const zUserResetPassword = z.object({
+  password: z.string().min(8),
+  confirmPassword: z.string(),
+}).superRefine((values, ctx) => {
+  if (values.password !== values.confirmPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["confirmPassword"],
+      message: "Passwords do not match",
+    });
+  }
+});
+
+export const zUserResetPasswordServer = z.object({
+  token: z.string().min(8),
+  password: z.string().min(8),
+});
+
 
 export type UserDTO = z.infer<typeof zUserRegister>;

@@ -2,15 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "db";
 import { zUserForgotPassword } from "common/validation/user_validation";
-import { APISuccessResponse, APIValidationErrorType, customValidationError, makeSuccessResponse, makeValidationError } from "common/responses";
+import {
+  APISuccessResponse,
+  APIValidationErrorType,
+  customValidationError,
+  makeSuccessResponse,
+  makeValidationError,
+} from "common/responses";
+import { enqueuePasswordReset } from "worker/queue";
 
-export type PasswordResetError = APIValidationErrorType<typeof zUserForgotPassword>;
+export type ForgotPasswordError = APIValidationErrorType<typeof zUserForgotPassword>;
 
-export type PasswordResetSuccess = APISuccessResponse<{ email: string }>
+export type ForgotPasswordSuccess = APISuccessResponse<{ email: string }>
 
-export type PasswordResetResponse =
-  | PasswordResetError
-  | PasswordResetSuccess;
+export type ForgotPasswordResponse =
+  | ForgotPasswordError
+  | ForgotPasswordSuccess;
 
 
 export async function POST(request: NextRequest) {
@@ -35,6 +42,10 @@ export async function POST(request: NextRequest) {
         username: ["User not found"],
       }), { status: 400 });
     }
+
+    await enqueuePasswordReset({
+      username: parsed.data.username,
+    });
 
     return NextResponse.json(makeSuccessResponse({
       email: censorEmail(user.email),
