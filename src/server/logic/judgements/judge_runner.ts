@@ -197,7 +197,7 @@ async function judgeSubtask<Type extends TaskType>(
       subtask_id: subtask.id,
       verdict_id: verdict_id,
     })
-    .returning(["id", "created_at"])
+    .returning(["id"])
     .executeTakeFirstOrThrow();
 
   const allVerdictData: JudgeVerdictTaskData[] = [];
@@ -232,7 +232,6 @@ async function judgeSubtask<Type extends TaskType>(
   return {
     id: dbSubtask.id,
     subtask_id: subtask.id,
-    created_at: dbSubtask.created_at,
     verdict: verdict,
     raw_score: raw_score,
     running_time_ms: running_time_ms,
@@ -281,13 +280,12 @@ async function judgeTaskData<Type extends TaskType>(
       running_time_ms: result.running_time_ms,
       running_memory_byte: result.running_memory_byte,
     })
-    .returning(["id", "created_at"])
+    .returning(["id"])
     .executeTakeFirstOrThrow();
 
   return {
     id: dbTaskData.id,
     task_data_id: task_data.id,
-    created_at: dbTaskData.created_at,
     verdict: result.verdict,
     raw_score: result.raw_score,
     running_time_ms: result.running_time_ms,

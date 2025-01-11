@@ -9,10 +9,10 @@ export async function up(db: Kysely<any>): Promise<void> {
         .defaultTo(sql`uuid_generate_v4()`)
         .notNull()
     )
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("email", "text", (col) => col.notNull().unique())
     .addColumn("username", "text", (col) => col.notNull().unique())
     .addColumn("hashed_password", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("school", "text")
     .addColumn("name", "text")
     .addColumn("country", "text")
@@ -28,6 +28,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("tasks")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("slug", "text", (col) => col.notNull().unique())
     .addColumn("title", "text", (col) => col.notNull())
     .addColumn("description", "text", (col) => col)
@@ -46,7 +47,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("communicator_id", "uuid")
     .addColumn("allowed_languages", sql`text[]`)
     .addColumn("owner_id", "uuid", (col) => col.notNull().references("users.id"))
-    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .execute();
 
   await db.schema.createIndex("idx_tasks_slug").on("tasks").columns(["slug"]).execute();
@@ -143,11 +143,11 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("submissions")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
     .addColumn("contest_id", "uuid")
     .addColumn("language", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("official_verdict_id", "uuid")
     .execute();
 
@@ -190,8 +190,8 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("verdicts")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
-    .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
     .addColumn("verdict", "text")
     .addColumn("raw_score", "real")
     .addColumn("is_official", "boolean")
@@ -206,7 +206,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("verdict_id", "uuid", (col) => col.notNull().references("verdicts.id").onDelete('cascade'))
     .addColumn("subtask_id", "uuid", (col) => col.notNull().references("task_subtasks.id").onDelete('cascade'))
-    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("verdict", "text")
     .addColumn("raw_score", "real")
     .addColumn("running_time_ms", "integer")
@@ -220,7 +219,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull().references("verdict_subtasks.id")
     )
     .addColumn("task_data_id", "uuid", (col) => col.notNull().references("task_data.id").onDelete('cascade'))
-    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("verdict", "text")
     .addColumn("raw_score", "real")
     .addColumn("running_time_ms", "integer")
@@ -258,6 +256,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("problem_sets")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("slug", "text", (col) => col.notNull().unique())
     .addColumn("title", "text", (col) => col.notNull())
     .addColumn("description", "text", (col) => col.notNull())
@@ -294,6 +293,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("contests")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("slug", "text", (col) => col.notNull().unique())
     .addColumn("title", "text", (col) => col.notNull())
     .addColumn("description", "text", (col) => col.notNull())
@@ -352,11 +352,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("participations")
+    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id"))
     .addColumn("contest_id", "uuid", (col) => col.notNull().references("contests.id"))
     .addColumn("is_hidden", "boolean", (col) => col.notNull())
     .addColumn("is_unrestricted", "boolean", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .execute();
 
   await db.schema

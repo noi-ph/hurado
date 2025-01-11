@@ -94,7 +94,6 @@ export type JudgeVerdict = {
 export type JudgeVerdictSubtask = {
   id: string;
   subtask_id: string;
-  created_at: Date;
   verdict: Verdict;
   raw_score: number;
   running_time_ms: number;
@@ -105,7 +104,6 @@ export type JudgeVerdictSubtask = {
 export type JudgeVerdictTaskData = {
   id: string;
   task_data_id: string;
-  created_at: Date;
   verdict: Verdict;
   raw_score: number;
   running_time_ms: number;

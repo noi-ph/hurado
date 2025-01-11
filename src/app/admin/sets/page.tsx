@@ -15,6 +15,8 @@ type ProblemSetSummaryAdminDTO = {
   id: string;
   title: string;
   slug: string;
+  is_public: boolean;
+  order: number;
 };
 
 async function getProblemSetsData(session: SessionData): Promise<ProblemSetSummaryAdminDTO[]> {
@@ -24,10 +26,12 @@ async function getProblemSetsData(session: SessionData): Promise<ProblemSetSumma
       "id",
       "title",
       "slug",
+      "is_public",
+      "order",
     ])
     .orderBy("order", "asc")
     .limit(1000)
-    .execute() as ProblemSetSummaryAdminDTO[];
+    .execute() satisfies ProblemSetSummaryAdminDTO[];
 
   return sets;
 }
@@ -54,6 +58,8 @@ async function Page() {
             <AdminTH>ID</AdminTH>
             <AdminTH>Slug</AdminTH>
             <AdminTH>Title</AdminTH>
+            <AdminTH>Public</AdminTH>
+            <AdminTH>Order</AdminTH>
             <AdminTH>Actions</AdminTH>
           </AdminTR>
         </AdminThead>
@@ -67,6 +73,8 @@ async function Page() {
                 </Link>
               </AdminTD>
               <AdminTD>{task.title}</AdminTD>
+              <AdminTD>{task.is_public ? "Yes" : "No" }</AdminTD>
+              <AdminTD>{task.order}</AdminTD>
               <AdminTD>
                 <Link href={getPath({ kind: Path.ProblemSetEdit, uuid: task.id })} className="text-blue-400 hover:text-blue-500">
                   Edit

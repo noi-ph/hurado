@@ -11,6 +11,7 @@ export type ContestTable = {
   is_public: boolean;
   start_time: Date | null;
   end_time: Date | null;
+  created_at: Generated<Date>;
 };
 
 export type ContestTaskTable = {

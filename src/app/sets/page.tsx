@@ -8,7 +8,7 @@ async function getProblemSetsData(): Promise<ProblemSetSummaryDTO[]> {
     .selectFrom("problem_sets")
     .select(["id", "title", "slug", "description", "order"])
     .where("is_public", "=", true)
-    .orderBy("order")
+    .orderBy("order", "asc")
     .execute();
 
   return sets;

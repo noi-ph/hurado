@@ -6,7 +6,9 @@ import { DefaultLayout } from "client/components/layouts/default_layout";
 async function getContestsData(): Promise<ContestSummaryDTO[]> {
   const contests = await db
     .selectFrom("contests")
+    .where("is_public", "=", true)
     .select(["title", "slug", "description"])
+    .orderBy("start_time", "desc")
     .limit(1000)
     .execute();
 

@@ -32,7 +32,7 @@ async function getTasksData(session: SessionData): Promise<TaskSummaryAdminDTO[]
     ])
     .orderBy("tasks.created_at", "desc")
     .limit(1000)
-    .execute() as TaskSummaryAdminDTO[];
+    .execute() satisfies TaskSummaryAdminDTO[];
 
   return tasks;
 }
