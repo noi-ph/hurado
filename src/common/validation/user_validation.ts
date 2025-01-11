@@ -22,4 +22,9 @@ export const zAdminUpdate = zUserBase.pick({
   role: true,
 });
 
+export const zUserForgotPassword = zUserBase.pick({
+  username: true,
+});
+
+
 export type UserDTO = z.infer<typeof zUserRegister>;

@@ -18,6 +18,7 @@ export enum Path {
   ContestView = "ContestView",
   ContestEdit = "ContestEdit",
   ContestAttachment = "ContestAttachment",
+  AdminHome = "AdminHome",
   AdminTaskList = "AdminTaskList",
   AdminProblemSetList = "AdminProblemSetList",
   AdminContestList = "AdminContestList",
@@ -40,6 +41,7 @@ export type PathArguments =
   | { kind: Path.ContestView; slug: string }
   | { kind: Path.ContestEdit; uuid: string }
   | { kind: Path.ContestAttachment; slug: string; path: string }
+  | { kind: Path.AdminHome }
   | { kind: Path.AdminTaskList }
   | { kind: Path.AdminProblemSetList }
   | { kind: Path.AdminContestList };
@@ -78,6 +80,8 @@ export function getPath(args: PathArguments) {
       return `/contests/${uuidToHuradoID(args.uuid)}/edit`;
     case Path.ContestAttachment:
       return `/contests/${args.slug}/attachments/${args.path}`;
+    case Path.AdminHome:
+      return "/admin";
     case Path.AdminTaskList:
       return "/admin/tasks";
     case Path.AdminProblemSetList:
@@ -92,6 +96,7 @@ export function getPath(args: PathArguments) {
 export enum APIPath {
   Login = "Login",
   Register = "Register",
+  PasswordReset = "PasswordReset",
   AttachmentFile = "AttachmentFile",
   SubmissionCreate = "SubmissionCreate",
   UserSubmissions = "UserSubmissions",
@@ -111,6 +116,7 @@ export enum APIPath {
 export type APIPathArguments =
   | { kind: APIPath.Login }
   | { kind: APIPath.Register }
+  | { kind: APIPath.PasswordReset }
   | { kind: APIPath.SubmissionCreate }
   | { kind: APIPath.UserSubmissions; taskId?: string }
   | { kind: APIPath.FileHashes }
@@ -131,6 +137,8 @@ export function getAPIPath(args: APIPathArguments) {
       return "/api/v1/auth/login";
     case APIPath.Register:
       return "api/v1/auth/register";
+    case APIPath.PasswordReset:
+      return "api/v1/auth/password_reset";
     case APIPath.SubmissionCreate:
       return "/api/v1/submissions";
     case APIPath.UserSubmissions:

@@ -76,7 +76,7 @@ export function ProblemSetCreator() {
       <Modal show={showModal} onBackgroundClick={onModalHide}>
         <div className='w-96 max-w-full'>
           <div>
-            <h3 className='text-center text-xl mb-4'>Create ProblemSet</h3>
+            <h3 className='text-center text-xl mb-4'>Create Problem Set</h3>
             <FormLabel>Slug</FormLabel>
             <FormInput type='text' {...register('slug')} />
             <FormError error={errors.slug}  className='mb-4'/>

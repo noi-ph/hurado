@@ -9,6 +9,8 @@ export type UserTable = {
   school: string | null;
   name: string | null;
   role: string;
+  password_reset_token: string | null;
+  password_reset_token_expires_at: Date | null;
 };
 
 export type User = Selectable<UserTable>;

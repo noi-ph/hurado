@@ -35,13 +35,21 @@ export const NavbarAccount = memo(() => {
         <NavbarLink href={getPath({kind: Path.AccountRegister })}>Register</NavbarLink>
       </>
     );
+  } else if (session.user.role === "admin") {
+    return (
+      <>
+        <NavbarLink href={getPath({kind: Path.AdminHome })} className="ml-auto">{session.user.name}</NavbarLink>
+        <NavbarLink href={getPath({kind: Path.AccountLogout })}>Logout</NavbarLink>
+      </>
+    );  
+  } else {
+    return (
+      <>
+        <div className="text-2xl px-1 py-3 ml-auto">{session.user.name}</div>
+        <NavbarLink href={getPath({kind: Path.AccountLogout })}>Logout</NavbarLink>
+      </>
+    );  
   }
-  return (
-    <>
-      <div className="text-2xl px-1 py-3 ml-auto">{session?.user.name}</div>
-      <NavbarLink href={getPath({kind: Path.AccountLogout })}>Logout</NavbarLink>
-    </>
-  );
 });
 
 type NavbarLinkProps = {

@@ -37,6 +37,7 @@
   "homepage": "https://github.com/noiph/hurado#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.723.0",
+    "@aws-sdk/client-ses": "^3.726.1",
     "@aws-sdk/lib-storage": "^3.723.0",
     "@azure/storage-blob": "^12.24.0",
     "@hookform/resolvers": "^3.10.0",
