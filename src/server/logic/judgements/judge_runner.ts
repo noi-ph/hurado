@@ -172,6 +172,57 @@ async function judgeTask<Type extends TaskType>(
     .returning(["id"])
     .execute();
 
+  
+  // compute the overall verdict from all past submissions
+  const allSubmissions = await db
+    .selectFrom("task_subtasks")
+    .where("task_subtasks.task_id", "=", task.id)
+    .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
+    .select(["task_subtasks.order", "verdict_subtasks.raw_score"])
+    .execute();
+
+  const maxOfEachSubtask = new Map<number, number>();
+  for (const {order, raw_score} of allSubmissions) {
+    maxOfEachSubtask.set(order, Math.max(maxOfEachSubtask.get(order) ?? 0, raw_score ?? 0));
+  }
+  let overall_score = 0;
+  for (let i = 0; i < task.subtasks.length; i++) {
+    overall_score += maxOfEachSubtask.get(i+1) ?? 0;
+  }
+
+  // TODO: Change this to a single DB transaction
+  // ChatGPT was NOT helpful and was just hallucinating how to use onConflict for upserts
+  // I give up; someone who knows Kysely pls fix this in the future
+  const hasOverallVerdict = await db
+    .selectFrom("overall_verdicts")
+    .where('task_id', '=', task.id)
+    .where('user_id', '=', submission.user_id)
+    .select('id')
+    .executeTakeFirst();
+
+  if (hasOverallVerdict == undefined) {
+    await db
+    .insertInto("overall_verdicts")
+    .values({
+      task_id: task.id, 
+      user_id: submission.user_id,
+      contest_id: submission.contest_id,
+      overall_score,
+      max_score,
+    })
+    .execute();
+  } else {
+    await db
+      .updateTable("overall_verdicts")
+      .set({
+        overall_score,
+        max_score,
+      })
+      .where("task_id", "=", task.id)
+      .where("user_id", "=", submission.user_id)
+      .executeTakeFirst();
+  }
+
   return {
     id: dbVerdict.id,
     submission_id: submission.id,

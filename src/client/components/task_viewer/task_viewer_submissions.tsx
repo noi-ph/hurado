@@ -1,8 +1,11 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TaskViewerDTO } from "common/types";
 import { TaskSubmissionsCache } from "client/submissions";
 import { TaskViewerTitle } from "./task_viewer_utils";
-import { SubmissionsTable } from "client/components/submissions_table";
+import { OverallScoreDisplay, SubmissionsTable } from "client/components/submissions_table";
+import http from "client/http";
+import { APIPath, getAPIPath } from "client/paths";
+import { OverallVerdictDisplayDTO } from "common/types/verdicts";
 
 type TaskViewerSubmissionsProps = {
   task: TaskViewerDTO;
@@ -16,10 +19,22 @@ export const TaskViewerSubmissions = ({ task, cache, setCache }: TaskViewerSubmi
       setCache(next);
     });
   }, [cache]);
+  
+  const [overallVerdict, setOverallVerdict] = useState<OverallVerdictDisplayDTO | undefined>(undefined);
+  useEffect(() => {
+    const fetchData = async() => {
+      const overall_verdict = (await http.get(getAPIPath({ kind: APIPath.TaskOverallScoreLookup, id: task.id }))).data;
+      setOverallVerdict(overall_verdict.verdict as OverallVerdictDisplayDTO | undefined);
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
-      <TaskViewerTitle title={task.title} />
+      <div className="flex items-end mt-2 mb-4">
+        <TaskViewerTitle title={task.title}/>
+        <OverallScoreDisplay overallVerdict={overallVerdict} className="ml-auto"/>
+      </div>
       <SubmissionsTable
         loaded={cache.loaded}
         submissions={cache.submissions}

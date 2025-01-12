@@ -241,6 +241,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
     .addColumn("contest_id", "uuid")
+    .addColumn("overall_score", "integer")
+    .addColumn("max_score", "integer")
     .execute();
 
   await db.schema

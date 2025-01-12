@@ -57,7 +57,7 @@ async function loadSubmission(
 ): Promise<JudgeSubmission> {
   const dbsub = await trx
     .selectFrom("submissions")
-    .select(["id", "task_id", "language"])
+    .select(["id", "task_id", "user_id", "contest_id", "language"])
     .where("id", "=", submissionId)
     .executeTakeFirstOrThrow();
 
@@ -70,6 +70,8 @@ async function loadSubmission(
   return {
     id: dbsub.id,
     task_id: dbsub.task_id,
+    user_id: dbsub.user_id,
+    contest_id: dbsub.contest_id,
     language: dbsub.language as Language,
     files: files,
   };

@@ -2,13 +2,14 @@ import classNames from "classnames";
 import Link from "next/link";
 import { memo, ReactNode, useContext, useEffect } from "react";
 import { SubmissionSummaryDTO } from "common/types";
-import { humanizeLanguage, humanizeVerdict } from "common/types/constants";
+import { humanizeLanguage, humanizeVerdict, Verdict } from "common/types/constants";
 import { uuidToHuradoID } from "common/utils/uuid";
 import { humanizeTimeAgo } from "common/utils/dates";
 import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
 import styles from "./submission_table.module.css";
 import { RefreshProvidedValue, RefreshSubmissionsContext } from "../task_viewer/task_viewer";
+import { OverallVerdictDisplayDTO } from "common/types/verdicts";
 
 type SubmissionTableProps = {
   loaded: boolean;
@@ -124,6 +125,38 @@ const SubmissionCell = memo(({ className, children }: SubmissionCellProps) => {
       )}
     >
       {children}
+    </div>
+  );
+});
+
+type OverallScoreProps = {
+  overallVerdict: OverallVerdictDisplayDTO | undefined;
+  className?: string,
+};
+
+export const OverallScoreDisplay = memo(({ overallVerdict, className }: OverallScoreProps) => {
+  if (overallVerdict == undefined) {
+    return null;
+  }
+  const { overall_score, max_score } = overallVerdict;
+  // purely for recycling style code
+  let verdict;
+  if (overall_score == 0) {
+    verdict = Verdict.WrongAnswer
+  } else if (overall_score < max_score) {
+    verdict = Verdict.Partial;
+  } else {
+    verdict = Verdict.Accepted;
+  }
+  return (
+    <div
+      className={classNames(
+        "font-sans font-bold text-4xl mt-2 mb-4",
+        getVerdictColorClass(verdict),
+        className,
+      )}
+    >
+      {overall_score == 0 ? "" : `${overall_score}/${max_score}`}
     </div>
   );
 });

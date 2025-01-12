@@ -42,4 +42,11 @@ export type OverallVerdictTable = {
   task_id: string;
   user_id: string;
   contest_id: string | null;
+  overall_score: number;
+  max_score: number; // for easy querying of all tasks that are AC'ed
+};
+
+export type OverallVerdictDisplayDTO = {
+  overall_score: number;
+  max_score: number;
 };

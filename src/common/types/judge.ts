@@ -70,6 +70,8 @@ export type JudgeTaskDataCommunication = {
 export type JudgeSubmission = {
   id: string;
   task_id: string;
+  user_id: string;
+  contest_id: string | null;
   files: JudgeSubmissionFile[];
   language: Language;
 };
