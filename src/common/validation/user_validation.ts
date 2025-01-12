@@ -4,7 +4,7 @@ const zUserBase = z.object({
   email: z.string().email(),
   username: z.string()
     .regex(/^[a-zA-Z0-9_]+$/, "Username must be alphanumeric or underscore")
-    .min(6),
+    .min(4),
   password: z.string().min(8),
   confirmPassword: z.string(),
   role: z.enum(["admin", "user"]),

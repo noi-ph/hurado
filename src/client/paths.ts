@@ -6,6 +6,7 @@ export enum Path {
   AccountLogin = "AccountLogin",
   AccountLogout = "AccountLogout",
   AccountRegister = "AccountRegister",
+  AccountForgotPassword = "AccountForgotPassword",
   AccountPasswordReset = "AccountPasswordReset",
   Submission = "Submission",
   TaskList = "TaskList",
@@ -30,6 +31,7 @@ export type PathArguments =
   | { kind: Path.AccountLogin }
   | { kind: Path.AccountLogout }
   | { kind: Path.AccountRegister }
+  | { kind: Path.AccountForgotPassword }
   | { kind: Path.AccountPasswordReset, token: string }
   | { kind: Path.Submission; uuid: string }
   | { kind: Path.TaskList }
@@ -58,6 +60,8 @@ export function getPath(args: PathArguments) {
       return "/logout";
     case Path.AccountRegister:
       return "/register";
+    case Path.AccountForgotPassword:
+      return "forgot-password";
     case Path.AccountPasswordReset:
       return `/password-reset?token=${args.token}`;
     case Path.Submission:

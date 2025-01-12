@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import {
+  AnchorHTMLAttributes,
   ButtonHTMLAttributes,
   DetailedHTMLProps,
   FormHTMLAttributes,
@@ -10,6 +11,7 @@ import {
 } from 'react';
 import { FieldError } from 'react-hook-form';
 import styles from './auth.module.css';
+import Link, { LinkProps } from 'next/link';
 
 type AuthMainProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
@@ -110,6 +112,27 @@ export function AuthButton(props: AuthButtonProps) {
     <button
       {...props}
       className={classNames(props.className, "flex justify-center items-center w-full h-fit p-2 border border-black rounded-2xl bg-purple-500 hover:bg-purple-700 disabled:bg-purple-200")}
+    />
+  );
+};
+
+type AuthLinksProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+
+export function AuthLinks(props: AuthLinksProps) {
+  return (
+    <div
+      {...props}
+      className={classNames("mt-4 flex flex-col gap-1", props.className)}
+    />
+  );
+};
+
+type AuthLinkProps = Parameters<typeof Link>[0];
+export function AuthLink(props: AuthLinkProps) {
+  return (
+    <Link
+      {...props}
+      className={classNames("block text-center text-gray-700 opacity-70 hover:opacity-100", props.className)}
     />
   );
 };

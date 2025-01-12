@@ -1,6 +1,7 @@
 "use client";
 
 import { AxiosError, AxiosResponse } from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +16,8 @@ import {
   AuthGroup,
   AuthInput,
   AuthLabel,
+  AuthLink,
+  AuthLinks,
   AuthMain,
   AuthTitle,
 } from "client/components/auth/auth";
@@ -94,6 +97,14 @@ export function LoginPage() {
           Submit
         </AuthButton>
       </AuthForm>
+      <AuthLinks>
+        <AuthLink href={getPath({ kind: Path.AccountForgotPassword })}>
+          Forgot your password
+        </AuthLink>
+        <AuthLink href={getPath({ kind: Path.AccountRegister })}>
+          Register an account
+        </AuthLink>
+      </AuthLinks>
     </AuthMain>
   );
 };

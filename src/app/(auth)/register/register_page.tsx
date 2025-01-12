@@ -15,6 +15,8 @@ import {
   AuthGroup,
   AuthInput,
   AuthLabel,
+  AuthLink,
+  AuthLinks,
   AuthMain,
   AuthTitle,
 } from "client/components/auth/auth";
@@ -107,6 +109,11 @@ export function RegisterPage() {
           Submit
         </AuthButton>
       </AuthForm>
+      <AuthLinks>
+        <AuthLink href={getPath({ kind: Path.AccountLogin })}>
+          Already have an account
+        </AuthLink>
+      </AuthLinks>
     </AuthMain>
   );
 }
