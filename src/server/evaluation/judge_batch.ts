@@ -29,7 +29,7 @@ export async function evaluateTaskDataForBatch(
     case Verdict.JudgeFailed:
       return {
         verdict: isolateResult.verdict,
-        raw_score: 0,
+        score_raw: 0,
         running_time_ms: isolateResult.running_time_ms,
         running_memory_byte: isolateResult.running_memory_byte,
       };
@@ -43,7 +43,7 @@ export async function evaluateTaskDataForBatch(
       });
       return {
         verdict: checkerResult.verdict,
-        raw_score: checkerResult.raw_score,
+        score_raw: checkerResult.score_raw,
         running_time_ms: isolateResult.running_time_ms,
         running_memory_byte: isolateResult.running_memory_byte,
       };

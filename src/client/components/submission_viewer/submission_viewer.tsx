@@ -95,8 +95,8 @@ const SubmissionVerdictSummary = ({ submission }: SubmissionViewerProps) => {
 
   let score: React.ReactNode = null;
   if (submission.verdict != null) {
-    const max = submission.verdict.max_score;
-    const raw = submission.verdict.raw_score;
+    const max = submission.verdict.score_max;
+    const raw = submission.verdict.score_raw;
 
     if (max != null && raw != null) {
       score = (
@@ -144,9 +144,9 @@ type SubtaskVerdictViewerProps = {
 
 const SubtaskVerdictViewer = ({ subtask, subtaskIndex }: SubtaskVerdictViewerProps) => {
   let score: React.ReactNode;
-  if (subtask.max_score != null && subtask.raw_score != null) {
-    const max = subtask.max_score;
-    const raw = subtask.raw_score;
+  if (subtask.score_max != null && subtask.score_raw != null) {
+    const max = subtask.score_max;
+    const raw = subtask.score_raw;
     score = (
       <span className={classNames("font-medium", getScoreClassName(raw, max))}>
         {raw}/{max}

@@ -138,11 +138,11 @@ async function judgeTask<Type extends TaskType>(
 
   const allVerdictSubtasks: JudgeVerdictSubtask[] = [];
   let verdict: Verdict = Verdict.Accepted;
-  let raw_score = 0;
+  let score_raw = 0;
   let running_time_ms = 0;
   let running_memory_byte = 0;
 
-  var max_score = 0;
+  var score_max = 0;
   for (const subtask of task.subtasks) {
     const child = await judgeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id);
     allVerdictSubtasks.push(child);
@@ -152,11 +152,11 @@ async function judgeTask<Type extends TaskType>(
     if (child.verdict != Verdict.Accepted) {
       verdict = child.verdict;
     } else {
-      raw_score += child.raw_score;
+      score_raw += child.score_raw;
     }
-    max_score += subtask.score_max;
+    score_max += subtask.score_max;
   }
-  if (0 < raw_score && raw_score < max_score) {
+  if (0 < score_raw && score_raw < score_max) {
     verdict = Verdict.Partial;
   }
 
@@ -164,7 +164,7 @@ async function judgeTask<Type extends TaskType>(
     .updateTable("verdicts")
     .set({
       verdict: verdict,
-      raw_score: raw_score,
+      score_raw: score_raw,
       running_time_ms: running_time_ms,
       running_memory_byte: running_memory_byte,
     })
@@ -178,16 +178,16 @@ async function judgeTask<Type extends TaskType>(
     .selectFrom("task_subtasks")
     .where("task_subtasks.task_id", "=", task.id)
     .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
-    .select(["task_subtasks.order", "verdict_subtasks.raw_score"])
+    .select(["task_subtasks.order", "verdict_subtasks.score_raw"])
     .execute();
 
   const maxOfEachSubtask = new Map<number, number>();
-  for (const {order, raw_score} of allSubmissions) {
-    maxOfEachSubtask.set(order, Math.max(maxOfEachSubtask.get(order) ?? 0, raw_score ?? 0));
+  for (const {order, score_raw} of allSubmissions) {
+    maxOfEachSubtask.set(order, Math.max(maxOfEachSubtask.get(order) ?? 0, score_raw ?? 0));
   }
-  let overall_score = 0;
+  let score_overall = 0;
   for (let i = 0; i < task.subtasks.length; i++) {
-    overall_score += maxOfEachSubtask.get(i+1) ?? 0;
+    score_overall += maxOfEachSubtask.get(i+1) ?? 0;
   }
 
   // TODO: Change this to a single DB transaction
@@ -207,16 +207,16 @@ async function judgeTask<Type extends TaskType>(
       task_id: task.id, 
       user_id: submission.user_id,
       contest_id: submission.contest_id,
-      overall_score,
-      max_score,
+      score_overall,
+      score_max,
     })
     .execute();
   } else {
     await db
       .updateTable("overall_verdicts")
       .set({
-        overall_score,
-        max_score,
+        score_overall,
+        score_max,
       })
       .where("task_id", "=", task.id)
       .where("user_id", "=", submission.user_id)
@@ -229,7 +229,7 @@ async function judgeTask<Type extends TaskType>(
     created_at: dbVerdict.created_at,
     is_official: true,
     verdict: verdict,
-    raw_score: raw_score,
+    score_raw: score_raw,
     running_time_ms: running_time_ms,
     running_memory_byte: running_memory_byte,
     subtasks: allVerdictSubtasks,
@@ -253,7 +253,7 @@ async function judgeSubtask<Type extends TaskType>(
 
   const allVerdictData: JudgeVerdictTaskData[] = [];
   let verdict: Verdict = Verdict.Accepted;
-  let raw_score = subtask.score_max;
+  let score_raw = subtask.score_max;
   let running_time_ms = 0;
   let running_memory_byte = 0;
   for (const data of subtask.data) {
@@ -264,7 +264,7 @@ async function judgeSubtask<Type extends TaskType>(
     running_time_ms = Math.max(running_time_ms, child.running_time_ms);
     if (child.verdict != Verdict.Accepted) {
       verdict = child.verdict;
-      raw_score = 0;
+      score_raw = 0;
     }
   }
 
@@ -272,7 +272,7 @@ async function judgeSubtask<Type extends TaskType>(
     .updateTable("verdict_subtasks")
     .set({
       verdict: verdict,
-      raw_score: raw_score,
+      score_raw: score_raw,
       running_time_ms: running_time_ms,
       running_memory_byte: running_memory_byte,
     })
@@ -284,7 +284,7 @@ async function judgeSubtask<Type extends TaskType>(
     id: dbSubtask.id,
     subtask_id: subtask.id,
     verdict: verdict,
-    raw_score: raw_score,
+    score_raw: score_raw,
     running_time_ms: running_time_ms,
     running_memory_byte: running_memory_byte,
     data: allVerdictData,
@@ -327,7 +327,7 @@ async function judgeTaskData<Type extends TaskType>(
       verdict_subtask_id: verdict_subtask_id,
       task_data_id: task_data.id,
       verdict: result.verdict,
-      raw_score: result.raw_score,
+      score_raw: result.score_raw,
       running_time_ms: result.running_time_ms,
       running_memory_byte: result.running_memory_byte,
     })
@@ -338,7 +338,7 @@ async function judgeTaskData<Type extends TaskType>(
     id: dbTaskData.id,
     task_data_id: task_data.id,
     verdict: result.verdict,
-    raw_score: result.raw_score,
+    score_raw: result.score_raw,
     running_time_ms: result.running_time_ms,
     running_memory_byte: result.running_memory_byte,
   };

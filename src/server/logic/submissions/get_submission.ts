@@ -145,7 +145,7 @@ async function getSubmissionVerdict(
     .select([
       "id",
       "verdict",
-      "raw_score",
+      "score_raw",
       "running_time_ms",
       "running_memory_byte",
       "compile_time_ms",
@@ -170,7 +170,7 @@ async function getSubmissionVerdict(
             "id",
             "subtask_id",
             "verdict",
-            "raw_score",
+            "score_raw",
             "running_time_ms",
             "running_memory_byte",
           ])
@@ -183,7 +183,7 @@ async function getSubmissionVerdict(
       "task_subtasks.score_max",
       "verdict_subtasks.id as verdict_subtask_id",
       "verdict_subtasks.verdict",
-      "verdict_subtasks.raw_score",
+      "verdict_subtasks.score_raw",
       "verdict_subtasks.running_time_ms",
       "verdict_subtasks.running_memory_byte",
     ])
@@ -204,7 +204,7 @@ async function getSubmissionVerdict(
             "id",
             "task_data_id",
             "verdict",
-            "raw_score",
+            "score_raw",
             "running_time_ms",
             "running_memory_byte",
           ]);
@@ -220,7 +220,7 @@ async function getSubmissionVerdict(
       "task_data.subtask_id as subtask_id",
       "verdict_task_data.id as verdict_task_data_id",
       "verdict_task_data.verdict",
-      "verdict_task_data.raw_score",
+      "verdict_task_data.score_raw",
       "verdict_task_data.running_time_ms",
       "verdict_task_data.running_memory_byte",
     ])
@@ -234,7 +234,7 @@ async function getSubmissionVerdict(
   function toVerdictTaskData(dv: (typeof dataVerdicts)[number]): VerdictTaskDataViewerDTO {
     return {
       verdict: dv.verdict as Verdict,
-      raw_score: dv.raw_score,
+      score_raw: dv.score_raw,
       running_time_ms: dv.running_time_ms,
       running_memory_byte: dv.running_memory_byte,
     };
@@ -243,8 +243,8 @@ async function getSubmissionVerdict(
   function toVerdictSubtask(sv: (typeof subverdicts)[number]): VerdictSubtaskViewerDTO {
     return {
       verdict: sv.verdict,
-      raw_score: sv.raw_score,
-      max_score: sv.score_max,
+      score_raw: sv.score_raw,
+      score_max: sv.score_max,
       running_time_ms: sv.running_time_ms,
       running_memory_byte: sv.running_memory_byte,
       data: dataVerdicts.filter((dv) => dv.subtask_id === sv.subtask_id).map(toVerdictTaskData),
@@ -253,8 +253,8 @@ async function getSubmissionVerdict(
 
   return {
     verdict: verdict.verdict as Verdict,
-    raw_score: verdict.raw_score,
-    max_score: task.score_max,
+    score_raw: verdict.score_raw,
+    score_max: task.score_max,
     running_time_ms: verdict.running_time_ms,
     running_memory_byte: verdict.running_memory_byte,
     compile_time_ms: verdict.compile_time_ms,

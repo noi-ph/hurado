@@ -3,14 +3,14 @@ import { ContestantScript, JudgeChecker, JudgeScript } from "common/types/judge"
 
 export type EvaluationResult = {
   verdict: Verdict;
-  raw_score: number;
+  score_raw: number;
   running_time_ms: number;
   running_memory_byte: number;
 };
 
 export type CheckerResult = {
   verdict: Verdict.Accepted | Verdict.WrongAnswer;
-  raw_score: number;
+  score_raw: number;
 };
 
 type IsolateVerdict =

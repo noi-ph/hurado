@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
       "submissions.created_at",
       "submissions.official_verdict_id",
       "verdicts.verdict",
-      "verdicts.raw_score",
+      "verdicts.score_raw",
       "verdicts.running_time_ms",
       "verdicts.running_memory_byte",
       "users.username",
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
     created_at: sub.created_at,
     verdict_id: sub.official_verdict_id,
     verdict: sub.verdict as Verdict | null,
-    score: sub.raw_score,
+    score: sub.score_raw,
     running_time_ms: sub.running_time_ms,
     running_memory_byte: sub.running_memory_byte,
   }));

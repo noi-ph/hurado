@@ -203,7 +203,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn("submission_id", "uuid", (col) => col.notNull().references("submissions.id"))
     .addColumn("verdict", "text")
-    .addColumn("raw_score", "real")
+    .addColumn("score_raw", "real")
     .addColumn("is_official", "boolean")
     .addColumn("running_time_ms", "integer")
     .addColumn("running_memory_byte", "integer")
@@ -217,7 +217,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("verdict_id", "uuid", (col) => col.notNull().references("verdicts.id").onDelete('cascade'))
     .addColumn("subtask_id", "uuid", (col) => col.notNull().references("task_subtasks.id").onDelete('cascade'))
     .addColumn("verdict", "text")
-    .addColumn("raw_score", "real")
+    .addColumn("score_raw", "real")
     .addColumn("running_time_ms", "integer")
     .addColumn("running_memory_byte", "integer")
     .execute();
@@ -230,7 +230,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn("task_data_id", "uuid", (col) => col.notNull().references("task_data.id").onDelete('cascade'))
     .addColumn("verdict", "text")
-    .addColumn("raw_score", "real")
+    .addColumn("score_raw", "real")
     .addColumn("running_time_ms", "integer")
     .addColumn("running_memory_byte", "integer")
     .execute();
@@ -320,11 +320,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
     .addColumn("contest_id", "uuid", (col) => col.references("contests.id"))
-    .addColumn("overall_score", "integer")
-    .addColumn("max_score", "integer")
+    .addColumn("score_overall", "double precision")
+    .addColumn("score_max", "double precision")
     .execute();
 
-  await db.schema.createIndex("idx_contests_slug").on("contests").columns(["slug"]).execute();
+  // await db.schema.createIndex("idx_contests_slug").on("contests").columns(["slug"]).execute();
 
   await db.schema
     .alterTable("submissions")

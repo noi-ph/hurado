@@ -168,7 +168,7 @@ export function getAPIPath(args: APIPathArguments) {
     case APIPath.TaskLookup:
       return `/api/v1/tasks/${args.id}`;
     case APIPath.TaskOverallScoreLookup:
-      return `/api/v1/tasks/${args.id}/overall_score`;
+      return `/api/v1/tasks/${args.id}/score_overall`;
     case APIPath.TaskSubmissions:
       return `/api/v1/tasks/${args.id}/submissions`;
     case APIPath.ProblemSetCreate:

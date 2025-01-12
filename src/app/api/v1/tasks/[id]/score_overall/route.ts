@@ -30,13 +30,13 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
         return eb("tasks.slug", "=", slug);
       }
     })
-    .select(["overall_verdicts.overall_score", "overall_verdicts.max_score"])
+    .select(["overall_verdicts.score_overall", "overall_verdicts.score_max"])
     .executeTakeFirst();
   
   return NextResponse.json({
     verdict: (overall_verdict == undefined ? undefined : {
-      overall_score: overall_verdict.overall_score,
-      max_score: overall_verdict.max_score,
+      score_overall: overall_verdict.score_overall,
+      score_max: overall_verdict.score_max,
     } satisfies OverallVerdictDisplayDTO),
   });
 }

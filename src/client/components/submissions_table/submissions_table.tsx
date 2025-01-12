@@ -138,12 +138,12 @@ export const OverallScoreDisplay = memo(({ overallVerdict, className }: OverallS
   if (overallVerdict == undefined) {
     return null;
   }
-  const { overall_score, max_score } = overallVerdict;
+  const { score_overall, score_max } = overallVerdict;
   // purely for recycling style code
   let verdict;
-  if (overall_score == 0) {
+  if (score_overall == 0) {
     verdict = Verdict.WrongAnswer
-  } else if (overall_score < max_score) {
+  } else if (score_overall < score_max) {
     verdict = Verdict.Partial;
   } else {
     verdict = Verdict.Accepted;
@@ -156,7 +156,7 @@ export const OverallScoreDisplay = memo(({ overallVerdict, className }: OverallS
         className,
       )}
     >
-      {overall_score == 0 ? "" : `${overall_score}/${max_score}`}
+      {score_overall == 0 ? "" : `${score_overall}/${score_max}`}
     </div>
   );
 });

@@ -16,7 +16,7 @@ export async function evaluateTaskDataForOutput(
 
   return {
     verdict: checkerResult.verdict,
-    raw_score: checkerResult.raw_score,
+    score_raw: checkerResult.score_raw,
     running_time_ms: 0,
     running_memory_byte: 0,
   };

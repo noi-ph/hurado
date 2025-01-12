@@ -133,7 +133,7 @@ async function makeCommunicationVerdict(opts: {
       verdict: Verdict.JudgeFailed,
       running_memory_byte: contestantResult.running_memory_byte,
       running_time_ms: contestantResult.running_time_ms,
-      raw_score: 0,
+      score_raw: 0,
     };
   }
 
@@ -143,14 +143,14 @@ async function makeCommunicationVerdict(opts: {
     case Verdict.RuntimeError:
       return {
         verdict: contestantResult.verdict,
-        raw_score: 0,
+        score_raw: 0,
         running_time_ms: contestantResult.running_time_ms,
         running_memory_byte: contestantResult.running_memory_byte,
       };
     case Verdict.JudgeFailed:
       return {
         verdict: Verdict.JudgeFailed,
-        raw_score: 0,
+        score_raw: 0,
         running_time_ms: contestantResult.running_time_ms,
         running_memory_byte: contestantResult.running_memory_byte,
       };
@@ -164,7 +164,7 @@ async function makeCommunicationVerdict(opts: {
       });
       return {
         verdict: checkerResult.verdict,
-        raw_score: checkerResult.raw_score,
+        score_raw: checkerResult.score_raw,
         running_time_ms: contestantResult.running_time_ms,
         running_memory_byte: contestantResult.running_memory_byte,
       };

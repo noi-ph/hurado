@@ -30,12 +30,12 @@ export async function checkSubmissionOutput(opts: {
       if (diffStatus == 0) {
         return {
           verdict: Verdict.Accepted,
-          raw_score: 1,
+          score_raw: 1,
         };
       } else {
         return {
           verdict: Verdict.WrongAnswer,
-          raw_score: 0,
+          score_raw: 0,
         };
       }
     }
@@ -127,7 +127,7 @@ function parseCheckerOutput(output: string): CheckerResult {
   const line2 = split[1];
   return {
     verdict: line1 == Verdict.Accepted ? Verdict.Accepted : Verdict.WrongAnswer,
-    raw_score: parseScore(line2),
+    score_raw: parseScore(line2),
   };
 }
 

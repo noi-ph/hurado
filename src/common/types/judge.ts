@@ -87,7 +87,7 @@ export type JudgeVerdict = {
   created_at: Date;
   is_official: boolean;
   verdict: Verdict;
-  raw_score: number;
+  score_raw: number;
   running_time_ms: number;
   running_memory_byte: number;
   subtasks: JudgeVerdictSubtask[];
@@ -97,7 +97,7 @@ export type JudgeVerdictSubtask = {
   id: string;
   subtask_id: string;
   verdict: Verdict;
-  raw_score: number;
+  score_raw: number;
   running_time_ms: number;
   running_memory_byte: number;
   data: JudgeVerdictTaskData[];
@@ -107,7 +107,7 @@ export type JudgeVerdictTaskData = {
   id: string;
   task_data_id: string;
   verdict: Verdict;
-  raw_score: number;
+  score_raw: number;
   running_time_ms: number;
   running_memory_byte: number;
 };

@@ -7,7 +7,7 @@ export type VerdictTable = {
   created_at: ColumnType<Date, never, never>;
   is_official: boolean;
   verdict: string | null;
-  raw_score: number | null;
+  score_raw: number | null;
   running_time_ms: number | null;
   running_memory_byte: number | null;
   compile_time_ms: number | null;
@@ -20,7 +20,7 @@ export type VerdictSubtaskTable = {
   subtask_id: string;
   created_at: ColumnType<Date, never, never>;
   verdict: Verdict | null;
-  raw_score: number | null;
+  score_raw: number | null;
   running_time_ms: number | null;
   running_memory_byte: number | null;
 };
@@ -32,7 +32,7 @@ export type VerdictTaskDataTable = {
   task_data_id: string;
   created_at: ColumnType<Date, never, never>;
   verdict: string;
-  raw_score: number;
+  score_raw: number;
   running_time_ms: number;
   running_memory_byte: number;
 };
@@ -42,11 +42,11 @@ export type OverallVerdictTable = {
   task_id: string;
   user_id: string;
   contest_id: string | null;
-  overall_score: number;
-  max_score: number; // for easy querying of all tasks that are AC'ed
+  score_overall: number;
+  score_max: number; // for easy querying of all tasks that are AC'ed
 };
 
 export type OverallVerdictDisplayDTO = {
-  overall_score: number;
-  max_score: number;
+  score_overall: number;
+  score_max: number;
 };

@@ -52,8 +52,8 @@ export type SubmissionViewerFileDTO = {
 
 export type VerdictViewerDTO = {
   verdict: Verdict | null;
-  raw_score: number | null;
-  max_score: number | null;
+  score_raw: number | null;
+  score_max: number | null;
   running_time_ms: number | null;
   running_memory_byte: number | null;
   compile_time_ms: number | null;
@@ -63,8 +63,8 @@ export type VerdictViewerDTO = {
 
 export type VerdictSubtaskViewerDTO = {
   verdict: Verdict | null;
-  raw_score: number | null;
-  max_score: number | null;
+  score_raw: number | null;
+  score_max: number | null;
   running_time_ms: number | null;
   running_memory_byte: number | null;
   data: VerdictTaskDataViewerDTO[];
@@ -72,7 +72,7 @@ export type VerdictSubtaskViewerDTO = {
 
 export type VerdictTaskDataViewerDTO = {
   verdict: Verdict | null;
-  raw_score: number | null;
+  score_raw: number | null;
   running_time_ms: number | null;
   running_memory_byte: number | null;
 };
