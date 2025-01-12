@@ -22,14 +22,7 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
   const overall_verdict: OverallVerdictDisplayDTO | undefined = await db
     .selectFrom("overall_verdicts")
     .where("overall_verdicts.user_id", "=", session.user.id)
-    .innerJoin("tasks", "tasks.id", "overall_verdicts.task_id")
-    .where((eb) => {
-      if (uuid != null) {
-        return eb.or([eb("tasks.id", "=", uuid), eb("tasks.slug", "=", slug)]);
-      } else {
-        return eb("tasks.slug", "=", slug);
-      }
-    })
+    .where("overall_verdicts.task_id", "=", context.params.id)
     .select(["overall_verdicts.score_overall", "overall_verdicts.score_max"])
     .executeTakeFirst();
   
