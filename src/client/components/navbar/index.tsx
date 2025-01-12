@@ -17,7 +17,6 @@ export const Navbar = memo(({ className }: NavbarProps) => {
   const linksRef = useRef<HTMLDivElement>(null);
 
   const toggleOpen = useCallback(() => {
-    console.log('Toggling open', isOpen);
     const open = !isOpen;
     setIsOpen(open);
     if (linksRef.current) {
