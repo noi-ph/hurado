@@ -330,7 +330,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createIndex("idx_overall_verdicts_contest_id_user_id_task_id")
     .on("overall_verdicts")
     .columns(["contest_id", "user_id", "task_id"])
-    .where("contest_id", "is not", null)
     .execute();
 
   await db.schema
