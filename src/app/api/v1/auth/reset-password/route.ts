@@ -7,7 +7,7 @@ import {
   APIValidationErrorType,
   customValidationError,
   makeSuccessResponse,
-  makeValidationError,
+  zodValidationError,
 } from "common/responses";
 import { hashPassword } from "server/logic/users";
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (!parsed.success) {
-    const errors = makeValidationError(parsed.error);
+    const errors = zodValidationError(parsed.error);
     return NextResponse.json(errors, { status: 400 });
   }
 

@@ -8,10 +8,10 @@ import {
   APIForbiddenError,
   APIForbiddenErrorType,
   APIValidationErrorType,
-  makeValidationError,
-  makeSuccessResponse,
   APISuccessResponse,
   customValidationError,
+  makeSuccessResponse,
+  zodValidationError,
 } from "common/responses";
 import { z } from "zod";
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<TaskCreat
   const parsed = zTaskCreateSimple.safeParse(data);
 
   if (!parsed.success) {
-    const errors = makeValidationError(parsed.error);
+    const errors = zodValidationError(parsed.error);
     return NextResponse.json(errors, { status: 400 });
   }
 

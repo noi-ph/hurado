@@ -7,7 +7,7 @@ import {
   APIValidationErrorType,
   customValidationError,
   makeSuccessResponse,
-  makeValidationError,
+  zodValidationError,
 } from "common/responses";
 import { enqueuePasswordReset } from "worker/queue";
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   const parsed = zUserForgotPassword.safeParse({ username });
 
   if (!parsed.success) {
-    const errors = makeValidationError(parsed.error);
+    const errors = zodValidationError(parsed.error);
     return NextResponse.json(errors, { status: 400 });
   }
 

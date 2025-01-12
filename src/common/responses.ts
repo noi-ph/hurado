@@ -30,7 +30,7 @@ export const APIForbiddenError: APIForbiddenErrorType = {
   kind: ResponseKind.ForbiddenError,
 };
 
-export function makeValidationError<T extends z.ZodType>(errors: ZodError): APIValidationErrorType<T> {
+export function zodValidationError<T extends z.ZodType>(errors: ZodError): APIValidationErrorType<T> {
   const errs: Record<string, string[]> = {};
   for (const issue of errors.issues) {
     const key = issue.path.join(".") || "root";

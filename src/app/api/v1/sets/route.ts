@@ -7,10 +7,10 @@ import {
   APIForbiddenError,
   APIForbiddenErrorType,
   APIValidationErrorType,
-  makeValidationError,
-  makeSuccessResponse,
   APISuccessResponse,
   customValidationError,
+  makeSuccessResponse,
+  zodValidationError,
 } from "common/responses";
 
 export type ProblemSetCreateError =
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProblemSe
   const parsed = zProblemSetCreate.safeParse(data);
 
   if (!parsed.success) {
-    const errors = makeValidationError(parsed.error);
+    const errors = zodValidationError(parsed.error);
     return NextResponse.json(errors, { status: 400 });
   }
 

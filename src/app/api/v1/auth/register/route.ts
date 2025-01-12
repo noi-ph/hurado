@@ -1,50 +1,86 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "db";
-import { SessionData } from "common/types";
+import { SessionData, UserPublic } from "common/types";
 import { tokenizeSession } from "server/sessions";
 import { createUser } from "server/logic/users";
-import { UniquenessConflictError } from "common/errors";
 import { zUserRegister } from "common/validation/user_validation";
+import { APISuccessResponse, APIValidationErrorType, customValidationError, makeSuccessResponse, zodValidationError } from "common/responses";
+import { cookies } from "next/headers";
 
-export async function POST(request: NextRequest) {
+
+export type UserRegisterError = APIValidationErrorType<typeof zUserRegister>;
+
+export type UserRegisterSuccess = APISuccessResponse<SessionData>
+
+export type UserRegisterResponse =
+  | UserRegisterError
+  | UserRegisterSuccess;
+
+
+type CustomValidationErrors = {
+  email?: string[];
+  username?: string[];
+};
+
+export async function POST(request: NextRequest): Promise<NextResponse<UserRegisterResponse>> {
   const { email, username, password, confirmPassword } = await request.json();
 
-  if (password !== confirmPassword) {
-    return NextResponse.json({}, { status: 400 });
-  }
   const parsed = zUserRegister.safeParse({
     email,
     username,
     password,
+    confirmPassword,
   });
 
   if (!parsed.success) {
-    return NextResponse.json({}, { status: 400 });
+    const errors = zodValidationError(parsed.error);
+    return NextResponse.json(errors, { status: 400 });
   }
 
   return db.transaction().execute(async (trx) => {
-    try {
-      const user = await createUser(trx, {
-        email: parsed.data.email,
-        username: parsed.data.username,
-        password: parsed.data.password,
-        role: 'user',
-      });
+    // Check if the email or username already exists
+    const current = await trx
+      .selectFrom("users")
+      .where((eb) => eb.or([
+        eb("email", "=", parsed.data.email),
+        eb("username", "=", parsed.data.username),
+      ]))
+      .select(["id", "email", "username"])
+      .execute();
 
-      const session: SessionData = { user };
-      return NextResponse.json(session, {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenizeSession(session)}`,
-        },
-      });
-    } catch (err) {
-      if (err instanceof UniquenessConflictError) {
-        return NextResponse.json({}, { status: 409 });
+    const currentEmail = current.find((u) => u.email === parsed.data.email);
+    const currentUsername = current.find((u) => u.username === parsed.data.username);
+    if (currentEmail != null || currentUsername != null) {
+      const errors: CustomValidationErrors = {};
+      if (currentEmail != null) {
+        errors.email = ["Email already exists"];
       }
-      throw err;
+      if (currentUsername != null) {
+        errors.username = ["Username already exists"];
+      }
+
+      return NextResponse.json(customValidationError(errors), { status: 400 });
     }
+
+    const raw = await createUser(trx, {
+      email: parsed.data.email,
+      username: parsed.data.username,
+      password: parsed.data.password,
+      role: 'user',
+    });
+
+    const session: SessionData = {
+      user: {
+        id: raw.id,
+        email: raw.email,
+        username: raw.username,
+        name: raw.name,
+        role: raw.role,
+      },
+    };
+    cookies().set("session", tokenizeSession(session));
+
+    return NextResponse.json(makeSuccessResponse(session), { status: 200 });
   });
 }

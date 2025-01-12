@@ -1,91 +1,115 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, FunctionComponent } from "react";
+import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 import http from "client/http";
 import { DefaultLayout } from "client/components/layouts/default_layout";
-import { APIPath, getAPIPath } from "client/paths";
-import styles from "./page.module.css";
+import { APIPath, getAPIPath, getPath, Path } from "client/paths";
+import {
+  AuthButton,
+  AuthDetails,
+  AuthError,
+  AuthForm,
+  AuthGroup,
+  AuthInput,
+  AuthLabel,
+  AuthMain,
+  AuthTitle,
+} from "client/components/auth/auth";
+import { useSessionWithUpdate } from "client/sessions";
+import { UnreachableCheck } from "common/errors";
+import { zUserRegister } from "common/validation/user_validation";
+import { applyValidationErrors, ResponseKind } from "common/responses";
+import { UserRegisterError, UserRegisterSuccess } from "@root/api/v1/auth/register/route";
 
-const Page: FunctionComponent = () => {
-  const [throttle, setThrottle] = useState<boolean>(false);
 
-  const submit = useRef<HTMLButtonElement>(null);
+type RegisterForm = {
+  email: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+};
 
-  useEffect(() => {
-    submit.current!.style.backgroundColor = throttle ? "var(--purple-light)" : "var(--purple)";
-  }, [throttle]);
-
+export default function Page() {
   const router = useRouter();
+  const { setSession } = useSessionWithUpdate();
 
-  const [email, setEmail] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<RegisterForm>({
+    resolver: zodResolver(zUserRegister),
+  });
 
-  const register = useCallback(async () => {
+  const onSubmit = async (data: RegisterForm) => {
     try {
-      const response = await http.post(getAPIPath({ kind: APIPath.Register }), {
-        email,
-        username,
-        password,
-        confirmPassword,
+      const url = getAPIPath({ kind: APIPath.Register });
+    const response: AxiosResponse<UserRegisterSuccess> = await http.post(url, {
+        email: data.email,
+        username: data.username,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
       });
 
-      if (response.status != 200) {
-        throw new Error("");
-      }
-
-      router.push("/login");
+      setSession(response.data.data);
+      router.push(getPath({ kind: Path.Home }));
       router.refresh();
-    } catch (error) {}
-
-    setThrottle(false);
-  }, [router, email, username, password, confirmPassword]);
-
-  const throttledRegister = useCallback(async () => {
-    if (throttle) {
-      return;
+    } catch (e) {
+      if (e instanceof AxiosError && e.response) {
+        const response: AxiosResponse<UserRegisterError> = e.response;
+        const data = response.data;
+        switch (data.kind) {
+          case ResponseKind.ValidationError:
+            applyValidationErrors(setError, data.errors);
+            break;
+          default:
+            UnreachableCheck(data.kind);
+            toast.error("An unexpected error occurred");
+        }
+      } else {
+        toast.error("An network error occurred. Please try again.");
+        throw e;
+      }
     }
-
-    try {
-      setThrottle(true);
-      await register();
-    } finally {
-      setThrottle(false);
-    }
-  }, [register, throttle]);
+  };
 
   return (
     <DefaultLayout>
-      <form id={styles.registerform}>
-        <h1>Register</h1>
-        <div className={styles.row}>
-          <label htmlFor="email">Email:</label>
-          <input type="email" id="email" onChange={(e) => setEmail(e.target.value)} />
-        </div>
-        <div className={styles.row}>
-          <label htmlFor="username">Username:</label>
-          <input type="text" id="username" onChange={(e) => setUsername(e.target.value)} />
-        </div>
-        <div className={styles.row}>
-          <label htmlFor="password">Password:</label>
-          <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} />
-        </div>
-        <div className={styles.row}>
-          <label htmlFor="confirmPassword">Confirm Password:</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-        <button type="button" ref={submit} disabled={throttle} onClick={throttledRegister}>
-          Submit
-        </button>
-      </form>
+      <AuthMain>
+        <AuthForm>
+          <AuthTitle>Register</AuthTitle>
+          <AuthDetails>
+            <AuthLabel>Email:</AuthLabel>
+            <AuthGroup>
+              <AuthInput type="text" {...register("email")} />
+              <AuthError error={errors.email} />
+            </AuthGroup>
+            <AuthLabel>Username:</AuthLabel>
+            <AuthGroup>
+              <AuthInput type="text" {...register("username")} />
+              <AuthError error={errors.username} />
+            </AuthGroup>
+            <AuthLabel>Password:</AuthLabel>
+            <AuthGroup>
+              <AuthInput type="password" {...register("password")} />
+              <AuthError error={errors.password} />
+            </AuthGroup>
+            <AuthLabel>Confirm Password:</AuthLabel>
+            <AuthGroup>
+              <AuthInput type="password" {...register("confirmPassword")} />
+              <AuthError error={errors.confirmPassword} />
+            </AuthGroup>
+          </AuthDetails>
+          <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+            Submit
+          </AuthButton>
+        </AuthForm>
+      </AuthMain>
     </DefaultLayout>
   );
-};
-
-export default Page;
+}
