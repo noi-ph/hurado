@@ -23,7 +23,12 @@ export const TaskViewerSubmissions = ({ task, cache, setCache }: TaskViewerSubmi
   const [overallVerdict, setOverallVerdict] = useState<OverallVerdictDisplayDTO | undefined>(undefined);
   useEffect(() => {
     const fetchData = async() => {
-      const overall_verdict = (await http.get(getAPIPath({ kind: APIPath.TaskOverallScoreLookup, id: task.id }))).data;
+      const response = await http.get(getAPIPath({
+        kind: APIPath.TaskOverallScoreLookup,
+        id: task.id,
+        contestId: null,
+      }));
+      const overall_verdict = response.data;
       setOverallVerdict(overall_verdict.verdict as OverallVerdictDisplayDTO | undefined);
     };
     fetchData();

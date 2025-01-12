@@ -318,18 +318,16 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("overall_verdicts")
-    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
     .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
-    .addColumn("contest_id", "uuid", (col) => col.references("contests.id"))
+    .addColumn("contest_id", "uuid", (col) => col.references("contests.id").onDelete("set null"))
     .addColumn("score_overall", "double precision")
     .addColumn("score_max", "double precision")
-    .execute();
-
-  await db.schema
-    .createIndex("idx_overall_verdicts_contest_id_user_id_task_id")
-    .on("overall_verdicts")
-    .columns(["contest_id", "user_id", "task_id"])
+    .addUniqueConstraint(
+      "idx_overall_verdicts_contest_id_user_id_task_id",
+      ["contest_id", "user_id", "task_id"],
+      (eb) => eb.nullsNotDistinct(),
+    )
     .execute();
 
   await db.schema

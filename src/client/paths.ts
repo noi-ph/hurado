@@ -136,7 +136,7 @@ export type APIPathArguments =
   | { kind: APIPath.TaskCreateSimple }
   | { kind: APIPath.TaskUpdate; id: string }
   | { kind: APIPath.TaskLookup; id: string }
-  | { kind: APIPath.TaskOverallScoreLookup; id: string }
+  | { kind: APIPath.TaskOverallScoreLookup; id: string, contestId: string | null }
   | { kind: APIPath.TaskSubmissions; id: string }
   | { kind: APIPath.ProblemSetCreate }
   | { kind: APIPath.ProblemSetUpdate; id: string }
@@ -168,7 +168,11 @@ export function getAPIPath(args: APIPathArguments) {
     case APIPath.TaskLookup:
       return `/api/v1/tasks/${args.id}`;
     case APIPath.TaskOverallScoreLookup:
-      return `/api/v1/tasks/${args.id}/score_overall`;
+      if (args.contestId == null) {
+        return `/api/v1/tasks/${args.id}/score_overall`;
+      } else {
+        return `/api/v1/tasks/${args.id}/score_overall?contest_id=${args.contestId}`;
+      }
     case APIPath.TaskSubmissions:
       return `/api/v1/tasks/${args.id}/submissions`;
     case APIPath.ProblemSetCreate:

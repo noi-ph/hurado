@@ -172,7 +172,6 @@ async function judgeTask<Type extends TaskType>(
     .returning(["id"])
     .execute();
 
-  
   // compute the overall verdict from all past submissions
   const allSubmissions = await db
     .selectFrom("task_subtasks")
@@ -181,46 +180,57 @@ async function judgeTask<Type extends TaskType>(
     .select(["task_subtasks.order", "verdict_subtasks.score_raw"])
     .execute();
 
-  const maxOfEachSubtask = new Map<number, number>();
-  for (const {order, score_raw} of allSubmissions) {
-    maxOfEachSubtask.set(order, Math.max(maxOfEachSubtask.get(order) ?? 0, score_raw ?? 0));
-  }
-  let score_overall = 0;
-  for (let i = 0; i < task.subtasks.length; i++) {
-    score_overall += maxOfEachSubtask.get(i+1) ?? 0;
-  }
-
-  // TODO: Change this to a single DB transaction
-  // ChatGPT was NOT helpful and was just hallucinating how to use onConflict for upserts
-  // I give up; someone who knows Kysely pls fix this in the future
-  const hasOverallVerdict = await db
-    .selectFrom("overall_verdicts")
-    .where('task_id', '=', task.id)
-    .where('user_id', '=', submission.user_id)
-    .select('id')
-    .executeTakeFirst();
-
-  if (hasOverallVerdict == undefined) {
-    await db
+  const allScoreOverall = computeScoreOverall(allSubmissions);
+  await db
     .insertInto("overall_verdicts")
     .values({
-      task_id: task.id, 
+      task_id: task.id,
       user_id: submission.user_id,
-      contest_id: submission.contest_id,
-      score_overall,
+      contest_id: null,
+      score_overall: allScoreOverall,
       score_max,
     })
+    .onConflict((conflict) => {
+      return conflict
+        .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
+        .doUpdateSet({
+          score_overall: (eb) => eb.ref("excluded.score_overall"),
+          score_max: (eb) => eb.ref("excluded.score_max"),
+      });
+    })
     .execute();
-  } else {
+
+  if (submission.contest_id != null) {
+    const contestSubmissions = await db
+      .selectFrom("task_subtasks")
+      .where("task_subtasks.task_id", "=", task.id)
+      .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
+      .innerJoin("verdicts", "verdicts.id", "verdict_subtasks.verdict_id")
+      .innerJoin("submissions", "submissions.id", "verdicts.submission_id")
+      .where("submissions.contest_id", "=", submission.contest_id)
+      .select(["task_subtasks.order", "verdict_subtasks.score_raw"])
+      .execute();
+
+    const contestScoreOverall = computeScoreOverall(contestSubmissions);
+
     await db
-      .updateTable("overall_verdicts")
-      .set({
-        score_overall,
+      .insertInto("overall_verdicts")
+      .values({
+        task_id: task.id,
+        user_id: submission.user_id,
+        contest_id: submission.contest_id,
+        score_overall: contestScoreOverall,
         score_max,
       })
-      .where("task_id", "=", task.id)
-      .where("user_id", "=", submission.user_id)
-      .executeTakeFirst();
+      .onConflict((conflict) => {
+        return conflict
+          .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
+          .doUpdateSet({
+            score_overall: (eb) => eb.ref("excluded.score_overall"),
+            score_max: (eb) => eb.ref("excluded.score_max"),
+        });
+      })
+      .execute();
   }
 
   return {
@@ -342,4 +352,24 @@ async function judgeTaskData<Type extends TaskType>(
     running_time_ms: result.running_time_ms,
     running_memory_byte: result.running_memory_byte,
   };
+}
+
+
+type SubtaskVerdict = {
+  order: number;
+  score_raw: number | null;
+};
+
+function computeScoreOverall(submissions: SubtaskVerdict[]) {
+  const maxOfEachSubtask = new Map<number, number>();
+  for (const { order, score_raw } of submissions) {
+    maxOfEachSubtask.set(order, Math.max(maxOfEachSubtask.get(order) ?? 0, score_raw ?? 0));
+  }
+
+  let overall = 0;
+  for (const [_order, score] of maxOfEachSubtask.entries()) {
+    overall += score;
+  }
+
+  return overall;
 }

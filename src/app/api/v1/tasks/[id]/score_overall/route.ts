@@ -3,7 +3,6 @@ import { canManageTasks } from "server/authorization";
 import { getSession } from "server/sessions";
 import { NextContext } from "types/nextjs";
 import { db } from "db";
-import { checkUUIDv4, huradoIDToUUID } from "common/utils/uuid";
 import { OverallVerdictDisplayDTO } from "common/types/verdicts";
 
 type RouteParams = {
@@ -16,13 +15,14 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
     return NextResponse.json({}, { status: 401 });
   }
 
-  // copy-pasted from lookupFromSlugOrId so I can do SQL stuffs
-  const slug = context.params.id;
-  const uuid = huradoIDToUUID(slug) ?? checkUUIDv4(slug);
+  const { searchParams } = new URL(request.url);
+  const contestId = searchParams.get("contest_id");
+
   const overall_verdict: OverallVerdictDisplayDTO | undefined = await db
     .selectFrom("overall_verdicts")
     .where("overall_verdicts.user_id", "=", session.user.id)
     .where("overall_verdicts.task_id", "=", context.params.id)
+    .where("overall_verdicts.contest_id", contestId ? "=" : "is", contestId ? contestId : null)
     .select(["overall_verdicts.score_overall", "overall_verdicts.score_max"])
     .executeTakeFirst();
   
