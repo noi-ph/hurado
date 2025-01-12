@@ -314,6 +314,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("end_time", "timestamp")
     .execute();
 
+  await db.schema.createIndex("idx_contests_slug").on("contests").columns(["slug"]).execute();
+
   await db.schema
     .createTable("overall_verdicts")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
@@ -324,7 +326,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("score_max", "double precision")
     .execute();
 
-  // await db.schema.createIndex("idx_contests_slug").on("contests").columns(["slug"]).execute();
+  await db.schema
+    .createIndex("idx_overall_verdicts_contest_id_user_id_task_id")
+    .on("overall_verdicts")
+    .columns(["contest_id", "user_id", "task_id"])
+    .where("contest_id", "is not", null)
+    .execute();
 
   await db.schema
     .alterTable("submissions")
