@@ -35,20 +35,26 @@ const CodeEditorMinimumHeight = 72;
 
 export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
   const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task.slug });
-  const taskURL = `${baseTaskURL}#submissions`;
+  const taskURL = `${baseTaskURL}`;
+  const submissionsURL = `${baseTaskURL}#submissions`;
 
   return (
     <>
-      <div className="flex items-end mt-2 mb-4">
+      <div className="flex flex-col-reverse lg:flex-row lg:items-end mt-2 mb-4">
         <Link
           href={taskURL}
-          className="flex items-center font-sans font-bold text-4xl text-blue-400"
+          className="flex items-center font-sans font-bold text-4xl text-blue-400 w-fit"
         >
           <BoxIcon name="bx-chevron-left" className="bx-lg" />
           {submission.task.title}
         </Link>
-        <div className="ml-auto text-gray-300 whitespace-nowrap">
-          {uuidToHuradoID(submission.id)}
+        <div className="flex flex-row justify-between flex-wrap lg:flex-col lg:justify-start lg:items-end my-4 lg:my-0 lg:ml-auto">
+          <Link href={submissionsURL} className="text-blue-400 hover:text-blue-500 mr-4">
+            My Submissions
+          </Link>
+          <div className="text-gray-300 whitespace-nowrap">
+            {uuidToHuradoID(submission.id)}
+          </div>
         </div>
       </div>
       <SubmissionVerdictSummary submission={submission} />
@@ -88,7 +94,7 @@ const SubmissionVerdictSummary = ({ submission }: SubmissionViewerProps) => {
       <span
         className={classNames("font-semibold", getVerdictColorClass(submission.verdict.verdict))}
       >
-        {humanizeVerdict(submission.verdict.verdict)}
+        {humanizeVerdict(submission.verdict.verdict, null)}
       </span>
     );
   }
