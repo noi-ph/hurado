@@ -20,17 +20,19 @@ import {
 } from "client/components/auth/auth";
 import { useSessionWithUpdate } from "client/sessions";
 import { UnreachableCheck } from "common/errors";
-import { zUserLogin } from "common/validation/user_validation";
+import { zUserRegister } from "common/validation/user_validation";
 import { applyValidationErrors, ResponseKind } from "common/responses";
-import type { UserLoginError, UserLoginSuccess } from "@root/api/v1/auth/login/route";
+import { UserRegisterError, UserRegisterSuccess } from "@root/api/v1/auth/register/route";
 
 
-type LoginForm = {
+type RegisterForm = {
+  email: string;
   username: string;
   password: string;
+  confirmPassword: string;
 };
 
-export function LoginPage() {
+export function RegisterPage() {
   const router = useRouter();
   const { setSession } = useSessionWithUpdate();
 
@@ -39,17 +41,18 @@ export function LoginPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm<LoginForm>({
-    resolver: zodResolver(zUserLogin),
+  } = useForm<RegisterForm>({
+    resolver: zodResolver(zUserRegister),
   });
 
-
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (data: RegisterForm) => {
     try {
-      const url = getAPIPath({ kind: APIPath.Login });
-    const response: AxiosResponse<UserLoginSuccess> = await http.post(url, {
+      const url = getAPIPath({ kind: APIPath.Register });
+    const response: AxiosResponse<UserRegisterSuccess> = await http.post(url, {
+        email: data.email,
         username: data.username,
         password: data.password,
+        confirmPassword: data.confirmPassword,
       });
 
       setSession(response.data.data);
@@ -57,7 +60,7 @@ export function LoginPage() {
       router.refresh();
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
-        const response: AxiosResponse<UserLoginError> = e.response;
+        const response: AxiosResponse<UserRegisterError> = e.response;
         const data = response.data;
         switch (data.kind) {
           case ResponseKind.ValidationError:
@@ -77,8 +80,13 @@ export function LoginPage() {
   return (
     <AuthMain>
       <AuthForm>
-        <AuthTitle>Login</AuthTitle>
+        <AuthTitle>Register</AuthTitle>
         <AuthDetails>
+          <AuthLabel>Email:</AuthLabel>
+          <AuthGroup>
+            <AuthInput type="text" {...register("email")} />
+            <AuthError error={errors.email} />
+          </AuthGroup>
           <AuthLabel>Username:</AuthLabel>
           <AuthGroup>
             <AuthInput type="text" {...register("username")} />
@@ -89,6 +97,11 @@ export function LoginPage() {
             <AuthInput type="password" {...register("password")} />
             <AuthError error={errors.password} />
           </AuthGroup>
+          <AuthLabel>Confirm Password:</AuthLabel>
+          <AuthGroup>
+            <AuthInput type="password" {...register("confirmPassword")} />
+            <AuthError error={errors.confirmPassword} />
+          </AuthGroup>
         </AuthDetails>
         <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
           Submit
@@ -96,6 +109,4 @@ export function LoginPage() {
       </AuthForm>
     </AuthMain>
   );
-};
-
-export default LoginPage;
+}

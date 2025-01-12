@@ -10,6 +10,11 @@ const zUserBase = z.object({
   role: z.enum(["admin", "user"]),
 });
 
+export const zUserLogin = z.object({
+  username: z.string().nonempty(),
+  password: z.string().nonempty(),
+});
+
 export const zUserRegister = zUserBase.pick({
   email: true,
   username: true,

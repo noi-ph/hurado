@@ -81,6 +81,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<UserRegis
     };
     cookies().set("session", tokenizeSession(session));
 
-    return NextResponse.json(makeSuccessResponse(session), { status: 200 });
+    return NextResponse.json(makeSuccessResponse(session));
   });
 }
