@@ -8,7 +8,7 @@ import {
   TaskTable,
 } from "./tasks";
 import { SubmissionFileTable, SubmissionTable } from "./submissions";
-import { VerdictSubtaskTable, VerdictTable, VerdictTaskDataTable } from "./verdicts";
+import { OverallVerdictTable, VerdictSubtaskTable, VerdictTable, VerdictTaskDataTable } from "./verdicts";
 import { UserTable } from "./users";
 import { ProblemSetTable, ProblemSetTaskTable } from "./problem_sets";
 import {
@@ -32,6 +32,7 @@ export interface Models {
   verdicts: VerdictTable;
   verdict_subtasks: VerdictSubtaskTable;
   verdict_task_data: VerdictTaskDataTable;
+  overall_verdicts: OverallVerdictTable;
   problem_sets: ProblemSetTable;
   problem_set_tasks: ProblemSetTaskTable;
   contests: ContestTable;

@@ -36,3 +36,10 @@ export type VerdictTaskDataTable = {
   running_time_ms: number;
   running_memory_byte: number;
 };
+
+export type OverallVerdictTable = {
+  id: Generated<string>;
+  task_id: string;
+  user_id: string;
+  contest_id: string | null;
+};

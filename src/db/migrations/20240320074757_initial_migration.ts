@@ -236,6 +236,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
+    .createTable("overall_verdicts")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
+    .addColumn("contest_id", "uuid")
+    .execute();
+
+  await db.schema
     .createIndex("idx_verdicts_submission_id")
     .on("verdicts")
     .columns(["submission_id"])
@@ -392,6 +400,7 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable("contest_attachments").execute();
   await db.schema.dropTable("contest_tasks").execute();
   await db.schema.dropTable("contests").execute();
+  await db.schema.dropTable("overall_verdicts").execute();
   await db.schema.dropTable("verdict_task_data").execute();
   await db.schema.dropTable("verdict_subtasks").execute();
   await db.schema.dropTable("verdicts").execute();
