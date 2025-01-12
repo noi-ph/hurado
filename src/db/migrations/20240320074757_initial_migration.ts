@@ -236,16 +236,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("overall_verdicts")
-    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
-    .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
-    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
-    .addColumn("contest_id", "uuid")
-    .addColumn("overall_score", "integer")
-    .addColumn("max_score", "integer")
-    .execute();
-
-  await db.schema
     .createIndex("idx_verdicts_submission_id")
     .on("verdicts")
     .columns(["submission_id"])
@@ -322,6 +312,16 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("is_public", "boolean", (col) => col.notNull())
     .addColumn("start_time", "timestamp")
     .addColumn("end_time", "timestamp")
+    .execute();
+
+  await db.schema
+    .createTable("overall_verdicts")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("user_id", "uuid", (col) => col.notNull().references("users.id").onDelete("cascade"))
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
+    .addColumn("contest_id", "uuid", (col) => col.references("contests.id"))
+    .addColumn("overall_score", "integer")
+    .addColumn("max_score", "integer")
     .execute();
 
   await db.schema.createIndex("idx_contests_slug").on("contests").columns(["slug"]).execute();

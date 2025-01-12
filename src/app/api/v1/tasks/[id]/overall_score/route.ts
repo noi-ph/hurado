@@ -34,6 +34,9 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
     .executeTakeFirst();
   
   return NextResponse.json({
-    verdict: overall_verdict,
+    verdict: (overall_verdict == undefined ? undefined : {
+      overall_score: overall_verdict.overall_score,
+      max_score: overall_verdict.max_score,
+    } satisfies OverallVerdictDisplayDTO),
   });
 }
