@@ -11,13 +11,24 @@ import {
 import { FieldError } from 'react-hook-form';
 import styles from './auth.module.css';
 
+type AuthMainProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+
+export function AuthMain(props: AuthMainProps) {
+  return (
+    <div
+      {...props}
+      className={classNames(props.className, "max-w-md mx-auto my-16")}
+    />
+  );
+};
+
 type AuthFormProps = DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
 
 export function AuthForm(props: AuthFormProps) {
   return (
     <form
       {...props}
-      className={classNames(props.className, "flex flex-col justify-center items-start max-w-md h-fit gap-4 px-9 py-6 mx-auto my-16 border border-black rounded-2xl")}
+      className={classNames(props.className, "flex flex-col justify-center items-start gap-4 px-9 py-6 border border-black rounded-2xl")}
     />
   );
 };
@@ -33,13 +44,24 @@ export function AuthTitle(props: AuthTitleProps) {
   );
 };
 
+type AuthDetails = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+
+export function AuthDetails(props: AuthGroupProps) {
+  return (
+    <div
+      {...props}
+      className={classNames(props.className, styles.details, "w-full h-fit gap-x-2 gap-y-2.5")}
+    />
+  );
+};
+
 type AuthGroupProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
 export function AuthGroup(props: AuthGroupProps) {
   return (
     <div
       {...props}
-      className={classNames(props.className, styles.group, "w-full h-fit gap-x-2.5")}
+      className={classNames(props.className)}
     />
   );
 };
@@ -50,7 +72,7 @@ export function AuthLabel(props: AuthLabelProps) {
   return (
     <label
       {...props}
-      className={classNames(props.className, "[grid-area:label]")}
+      className={classNames(props.className, "mt-0.5")}
     />
   );
 };
@@ -62,7 +84,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>((props, re
     <input
       {...props}
       ref={ref}
-      className={classNames(props.className, "w-full max-w-xs border-b border-gray-500 [grid-area:input]")}
+      className={classNames(props.className, "w-full max-w-xs border-b border-gray-500")}
     />
   );
 });

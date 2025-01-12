@@ -10,11 +10,13 @@ import http from "client/http";
 import { APIPath, getAPIPath, getPath, Path } from "client/paths";
 import {
   AuthButton,
+  AuthDetails,
   AuthError,
   AuthForm,
   AuthGroup,
   AuthInput,
   AuthLabel,
+  AuthMain,
   AuthTitle,
 } from "client/components/auth/auth";
 import { zUserResetPassword } from "common/validation/user_validation";
@@ -86,22 +88,26 @@ export function PasswordResetPage() {
   };
 
   return (
-    <AuthForm>
-      <AuthTitle>Password Reset</AuthTitle>
-      <AuthGroup>
-        <AuthLabel>Password:</AuthLabel>
-        <AuthInput type="password" disabled={tokenBad} {...register('password')}/>
-        <AuthError error={errors.password}/>
-      </AuthGroup>
-      <AuthGroup>
-        <AuthLabel>Confirm Password:</AuthLabel>
-        <AuthInput type="password" disabled={tokenBad} {...register('confirmPassword')}/>
-        <AuthError error={errors.confirmPassword}/>
-      </AuthGroup>
-      <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting || tokenBad}>
-        Reset Password
-      </AuthButton>
-    </AuthForm>
+    <AuthMain>
+      <AuthForm>
+        <AuthTitle>Password Reset</AuthTitle>
+        <AuthDetails>
+          <AuthLabel>Password:</AuthLabel>
+          <AuthGroup>
+            <AuthInput type="password" disabled={tokenBad} {...register('password')}/>
+            <AuthError error={errors.password}/>
+          </AuthGroup>
+          <AuthLabel>Confirm Password:</AuthLabel>
+          <AuthGroup>
+            <AuthInput type="password" disabled={tokenBad} {...register('confirmPassword')}/>
+            <AuthError error={errors.confirmPassword}/>
+          </AuthGroup>
+        </AuthDetails>
+        <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting || tokenBad}>
+          Reset Password
+        </AuthButton>
+      </AuthForm>
+    </AuthMain>
   );
 };
 

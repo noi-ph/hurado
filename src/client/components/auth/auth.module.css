@@ -1,7 +1,4 @@
-.group {
+.details {
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-template-areas:
-    'label input'
-    'space error';
 }

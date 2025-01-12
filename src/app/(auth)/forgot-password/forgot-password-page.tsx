@@ -8,11 +8,13 @@ import http from "client/http";
 import { APIPath, getAPIPath } from "client/paths";
 import {
   AuthButton,
+  AuthDetails,
   AuthError,
   AuthForm,
   AuthGroup,
   AuthInput,
   AuthLabel,
+  AuthMain,
   AuthTitle,
 } from "client/components/auth/auth";
 import { zUserForgotPassword } from "common/validation/user_validation";
@@ -62,17 +64,21 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <AuthForm>
-      <AuthTitle>Forgot Password</AuthTitle>
-      <AuthGroup>
-        <AuthLabel>Username:</AuthLabel>
-        <AuthInput {...register('username')}/>
-        <AuthError error={errors.username}/>
-      </AuthGroup>
-      <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
-        Reset Password
-      </AuthButton>
-    </AuthForm>
+    <AuthMain>
+      <AuthForm>
+        <AuthTitle>Forgot Password</AuthTitle>
+        <AuthDetails>
+          <AuthLabel>Username:</AuthLabel>
+          <AuthGroup>
+            <AuthInput {...register('username')}/>
+            <AuthError error={errors.username}/>
+          </AuthGroup>
+        </AuthDetails>
+        <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+          Reset Password
+        </AuthButton>
+      </AuthForm>
+    </AuthMain>
   );
 };
 
