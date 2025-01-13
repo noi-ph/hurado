@@ -5,7 +5,6 @@ import { Selectable } from "kysely";
 type TaskDataDatabaseResponseKey =
   | 'id'
   | 'name'
-  | 'is_sample'
   | 'input_file_name'
   | 'input_file_hash'
   | 'judge_file_name'
@@ -17,7 +16,6 @@ export function dbToTaskDataBatchDTO(data: TaskDataDatabaseResponse): TaskDataBa
   return {
     id: data.id,
     name: data.name,
-    is_sample: data.is_sample,
     input_file_name: data.input_file_name as string,
     input_file_hash: data.input_file_hash as string,
     judge_file_name: data.judge_file_name,

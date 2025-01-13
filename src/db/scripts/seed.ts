@@ -165,7 +165,18 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       checker_kind: CheckerKind.LenientDiff,
       scripts: [],
       attachments: [],
-      sample_IO: [],
+      sample_IO: [
+        {
+          input: readFileSync("who-is-the-oldest-1a.in"),
+          output: readFileSync("who-is-the-oldest-1a.out"),
+          explanation: "",
+        },
+        {
+          input: readFileSync("who-is-the-oldest-1b.in"),
+          output: readFileSync("who-is-the-oldest-1b.out"),
+          explanation: "",
+        },
+      ],
       credits: [
         {
           name: "kevinsogo",
@@ -192,7 +203,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: true,
               input_file_name: "who-is-the-oldest-1a.in",
               input_file_hash: getOrThrow(hashes, "who-is-the-oldest-1a.in"),
               judge_file_name: "who-is-the-oldest-1a.out",
@@ -200,7 +210,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #2",
-              is_sample: true,
               input_file_name: "who-is-the-oldest-1b.in",
               input_file_hash: getOrThrow(hashes, "who-is-the-oldest-1b.in"),
               judge_file_name: "who-is-the-oldest-1b.out",
@@ -208,7 +217,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #3",
-              is_sample: false,
               input_file_name: "who-is-the-oldest-1c.in",
               input_file_hash: getOrThrow(hashes, "who-is-the-oldest-1c.in"),
               judge_file_name: "who-is-the-oldest-1c.out",
@@ -223,7 +231,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: false,
               input_file_name: "who-is-the-oldest-2a.in",
               input_file_hash: getOrThrow(hashes, "who-is-the-oldest-2a.in"),
               judge_file_name: "who-is-the-oldest-2a.out",
@@ -231,7 +238,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #2",
-              is_sample: false,
               input_file_name: "who-is-the-oldest-2b.in",
               input_file_hash: getOrThrow(hashes, "who-is-the-oldest-2b.in"),
               judge_file_name: "who-is-the-oldest-2b.out",
@@ -239,7 +245,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #3",
-              is_sample: false,
               input_file_name: "who-is-the-oldest-2c.in",
               input_file_hash: getOrThrow(hashes, "who-is-the-oldest-2c.in"),
               judge_file_name: "who-is-the-oldest-2c.out",
@@ -273,7 +278,18 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       checker_kind: CheckerKind.LenientDiff,
       scripts: [],
       attachments: [],
-      sample_IO: [],
+      sample_IO: [
+        {
+          input: "1 2\n",
+          output: "SAD\n",
+          explanation: "In the first case, either Alvin gets 1 chocolate and Berto gets 2 chocolates, or Alvin gets 2 chocolates and Berto gets 1 chocolate. In either case, they cannot share their chocolates fairly, so they are sad.",
+        },
+        {
+          input: "4 2\n",
+          output: "HAPPY\n",
+          explanation: "In the second case, Alvin can receive 3 chocolates, and Berto can receive 3 chocolates, and so they are happy that they can share the chocolates fairly.",
+        },
+      ],
       credits: [
         {
           name: "kevinsogo",
@@ -300,7 +316,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: true,
               input_file_name: "sharing-chocolates-1a.in",
               input_file_hash: getOrThrow(hashes, "sharing-chocolates-1a.in"),
               judge_file_name: "sharing-chocolates-1a.out",
@@ -308,7 +323,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #2",
-              is_sample: true,
               input_file_name: "sharing-chocolates-1b.in",
               input_file_hash: getOrThrow(hashes, "sharing-chocolates-1b.in"),
               judge_file_name: "sharing-chocolates-1b.out",
@@ -316,7 +330,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #3",
-              is_sample: false,
               input_file_name: "sharing-chocolates-1c.in",
               input_file_hash: getOrThrow(hashes, "sharing-chocolates-1c.in"),
               judge_file_name: "sharing-chocolates-1c.out",
@@ -324,7 +337,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #4",
-              is_sample: false,
               input_file_name: "sharing-chocolates-1d.in",
               input_file_hash: getOrThrow(hashes, "sharing-chocolates-1d.in"),
               judge_file_name: "sharing-chocolates-1d.out",
@@ -332,7 +344,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #5",
-              is_sample: false,
               input_file_name: "sharing-chocolates-1e.in",
               input_file_hash: getOrThrow(hashes, "sharing-chocolates-1e.in"),
               judge_file_name: "sharing-chocolates-1e.out",
@@ -340,7 +351,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #6",
-              is_sample: false,
               input_file_name: "sharing-chocolates-1f.in",
               input_file_hash: getOrThrow(hashes, "sharing-chocolates-1f.in"),
               judge_file_name: "sharing-chocolates-1f.out",
@@ -355,7 +365,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: false,
               input_file_name: "sharing-chocolates-2a.in",
               input_file_hash: getOrThrow(hashes, "sharing-chocolates-2a.in"),
               judge_file_name: "sharing-chocolates-2a.out",
@@ -381,7 +390,13 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.Custom,
       checker_file_name: "batch-demo-checker.py",
-      sample_IO: [],
+      sample_IO: [
+        {
+          input: readFileSync("batch-demo-1a.in"),
+          output: readFileSync("batch-demo-1a.out"),
+          explanation: "",
+        },
+      ],
       scripts: [
         {
           file_name: "batch-demo-checker.py",
@@ -418,7 +433,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: false,
               input_file_name: "batch-demo-1a.in",
               input_file_hash: getOrThrow(hashes, "batch-demo-1a.in"),
               judge_file_name: "batch-demo-1a.out",
@@ -426,7 +440,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #2",
-              is_sample: false,
               input_file_name: "batch-demo-1b.in",
               input_file_hash: getOrThrow(hashes, "batch-demo-1b.in"),
               judge_file_name: "batch-demo-1b.out",
@@ -441,7 +454,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: false,
               input_file_name: "batch-demo-2a.in",
               input_file_hash: getOrThrow(hashes, "batch-demo-2a.in"),
               judge_file_name: "batch-demo-2a.out",
@@ -449,7 +461,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #2",
-              is_sample: false,
               input_file_name: "batch-demo-2b.in",
               input_file_hash: getOrThrow(hashes, "batch-demo-2b.in"),
               judge_file_name: "batch-demo-2b.out",
@@ -643,7 +654,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: true,
               input_file_name: "comms-demo-1a.in",
               input_file_hash: getOrThrow(hashes, "comms-demo-1a.in"),
               judge_file_name: "comms-demo-1a.out",
@@ -651,7 +661,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #2",
-              is_sample: false,
               input_file_name: "comms-demo-1b.in",
               input_file_hash: getOrThrow(hashes, "comms-demo-1b.in"),
               judge_file_name: "comms-demo-1b.out",
@@ -666,7 +675,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           data: [
             {
               name: "Test Case #1",
-              is_sample: false,
               input_file_name: "comms-demo-2a.in",
               input_file_hash: getOrThrow(hashes, "comms-demo-2a.in"),
               judge_file_name: "comms-demo-2a.out",
@@ -674,7 +682,6 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
             },
             {
               name: "Test Case #2",
-              is_sample: false,
               input_file_name: "comms-demo-2b.in",
               input_file_hash: getOrThrow(hashes, "comms-demo-2b.in"),
               judge_file_name: "comms-demo-2b.out",

@@ -114,7 +114,6 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
       input_file: null,
       judge_file_name: "",
       judge_file: null,
-      is_sample: false,
       deleted: false,
     };
     replaceThisSubtask({

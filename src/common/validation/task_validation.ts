@@ -69,7 +69,6 @@ const zTaskCommon = {
 const zTaskDataBatch = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
-  is_sample: z.boolean(),
   input_file_hash: z.string().min(1),
   input_file_name: z.string().min(1),
   judge_file_hash: z.string().min(1),
@@ -125,7 +124,6 @@ export const zTaskTypeOutput = z.object({
 const zTaskDataCommunication = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1),
-  is_sample: z.boolean(),
   input_file_hash: z.string().min(1),
   input_file_name: z.string().min(1),
   judge_file_hash: z.string().min(1),

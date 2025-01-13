@@ -134,7 +134,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("name", "text", (col) => col.notNull())
     .addColumn("order", "integer", (col) => col.notNull())
-    .addColumn("is_sample", "boolean", (col) => col.notNull())
     .addColumn("input_file_name", "text")
     .addColumn("input_file_hash", "text", (col) => col.references("files.hash"))
     .addColumn("judge_file_name", "text", (col) => col.notNull())

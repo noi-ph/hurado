@@ -75,7 +75,6 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
             "subtask_id",
             "name",
             "order",
-            "is_sample",
             "input_file_name",
             "input_file_hash",
             "judge_file_name",

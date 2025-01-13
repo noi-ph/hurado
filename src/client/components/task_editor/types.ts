@@ -104,7 +104,6 @@ export type TaskDataSaved = {
   input_file: CommonFileED | null;
   judge_file_name: string;
   judge_file: CommonFileED | null;
-  is_sample: boolean;
   deleted: boolean;
 };
 
@@ -115,7 +114,6 @@ export type TaskDataLocal = {
   input_file: CommonFileED | null;
   judge_file_name: string;
   judge_file: CommonFileED | null;
-  is_sample: boolean;
   deleted: boolean;
 };
 

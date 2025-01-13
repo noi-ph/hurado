@@ -435,7 +435,6 @@ export async function upsertTaskData(
           .values(
             dataNew.map((data, index) => ({
               name: data.name,
-              is_sample: "is_sample" in data ? data.is_sample : false,
               order: data.order,
               input_file_hash: "input_file_hash" in data ? data.input_file_hash : null,
               input_file_name: "input_file_name" in data ? data.input_file_name : null,
@@ -456,7 +455,6 @@ export async function upsertTaskData(
             dataOld.map((data) => ({
               id: data.id,
               name: data.name,
-              is_sample: "is_sample" in data ? data.is_sample : false,
               order: data.order,
               input_file_hash: "input_file_hash" in data ? data.input_file_hash : null,
               input_file_name: "input_file_name" in data ? data.input_file_name : null,
@@ -468,7 +466,6 @@ export async function upsertTaskData(
           .onConflict((oc) =>
             oc.column("id").doUpdateSet((eb) => ({
               name: eb.ref("excluded.name"),
-              is_sample: eb.ref("excluded.is_sample"),
               order: eb.ref("excluded.order"),
               input_file_hash: eb.ref("excluded.input_file_hash"),
               input_file_name: eb.ref("excluded.input_file_name"),

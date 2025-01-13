@@ -322,7 +322,6 @@ function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
       input_file_hash: ed.input_file.hash,
       judge_file_name: ed.judge_file_name,
       judge_file_hash: ed.judge_file.hash,
-      is_sample: ed.is_sample,
     };
   } else {
     return {
@@ -332,7 +331,6 @@ function coerceTaskDataBatchDTO(ed: TaskDataED): TaskDataBatchDTO | null {
       input_file_hash: ed.input_file.hash,
       judge_file_name: ed.judge_file_name,
       judge_file_hash: ed.judge_file.hash,
-      is_sample: ed.is_sample,
     };
   }
 }

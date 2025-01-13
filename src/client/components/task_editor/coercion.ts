@@ -102,7 +102,6 @@ function coerceTaskDataED(dto: TaskDataDTO): TaskDataED {
     kind: EditorKind.Saved,
     id: dto.id as string,
     name: dto.name,
-    is_sample: "is_sample" in dto ? dto.is_sample : false,
     input_file:
       "input_file_hash" in dto
         ? {

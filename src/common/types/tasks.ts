@@ -68,7 +68,6 @@ export type TaskDataTable = {
   subtask_id: string;
   name: string;
   order: number;
-  is_sample: boolean;
   input_file_name: string | null;
   input_file_hash: string | null;
   judge_file_name: string;
