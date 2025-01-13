@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { SessionData } from "common/types/auth";
 import { JWT_EXPIRE, JWT_SECRET } from "server/secrets";
+import { db } from "db";
+import { USER_PUBLIC_FIELDS } from "common/types";
 
 export class InvalidSessionException extends Error {}
 
@@ -24,12 +26,26 @@ export const getSessionFromToken = (token: string | undefined): SessionData | nu
   }
 };
 
-export const getSession = (request?: NextRequest): SessionData | null => {
-  if (request != null) {
-    const token = request.cookies.get("session")?.value;
-    return getSessionFromToken(token);
-  } else {
+export const getSession = async (request?: NextRequest): Promise<SessionData | null> => {
+  if (request == null) {
     const token = cookies().get("session")?.value;
+    return getSessionFromToken(token);
+  } else if (request.headers.get("Kompgen-Token") != undefined) {
+    const user = await db
+      .selectFrom("users")
+      .where("users.kompgen_token", "=", request.headers.get("Kompgen-Token"))
+      .select(USER_PUBLIC_FIELDS)
+      .executeTakeFirst();
+
+    if (user == undefined) {
+      return null;
+    } else {
+      return {
+        user,
+      };
+    }
+  } else {
+    const token = request.cookies.get("session")?.value;
     return getSessionFromToken(token);
   }
 };

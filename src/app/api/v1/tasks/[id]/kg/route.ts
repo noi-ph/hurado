@@ -11,7 +11,7 @@ import { z } from "zod";
 // Updates only a subset of the properties that kg knows about, and
 //   DOESN'T OVERWRITE THE OTHER PROPERTIES!!!
 export async function PUT(request: NextRequest) {
-  const session = getSession(request);
+  const session = await getSession(request);
   if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 403 });
   }

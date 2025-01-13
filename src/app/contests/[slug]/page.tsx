@@ -64,7 +64,7 @@ async function Page(props: ContestPageProps) {
     return notFound();
   }
 
-  const session = getSession();
+  const session = await getSession();
   const canEdit = canManageContests(session);
 
   return (

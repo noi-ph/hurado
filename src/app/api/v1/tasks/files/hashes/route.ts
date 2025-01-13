@@ -9,7 +9,7 @@ const schema = z.array(z.string());
 export async function POST(request: NextRequest) {
   // This function accepts an array of hashes (string[]) and finds all hashes
   // in that list that are already in the database, so you can skip re-uploading them.
-  const session = getSession(request);
+  const session = await getSession(request);
   if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 401 });
   }

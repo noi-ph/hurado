@@ -13,7 +13,7 @@ type ContestEditPageProps = {
 };
 
 export default async function ContestEditPage(props: ContestEditPageProps) {
-  const session = getSession();
+  const session = await getSession();
   if (session == null || session.user.role != "admin") {
     return <ForbiddenPage/>;
   }

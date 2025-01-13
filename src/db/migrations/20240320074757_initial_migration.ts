@@ -19,6 +19,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("role", "text", (col) => col.notNull())
     .addColumn("password_reset_token", "text")
     .addColumn("password_reset_expires_at", "text")
+    .addColumn("kompgen_token", "text")
     .execute();
 
   await db.schema

@@ -6,7 +6,7 @@ import { getSession } from "server/sessions";
 import { canManageTasks } from "server/authorization";
 
 export async function POST(request: NextRequest) {
-  const session = getSession(request);
+  const session = await getSession(request);
   if (session == null || !canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 401 });
   }

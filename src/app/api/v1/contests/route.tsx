@@ -25,7 +25,7 @@ export type ContestCreateResponse =
 
 
 export async function POST(request: NextRequest): Promise<NextResponse<ContestCreateResponse>> {
-  const session = getSession(request);
+  const session = await getSession(request);
   if (session == null || !canManageContests(session)) {
     return NextResponse.json(APIForbiddenError, { status: 401 });
   }

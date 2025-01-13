@@ -25,7 +25,7 @@ export type ProblemSetCreateResponse =
 
 
 export async function POST(request: NextRequest): Promise<NextResponse<ProblemSetCreateResponse>> {
-  const session = getSession(request);
+  const session = await getSession(request);
   if (session == null || !canManageProblemSets(session)) {
     return NextResponse.json(APIForbiddenError, { status: 401 });
   }

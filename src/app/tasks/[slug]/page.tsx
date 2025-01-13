@@ -118,7 +118,7 @@ async function Page(props: TaskPageProps) {
     return notFound();
   }
 
-  const session = getSession();
+  const session = await getSession();
   const canEdit = canManageTasks(session);
   return (
     <DefaultLayout>

@@ -39,7 +39,7 @@ async function getTasksData(session: SessionData): Promise<TaskSummaryAdminDTO[]
 
 
 async function Page() {
-  const session = getSession();
+  const session = await getSession();
 
   if (session == null || !canManageTasks(session)) {
     return <ForbiddenPage/>;

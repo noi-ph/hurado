@@ -13,7 +13,7 @@ type TaskEditPageProps = {
 };
 
 export default async function TaskEditPage(props: TaskEditPageProps) {
-  const session = getSession();
+  const session = await getSession();
   if (session == null || session.user.role != "admin") {
     return <ForbiddenPage/>;
   }

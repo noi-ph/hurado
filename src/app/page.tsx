@@ -3,8 +3,8 @@ import { getSession } from "server/sessions";
 import { Homepage } from "client/components/homepage";
 import ProblemSetListPage from "./sets/page";
 
-const Page: FunctionComponent = () => {
-  const session = getSession();
+const Page: FunctionComponent = async() => {
+  const session = await getSession();
 
   if (session == null) {
     return (

@@ -27,7 +27,7 @@ export type TaskCreateSimpleResponse =
 
 
 export async function POST(request: NextRequest): Promise<NextResponse<TaskCreateSimpleResponse>> {
-  const session = getSession(request);
+  const session = await getSession(request);
   if (session == null || !canManageTasks(session, request)) {
     return NextResponse.json(APIForbiddenError, { status: 401 });
   }

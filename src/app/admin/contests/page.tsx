@@ -39,7 +39,7 @@ async function getContestsData(session: SessionData): Promise<ContestSummaryAdmi
 
 
 async function Page() {
-  const session = getSession();
+  const session = await getSession();
 
   if (session == null || !canManageContests(session)) {
     return <ForbiddenPage/>;

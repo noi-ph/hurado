@@ -3,9 +3,6 @@ import { NextRequest } from "next/server";
 import { KOMPGEN_SECRET } from "./secrets";
 
 export function canManageTasks(session: SessionData | null, request: NextRequest | undefined = undefined): boolean {
-  if (request?.headers.get('Authorization') === KOMPGEN_SECRET) {
-    return true;
-  }
   if (session == null || session.user.role != 'admin') {
     return false;
   }

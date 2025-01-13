@@ -11,7 +11,9 @@ export type UserTable = {
   role: string;
   password_reset_token: string | null;
   password_reset_expires_at: Date | null;
+  kompgen_token: string | null;
 };
 
+export const USER_PUBLIC_FIELDS = ["id", "email", "username", "name", "role"] as const;
 export type User = Selectable<UserTable>;
-export type UserPublic = Pick<User, "id" | "email" | "username" | "name" | "role">;
+export type UserPublic = Pick<User, (typeof USER_PUBLIC_FIELDS)[number]>;

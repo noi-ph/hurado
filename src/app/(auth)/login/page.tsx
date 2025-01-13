@@ -5,8 +5,8 @@ import { getSession } from "server/sessions";
 import LoginPage from "./login_page";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 
-const Page: FunctionComponent = () => {
-  const session = getSession();
+const Page: FunctionComponent = async() => {
+  const session = await getSession();
   if (session != null) {
     redirect("/");
   }

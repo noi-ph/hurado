@@ -6,8 +6,8 @@ import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ForbiddenPage } from "server/errors/forbidden";
 import { canManageContests, canManageProblemSets, canManageTasks } from "server/authorization";
 
-const Page: FunctionComponent = () => {
-  const session = getSession();
+const Page: FunctionComponent = async() => {
+  const session = await getSession();
 
   const tasks = canManageTasks(session);
   const sets = canManageProblemSets(session);

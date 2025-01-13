@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   // This accepts one uploaded file, hashes it, and stores it in blob storage
   // if the file hash already exists, it just returns the hash of the file
   // with status code 409_Conflict
-  const session = getSession(request);
+  const session = await getSession(request);
   if (!canManageTasks(session, request)) {
     return NextResponse.json({}, { status: 401 });
   }

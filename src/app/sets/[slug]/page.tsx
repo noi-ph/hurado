@@ -63,7 +63,7 @@ async function Page(props: ProblemSetPageProps) {
     return notFound();
   }
 
-  const session = getSession();
+  const session = await getSession();
   const canEdit = canManageProblemSets(session);
   return (
     <DefaultLayout>

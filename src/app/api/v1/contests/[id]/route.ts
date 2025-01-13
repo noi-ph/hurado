@@ -5,7 +5,7 @@ import { getSession } from "server/sessions";
 import { updateContest } from "server/logic/contests/update_contest";
 
 export async function PUT(request: NextRequest) {
-  const session = getSession(request);
+  const session = await getSession(request);
   if (!canManageContests(session)) {
     return NextResponse.json({}, { status: 403 });
   }

@@ -17,7 +17,7 @@ async function Page(props: SubmissionPageProps) {
   if (uuid == null) {
     return notFound();
   }
-  const session = getSession();
+  const session = await getSession();
   if(session == null || session.user == null) {
     return notFound();
   }

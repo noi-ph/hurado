@@ -13,7 +13,7 @@ type ProblemSetEditPageProps = {
 };
 
 export default async function ProblemSetEditPage(props: ProblemSetEditPageProps) {
-  const session = getSession();
+  const session = await getSession();
   if (session == null || session.user.role != "admin") {
     return <ForbiddenPage/>;
   }

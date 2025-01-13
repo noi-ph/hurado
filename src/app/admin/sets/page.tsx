@@ -38,7 +38,7 @@ async function getProblemSetsData(session: SessionData): Promise<ProblemSetSumma
 
 
 async function Page() {
-  const session = getSession();
+  const session = await getSession();
 
   if (session == null || !canManageProblemSets(session)) {
     return <ForbiddenPage/>;

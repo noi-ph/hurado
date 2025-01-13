@@ -8,7 +8,7 @@ import { Language, TaskType } from "common/types/constants";
 import { SubmissionFileStorage } from "server/files";
 
 export async function POST(request: NextRequest) {
-  const session = getSession(request);
+  const session = await getSession(request);
   if (session == null) {
     return NextResponse.json({}, { status: 401 });
   }

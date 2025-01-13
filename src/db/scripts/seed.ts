@@ -19,6 +19,7 @@ const users: Insertable<UserTable>[] = [
     school: "University of the Philippines - Diliman",
     name: "Kevin Sogo",
     role: "admin",
+    kompgen_token: "kevinsogosogokevin",
   },
   {
     email: "vernon@example.com",
@@ -27,6 +28,7 @@ const users: Insertable<UserTable>[] = [
     school: "Ateneo de Manila University",
     name: "Vernon Sago",
     role: "admin",
+    kompgen_token: "ittakesgutztobe",
   },
   {
     email: "cisco@example.com",
@@ -35,6 +37,7 @@ const users: Insertable<UserTable>[] = [
     school: "Ateneo de Manila University",
     name: "Cisco Sugoi",
     role: "user",
+    kompgen_token: "shisukodesu",
   },
 ];
 

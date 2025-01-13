@@ -43,8 +43,8 @@ export const metadata: Metadata = {
 type RootLayoutProps = {
   children: ReactNode;
 };
-const RootLayout: FunctionComponent<RootLayoutProps> = ({ children }) => {
-  const session = getSession();
+const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
+  const session = await getSession();
 
   return (
     <SessionProvider initial={session}>
