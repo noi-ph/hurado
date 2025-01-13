@@ -3,12 +3,16 @@ import path from "path";
 import { Insertable } from "kysely";
 import { db } from "db";
 import { ContestTable, ProblemSetTable, UserTable } from "common/types";
-import { TaskDTO } from "common/validation/task_validation";
-import { sha256 } from "common/utils/hashing";
 import { CheckerKind, Language, ReducerKind, TaskFlavor, TaskType } from "common/types/constants";
+import { sha256 } from "common/utils/hashing";
+import { TaskDTO } from "common/validation/task_validation";
+import { ContestUpdateDTO } from "common/validation/contest_validation";
+import { ProblemSetUpdateDTO } from "common/validation/problem_set_validation";
 import { TaskFileStorage } from "server/files";
 import { updateEditorTask } from "server/logic/tasks/update_editor_task";
 import { hashPassword } from "server/logic/users";
+import { updateContest } from "server/logic/contests/update_contest";
+import { updateProblemSet } from "server/logic/problem_sets/update_problem_set";
 
 
 // Hard-code these UUIDs so that you don't need to re-login after a db:reset, etc
@@ -42,7 +46,7 @@ const users: Insertable<UserTable>[] = [
   },
 ];
 
-const contests: Insertable<ContestTable>[] = [
+const baseContests: Insertable<ContestTable>[] = [
   {
     id: "4a4638f5-b068-4c24-91a4-085fd15364dd",
     slug: "noi-elims",
@@ -67,7 +71,7 @@ const contests: Insertable<ContestTable>[] = [
   },
 ];
 
-const psets: Insertable<ProblemSetTable>[] = [
+const baseProblemSets: Insertable<ProblemSetTable>[] = [
   {
     id: "ed31191c-28ce-4c04-b7c3-cae9c88821f1",
     slug: "beginner",
@@ -142,7 +146,7 @@ const filenames = [
   "comms-demo-2b.out",
 ];
 
-function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
+function makeTasks(ids: Map<string, string>, hashes: Map<string, string>): TaskDTO[] {
   const tasks: TaskDTO[] = [
     {
       type: TaskType.Batch,
@@ -695,6 +699,123 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
   return tasks;
 }
 
+function makeContests(contestids: Map<string, string>, taskids: Map<string, string>): ContestUpdateDTO[] {
+  const contests: ContestUpdateDTO[] = [
+    {
+      id: getOrThrow(contestids, "noi-elims"),
+      slug: "noi-elims",
+      title: "NOI.PH Eliminations",
+      description: "The best elimination round",
+      statement: "Join this contest to get eliminated!",
+      is_public: true,
+      start_time: null,
+      end_time: null,
+      attachments: [],
+      tasks: [
+        {
+          task_id: getOrThrow(taskids, "who-is-the-oldest"),
+          letter: "A",
+          score_max: 100,
+        },
+        {
+          task_id: getOrThrow(taskids, "batch-demo"),
+          letter: "B",
+          score_max: 100,
+        },
+      ],
+    },
+    {
+      id: getOrThrow(contestids, "noi-finals"),
+      slug: "noi-finals",
+      title: "NOI.PH Finals",
+      description: "Secret final contest",
+      statement: "Join this contest to win the greatest prize of all!",
+      is_public: false,
+      start_time: null,
+      end_time: null,
+      attachments: [],
+      tasks: [
+        {
+          task_id: getOrThrow(taskids, "who-is-the-oldest"),
+          letter: "A",
+          score_max: 50,
+        },
+        {
+          task_id: getOrThrow(taskids, "sharing-chocolates"),
+          letter: "B",
+          score_max: 50,
+        },
+        {
+          task_id: getOrThrow(taskids, "output-demo"),
+          letter: "B",
+          score_max: 100,
+        },
+        {
+          task_id: getOrThrow(taskids, "output-custom"),
+          letter: "C",
+          score_max: 100,
+        },
+        {
+          task_id: getOrThrow(taskids, "comms-demo"),
+          letter: "D",
+          score_max: 200,
+        },
+      ],
+    },
+  ];
+  return contests;
+}
+
+function makeProblemSets(setids: Map<string, string>, taskids: Map<string, string>): ProblemSetUpdateDTO[] {
+  const psets: ProblemSetUpdateDTO[] = [
+    {
+      id: getOrThrow(setids, "beginner"),
+      slug: "beginner",
+      title: "Beginner Problems",
+      description: "Problems for beginners",
+      is_public: true,
+      order: 0,
+      tasks: [
+        {
+          task_id: getOrThrow(taskids, "who-is-the-oldest"),
+          order: 0,
+        },
+        {
+          task_id: getOrThrow(taskids, "sharing-chocolates"),
+          order: 1,
+        },
+        {
+          task_id: getOrThrow(taskids, "batch-demo"),
+          order: 2,
+        },
+      ],
+    },
+    {
+      id: getOrThrow(setids, "advanced"),
+      slug: "advanced",
+      title: "Advanced Problems",
+      description: "Problems for advanced users",
+      is_public: true,
+      order: 1,
+      tasks: [
+        {
+          task_id: getOrThrow(taskids, "output-demo"),
+          order: 0,
+        },
+        {
+          task_id: getOrThrow(taskids, "output-custom"),
+          order: 1,
+        },
+        {
+          task_id: getOrThrow(taskids, "comms-demo"),
+          order: 2,
+        },
+      ],
+    },
+  ];
+  return psets;
+}
+
 export class __DO_NOT_IMPORT__DeveloperSeeds {
   static async run() {
     const dbUsers = await db
@@ -805,10 +926,10 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
       await updateEditorTask(task);
     }
 
-    const _dbContests = await db
+    const dbContests = await db
       .insertInto("contests")
       .values(
-        contests.map((c) => ({
+        baseContests.map((c) => ({
           slug: c.slug,
           title: c.title,
           description: c.description,
@@ -820,19 +941,31 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
       .returning(["id", "slug"])
       .execute();
 
-      const _dbProblemSets = await db
-        .insertInto("problem_sets")
-        .values(
-          psets.map((p) => ({
-            slug: p.slug,
-            title: p.title,
-            description: p.description,
-            is_public: p.is_public,
-            order: p.order,
-          }))
-        )
-        .returning(["id", "slug"])
-        .execute();
+    const contestids = new Map<string, string>(dbContests.map((t) => [t.slug, t.id]));
+    const contests = makeContests(contestids, taskids);
+    for (const contest of contests) {
+      await updateContest(contest);
+    }
+
+    const dbProblemSets = await db
+      .insertInto("problem_sets")
+      .values(
+        baseProblemSets.map((p) => ({
+          slug: p.slug,
+          title: p.title,
+          description: p.description,
+          is_public: p.is_public,
+          order: p.order,
+        }))
+      )
+      .returning(["id", "slug"])
+      .execute();
+
+    const psetids = new Map<string, string>(dbProblemSets.map((t) => [t.slug, t.id]));
+    const psets = makeProblemSets(psetids, taskids);
+    for (const pset of psets) {
+      await updateProblemSet(pset);
+    }
   }
 
   private static async uploadFile(filename: string, hashset: Set<string>): Promise<string> {
