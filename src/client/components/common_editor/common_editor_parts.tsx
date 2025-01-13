@@ -205,7 +205,7 @@ export const CommonEditorInput = ({
   } else {
     return (
       <textarea
-        className="font-mono p-2 border border-gray-300 rounded-lg h-24"
+        className={classNames("font-mono p-2 border border-gray-300 rounded-lg h-24", className)}
         value={value}
         onChange={onChange}
         placeholder={placeholder}

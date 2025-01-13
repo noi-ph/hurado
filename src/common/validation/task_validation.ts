@@ -62,6 +62,7 @@ const zTaskCommon = {
   credits: z.array(zTaskCredit),
   attachments: z.array(zTaskAttachment),
   scripts: z.array(zTaskScript),
+  sample_IO: z.array(zTaskSampleIO),
 };
 
 const zTaskDataBatch = z.object({
@@ -94,7 +95,6 @@ export const zTaskTypeBatch = z.object({
   checker_kind: zCheckerKind,
   checker_file_name: z.string().optional(),
   subtasks: z.array(zTaskSubtaskBatch),
-  sample_IO: z.array(zTaskSampleIO),
 });
 
 const zTaskDataOutput = z.object({

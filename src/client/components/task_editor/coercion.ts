@@ -44,11 +44,6 @@ export function coerceTaskED(dto: TaskDTO): TaskED {
       : coerceTaskScriptED(communicatorScript);
   }
 
-  let sample_IO: TaskSampleIO_ED[] = [];
-  if (dto.type === TaskType.Batch) {
-    sample_IO = dto.sample_IO.map((x) => coerceTaskSampleIO(x));
-  }
-
   const task: TaskED = {
     id: dto.id,
     slug: dto.slug,
@@ -62,7 +57,7 @@ export function coerceTaskED(dto: TaskDTO): TaskED {
     type: dto.type,
     flavor: 'flavor' in dto ? dto.flavor : null,
     subtasks: dto.subtasks.map((x) => coerceTaskSubtaskED(x)),
-    sample_IO,
+    sample_IO: dto.sample_IO.map((x) => coerceTaskSampleIO(x)),
   };
   return task;
 }

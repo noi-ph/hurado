@@ -23,6 +23,7 @@ import {
   TaskDataOutputDTO,
   TaskDTO,
   TaskOutputDTO,
+  TaskSampleIO_DTO,
   TaskScriptDTO,
   TaskSubtaskBatchDTO,
   TaskSubtaskOutputDTO,
@@ -30,7 +31,7 @@ import {
 import { UnreachableError } from "common/errors";
 import { CheckerKind, TaskFlavor, TaskType } from "common/types/constants";
 import { notNull } from "common/utils/guards";
-import { TaskCreditED, TaskED, TaskSubtaskED, TaskDataED, TaskScriptED } from "./types";
+import { TaskCreditED, TaskED, TaskSubtaskED, TaskDataED, TaskScriptED, TaskSampleIO_ED } from "./types";
 import { coerceTaskED } from "./coercion";
 
 export async function saveTask(task: TaskED): Promise<SaveResult<TaskED>> {
@@ -235,6 +236,21 @@ function coerceTaskScriptDTO(ed: TaskScriptED): TaskScriptDTO {
   }
 }
 
+function coerceSampleIO_DTO(ed: TaskSampleIO_ED): TaskSampleIO_DTO {
+  if (ed.kind === EditorKind.Local) {
+    return {
+      input: ed.input,
+      output: ed.output,
+    };
+  } else {
+    return {
+      id: ed.id,
+      input: ed.input,
+      output: ed.output,
+    }
+  };
+}
+
 function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
   const scripts: TaskScriptDTO[] = [];
   if (ed.checker.kind === CheckerKind.Custom) {
@@ -253,6 +269,7 @@ function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
     credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
     attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
     scripts: scripts,
+    sample_IO: ed.sample_IO.map(coerceSampleIO_DTO).filter(notNull),
     // Batch only
     type: TaskType.Batch,
     time_limit_ms: 3000,
@@ -336,6 +353,7 @@ function coerceTaskOutputDTO(ed: TaskED): TaskOutputDTO {
     credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
     attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
     scripts: scripts,
+    sample_IO: ed.sample_IO.map(coerceSampleIO_DTO).filter(notNull),
     // OutputOnly only
     type: TaskType.OutputOnly,
     flavor: ed.flavor ?? TaskFlavor.OutputText,
@@ -412,6 +430,7 @@ function coerceTaskCommunicationDTO(ed: TaskED): TaskCommunicationDTO {
     credits: ed.credits.map(coerceTaskCreditDTO).filter(notNull),
     attachments: ed.attachments.map(coerceTaskAttachmentDTO).filter(notNull),
     scripts: scripts,
+    sample_IO: ed.sample_IO.map(coerceSampleIO_DTO).filter(notNull),
     // Communication only
     type: TaskType.Communication,
     time_limit_ms: 3000,

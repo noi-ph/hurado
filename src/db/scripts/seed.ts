@@ -149,6 +149,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       checker_kind: CheckerKind.LenientDiff,
       scripts: [],
       attachments: [],
+      sample_IO: [],
       credits: [
         {
           name: "kevinsogo",
@@ -256,6 +257,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       checker_kind: CheckerKind.LenientDiff,
       scripts: [],
       attachments: [],
+      sample_IO: [],
       credits: [
         {
           name: "kevinsogo",
@@ -363,6 +365,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.Custom,
       checker_file_name: "crazy-problem-checker.py",
+      sample_IO: [],
       scripts: [
         {
           file_name: "crazy-problem-checker.py",
@@ -439,6 +442,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       checker_kind: CheckerKind.LenientDiff,
       scripts: [],
       attachments: [],
+      sample_IO: [],
       credits: [
         {
           name: "jabbawookiees",
@@ -522,6 +526,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
           file_hash: getOrThrow(hashes, "please-add-2.in"),
         },
       ],
+      sample_IO: [],
       credits: [
         {
           name: "jabbawookiees",
@@ -580,6 +585,7 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.LenientDiff,
       communicator_file_name: "hard-of-hearing-communicator.py",
+      sample_IO: [],
       scripts: [
         {
           file_name: "hard-of-hearing-communicator.py",

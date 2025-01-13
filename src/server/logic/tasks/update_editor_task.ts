@@ -5,6 +5,7 @@ import {
   TaskAttachmentTable,
   TaskCreditTable,
   TaskDataTable,
+  TaskSampleIOTable,
   TaskScriptTable,
   TaskSubtaskTable,
 } from "common/types";
@@ -16,6 +17,7 @@ import {
   TaskDataDTO,
   TaskDTO,
   TaskOutputDTO,
+  TaskSampleIO_DTO,
   TaskScriptDTO,
   TaskSubtaskDTO,
 } from "common/validation/task_validation";
@@ -311,6 +313,79 @@ export async function upsertTaskSubtasks(
   };
 }
 
+type TaskSampleWithExtras = TaskSampleIO_DTO & {
+  order: number;
+};
+
+async function upsertTaskSampleIO(
+  trx: Transaction<Models>,
+  taskId: string,
+  _sample_IO: TaskSampleIO_DTO[],
+): Promise<Selectable<TaskSampleIOTable>[]> {
+  const sample_IO: TaskSampleWithExtras[] = _sample_IO.map((sample, idx) => ({
+    ...sample,
+    order: idx,
+  }));
+  const samplesNew = sample_IO.filter((sample) => sample.id == null);
+  const samplesOld = sample_IO.filter((sample) => sample.id != null);
+
+  const samplesOldIds = samplesOld.map((sample) => sample.id as string);
+  if (samplesOldIds.length <= 0) {
+    await trx.deleteFrom("task_sample_io").where("task_id", "=", taskId).execute();
+  } else {
+    await trx
+      .deleteFrom("task_sample_io")
+      .where("task_id", "=", taskId)
+      .where("id", "not in", samplesOldIds)
+      .execute();
+  }
+
+  const dbSamplesNew =
+    samplesNew.length <= 0
+      ? []
+      : await trx
+        .insertInto("task_sample_io")
+        .values(
+          samplesNew.map((sample) => ({
+            task_id: taskId,
+            order: sample.order,
+            input: sample.input,
+            output: sample.output,
+          }))
+        )
+        .returningAll()
+        .execute();
+
+  const dbSamplesUpdate =
+    samplesOld.length <= 0
+      ? []
+      : await trx
+          .insertInto("task_sample_io")
+          .values(
+            samplesOld.map((sample) => ({
+              id: sample.id,
+              task_id: taskId,
+              order: sample.order,
+              input: sample.input,
+              output: sample.output,
+            }))
+          )
+          .onConflict((oc) => 
+            oc.column("id").doUpdateSet((eb) => ({
+              task_id: eb.ref("excluded.task_id"),
+              order: eb.ref("excluded.order"),
+              input: eb.ref("excluded.input"),
+              output: eb.ref("excluded.output"),
+            }))
+          )
+          .returningAll()
+          .execute();
+
+  const dbSamples = [...dbSamplesNew, ...dbSamplesUpdate];
+  dbSamples.sort((a, b) => a.order - b.order );
+  return dbSamples;
+}
+
 type TaskSubtaskWithData = {
   id: string;
   data: TaskDataDTO[];
@@ -504,6 +579,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
       task.id,
       task.subtasks
     );
+    let dbSampleIO = await upsertTaskSampleIO(trx, task.id, task.sample_IO);
     const dbTaskData = await upsertTaskData(trx, subtasksWithData);
 
     const currentScriptIds = dbTaskScripts.map((script) => script.id);
@@ -557,6 +633,11 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           language: script.language,
           argv: script.argv ?? undefined,
         })),
+        sample_IO: dbSampleIO.map((sample) => ({
+          id: sample.id,
+          input: sample.input,
+          output: sample.output,
+        })),
       };
       return result;
     } else if (dbTask.type === TaskType.Communication) {
@@ -600,6 +681,11 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           language: script.language,
           argv: script.argv ?? undefined,
         })),
+        sample_IO: dbSampleIO.map((sample) => ({
+          id: sample.id,
+          input: sample.input,
+          output: sample.output,
+        })),
       };
       return result;
     } else if (dbTask.type === TaskType.OutputOnly) {
@@ -638,6 +724,11 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           file_hash: script.file_hash,
           language: script.language,
           argv: script.argv ?? undefined,
+        })),
+        sample_IO: dbSampleIO.map((sample) => ({
+          id: sample.id,
+          input: sample.input,
+          output: sample.output,
         })),
       };
       return result;

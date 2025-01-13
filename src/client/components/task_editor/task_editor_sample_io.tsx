@@ -1,6 +1,8 @@
 import { useCallback } from "react";
-import { CommonEditorAddButton, EditorKind } from "../common_editor";
+import { CommonEditorAddButton, CommonEditorInput, EditorKind } from "../common_editor";
 import { TaskED, TaskSampleIO_ED } from "./types";
+import { InputChangeEvent } from "common/types/events";
+import BoxIcon from "../box_icon";
 
 type TaskEditorSampleProps = {
   task: TaskED;
@@ -23,7 +25,7 @@ export const TaskEditorSampleIO = ({ task, setTask }: TaskEditorSampleProps) => 
   }, [task]);
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-4">
       {task.sample_IO.map((sample, idx) => (
         <TaskSampleIOEditor
           key={idx}
@@ -34,7 +36,7 @@ export const TaskEditorSampleIO = ({ task, setTask }: TaskEditorSampleProps) => 
         />
       ))}
       <div className="text-center">
-        <CommonEditorAddButton label="Add Subtask" onClick={onSampleAdd} />
+        <CommonEditorAddButton label="Add Sample I/O" onClick={onSampleAdd} />
       </div>
     </div>
   );
@@ -48,12 +50,57 @@ type TaskSampleIOEditorProps = {
 };
 
 const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIOEditorProps) => {
+  const updateField = (field: 'input' | 'output') => useCallback(
+    (event: InputChangeEvent) => {
+      const samples = [...task.sample_IO];
+      samples[sampleIndex] = {...samples[sampleIndex]};
+      samples[sampleIndex][field] = event.target.value;
+      setTask({
+        ...task,
+        sample_IO: samples,
+      });
+    },
+    [task, setTask],
+  );
+
+  const deleteSelf = useCallback(
+    () => {
+      const samples = [...task.sample_IO];
+      samples.splice(sampleIndex, 1);
+      setTask({
+        ...task,
+        sample_IO: samples,
+      });
+    },
+    [task, setTask],
+  );
+
   return (
-    <div>
-      <input value={sample.input}>
-      </input>
-      <input value={sample.output}>
-      </input>
-    </div>
+    <>
+      <div className="relative flex flex-row justify-between gap-4 w-full">
+        <div className="text-lg text-gray-500 ml-auto mr-auto">
+          {`Sample ${sampleIndex+1}`}
+        </div>
+        <button type="button" className="absolute right-0" onClick={deleteSelf}>
+          <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
+        </button>
+      </div>
+      <div className="flex flex-row justify-center gap-4 w-full">
+        <CommonEditorInput
+          type="textarea"
+          value={sample.input}
+          onChange={updateField('input')}
+          placeholder="Sample Input"
+          className="flex-auto"
+        />
+        <CommonEditorInput
+          type="textarea"
+          value={sample.output}
+          onChange={updateField('output')}
+          placeholder="Sample Output"
+          className="flex-auto"
+        />
+      </div>
+    </>
   );
 }
