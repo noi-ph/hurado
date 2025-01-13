@@ -19,6 +19,7 @@ import {
 } from "./common_editor_parts";
 import { destructivelyComputeSHA1 } from "./common_editor_utils";
 import styles from "./common_editor.module.css";
+import { toast } from "react-toastify";
 
 type CommonAttachmentSavedProps = {
   index: number;
@@ -50,6 +51,12 @@ const CommonAttachmentSavedX = ({
       <CommonEditorTableCell deleted={attachment.deleted}>{filename}</CommonEditorTableCell>
       <CommonEditorTableCell deleted={attachment.deleted}>{attachment.path}</CommonEditorTableCell>
       <div className="flex flex-row justify-end items-center px-3 gap-2">
+        <button type="button" onClick={async() => {
+          await navigator.clipboard.writeText(getAttachmentURL(attachment));
+          toast("Filepath copied to clipboard!", { type: "success" });
+        }}>
+          <BoxIcon name="bxs-copy" className="bx-sm text-blue-300 hover:text-blue-500" />
+        </button>
         <a target="_blank" href={getAttachmentURL(attachment)}>
           <BoxIcon name="bx-download" className="bx-sm text-blue-300 hover:text-blue-500" />
         </a>
