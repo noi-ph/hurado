@@ -29,6 +29,7 @@ export class TaskSubmissionsCache {
 
   private static async loadAndCoerce(url: string): Promise<TaskSubmissionsCache> {
     const response: AxiosResponse<SubmissionSummaryDTO[]> = await http.get(url);
+    console.log('Hey wtf', url);
     const coerced: SubmissionSummaryDTO[] = response.data.map(json => ({
       id: json.id,
       language: json.language,

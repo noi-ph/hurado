@@ -29,6 +29,7 @@ export enum Verdict {
   RuntimeError = "re",
   TimeLimitExceeded = "tle",
   MemoryLimitExceeded = "mle",
+  CompileError = "ce",
   JudgeFailed = "jf",
   Skipped = "skip",
 }
@@ -75,6 +76,8 @@ export function humanizeVerdict(verdict: Verdict, score: number | null): string 
       return "Time Limit Exceeded";
     case Verdict.MemoryLimitExceeded:
       return "Memory Limit Exceeded";
+    case Verdict.CompileError:
+      return "Compile Error";
     case Verdict.JudgeFailed:
       return "Judge Failed";
     case Verdict.Skipped:

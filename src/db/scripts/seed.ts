@@ -11,8 +11,10 @@ import { updateEditorTask } from "server/logic/tasks/update_editor_task";
 import { hashPassword } from "server/logic/users";
 
 
+// Hard-code these UUIDs so that you don't need to re-login after a db:reset, etc
 const users: Insertable<UserTable>[] = [
   {
+    id: "da3f6f95-096f-41fd-8214-34a5a7cb9a7f",
     email: "kevin@example.com",
     username: "kevinsogo",
     hashed_password: hashPassword("password"),
@@ -21,6 +23,7 @@ const users: Insertable<UserTable>[] = [
     role: "admin",
   },
   {
+    id: "e7cbd74d-aa7c-477e-a17d-e558e63000dd",
     email: "vernon@example.com",
     username: "verngutz",
     hashed_password: hashPassword("password"),
@@ -29,6 +32,7 @@ const users: Insertable<UserTable>[] = [
     role: "admin",
   },
   {
+    id: "abfaecfe-5dd8-4f2a-81b1-d66efe22279e",
     email: "cisco@example.com",
     username: "shisuko",
     hashed_password: hashPassword("password"),
@@ -40,6 +44,7 @@ const users: Insertable<UserTable>[] = [
 
 const contests: Insertable<ContestTable>[] = [
   {
+    id: "4a4638f5-b068-4c24-91a4-085fd15364dd",
     slug: "noi-elims",
     title: "NOI.PH Eliminations",
     description: "The best elimination round",
@@ -50,6 +55,7 @@ const contests: Insertable<ContestTable>[] = [
     end_time: null,
   },
   {
+    id: "c1c8d90b-15ed-49e9-b1e0-bc7089b9e5cf",
     slug: "noi-finals",
     title: "NOI.PH Finals",
     description: "Secret final contest",
@@ -63,6 +69,7 @@ const contests: Insertable<ContestTable>[] = [
 
 const psets: Insertable<ProblemSetTable>[] = [
   {
+    id: "ed31191c-28ce-4c04-b7c3-cae9c88821f1",
     slug: "beginner",
     title: "Beginner Problems",
     description: "Problems for beginners",
@@ -70,6 +77,7 @@ const psets: Insertable<ProblemSetTable>[] = [
     order: 0,
   },
   {
+    id: "a4d5032e-e81d-4e6a-8241-56773831fd95",
     slug: "advanced",
     title: "Advanced Problems",
     description: "Problems for advanced users",
@@ -105,11 +113,15 @@ const filenames = [
   "sharing-chocolates-1e.out",
   "sharing-chocolates-1f.out",
   "sharing-chocolates-2a.out",
-  "crazy-problem-checker.py",
-  "crazy-problem-1a.in",
-  "crazy-problem-1a.out",
-  "crazy-problem-2a.in",
-  "crazy-problem-2a.out",
+  "batch-demo-checker.py",
+  "batch-demo-1a.in",
+  "batch-demo-1a.out",
+  "batch-demo-1b.in",
+  "batch-demo-1b.out",
+  "batch-demo-2a.in",
+  "batch-demo-2a.out",
+  "batch-demo-2b.in",
+  "batch-demo-2b.out",
   "chocolate-hills.jpg",
   "sum-of-n-1.out",
   "sum-of-n-2.out",
@@ -350,11 +362,11 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       ],
     },
     {
-      id: getOrThrow(ids, "crazy-problem"),
-      slug: "crazy-problem",
-      title: "Crazy Problem",
-      statement: readFileSync("crazy-problem.tex"),
-      description: "Read a crazy statement. Solve a crazy problem.",
+      id: getOrThrow(ids, "batch-demo"),
+      slug: "batch-demo",
+      title: "Batch Demo",
+      statement: readFileSync("batch-demo.tex"),
+      description: "A batch task with a custom grader",
       is_public: true,
       type: TaskType.Batch,
       score_max: 100,
@@ -364,12 +376,12 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       compile_time_limit_ms: null,
       submission_size_limit_byte: null,
       checker_kind: CheckerKind.Custom,
-      checker_file_name: "crazy-problem-checker.py",
+      checker_file_name: "batch-demo-checker.py",
       sample_IO: [],
       scripts: [
         {
-          file_name: "crazy-problem-checker.py",
-          file_hash: getOrThrow(hashes, "crazy-problem-checker.py"),
+          file_name: "batch-demo-checker.py",
+          file_hash: getOrThrow(hashes, "batch-demo-checker.py"),
           language: Language.Python3,
         },
       ],
@@ -397,31 +409,47 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>) {
       subtasks: [
         {
           name: "Subtask #1",
-          score_max: 30,
+          score_max: 40,
           reducer_kind: ReducerKind.MinData,
           data: [
             {
               name: "Test Case #1",
               is_sample: false,
-              input_file_name: "crazy-problem-1a.in",
-              input_file_hash: getOrThrow(hashes, "crazy-problem-1a.in"),
-              judge_file_name: "crazy-problem-1a.out",
-              judge_file_hash: getOrThrow(hashes, "crazy-problem-1a.out"),
+              input_file_name: "batch-demo-1a.in",
+              input_file_hash: getOrThrow(hashes, "batch-demo-1a.in"),
+              judge_file_name: "batch-demo-1a.out",
+              judge_file_hash: getOrThrow(hashes, "batch-demo-1a.out"),
+            },
+            {
+              name: "Test Case #2",
+              is_sample: false,
+              input_file_name: "batch-demo-1b.in",
+              input_file_hash: getOrThrow(hashes, "batch-demo-1b.in"),
+              judge_file_name: "batch-demo-1b.out",
+              judge_file_hash: getOrThrow(hashes, "batch-demo-1b.out"),
             },
           ],
         },
         {
           name: "Subtask #2",
-          score_max: 70,
+          score_max: 60,
           reducer_kind: ReducerKind.MinData,
           data: [
             {
               name: "Test Case #1",
               is_sample: false,
-              input_file_name: "crazy-problem-2a.in",
-              input_file_hash: getOrThrow(hashes, "crazy-problem-2a.in"),
-              judge_file_name: "crazy-problem-2a.out",
-              judge_file_hash: getOrThrow(hashes, "crazy-problem-2a.out"),
+              input_file_name: "batch-demo-2a.in",
+              input_file_hash: getOrThrow(hashes, "batch-demo-2a.in"),
+              judge_file_name: "batch-demo-2a.out",
+              judge_file_hash: getOrThrow(hashes, "batch-demo-2a.out"),
+            },
+            {
+              name: "Test Case #2",
+              is_sample: false,
+              input_file_name: "batch-demo-2b.in",
+              input_file_hash: getOrThrow(hashes, "batch-demo-2b.in"),
+              judge_file_name: "batch-demo-2b.out",
+              judge_file_hash: getOrThrow(hashes, "batch-demo-2b.out"),
             },
           ],
         },
@@ -659,6 +687,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
       .insertInto("tasks")
       .values([
         {
+          id: "defdfb9a-803f-418c-86e3-e255a3b9b698",
           title: "Who is the oldest",
           slug: "who-is-the-oldest",
           statement: "",
@@ -671,6 +700,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
+          id: "ab5a30fd-6c36-4c61-8b35-517fe2442917",
           title: "Sharing Chocolates",
           slug: "sharing-chocolates",
           statement: "",
@@ -683,8 +713,9 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
-          title: "Crazy Problem",
-          slug: "crazy-problem",
+          id: "c5f03145-c3a6-4680-bd2f-1fa1888f5af7",
+          title: "Batch Demo",
+          slug: "batch-demo",
           statement: "",
           is_public: true,
           type: TaskType.Batch,
@@ -695,6 +726,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
+          id: "6d477ea2-c50c-4495-b4fd-9fed7db7c7c4",
           title: "Sum of N",
           slug: "sum-of-n",
           statement: "",
@@ -708,6 +740,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
+          id: "af30838c-ba65-4258-bbfc-d54b398f2c0e",
           title: "Please Add",
           slug: "please-add",
           statement: "",
@@ -721,6 +754,7 @@ export class __DO_NOT_IMPORT__DeveloperSeeds {
           owner_id: getOrThrow(userIds, "kevinsogo"),
         },
         {
+          id: "31a564d9-c80e-4b2b-a598-9d7cfbe3bf6f",
           title: "Hard of Hearing",
           slug: "hard-of-hearing",
           statement: "",

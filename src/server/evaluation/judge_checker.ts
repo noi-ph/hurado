@@ -123,12 +123,27 @@ function makeCheckerArgv(opts: {
 
 function parseCheckerOutput(output: string): CheckerResult {
   const split = output.split("\n");
-  const line1 = split[0];
+  // Ignore the first line. We only care about the raw score
+  // const line1 = split[0];
   const line2 = split[1];
-  return {
-    verdict: line1 == Verdict.Accepted ? Verdict.Accepted : Verdict.WrongAnswer,
-    score_raw: parseScore(line2),
-  };
+
+  const score = parseScore(line2);
+  if (score == 1) {
+    return {
+      verdict: Verdict.Accepted,
+      score_raw: 1,
+    };
+  } else if (score == 0) {
+    return {
+      verdict: Verdict.WrongAnswer,
+      score_raw: 0,
+    };
+  } else {
+    return {
+      verdict: Verdict.Partial,
+      score_raw: score,
+    };
+  }
 }
 
 function parseScore(line: string): number {

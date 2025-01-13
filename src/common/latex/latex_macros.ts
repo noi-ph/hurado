@@ -81,6 +81,9 @@ export const LATEX_MACROS = {
   includegraphics: {
     signature: "o m",
   },
+  section: {
+    signature: "s m",
+  },
 };
 
 export const LATEX_ENVIRONMENTS = {

@@ -1,5 +1,5 @@
 import fs from "fs";
-import { UnreachableError } from "common/errors";
+import { UnreachableCheck, UnreachableError } from "common/errors";
 import { ProgrammingLanguage, TaskType, Verdict } from "common/types/constants";
 import {
   JudgeSubmission,
@@ -149,11 +149,8 @@ async function judgeTask<Type extends TaskType>(
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
     running_time_ms = Math.max(running_time_ms, child.running_time_ms);
-    if (child.verdict != Verdict.Accepted) {
-      verdict = child.verdict;
-    } else {
-      score_raw += child.score_raw;
-    }
+    verdict = minVerdict(verdict, child.verdict);
+    score_raw += child.score_raw;
     score_max += subtask.score_max;
   }
   if (0 < score_raw && score_raw < score_max) {
@@ -263,7 +260,7 @@ async function judgeSubtask<Type extends TaskType>(
 
   const allVerdictData: JudgeVerdictTaskData[] = [];
   let verdict: Verdict = Verdict.Accepted;
-  let score_raw = subtask.score_max;
+  let score_scaled = subtask.score_max;
   let running_time_ms = 0;
   let running_memory_byte = 0;
   for (const data of subtask.data) {
@@ -272,11 +269,12 @@ async function judgeSubtask<Type extends TaskType>(
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
     running_time_ms = Math.max(running_time_ms, child.running_time_ms);
-    if (child.verdict != Verdict.Accepted) {
-      verdict = child.verdict;
-      score_raw = 0;
-    }
+
+    verdict = minVerdict(verdict, child.verdict);
+    score_scaled = Math.min(score_scaled, child.score_raw);
   }
+
+  const score_raw = score_scaled * subtask.score_max;
 
   await db
     .updateTable("verdict_subtasks")
@@ -373,3 +371,22 @@ function computeScoreOverall(submissions: SubtaskVerdict[]) {
 
   return overall;
 }
+
+function minVerdict(current: Verdict, next: Verdict): Verdict {
+  if (VERDICT_PRIORITY[next] < VERDICT_PRIORITY[current]) {
+    return next;
+  }
+  return current;
+}
+
+const VERDICT_PRIORITY: Record<Verdict, number> = {
+  [Verdict.Accepted]: 6,
+  [Verdict.Skipped]: 5,
+  [Verdict.Partial]: 4,
+  [Verdict.WrongAnswer]: 3,
+  [Verdict.RuntimeError]: 3,
+  [Verdict.TimeLimitExceeded]: 3,
+  [Verdict.MemoryLimitExceeded]: 3,
+  [Verdict.CompileError]: 2,
+  [Verdict.JudgeFailed]: 1,
+};

@@ -1,16 +1,40 @@
-To solve this problem I need to give you a few definitions.
+\subsection*{Problem Statement}
+
+This is a sample batch task with a custom checker / grader. The task is to output the input strings in uppercase.
+
+\subsection*{Input Format}
+
+The first line of input contains an integer \(n\), the number of lines to upper case.
+
+Each of the next \(n\) lines contains a string \(s\).
+
+\subsection*{Output Format}
+
+Output \(n\) lines, each containing the string \(s\) in uppercase.
+
+\subsection*{Scoring}
+
+Your score is proportional to how many strings you output correctly.
+
+There will be exactly two subtasks. Each subtask will have two test files.
+
+The first subtask will have two files with \(n = 4\) and \(n = 8\).
+
+The second subtask will have two files with \(n = 6\) and \(n = 12\).
+
+\section*{Gibberish}
+
+You should basically just ignore the rest of this. These are just demonstrations for different latex commands available.
 
 If is \(n\) an integer and is a \(p\) prime factor of \(n\), the multiplicity of \(p\) in \(n\) is defined as the number of times \(p\) can divide \(n\). For example, the multiplicity of $2$ in $24$ is $3$ since you can divide $24$ up to three times, and no more. Let's denote the multiplicity of $p$ in $n$ by $o_p(n)$. For example \(o_2(24) = 3\), 
 
-Then I need you to compute the function $f(n)$ defined as:
+You compute the function $f(n)$ defined as:
 
 $$f(n) = \prod_{\substack{p \\ p \geq 2 \text{ is a prime dividing } n}} p^{o_p(n)}$$
 
-Then I need you to compute the number $k$ defined as:
+Then you compute the number $k$ defined as:
 
 \[\int_{0}^{2\sqrt{5}} x \, dx\]
-
-Finally, I will give you one number $n$ and you will have to generate $f(n)$ numbers from $1$ to $k$ inclusive. If you followed the same process as I did when generating the test data, you should get the same results.
 
 \large{\bf{Bounds:}}
 $$ 20 \le n \le 20 $$
@@ -57,4 +81,4 @@ Here is a nicer \href{http://example.com}{link}
 
 You can also nest all of these together. \href{http://example.com}{\HUGE{\sout{\tt{\bf\it{{link}}}}}}
 
-Here is a picture for your troubles \includegraphics{/tasks/crazy-problem/attachments/path/to/chocolate-hills.jpg}
+Here is a picture for your troubles \includegraphics{/tasks/batch-demo/attachments/path/to/chocolate-hills.jpg}
