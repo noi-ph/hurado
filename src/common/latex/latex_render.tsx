@@ -25,7 +25,6 @@ type RenderLatexResult = { node: ReactNode } | { error: unknown };
 
 export function renderLatex(source: string): RenderLatexResult {
   const parsed = LatexParser.parse(source) as unknown as LatexNode;
-  console.log(parsed);
   try {
     const merged = mergeLatexNodeStrings(parsed);
     const node = <LatexNodeAnyX node={merged} source={source} />;
