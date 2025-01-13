@@ -16,7 +16,7 @@ export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
   return (
     <>
       <TaskViewerTitle title={task.title} />
-      <div className="my-4">
+      <div className="text-gray-800 my-4">
         <LatexDisplay>{task.statement}</LatexDisplay>
         {task.sample_IO.map((sample, idx) => (
           <SampleIODisplay

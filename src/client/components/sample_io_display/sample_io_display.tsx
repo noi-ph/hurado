@@ -44,7 +44,7 @@ const SampleFileDisplay = memo(({ label, content }: SampleFileDisplayProps) => {
           <BoxIcon name="bxs-copy" className="bx-sm text-gray-300 hover:text-gray-500 self-center" />
         </button>
       </div>
-      <pre className="bg-gray-200 border-2 border-gray-250 rounded-md p-3">{ content }</pre>
+      <pre className="text-sm bg-gray-150 border border-gray-250 rounded-md p-2.5">{ content }</pre>
     </div>
   )
 });
