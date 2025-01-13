@@ -19,6 +19,7 @@ import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
 import { TaskCreditLocal, TaskCreditSaved, TaskED } from "./types";
 import styles from "./task_editor.module.css";
+import { TaskEditorSampleIO } from "./task_editor_sample_io";
 
 type TaskEditorDetailsProps = {
   task: TaskED;
@@ -44,6 +45,8 @@ export const TaskEditorDetails = ({ task, setTask }: TaskEditorDetailsProps) => 
           onChange={onChangeDescription}
           placeholder="Write a short summary about the task"
         />
+        <CommonEditorLabel label="Sample I/O" />
+        <TaskEditorSampleIO task={task} setTask={setTask} />
         <CommonEditorLabel label="Attachments" />
         <TaskEditorAttachments task={task} setTask={setTask} />
         <CommonEditorLabel label="Developer Credits" />

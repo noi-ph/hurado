@@ -14,6 +14,7 @@ export type TaskED = {
   credits: TaskCreditED[];
   attachments: CommonAttachmentED[];
   subtasks: TaskSubtaskED[];
+  sample_IO: TaskSampleIO_ED[];
 };
 
 export type TaskCheckerED = {
@@ -77,6 +78,21 @@ export type TaskSubtaskLocal = {
 };
 
 export type TaskSubtaskED = TaskSubtaskSaved | TaskSubtaskLocal;
+
+export type TaskSampleIOSaved = {
+  kind: EditorKind.Saved;
+  id: string;
+  input: string;
+  output: string;
+};
+
+export type TaskSampleIOLocal = {
+  kind: EditorKind.Local;
+  input: string;
+  output: string;
+};
+
+export type TaskSampleIO_ED = TaskSampleIOSaved | TaskSampleIOLocal;
 
 export type TaskDataSaved = {
   kind: EditorKind.Saved;
