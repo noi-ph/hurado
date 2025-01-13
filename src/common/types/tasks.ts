@@ -75,6 +75,14 @@ export type TaskDataTable = {
   judge_file_hash: string;
 };
 
+export type TaskSampleIOTable = {
+  id: Generated<string>;
+  task_id: string;
+  order: number;
+  input: string;
+  output: string;
+};
+
 export type Task = Selectable<TaskTable>;
 export type TaskCreate = Insertable<TaskTable>;
 export type TaskUpdate = Updateable<TaskTable>;

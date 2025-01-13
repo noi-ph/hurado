@@ -151,6 +151,21 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
+    .createTable("task_sample_io")
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
+    .addColumn("task_id", "uuid", (col) => col.notNull().references("tasks.id").onDelete("cascade"))
+    .addColumn("order", "integer", (col) => col.notNull())
+    .addColumn("input", "text")
+    .addColumn("output", "text")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_task_sample_io_task_id")
+    .on("task_sample_io")
+    .columns(["task_id"])
+    .execute();
+
+  await db.schema
     .createTable("submissions")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
     .addColumn("created_at", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
@@ -412,6 +427,7 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable("verdicts").execute();
   await db.schema.dropTable("submission_files").execute();
   await db.schema.dropTable("submissions").execute();
+  await db.schema.dropTable("task_sample_io").execute();
   await db.schema.dropTable("task_data").execute();
   await db.schema.dropTable("task_subtasks").execute();
   await db.schema.dropTable("task_attachments").execute();

@@ -6,6 +6,7 @@ import {
   TaskDataTable,
   TaskSubtaskTable,
   TaskTable,
+  TaskSampleIOTable,
 } from "./tasks";
 import { SubmissionFileTable, SubmissionTable } from "./submissions";
 import { OverallVerdictTable, VerdictSubtaskTable, VerdictTable, VerdictTaskDataTable } from "./verdicts";
@@ -27,6 +28,7 @@ export interface Models {
   task_subtasks: TaskSubtaskTable;
   task_data: TaskDataTable;
   task_scripts: TaskScriptTable;
+  task_sample_io: TaskSampleIOTable;
   submissions: SubmissionTable;
   submission_files: SubmissionFileTable;
   verdicts: VerdictTable;
