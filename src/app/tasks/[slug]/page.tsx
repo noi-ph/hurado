@@ -27,6 +27,13 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
       .where("task_id", "=", task.id)
       .execute();
 
+    const sample_IO = await trx
+      .selectFrom("task_sample_io")
+      .select(["input", "output", "explanation"])
+      .orderBy("order")
+      .where("task_id", "=", task.id)
+      .execute();
+
     if (task.type === TaskType.Batch) {
       return {
         id: task.id,
@@ -37,6 +44,7 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
         score_max: task.score_max,
         credits: credits,
         type: task.type,
+        sample_IO,
       };
     } else if (task.type === TaskType.Communication) {
       return {
@@ -48,6 +56,7 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
         score_max: task.score_max,
         credits: credits,
         type: task.type,
+        sample_IO,
       };
     } else if (task.type === TaskType.OutputOnly) {
       const dbSubtasks = await trx
@@ -88,6 +97,7 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
         type: task.type,
         flavor: task.flavor as TaskFlavor,
         subtasks: subtasks,
+        sample_IO,
       };
     } else {
       throw new UnreachableError(task.type);

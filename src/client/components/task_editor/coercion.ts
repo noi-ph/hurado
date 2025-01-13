@@ -140,5 +140,6 @@ function coerceTaskSampleIO(dto: TaskSampleIO_DTO): TaskSampleIO_ED {
     id: dto.id as string,
     input: dto.input,
     output: dto.output,
+    explanation: dto.explanation,
   };
 }

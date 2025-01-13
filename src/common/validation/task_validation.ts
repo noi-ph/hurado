@@ -41,6 +41,7 @@ const zTaskSampleIO = z.object({
   id: z.string().uuid().optional(),
   input: z.string(),
   output: z.string(),
+  explanation: z.string(),
 });
 
 const zTaskScript = z.object({

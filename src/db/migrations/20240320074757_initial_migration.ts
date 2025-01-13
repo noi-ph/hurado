@@ -157,6 +157,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("order", "integer", (col) => col.notNull())
     .addColumn("input", "text")
     .addColumn("output", "text")
+    .addColumn("explanation", "text")
     .execute();
 
   await db.schema

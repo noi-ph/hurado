@@ -241,12 +241,14 @@ function coerceSampleIO_DTO(ed: TaskSampleIO_ED): TaskSampleIO_DTO {
     return {
       input: ed.input,
       output: ed.output,
+      explanation: ed.explanation,
     };
   } else {
     return {
       id: ed.id,
       input: ed.input,
       output: ed.output,
+      explanation: ed.explanation,
     }
   };
 }

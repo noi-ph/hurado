@@ -351,6 +351,7 @@ async function upsertTaskSampleIO(
             order: sample.order,
             input: sample.input,
             output: sample.output,
+            explanation: sample.explanation,
           }))
         )
         .returningAll()
@@ -368,6 +369,7 @@ async function upsertTaskSampleIO(
               order: sample.order,
               input: sample.input,
               output: sample.output,
+              explanation: sample.explanation,
             }))
           )
           .onConflict((oc) => 
@@ -376,6 +378,7 @@ async function upsertTaskSampleIO(
               order: eb.ref("excluded.order"),
               input: eb.ref("excluded.input"),
               output: eb.ref("excluded.output"),
+              explanation: eb.ref("excluded.explanation"),
             }))
           )
           .returningAll()
@@ -637,6 +640,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           id: sample.id,
           input: sample.input,
           output: sample.output,
+          explanation: sample.explanation,
         })),
       };
       return result;
@@ -685,6 +689,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           id: sample.id,
           input: sample.input,
           output: sample.output,
+          explanation: sample.explanation,
         })),
       };
       return result;
@@ -729,6 +734,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
           id: sample.id,
           input: sample.input,
           output: sample.output,
+          explanation: sample.explanation,
         })),
       };
       return result;

@@ -19,6 +19,7 @@ export const TaskEditorSampleIO = ({ task, setTask }: TaskEditorSampleProps) => 
           kind: EditorKind.Local,
           input: "",
           output: "",
+          explanation: "",
         },
       ],
     });

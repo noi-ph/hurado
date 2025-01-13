@@ -81,6 +81,7 @@ export type TaskSampleIOTable = {
   order: number;
   input: string;
   output: string;
+  explanation: string;
 };
 
 export type Task = Selectable<TaskTable>;
@@ -96,6 +97,7 @@ export type TaskViewerCommonDTO = {
   statement: string;
   score_max: number;
   credits: TaskViewerCreditDTO[];
+  sample_IO: TaskViewerSampleIO_DTO[];
 };
 
 export type TaskViewerDTO = TaskViewerBatchDTO | TaskViewerCommunicationDTO | TaskViewerOutputDTO;
@@ -123,6 +125,12 @@ export type TaskViewerSubtaskOutputDTO = {
 export type TaskViewerCreditDTO = {
   name: string;
   role: string;
+};
+
+export type TaskViewerSampleIO_DTO = {
+  input: string;
+  output: string;
+  explanation: string;
 };
 
 export type TaskSummaryDTO = Pick<Task, "title" | "slug" | "description">;

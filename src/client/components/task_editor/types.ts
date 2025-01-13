@@ -84,12 +84,14 @@ export type TaskSampleIOSaved = {
   id: string;
   input: string;
   output: string;
+  explanation: string;
 };
 
 export type TaskSampleIOLocal = {
   kind: EditorKind.Local;
   input: string;
   output: string;
+  explanation: string;
 };
 
 export type TaskSampleIO_ED = TaskSampleIOSaved | TaskSampleIOLocal;
