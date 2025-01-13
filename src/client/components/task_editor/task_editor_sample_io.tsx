@@ -51,7 +51,7 @@ type TaskSampleIOEditorProps = {
 };
 
 const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIOEditorProps) => {
-  const updateField = (field: 'input' | 'output') => useCallback(
+  const updateField = (field: 'input' | 'output' | 'explanation') => useCallback(
     (event: InputChangeEvent) => {
       const samples = [...task.sample_IO];
       samples[sampleIndex] = {...samples[sampleIndex]};
@@ -102,6 +102,13 @@ const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIO
           className="flex-auto"
         />
       </div>
+      <CommonEditorInput
+        type="textarea"
+        value={sample.explanation}
+        onChange={updateField('explanation')}
+        placeholder="Explanation"
+        className="flex-auto w-full"
+      />
     </>
   );
 }

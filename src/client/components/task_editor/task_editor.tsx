@@ -106,7 +106,7 @@ export function TaskEditorStatement({ task, setTask }: TaskCommonProps) {
     },
     [task, setTask]
   );
-  return <CommonEditorStatement statement={task.statement} setStatement={setStatement} />;
+  return <CommonEditorStatement task={task} statement={task.statement} setStatement={setStatement} />;
 }
 
 export enum TaskEditorTab {

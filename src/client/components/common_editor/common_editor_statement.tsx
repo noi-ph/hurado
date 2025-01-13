@@ -5,6 +5,8 @@ import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
 import { LatexDisplay } from "client/components/latex_display";
 import styles from "./common_editor.module.css";
+import { TaskED } from "../task_editor/types";
+import { SampleIODisplay } from "../sample_io_display/sample_io_display";
 
 const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
   language: 'latex',
@@ -15,11 +17,12 @@ const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
 };
 
 type CommonEditorStatementProps = {
+  task: TaskED;
   statement: string;
   setStatement(statement: string): void;
 };
 
-export const CommonEditorStatement = ({ statement, setStatement }: CommonEditorStatementProps) => {
+export const CommonEditorStatement = ({ task, statement, setStatement }: CommonEditorStatementProps) => {
   const onChangeStatement = useCallback(
     (value: string | undefined) => {
       setStatement(value ?? "");
@@ -40,6 +43,14 @@ export const CommonEditorStatement = ({ statement, setStatement }: CommonEditorS
       <Scrollable className={styles.statementPreview} defer>
         <div className='p-3 bg-white flex-auto min-h-full'>
           <LatexDisplay>{statement}</LatexDisplay>
+          {task.sample_IO.map((sample, idx) => (
+            <SampleIODisplay
+              sampleIndex={idx}
+              input={sample.input}
+              output={sample.output}
+              explanation={sample.explanation}
+            />
+          ))}
         </div>
       </Scrollable>
     </>

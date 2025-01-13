@@ -15,9 +15,14 @@ export const SampleIODisplay = memo(({ sampleIndex, input, output, explanation }
     <div className="flex flex-col gap-4 mt-8">
       <SampleFileDisplay label={`Sample Input ${sampleIndex+1}`} content={input}/>
       <SampleFileDisplay label={`Sample Output ${sampleIndex+1}`} content={output}/>
-      { explanation ? <LatexDisplay>
-        { explanation }
-      </LatexDisplay> : null }
+      { explanation ? (
+          <div>
+            <h3 className="text-2xl font-bold mb-2">Explanation</h3>
+            <LatexDisplay>
+              { explanation }
+            </LatexDisplay>
+          </div>
+        ) : null }
     </div>
   );
 });
