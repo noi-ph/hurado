@@ -28,7 +28,7 @@ export class IsolateUtils {
   ): Promise<T> {
     const [isolate1, isolate2] = await Promise.all([IsolateUtils.init(), IsolateUtils.init()]);
     try {
-      return callback(isolate1, isolate2);
+      return await callback(isolate1, isolate2);
     } finally {
       await Promise.all([IsolateUtils.cleanup(isolate1), IsolateUtils.cleanup(isolate2)]);
     }

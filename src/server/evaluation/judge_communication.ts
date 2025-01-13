@@ -53,9 +53,6 @@ export async function evaluateTaskDataForCommunication(
       IsolateUtils.readResult(isoCommunicator),
     ]);
 
-    const judgePath = path.join(context.task_root, data.judge_file_name);
-    const outputPath = path.join(context.output_root, data.judge_file_name);
-
     // Need to await these so that we can clean up at the end properly
     return makeCommunicationVerdict({
       contestantResult: rContestant,
