@@ -45,6 +45,7 @@ export const CommonEditorStatement = ({ task, statement, setStatement }: CommonE
           <LatexDisplay>{statement}</LatexDisplay>
           {task.sample_IO.map((sample, idx) => (
             <SampleIODisplay
+              key={idx}
               sampleIndex={idx}
               input={sample.input}
               output={sample.output}

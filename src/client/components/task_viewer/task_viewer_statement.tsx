@@ -20,6 +20,7 @@ export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
         <LatexDisplay>{task.statement}</LatexDisplay>
         {task.sample_IO.map((sample, idx) => (
           <SampleIODisplay
+            key={idx}
             sampleIndex={idx}
             input={sample.input}
             output={sample.output}
