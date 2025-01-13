@@ -507,8 +507,8 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
     }
 
     function getScriptId(filename: string | undefined, required: true): string;
-    function getScriptId(filename: string | undefined, required: false): string | undefined;
-    function getScriptId(filename: string | undefined, required: boolean): string | undefined {
+    function getScriptId(filename: string | undefined, required: false): string | null;
+    function getScriptId(filename: string | undefined, required: boolean): string | null {
       if (required) {
         if (filename == null) {
           throw new Error("Missing script file name");
@@ -520,9 +520,9 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
         return scriptId;
       } else {
         if (filename == null) {
-          return undefined;
+          return null;
         }
-        return scriptNameToId.get(filename);
+        return scriptNameToId.get(filename) ?? null;
       }
     }
 

@@ -280,7 +280,9 @@ function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
     compile_memory_limit_byte: null,
     submission_size_limit_byte: null,
     checker_kind: ed.checker.kind,
-    checker_file_name: undefined,
+    checker_file_name: CheckerKind.Custom === ed.checker.kind
+      ? ed.checker.script.file_name
+      : undefined,
     subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
   };
 }
@@ -359,8 +361,9 @@ function coerceTaskOutputDTO(ed: TaskED): TaskOutputDTO {
     flavor: ed.flavor ?? TaskFlavor.OutputText,
     submission_size_limit_byte: null,
     checker_kind: ed.checker.kind,
-    checker_file_name:
-      CheckerKind.Custom === ed.checker.kind ? ed.checker.script.file_name : undefined,
+    checker_file_name: CheckerKind.Custom === ed.checker.kind
+      ? ed.checker.script.file_name
+      : undefined,
     subtasks: ed.subtasks.map(coerceSubtaskOutputDTO).filter(notNull),
   };
 }
@@ -439,7 +442,9 @@ function coerceTaskCommunicationDTO(ed: TaskED): TaskCommunicationDTO {
     compile_memory_limit_byte: null,
     submission_size_limit_byte: null,
     checker_kind: ed.checker.kind,
-    checker_file_name: undefined,
+    checker_file_name: CheckerKind.Custom === ed.checker.kind
+      ? ed.checker.script.file_name
+      : undefined,
     communicator_file_name: ed.communicator != null ? ed.communicator.file_name : '',
     subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
   };
