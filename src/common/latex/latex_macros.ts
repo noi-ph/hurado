@@ -81,9 +81,32 @@ export const LATEX_MACROS = {
   includegraphics: {
     signature: "o m",
   },
+  item: {
+    signature: "o",
+  },
+  arabic: {
+    signature: "m",
+  },
+  roman: {
+    signature: "m",
+  },
+  Roman: {
+    signature: "m",
+  },
+  Alph: {
+    signature: "m",
+  },
+  alph: {
+    signature: "m",
+  },
 };
 
 export const LATEX_ENVIRONMENTS = {
-  center: {
+  center: {},
+  enumerate: {
+    signature: "o",
   },
-};
+  itemize: {
+    signature: "o",
+  },
+} satisfies Record<string, EnvInfo>;

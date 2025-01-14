@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import katex from "katex";
 import { getParser } from "@unified-latex/unified-latex-util-parse";
-import { UnreachableDefault } from "common/errors";
+import { UnreachableCheck } from "common/errors";
 import {
   LatexArgument,
   LatexNode,
@@ -15,6 +15,8 @@ import {
 import { LATEX_ENVIRONMENTS, LATEX_MACROS } from "./latex_macros";
 import { mergeLatexNodeStrings } from "./latex_strings";
 import 'katex/dist/katex.css';
+import { LatexBulletOrdered, latexEnvironmentList, LatexMacroBulletOrdered, LatexNodeList } from "./latex_list";
+import { latexBrokenBlock, latexBrokenInline, latexPositionalString } from "./latex_utils";
 
 const LatexParser = getParser({
   macros: LATEX_MACROS,
@@ -39,7 +41,7 @@ type LatexNodeProps<T extends LatexNode> = {
   source: string;
 };
 
-function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): React.ReactNode {
+export function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): React.ReactNode {
   switch (node.type) {
     case "whitespace":
       return " ";
@@ -62,8 +64,7 @@ function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): React.React
     case "root":
       return <LatexNodeGroupX node={node} source={source} />;
     default:
-      // Functionally useless type assertion
-      UnreachableDefault(node)
+      UnreachableCheck(node);
       return null;
   }
 }
@@ -86,7 +87,7 @@ function LatexNodeInlineMathX({ node, source }: LatexNodeProps<LatexNodeInlineMa
     if ("message" in e) {
       return <span className="font-mono text-red-500">{e.message}</span>;
     } else {
-      return renderBroken(node, source);
+      return latexBrokenBlock(node, source);
     }
   }
 }
@@ -107,13 +108,12 @@ function LatexNodeDisplayMathX({ node, source }: LatexNodeProps<LatexNodeDisplay
     if ("message" in e) {
       return <div className="font-mono text-red-500">{e.message}</div>;
     } else {
-      return renderBroken(node, source);
+      return latexBrokenBlock(node, source);
     }
   }
 }
 
 function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): React.ReactNode {
-
   switch (node.content) {
     case "bf":
     case "textbf":
@@ -152,9 +152,9 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
     case "HUGE":
       return <span className="text-5xl">{renderArgumentContent(node.args, source)}</span>;
     case "url": {
-      const href = getStringArg(node.args, 0);
+      const href = latexPositionalString(node.args, 0);
       if (href == null) {
-        return renderBroken(node, source);
+        return latexBrokenInline(node, source);
       }
       return (
         <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
@@ -163,9 +163,9 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       );
     }
     case "href": {
-      const href = getStringArg(node.args, 0);
+      const href = latexPositionalString(node.args, 0);
       if (href == null) {
-        return renderBroken(node, source);
+        return latexBrokenInline(node, source);
       }
       return (
         <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
@@ -174,62 +174,77 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       );
     }
     case "section": {
-      const maybeStar = getStringArg(node.args, 0);
+      const maybeStar = latexPositionalString(node.args, 0);
       if (maybeStar == '*') {
         return <h3 className="text-3xl font-bold">{renderArgumentContent(node.args, source, 1)}</h3>;
       } else if (maybeStar == null) {
         return <h3 className="text-3xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h3>;
       }
-      return renderBroken(node, source);
+      return latexBrokenInline(node, source);
     }
     case "subsection": {
-      const maybeStar = getStringArg(node.args, 0);
+      const maybeStar = latexPositionalString(node.args, 0);
       if (maybeStar == '*') {
         return <h4 className="text-2xl font-bold">{renderArgumentContent(node.args, source, 1)}</h4>;
       } else if (maybeStar == null) {
         return <h4 className="text-2xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h4>;
       }
-      return renderBroken(node, source);
+      return latexBrokenInline(node, source);
     }
     case "subsubsection": {
-      const maybeStar = getStringArg(node.args, 0);
+      const maybeStar = latexPositionalString(node.args, 0);
       if (maybeStar == '*') {
         return <h5 className="text-xl font-bold">{renderArgumentContent(node.args, source, 1)}</h5>;
       } else if (maybeStar == null) {
         return <h5 className="text-xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h5>;
       }
-      return renderBroken(node, source);
+      return latexBrokenInline(node, source);
     }
     case "includegraphics": {
       // Don't use the second arg yet
-      const src = getStringArg(node.args, 1);
+      const src = latexPositionalString(node.args, 1);
       if (src == null) {
-        return renderBroken(node, source);
+        return latexBrokenInline(node, source);
       }
       return <img className="max-w-full mx-auto" src={src} />;
     }
     case "$":
     case "%":
       return node.content;
+    case "item":
+      return null;
+    case "arabic":
+    case "alph":
+    case "Alph":
+    case "roman":
+    case "Roman":
+      return <LatexBulletOrdered node={node as LatexMacroBulletOrdered} />;
     default:
       // Functionally useless type assertion
-      UnreachableDefault(node.content)
+      UnreachableCheck(node.content)
       return node.content;
   }
 }
 
 function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnvironment>) {
-  return node.content.map((child, idx) => <LatexNodeAnyX key={idx} node={child} source={source} />);
+  switch (node.env) {
+    case "center":
+      return <div className="text-center">{renderEnvironmentContent(node, source)}</div>;
+    case "enumerate":
+    case "itemize":
+      return latexEnvironmentList(node as LatexNodeList, source);
+    default:
+      UnreachableCheck(node.env);
+      return latexBrokenBlock(node, source);
+  }
 }
 
 function LatexNodeGroupX({ node, source }: LatexNodeProps<LatexNodeGroup | LatexNodeRoot>) {
   return node.content.map((child, idx) => <LatexNodeAnyX key={idx} node={child} source={source} />);
 }
 
-function renderBroken(node: LatexNode, source: string) {
-  const start = node.position.start.offset;
-  const end = node.position.end.offset;
-  return <span className="font-mono text-red-500">[err]{source.substring(start, end)}[err]</span>;
+function renderEnvironmentContent(node: LatexNodeEnvironment, source: string): ReactNode {
+  return node.content.map((child, idx) => <LatexNodeAnyX key={idx} node={child} source={source} />);
 }
 
 function renderArgumentContent(
@@ -243,19 +258,4 @@ function renderArgumentContent(
   return args[index].content.map((child, idx) => (
     <LatexNodeAnyX key={idx} node={child} source={source} />
   ));
-}
-
-function getStringArg(args: LatexArgument[] | undefined, index: number): string | null {
-  if (args == null || args.length <= index) {
-    return null;
-  }
-  const arg = args[index];
-  if (arg.content.length != 1) {
-    return null;
-  }
-  const content = arg.content[0];
-  if (content.type != "string") {
-    return null;
-  }
-  return content.content;
 }

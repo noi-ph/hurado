@@ -14,7 +14,7 @@ export type NodePosition = {
   end: NodePoint;
 };
 
-type BaseNode<T> = T & {
+export type LatexBaseNode<T> = T & {
   position: NodePosition;
 };
 
@@ -27,50 +27,51 @@ export type LatexArgument = {
   closeMark: string;
 };
 
-export type LatexNodeWhitespace = BaseNode<{
+export type LatexNodeWhitespace = LatexBaseNode<{
   type: "whitespace";
 }>;
 
-export type LatexNodeString = BaseNode<{
+export type LatexNodeString = LatexBaseNode<{
   type: "string";
   content: string;
 }>;
 
-export type LatexNodeMacro = BaseNode<{
+export type LatexNodeMacro = LatexBaseNode<{
   type: "macro";
   content: LatexMacroType; // Macro name
   args?: LatexArgument[];
 }>;
 
-export type LatexNodeParbreak = BaseNode<{
+export type LatexNodeParbreak = LatexBaseNode<{
   type: "parbreak";
 }>;
 
-export type LatexNodeInlineMath = BaseNode<{
+export type LatexNodeInlineMath = LatexBaseNode<{
   type: "inlinemath";
 }>;
 
-export type LatexNodeDisplayMath = BaseNode<{
+export type LatexNodeDisplayMath = LatexBaseNode<{
   type: "displaymath";
 }>;
 
-export type LatexNodeEnvironment = BaseNode<{
+export type LatexNodeEnvironment = LatexBaseNode<{
   type: "environment"; // \begin{env}...\end{env}
-  env: string; // This is the environment type
+  env: LatexEnvironmentType; // This is the environment type
   content: LatexNode[];
+  args?: LatexArgument[];
 }>;
 
-export type LatexNodeGroup = BaseNode<{
+export type LatexNodeGroup = LatexBaseNode<{
   type: "group"; // \begin{env}...\end{env}
   content: LatexNode[]; // This is the environment type
 }>;
 
-export type LatexNodeComment = BaseNode<{
+export type LatexNodeComment = LatexBaseNode<{
   type: "comment";
   content: string;
 }>;
 
-export type LatexNodeRoot = BaseNode<{
+export type LatexNodeRoot = LatexBaseNode<{
   type: "root";
   content: LatexNode[];
 }>;
