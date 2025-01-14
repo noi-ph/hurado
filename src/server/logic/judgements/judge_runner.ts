@@ -143,8 +143,9 @@ async function judgeTask<Type extends TaskType>(
   let running_memory_byte = 0;
 
   var score_max = 0;
+  const verdict_cache = new Map<string, JudgeVerdictTaskData>();
   for (const subtask of task.subtasks) {
-    const child = await judgeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id);
+    const child = await judgeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id, verdict_cache);
     allVerdictSubtasks.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -247,7 +248,8 @@ async function judgeSubtask<Type extends TaskType>(
   type: Type,
   context: JudgeContextFor<Type>,
   subtask: JudgeSubtaskFor<Type>,
-  verdict_id: string
+  verdict_id: string,
+  verdict_cache: Map<string, JudgeVerdictTaskData>
 ): Promise<JudgeVerdictSubtask> {
   const dbSubtask = await db
     .insertInto("verdict_subtasks")
@@ -263,8 +265,9 @@ async function judgeSubtask<Type extends TaskType>(
   let score_scaled = subtask.score_max;
   let running_time_ms = 0;
   let running_memory_byte = 0;
+  let bad_subtask = false;
   for (const data of subtask.data) {
-    const child = await judgeTaskData(type, context, data as JudgeTaskDataFor<Type>, dbSubtask.id);
+    let child = await judgeTaskData(type, context, data as JudgeTaskDataFor<Type>, dbSubtask.id, verdict_cache, bad_subtask);
     allVerdictData.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -272,6 +275,9 @@ async function judgeSubtask<Type extends TaskType>(
 
     verdict = minVerdict(verdict, child.verdict);
     score_scaled = Math.min(score_scaled, child.score_raw);
+    if (badVerdict(child.verdict)) {
+      bad_subtask = true;
+    }
   }
 
   const score_raw = score_scaled * subtask.score_max;
@@ -303,30 +309,44 @@ async function judgeTaskData<Type extends TaskType>(
   type: Type,
   context: JudgeContextFor<Type>,
   task_data: JudgeTaskDataFor<Type>,
-  verdict_subtask_id: string
+  verdict_subtask_id: string,
+  verdict_cache: Map<string, JudgeVerdictTaskData>,
+  bad_subtask: boolean,
 ): Promise<JudgeVerdictTaskData> {
+  const cached_verdict = verdict_cache.get(task_data.judge_file_hash);
   let result: EvaluationResult;
-  switch (type) {
-    case TaskType.Batch:
-      result = await evaluateTaskDataForBatch(
-        context as JudgeContextFor<TaskType.Batch>,
-        task_data as JudgeTaskDataFor<TaskType.Batch>
-      );
-      break;
-    case TaskType.OutputOnly:
-      result = await evaluateTaskDataForOutput(
-        context as JudgeContextFor<TaskType.OutputOnly>,
-        task_data as JudgeTaskDataFor<TaskType.OutputOnly>
-      );
-      break;
-    case TaskType.Communication:
-      result = await evaluateTaskDataForCommunication(
-        context as JudgeContextFor<TaskType.Communication>,
-        task_data as JudgeTaskDataFor<TaskType.Communication>
-      );
-      break;
-    default:
-      throw new UnreachableError(type);
+  if (bad_subtask) {
+    result = {
+      verdict: Verdict.Skipped,
+      score_raw: 0,
+      running_time_ms: 0,
+      running_memory_byte: 0,
+    };
+  } else if (cached_verdict != undefined) {
+    result = cached_verdict;
+  } else {
+    switch (type) {
+      case TaskType.Batch:
+        result = await evaluateTaskDataForBatch(
+          context as JudgeContextFor<TaskType.Batch>,
+          task_data as JudgeTaskDataFor<TaskType.Batch>
+        );
+        break;
+      case TaskType.OutputOnly:
+        result = await evaluateTaskDataForOutput(
+          context as JudgeContextFor<TaskType.OutputOnly>,
+          task_data as JudgeTaskDataFor<TaskType.OutputOnly>
+        );
+        break;
+      case TaskType.Communication:
+        result = await evaluateTaskDataForCommunication(
+          context as JudgeContextFor<TaskType.Communication>,
+          task_data as JudgeTaskDataFor<TaskType.Communication>
+        );
+        break;
+      default:
+        throw new UnreachableError(type);
+    }
   }
 
   const dbTaskData = await db
@@ -342,7 +362,7 @@ async function judgeTaskData<Type extends TaskType>(
     .returning(["id"])
     .executeTakeFirstOrThrow();
 
-  return {
+  const returnResult: JudgeVerdictTaskData = {
     id: dbTaskData.id,
     task_data_id: task_data.id,
     verdict: result.verdict,
@@ -350,6 +370,8 @@ async function judgeTaskData<Type extends TaskType>(
     running_time_ms: result.running_time_ms,
     running_memory_byte: result.running_memory_byte,
   };
+  verdict_cache.set(task_data.judge_file_hash, returnResult);
+  return returnResult;
 }
 
 
@@ -377,6 +399,24 @@ function minVerdict(current: Verdict, next: Verdict): Verdict {
     return next;
   }
   return current;
+}
+
+function badVerdict(verdict: Verdict) {
+  switch (verdict) {
+    case Verdict.Accepted:
+    case Verdict.Skipped:
+    case Verdict.Partial:
+    case Verdict.JudgeFailed:
+      return false;
+    case Verdict.WrongAnswer:
+    case Verdict.RuntimeError:
+    case Verdict.TimeLimitExceeded:
+    case Verdict.MemoryLimitExceeded:
+    case Verdict.CompileError:
+      return true;
+    default:
+      throw new UnreachableError(verdict);
+  }
 }
 
 const VERDICT_PRIORITY: Record<Verdict, number> = {
