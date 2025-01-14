@@ -2,6 +2,7 @@ import { db } from "db";
 import { TaskCard } from "client/components/task_card";
 import { TaskSummaryDTO } from "common/types";
 import { DefaultLayout } from "client/components/layouts/default_layout";
+import { EmptyNoticePage } from "client/components/empty_notice";
 
 async function getTasksData(): Promise<TaskSummaryDTO[]> {
   const tasks = await db
@@ -16,6 +17,14 @@ async function getTasksData(): Promise<TaskSummaryDTO[]> {
 
 async function Page() {
   const tasks = await getTasksData();
+
+  if (tasks.length == 0) {
+    return (
+      <DefaultLayout>
+        <EmptyNoticePage />
+      </DefaultLayout>
+    )
+  }
 
   return (
     <DefaultLayout>

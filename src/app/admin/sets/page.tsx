@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { ReactNode } from "react";
 import { db } from "db";
 import { AdminTable, AdminTbody, AdminTD, AdminTH, AdminThead, AdminTR } from "client/components/admin_table/admin_table";
 import { DefaultLayout } from "client/components/layouts/default_layout";
+import { EmptyNotice } from "client/components/empty_notice";
 import { ProblemSetCreator } from "client/components/problem_set_creator";
 import { getPath, Path } from "client/paths";
 import { SessionData } from "common/types";
@@ -44,14 +46,12 @@ async function Page() {
     return <ForbiddenPage/>;
   }
 
-  const tasks = await getProblemSetsData(session);
-
-  return (
-    <DefaultLayout>
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl">ProblemSets</h2>
-        <ProblemSetCreator/>
-      </div>
+  const sets = await getProblemSetsData(session);
+  let content: ReactNode = null;
+  if (sets.length == 0) {
+    content = <EmptyNotice className="mt-12"/>;
+  } else {
+    content = (
       <AdminTable className="mt-6">
         <AdminThead>
           <AdminTR>
@@ -64,7 +64,7 @@ async function Page() {
           </AdminTR>
         </AdminThead>
         <AdminTbody>
-          {tasks.map((task) => (
+          {sets.map((task) => (
             <AdminTR key={task.slug}>
               <AdminTD className="font-mono text-sm">{uuidToHuradoID(task.id)}</AdminTD>
               <AdminTD className="font-mono text-sm">
@@ -84,6 +84,16 @@ async function Page() {
           ))}
         </AdminTbody>
       </AdminTable>
+    );
+  }
+
+  return (
+    <DefaultLayout>
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl">Problem Sets</h2>
+        <ProblemSetCreator/>
+      </div>
+      {content}
     </DefaultLayout>
   );
 };

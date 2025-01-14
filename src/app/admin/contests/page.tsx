@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { ReactNode } from "react";
 import { db } from "db";
 import { AdminTable, AdminTbody, AdminTD, AdminTH, AdminThead, AdminTR } from "client/components/admin_table/admin_table";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ContestCreator } from "client/components/contest_creator";
+import { EmptyNotice } from "client/components/empty_notice";
 import { getPath, Path } from "client/paths";
 import { SessionData } from "common/types";
 import { uuidToHuradoID } from "common/utils/uuid";
@@ -47,12 +49,11 @@ async function Page() {
 
   const contests = await getContestsData(session);
 
-  return (
-    <DefaultLayout>
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl">Contests</h2>
-        <ContestCreator/>
-      </div>
+  let content: ReactNode = null;
+  if (contests.length == 0) {
+    content = <EmptyNotice className="mt-12"/>;
+  } else {
+    content = (
       <AdminTable className="mt-6">
         <AdminThead>
           <AdminTR>
@@ -85,6 +86,16 @@ async function Page() {
           ))}
         </AdminTbody>
       </AdminTable>
+    );
+  }
+
+  return (
+    <DefaultLayout>
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl">Contests</h2>
+        <ContestCreator/>
+      </div>
+      {content}
     </DefaultLayout>
   );
 };

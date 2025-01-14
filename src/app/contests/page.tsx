@@ -2,6 +2,7 @@ import { db } from "db";
 import { ContestCard } from "client/components/contest_card/contest_card";
 import { ContestSummaryDTO } from "common/types";
 import { DefaultLayout } from "client/components/layouts/default_layout";
+import { EmptyNoticePage } from "client/components/empty_notice";
 
 async function getContestsData(): Promise<ContestSummaryDTO[]> {
   const contests = await db
@@ -17,6 +18,14 @@ async function getContestsData(): Promise<ContestSummaryDTO[]> {
 
 async function Page() {
   const contests = await getContestsData();
+
+  if (contests.length == 0) {
+    return (
+      <DefaultLayout>
+        <EmptyNoticePage />
+      </DefaultLayout>
+    )
+  }
 
   return (
     <DefaultLayout>
