@@ -20,6 +20,7 @@ import 'katex/dist/katex.css';
 import { LatexBulletOrdered, latexEnvironmentList, LatexMacroBulletOrdered, LatexNodeList } from "./latex_list";
 import { latexBrokenBlock, latexBrokenInline, latexPositionalString } from "./latex_utils";
 import { LatexSyntaxHighlight } from "./latex_syntax_highlight";
+import { LatexImageX, LatexMacroImage } from "./latex_images";
 
 const LatexParser = getParser({
   macros: LATEX_MACROS,
@@ -200,14 +201,8 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       }
       return latexBrokenInline(node, source);
     }
-    case "includegraphics": {
-      // Don't use the second arg yet
-      const src = latexPositionalString(node.args, 1);
-      if (src == null) {
-        return latexBrokenInline(node, source);
-      }
-      return <img className="max-w-full mx-auto" src={src} />;
-    }
+    case "includegraphics":
+      return <LatexImageX node={node as LatexMacroImage} source={source} />;
     case "$":
     case "%":
       return node.content;
@@ -222,6 +217,7 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
     default:
       // Functionally useless type assertion
       UnreachableCheck(node.content)
+      // It's important to return the content here. This allows for users to escape special strings using \x
       return node.content;
   }
 }
@@ -229,7 +225,7 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
 function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnvironment>) {
   switch (node.env) {
     case "center":
-      return <div className="text-center">{renderEnvironmentContent(node, source)}</div>;
+      return <div className="flex flex-col items-center text-center">{renderEnvironmentContent(node, source)}</div>;
     case "enumerate":
     case "itemize":
       return latexEnvironmentList(node as LatexNodeList, source);

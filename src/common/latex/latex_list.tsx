@@ -180,7 +180,7 @@ function ListItem({ bullet: itemBullet, order, ordered, children }: ListItemProp
 }
 
 function ListOrdered({ node, source }: LatexNodeProps<LatexNodeList>) {
-  const kwargs = latexParseKwargs(node.args[0]);
+  const kwargs = latexParseKwargs(node, 0);
   const label = kwargs.label ?? null;
   const depth = useContext(ListOrderedDepthContext);
   const children = latexEnvironmentListChildren(node, source, true);
@@ -197,7 +197,7 @@ function ListOrdered({ node, source }: LatexNodeProps<LatexNodeList>) {
 }
 
 function ListUnordered({ node, source }: LatexNodeProps<LatexNodeList>) {
-  const kwargs = latexParseKwargs(node.args[0]);
+  const kwargs = latexParseKwargs(node, 0);
   const label = kwargs.label ?? null;
   const depth = useContext(ListUnorderedDepthContext);
   const children = latexEnvironmentListChildren(node, source, false);
