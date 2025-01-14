@@ -79,7 +79,7 @@ export function EmptyNotice({ className }: EmptyNoticeProps) {
     <div className={classNames(className, "text-center w-fit mx-auto py-12 px-6 rounded-lg border border-gray-800")}>
       <GooglyEyes/>
       <div className="max-w-96 mt-6 mx-auto text-gray-800">
-        We tried our best, but there's nothing to see here right now. Please come back later.
+        We searched everywhere, but there's nothing to see here right now. Please come back later.
       </div>
     </div>
   )
