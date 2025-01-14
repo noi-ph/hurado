@@ -78,14 +78,14 @@ export const NavbarAccount = memo(() => {
         <NavbarLink href={getPath({kind: Path.AdminHome })} className="lg:ml-auto">{session.user.name || 'Anonymous'}</NavbarLink>
         <NavbarLink href={getPath({kind: Path.AccountLogout })}>Logout</NavbarLink>
       </>
-    );  
+    );
   } else {
     return (
       <>
         <div className="text-2xl px-1 lg:ml-auto">{session.user.name || 'Anonymous'}</div>
         <NavbarLink href={getPath({kind: Path.AccountLogout })}>Logout</NavbarLink>
       </>
-    );  
+    );
   }
 });
 

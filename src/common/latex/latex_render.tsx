@@ -10,13 +10,16 @@ import {
   LatexNodeGroup,
   LatexNodeInlineMath,
   LatexNodeMacro,
+  LatexNodeProps,
   LatexNodeRoot,
+  LatexNodeVerbatim,
 } from "./latex_types";
 import { LATEX_ENVIRONMENTS, LATEX_MACROS } from "./latex_macros";
 import { mergeLatexNodeStrings } from "./latex_strings";
 import 'katex/dist/katex.css';
 import { LatexBulletOrdered, latexEnvironmentList, LatexMacroBulletOrdered, LatexNodeList } from "./latex_list";
 import { latexBrokenBlock, latexBrokenInline, latexPositionalString } from "./latex_utils";
+import { LatexSyntaxHighlight } from "./latex_syntax_highlight";
 
 const LatexParser = getParser({
   macros: LATEX_MACROS,
@@ -36,11 +39,6 @@ export function renderLatex(source: string): RenderLatexResult {
   }
 }
 
-type LatexNodeProps<T extends LatexNode> = {
-  node: T;
-  source: string;
-};
-
 export function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): React.ReactNode {
   switch (node.type) {
     case "whitespace":
@@ -57,6 +55,8 @@ export function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): Reac
       return <LatexNodeMacroX node={node} source={source} />;
     case "environment":
       return <LatexNodeEnvironmentX node={node} source={source} />;
+    case "verbatim":
+      return <LatexNodeVerbatimX node={node} source={source} />;
     case "group":
       return <LatexNodeGroupX node={node} source={source} />;
     case "comment":
@@ -233,6 +233,22 @@ function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnviron
     case "enumerate":
     case "itemize":
       return latexEnvironmentList(node as LatexNodeList, source);
+    default:
+      UnreachableCheck(node.env);
+      return latexBrokenBlock(node, source);
+  }
+}
+
+function LatexNodeVerbatimX({ node, source }: LatexNodeProps<LatexNodeVerbatim>) {
+  switch (node.env) {
+    case "verbatim": {
+      const trimmed = node.content.replace(/^\s*\n/, "");
+      return (
+        <pre className="text-sm bg-gray-150 border border-gray-250 rounded-md p-2.5 [letter-spacing:0.001em]">{trimmed}</pre>
+      );
+    }
+    case "lstlisting":
+      return <LatexSyntaxHighlight node={node} source={source} />;
     default:
       UnreachableCheck(node.env);
       return latexBrokenBlock(node, source);

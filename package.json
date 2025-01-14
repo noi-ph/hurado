@@ -53,6 +53,7 @@
     "classnames": "^2.5.1",
     "cookies-next": "^4.1.1",
     "dotenv": "^16.4.5",
+    "highlight.js": "^11.11.1",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "katex": "^0.16.11",

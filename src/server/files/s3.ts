@@ -49,7 +49,7 @@ class S3FileStorage implements FileStorage {
   }
 
   async downloadToFile(filename: string, destination: string): Promise<unknown> {
-    const prefixed = this.getFilename(filename); 
+    const prefixed = this.getFilename(filename);
     const params = {
       Bucket: this.bucket,
       Key: prefixed,

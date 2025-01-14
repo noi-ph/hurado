@@ -2,6 +2,9 @@ import { LATEX_ENVIRONMENTS, LATEX_MACROS } from "./latex_macros";
 
 export type LatexMacroType = keyof typeof LATEX_MACROS;
 export type LatexEnvironmentType = keyof typeof LATEX_ENVIRONMENTS;
+export type LatexVerbatimType =
+  | "verbatim"
+  | "lstlisting";
 
 export type NodePoint = {
   offset: number;
@@ -61,6 +64,12 @@ export type LatexNodeEnvironment = LatexBaseNode<{
   args?: LatexArgument[];
 }>;
 
+export type LatexNodeVerbatim = LatexBaseNode<{
+  type: "verbatim";
+  env: LatexVerbatimType;
+  content: string;
+}>;
+
 export type LatexNodeGroup = LatexBaseNode<{
   type: "group"; // \begin{env}...\end{env}
   content: LatexNode[]; // This is the environment type
@@ -84,6 +93,12 @@ export type LatexNode =
   | LatexNodeInlineMath
   | LatexNodeDisplayMath
   | LatexNodeEnvironment
+  | LatexNodeVerbatim
   | LatexNodeGroup
   | LatexNodeComment
   | LatexNodeRoot;
+
+export type LatexNodeProps<T extends LatexNode> = {
+  node: T;
+  source: string;
+};

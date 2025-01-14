@@ -1,3 +1,14 @@
+type EnvInfo = {
+  renderInfo?: {
+    inMathMode?: boolean;
+    alignContent?: boolean;
+    pgfkeysArgs?: boolean;
+    namedArguments?: (string | null)[];
+    tikzEnvironment?: boolean;
+  };
+  signature?: string;
+};
+
 export const LATEX_MACROS = {
   '%': {
   },

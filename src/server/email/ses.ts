@@ -31,6 +31,6 @@ export class EmailSenderSES implements EmailSenderAbstract {
     };
 
     const command = new SendEmailCommand(params);
-    return await client.send(command);  
+    return await client.send(command);
   }  
 }

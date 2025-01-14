@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
-import { LatexArgument, LatexBaseNode, LatexNode } from "./latex_types";
+import { LatexArgument, LatexBaseNode, LatexNode, LatexNodeProps } from "./latex_types";
 import { UnreachableCheck } from "common/errors";
 import { latexBrokenBlock, latexParseKwargs, latexPositionalArgument, latexPositionalString } from "./latex_utils";
 import { LatexNodeAnyX } from "./latex_render";
@@ -179,12 +179,7 @@ function ListItem({ bullet: itemBullet, order, ordered, children }: ListItemProp
   );
 }
 
-type ListOrderedProps = {
-  node: LatexNodeList;
-  source: string;
-};
-
-function ListOrdered({ node, source }: ListOrderedProps) {
+function ListOrdered({ node, source }: LatexNodeProps<LatexNodeList>) {
   const kwargs = latexParseKwargs(node.args[0]);
   const label = kwargs.label ?? null;
   const depth = useContext(ListOrderedDepthContext);
@@ -201,12 +196,7 @@ function ListOrdered({ node, source }: ListOrderedProps) {
   )
 }
 
-type ListUnordered = {
-  node: LatexNodeList;
-  source: string;
-};
-
-function ListUnordered({ node, source }: ListOrderedProps) {
+function ListUnordered({ node, source }: LatexNodeProps<LatexNodeList>) {
   const kwargs = latexParseKwargs(node.args[0]);
   const label = kwargs.label ?? null;
   const depth = useContext(ListUnorderedDepthContext);
