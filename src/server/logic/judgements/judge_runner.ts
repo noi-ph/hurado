@@ -267,7 +267,7 @@ async function judgeSubtask<Type extends TaskType>(
   let running_memory_byte = 0;
   let bad_subtask = false;
   for (const data of subtask.data) {
-    let child = await judgeTaskData(type, context, data as JudgeTaskDataFor<Type>, dbSubtask.id, verdict_cache, bad_subtask);
+    const child = await judgeTaskData(type, context, data as JudgeTaskDataFor<Type>, dbSubtask.id, verdict_cache, bad_subtask);
     allVerdictData.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
