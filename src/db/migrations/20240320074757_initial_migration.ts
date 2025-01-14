@@ -31,6 +31,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
+    .createIndex("idx_users_kompgen_token")
+    .on("users")
+    .columns(["kompgen_token"])
+    .where("kompgen_token", "is not", null)
+    .unique()
+    .execute();
+
+  await db.schema
     .createTable("files")
     .addColumn("hash", "text", (col) => col.primaryKey())
     .addColumn("size", "bigint", (col) => col.notNull())

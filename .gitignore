@@ -133,7 +133,8 @@ dist
 .pnp.*
 
 # Development docker volumes
-volumes
+/volumes
+/private
 
 # For the mac users out there
 .DS_Store
