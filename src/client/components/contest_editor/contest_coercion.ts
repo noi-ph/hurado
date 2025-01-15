@@ -17,6 +17,7 @@ export function coerceContestED(dto: ContestEditorDTO): ContestED {
     end_time: dto.end_time,
     attachments: dto.attachments.map((x) => coerceContestAttachmentED(x)),
     tasks: dto.tasks.map((x) => coerceContestTaskED(x)),
+    is_public: dto.is_public,
   };
   return contest;
 }

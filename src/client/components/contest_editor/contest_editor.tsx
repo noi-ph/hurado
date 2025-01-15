@@ -19,6 +19,7 @@ import { saveContest } from "./contest_editor_saving";
 import { coerceContestED } from "./contest_coercion";
 import { ContestEditorDetails } from "./contest_editor_details";
 import { getPath, Path } from "client/paths";
+import { ContestEditorAdvanced } from "./contest_editor_advanced";
 
 type ContestEditorProps = {
   dto: ContestEditorDTO;
@@ -53,6 +54,9 @@ export const ContestEditor = ({ dto }: ContestEditorProps) => {
       break;
     case ContestEditorTab.Details:
       content = <ContestEditorDetails contest={contest} setContest={setContest} />;
+      break;
+    case ContestEditorTab.Advanced:
+      content = <ContestEditorAdvanced contest={contest} setContest={setContest} />;
       break;
     case ContestEditorTab.Participants:
       content = "Nothing here yet";
@@ -100,6 +104,7 @@ export enum ContestEditorTab {
   Statement = "statement",
   Details = "details",
   Participants = "participants",
+  Advanced = "advanced",
 }
 
 type ContestEditorTabProps = {
@@ -115,6 +120,7 @@ export const ContestEditorTabComponent = memo(({ tab, slug }: ContestEditorTabPr
       <CommonEditorTabItem tab={ContestEditorTab.Statement} current={tab} label="Statement" />
       <CommonEditorTabItem tab={ContestEditorTab.Details} current={tab} label="Details" />
       <CommonEditorTabItem tab={ContestEditorTab.Participants} current={tab} label="Participants" />
+      <CommonEditorTabItem tab={ContestEditorTab.Advanced} current={tab} label="Advanced" />
       <CommonEditorViewLink slug={slug} label="View" url={viewURL} />
     </CommonEditorTabComponent>
   );
@@ -127,6 +133,7 @@ export function coerceContestEditorTab(hash: string): ContestEditorTab {
     case ContestEditorTab.Statement:
     case ContestEditorTab.Details:
     case ContestEditorTab.Participants:
+    case ContestEditorTab.Advanced:
       return real;
     default:
       return ContestEditorTab.Statement;

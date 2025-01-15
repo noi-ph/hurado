@@ -17,7 +17,7 @@ const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
 };
 
 type CommonEditorStatementProps = {
-  task: TaskED;
+  task?: TaskED;
   statement: string;
   setStatement(statement: string): void;
 };
@@ -43,7 +43,7 @@ export const CommonEditorStatement = ({ task, statement, setStatement }: CommonE
       <Scrollable className={styles.statementPreview} defer>
         <div className='p-3 bg-white flex-auto min-h-full'>
           <LatexDisplay>{statement}</LatexDisplay>
-          {task.sample_IO.map((sample, idx) => (
+          {task?.sample_IO.map((sample, idx) => (
             <SampleIODisplay
               key={idx}
               sampleIndex={idx}

@@ -10,6 +10,7 @@ export type ContestED = {
   end_time: Date | null;
   attachments: CommonAttachmentED[];
   tasks: ContestTaskED[];
+  is_public: boolean;
 };
 
 export type ContestTaskED = {

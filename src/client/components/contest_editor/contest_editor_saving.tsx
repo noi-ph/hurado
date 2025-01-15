@@ -112,7 +112,7 @@ function coerceContestUpdateDTO(ed: ContestED): ContestUpdateDTO {
     title: ed.title,
     description: ed.description,
     statement: ed.statement,
-    is_public: true,
+    is_public: ed.is_public,
     start_time: ed.start_time ?? null,
     end_time: ed.end_time ?? null,
     attachments: ed.attachments.map(coerceContestAttachmentUpdateDTO).filter(notNull),

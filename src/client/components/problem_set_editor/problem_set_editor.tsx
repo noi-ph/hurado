@@ -3,7 +3,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import classNames from "classnames";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { ReactNode, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { Navbar } from "client/components/navbar";
 import {
@@ -20,6 +20,10 @@ import {
   CommonEditorInputSubtle,
   CommonEditorActionButton,
   useSimpleStringPropUpdater,
+  CommonEditorTabComponent,
+  CommonEditorTabItem,
+  getLocationHash,
+  CommonEditorViewLink,
 } from "client/components/common_editor";
 import commonStyles from "client/components/common_editor/common_editor.module.css";
 import http from "client/http";
@@ -32,6 +36,7 @@ import { ProblemSetED, ProblemSetTaskED } from "./types";
 import { coerceProblemSetED } from "./problem_set_coercion";
 import { saveProblemSet } from "./problem_set_editor_saving";
 import styles from "./problem_set_editor.module.css";
+import { useParams } from "next/navigation";
 
 type ProblemSetEditorProps = {
   dto: ProblemSetEditorDTO;
@@ -41,13 +46,44 @@ export const ProblemSetEditor = ({ dto }: ProblemSetEditorProps) => {
   const initialProblemSet = useMemo(() => {
     return coerceProblemSetED(dto);
   }, [dto]);
+  const [tab, setTab] = useState(coerceProblemSetEditorTab(getLocationHash()));
   const [problemSet, setProblemSet] = useState<ProblemSetED>(initialProblemSet);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // hacks copy-pasted from the task editor!
+
+  // NextJS hack to detect when hash changes and run some code
+  // https://github.com/vercel/next.js/discussions/49465#discussioncomment-5845312
+  const params = useParams();
+  useEffect(() => {
+    const currentTab = coerceProblemSetEditorTab(getLocationHash());
+    setTab(currentTab);
+    setIsMounted(true);
+  }, [params]);
+
+  // Hack to skip the hydration error
+  if (!isMounted) {
+    return null;
+  }
+
+  let content: ReactNode = null;
+  switch (tab) {
+    case ProblemSetEditorTab.Details:
+      content = <ProblemSetEditorDetails problemSet={problemSet} setProblemSet={setProblemSet} />;
+      break;
+    case ProblemSetEditorTab.Advanced:
+      content = <ProblemSetEditorAdvanced problemSet={problemSet} setProblemSet={setProblemSet}/>;
+      break;
+    default:
+      content = null;
+  }
 
   return (
     <CommonEditorPage isStatement={false}>
       <Navbar className={commonStyles.header} />
       <CommonEditorTitle title={problemSet.title} slug={problemSet.slug} />
-      <ProblemSetEditorDetails problemSet={problemSet} setProblemSet={setProblemSet} />
+      <ProblemSetEditorTabComponent tab={tab} slug={problemSet.slug}/>
+      {content}
       <CommonEditorFooter
         object={problemSet}
         setObject={setProblemSet}
@@ -120,7 +156,7 @@ export const ProblemSetEditorTasks = ({ problemSet, setProblemSet }: ProblemSetE
         <CommonEditorTableHeader text="Task" />
         <CommonEditorTableHeader text="Actions" />
         {problemSet.tasks.map((task, idx) => (
-          <ProblemSetTaskEditor
+          <ProblemSetProblemSetEditor
             key={idx}
             task={task}
             taskIndex={idx}
@@ -136,14 +172,14 @@ export const ProblemSetEditorTasks = ({ problemSet, setProblemSet }: ProblemSetE
   );
 };
 
-type ProblemSetTaskEditorProps = {
+type ProblemSetProblemSetEditorProps = {
   task: ProblemSetTaskED;
   taskIndex: number;
   problemSet: ProblemSetED;
   setProblemSet(problemSet: ProblemSetED): void;
 };
 
-const ProblemSetTaskEditor = ({ task, taskIndex, problemSet, setProblemSet }: ProblemSetTaskEditorProps) => {
+const ProblemSetProblemSetEditor = ({ task, taskIndex, problemSet, setProblemSet }: ProblemSetProblemSetEditorProps) => {
   const replaceThisTask = useCallback(
     (newTask: ProblemSetTaskED) => {
       setProblemSet({
@@ -282,3 +318,80 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
     );
   }
 };
+
+
+export enum ProblemSetEditorTab {
+  Details = "details",
+  Advanced = "advanced",
+}
+
+type ProblemSetEditorTabProps = {
+  tab: ProblemSetEditorTab;
+  slug: string;
+};
+
+export const ProblemSetEditorTabComponent = memo(({ tab, slug }: ProblemSetEditorTabProps) => {
+  const viewURL = getPath({ kind: Path.ProblemSetView, slug });
+
+  return (
+    <CommonEditorTabComponent>
+      <CommonEditorTabItem tab={ProblemSetEditorTab.Details} current={tab} label="Details"/>
+      <CommonEditorTabItem tab={ProblemSetEditorTab.Advanced} current={tab} label="Advanced"/>
+      <CommonEditorViewLink slug={slug} label="View" url={viewURL} />
+    </CommonEditorTabComponent>
+  );
+});
+
+export function coerceProblemSetEditorTab(hash: string): ProblemSetEditorTab {
+  const split = hash.split("#");
+  const real = split.length >= 2 ? split[1] : "";
+  switch (real) {
+    case ProblemSetEditorTab.Details:
+    case ProblemSetEditorTab.Advanced:
+      return real;
+    default:
+      return ProblemSetEditorTab.Details;
+  }
+}
+
+type ProblemSetEditorAdvancedProps = {
+  problemSet: ProblemSetED;
+  setProblemSet(problemSet: ProblemSetED): void;
+};
+
+export const ProblemSetEditorAdvanced = ({ problemSet, setProblemSet }: ProblemSetEditorAdvancedProps) => {
+  return (
+    <CommonEditorContent>
+      <CommonEditorDetails>
+        <CommonEditorLabel label="Is Public?" />
+        <ProblemSetEditorPublic problemSet={problemSet} setProblemSet={setProblemSet}/>
+      </CommonEditorDetails>
+    </CommonEditorContent>
+  );
+};
+
+type ProblemSetEditorPublicProps = {
+  problemSet: ProblemSetED;
+  setProblemSet(problemSet: ProblemSetED): void;
+}
+export const ProblemSetEditorPublic = ({ problemSet, setProblemSet }: ProblemSetEditorPublicProps) => {
+  const onChangePublic = useCallback(
+    (event: InputChangeEvent) => {
+      setProblemSet({
+        ...problemSet,
+        is_public: event.target.checked,
+      });
+    },
+    [problemSet, setProblemSet]
+  );
+  return (
+    <>
+      <input
+        type='checkbox'
+        className="border-2 border-gray-250 rounded-md h-6 w-6 self-center"
+        checked={problemSet.is_public}
+        onChange={onChangePublic}
+      />
+    </>
+  );
+}

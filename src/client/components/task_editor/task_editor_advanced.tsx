@@ -36,7 +36,6 @@ export const TaskEditorPublic = ({ task, setTask }: TaskEditorPublicProps) => {
     },
     [task, setTask]
   );
-  console.log(task.is_public);
   return (
     <>
       <input
