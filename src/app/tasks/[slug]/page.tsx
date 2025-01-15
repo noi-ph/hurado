@@ -1,4 +1,6 @@
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { TaskViewerDTO, TaskViewerSubtaskOutputDTO } from "common/types";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
@@ -105,14 +107,29 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
   });
 }
 
+const getCachedTaskData = cache(getTaskData);
+
 type TaskPageProps = {
   params: {
     slug: string;
   };
 };
 
+export async function generateMetadata(props: TaskPageProps): Promise<Metadata | null> {
+  const task = await getCachedTaskData(props.params.slug);
+
+  if (task == null) {
+    return null;
+  }
+
+  return {
+    title: task.title,
+    description: task.description
+  };
+};
+
 async function Page(props: TaskPageProps) {
-  const task = await getTaskData(props.params.slug);
+  const task = await getCachedTaskData(props.params.slug);
 
   if (task == null) {
     return notFound();

@@ -15,6 +15,5 @@ export async function enqueueSubmissionJudgement(data: SubmissionJudgementData) 
 }
 
 export async function enqueuePasswordReset(data: PasswordResetData) {
-  console.log('am going???', JobName.PasswordReset, data);
   return await JobQueue.add(JobName.PasswordReset, data);
 }

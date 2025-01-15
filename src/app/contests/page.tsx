@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { db } from "db";
 import { ContestCard } from "client/components/cards";
 import { ContestSummaryDTO } from "common/types";
@@ -15,6 +16,10 @@ async function getContestsData(): Promise<ContestSummaryDTO[]> {
 
   return contests;
 }
+
+export const metadata: Metadata = {
+  title: "Contests",
+};
 
 async function Page() {
   const contests = await getContestsData();

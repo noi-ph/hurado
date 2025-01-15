@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ProblemSetSummaryDTO } from "common/types/problem_sets";
@@ -14,6 +15,10 @@ async function getProblemSetsData(): Promise<ProblemSetSummaryDTO[]> {
 
   return sets;
 }
+
+export const metadata: Metadata = {
+  title: "Problem Sets",
+};
 
 export async function ProblemSetListPage() {
   const sets = await getProblemSetsData();

@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
+import { cache } from "react";
+import { db } from "db";
 import { SessionData } from "common/types/auth";
 import { JWT_EXPIRE, JWT_SECRET } from "server/secrets";
-import { db } from "db";
 import { USER_PUBLIC_FIELDS } from "common/types";
 
 export class InvalidSessionException extends Error {}
@@ -26,7 +27,7 @@ export const getSessionFromToken = (token: string | undefined): SessionData | nu
   }
 };
 
-export const getSession = async (request?: NextRequest): Promise<SessionData | null> => {
+const getSessionUncached = async (request?: NextRequest): Promise<SessionData | null> => {
   if (request == null) {
     const token = cookies().get("session")?.value;
     return getSessionFromToken(token);
@@ -49,3 +50,5 @@ export const getSession = async (request?: NextRequest): Promise<SessionData | n
     return getSessionFromToken(token);
   }
 };
+
+export const getSession = cache(getSessionUncached);

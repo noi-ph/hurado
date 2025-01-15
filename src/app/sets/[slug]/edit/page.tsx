@@ -1,14 +1,47 @@
+import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 import { db } from "db";
-import { huradoIDToUUID, uuidToHuradoID } from "common/utils/uuid";
+import { getPath, Path } from "client/paths";
+import { ProblemSetEditor } from "client/components/problem_set_editor";
 import { ForbiddenPage } from "server/errors/forbidden";
 import { getEditorProblemSet } from "server/logic/problem_sets/get_editor_problem_set";
 import { getSession } from "server/sessions";
-import { ProblemSetEditor } from "client/components/problem_set_editor";
+import { makeFindFromSlugOrHID, SlugLookup } from "server/slugs";
+
+async function lookupProblemSetID(slug: string): Promise<string | undefined> {
+  const set = await db
+    .selectFrom("problem_sets")
+    .select("id")
+    .where("slug", "=", slug)
+    .executeTakeFirst();
+  return set?.id;
+}
+
+const getCachedEditorProblemSet = cache(getEditorProblemSet);
+const findFromSlugOrHID = makeFindFromSlugOrHID(lookupProblemSetID);
 
 type ProblemSetEditPageProps = {
   params: {
     slug: string;
+  };
+};
+
+export async function generateMetadata(props: ProblemSetEditPageProps): Promise<Metadata | null> {
+  const lookup = await findFromSlugOrHID(props.params.slug);
+  if (lookup.kind == SlugLookup.NotFound || lookup.kind == SlugLookup.Slug) {
+    return null;
+  }
+
+  const set = await getCachedEditorProblemSet(lookup.uuid);
+
+  if (set == null) {
+    return null;
+  }
+
+  return {
+    title: `Admin | ${set.title}`,
+    description: set.description
   };
 };
 
@@ -18,27 +51,18 @@ export default async function ProblemSetEditPage(props: ProblemSetEditPageProps)
     return <ForbiddenPage/>;
   }
 
-  const uuid = huradoIDToUUID(props.params.slug);
-  if (uuid == null) {
-    const contest = await db
-      .selectFrom("contests")
-      .select("id")
-      .where("slug", "=", props.params.slug)
-      .executeTakeFirst();
-
-    if (contest == null) {
-      return notFound();
-    }
-
-    const hid = uuidToHuradoID(contest.id);
-    return redirect(`/contests/${hid}/edit`);
+  const lookup = await findFromSlugOrHID(props.params.slug);
+  if (lookup.kind == SlugLookup.NotFound) {
+    return notFound();
+  } else if (lookup.kind == SlugLookup.Slug) {
+    return redirect(getPath({ kind: Path.ProblemSetEdit, uuid: lookup.uuid }));
   }
 
-  const contest = await getEditorProblemSet(uuid);
+  const set = await getCachedEditorProblemSet(lookup.uuid);
 
-  if (contest == null) {
+  if (set == null) {
     return notFound();
   }
 
-  return <ProblemSetEditor dto={contest} />;
+  return <ProblemSetEditor dto={set} />;
 }

@@ -1,4 +1,6 @@
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { ProblemSetViewerDTO, TaskSummaryDTO } from "common/types";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
@@ -50,14 +52,30 @@ async function getProblemSetData(slug: string): Promise<ProblemSetViewerDTO | nu
   });
 }
 
+const getCachedProblemSetData = cache(getProblemSetData);
+
 type ProblemSetPageProps = {
   params: {
     slug: string;
   };
 };
 
+export async function generateMetadata(props: ProblemSetPageProps): Promise<Metadata | null> {
+  const set = await getCachedProblemSetData(props.params.slug);
+
+  if (set == null) {
+    return null;
+  }
+
+  return {
+    title: set.title,
+    description: set.description
+  };
+};
+
+
 async function Page(props: ProblemSetPageProps) {
-  const set = await getProblemSetData(props.params.slug);
+  const set = await getCachedProblemSetData(props.params.slug);
 
   if (set == null) {
     return notFound();

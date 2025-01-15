@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { db } from "db";
@@ -12,6 +13,9 @@ import { canManageTasks } from "server/authorization";
 import { getSession } from "server/sessions";
 import { ForbiddenPage } from "server/errors/forbidden";
 
+export const metadata: Metadata = {
+  title: "Admin | Tasks",
+};
 
 type TaskSummaryAdminDTO = {
   id: string;

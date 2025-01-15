@@ -1,7 +1,7 @@
 import { db } from "db";
 import { TaskBatchDTO, TaskCommunicationDTO, TaskDTO, TaskOutputDTO } from "common/validation/task_validation";
 import { TaskFlavor, TaskFlavorOutput, TaskType } from "common/types/constants";
-import { NotYetImplementedError, UnreachableError } from "common/errors";
+import { UnreachableError } from "common/errors";
 import { dbToTaskDataBatchDTO, dbToTaskDataCommunicationDTO, dbToTaskDataOutputDTO } from "./editor_utils";
 
 export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {

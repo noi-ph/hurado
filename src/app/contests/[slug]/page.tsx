@@ -1,4 +1,6 @@
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { canManageContests } from "server/authorization";
@@ -51,9 +53,24 @@ async function getContestData(slug: string): Promise<ContestViewerDTO | null> {
   });
 }
 
+const getCachedContestData = cache(getContestData);
+
 type ContestPageProps = {
   params: {
     slug: string;
+  };
+};
+
+export async function generateMetadata(props: ContestPageProps): Promise<Metadata | null> {
+  const contest = await getCachedContestData(props.params.slug);
+
+  if (contest == null) {
+    return null;
+  }
+
+  return {
+    title: contest.title,
+    description: contest.description
   };
 };
 

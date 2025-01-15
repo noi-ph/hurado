@@ -10,6 +10,7 @@ import { ToastContainer, Zoom } from "react-toastify";
 import { SessionProvider } from "client/sessions";
 import { getSession } from "server/sessions";
 import classNames from "classnames";
+import Head from "next/head";
 
 const fontMontserrat = Montserrat({
   subsets: ["latin"],
@@ -33,10 +34,10 @@ const fontSpaceMono = Space_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Algurado",
-    default: "Algurado",
+    template: "Hurado | %s",
+    default: "Hurado",
   },
-  description: "NOI.PH's online judge.",
+  description: "NOI.PH Online Judge. The best way to learn math and coding.",
 };
 
 type RootLayoutProps = {

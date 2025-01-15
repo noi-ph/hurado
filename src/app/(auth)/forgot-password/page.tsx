@@ -1,8 +1,12 @@
-
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession } from "server/sessions";
 import { ForgotPasswordPage } from "./forgot-password-page";
 import { DefaultLayout } from "client/components/layouts/default_layout";
+
+export const metadata: Metadata = {
+  title: "Forgot Password",
+};
 
 async function Page() {
   const session = await getSession();

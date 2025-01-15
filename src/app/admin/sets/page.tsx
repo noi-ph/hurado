@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { db } from "db";
@@ -11,6 +12,10 @@ import { uuidToHuradoID } from "common/utils/uuid";
 import { canManageProblemSets } from "server/authorization";
 import { getSession } from "server/sessions";
 import { ForbiddenPage } from "server/errors/forbidden";
+
+export const metadata: Metadata = {
+  title: "Admin | Problem Sets",
+};
 
 
 type ProblemSetSummaryAdminDTO = {

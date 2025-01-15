@@ -1,10 +1,15 @@
 import type { FunctionComponent } from "react";
+import { Metadata } from "next";
 import Link from "next/link";
 import { getSession } from "server/sessions";
 import { getPath, Path } from "client/paths";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ForbiddenPage } from "server/errors/forbidden";
 import { canManageContests, canManageProblemSets, canManageTasks } from "server/authorization";
+
+export const metadata: Metadata = {
+  title: "Admin",
+};
 
 const Page: FunctionComponent = async() => {
   const session = await getSession();
