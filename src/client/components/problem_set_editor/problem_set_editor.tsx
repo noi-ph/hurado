@@ -156,7 +156,7 @@ export const ProblemSetEditorTasks = ({ problemSet, setProblemSet }: ProblemSetE
         <CommonEditorTableHeader text="Task" />
         <CommonEditorTableHeader text="Actions" />
         {problemSet.tasks.map((task, idx) => (
-          <ProblemSetProblemSetEditor
+          <ProblemSetTaskEditor
             key={idx}
             task={task}
             taskIndex={idx}
@@ -172,14 +172,14 @@ export const ProblemSetEditorTasks = ({ problemSet, setProblemSet }: ProblemSetE
   );
 };
 
-type ProblemSetProblemSetEditorProps = {
+type ProblemSetTaskEditorProps = {
   task: ProblemSetTaskED;
   taskIndex: number;
   problemSet: ProblemSetED;
   setProblemSet(problemSet: ProblemSetED): void;
 };
 
-const ProblemSetProblemSetEditor = ({ task, taskIndex, problemSet, setProblemSet }: ProblemSetProblemSetEditorProps) => {
+const ProblemSetTaskEditor = ({ task, taskIndex, problemSet, setProblemSet }: ProblemSetTaskEditorProps) => {
   const replaceThisTask = useCallback(
     (newTask: ProblemSetTaskED) => {
       setProblemSet({
