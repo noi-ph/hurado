@@ -5,7 +5,7 @@ services:
     container_name: hurado-main
     image: noiph/hurado:latest
     working_dir: /app
-    command: node /app/.next/standalone/server.js
+    command: node /app/build/standalone/server.js
     environment:
       - IS_UNDER_DOCKER=true
     env_file:
@@ -62,4 +62,4 @@ services:
     volumes:
       - ./config/production/nginx/:/etc/nginx/
       - ./private/nginx-certs/:/etc/nginx-certs/
-      - ./.next/:/var/www/hurado/:ro
+      - ./build/:/var/www/hurado/:ro

@@ -1,7 +1,8 @@
-#! /bin/bash
+#!/bin/bash
 # Simple bash script that provides a few utilities for managing Hurado development/deployment
 
 PROJECT_ROOT=$(cd `dirname "$0"` && git rev-parse --show-toplevel)
+HRD_CMD=$PROJECT_ROOT/scripts/hrd.sh
 
 
 function hrd_install() {
@@ -130,7 +131,7 @@ function hrd_deploy() {
 
     case "$1" in
         production)
-            hrd connect production hrd deploy_serverside
+            $HRD_CMD connect production hrd deploy_server
             ;;
         *)
             echo "Unknown server: $1"
@@ -139,14 +140,14 @@ function hrd_deploy() {
     esac
 }
 
-function hrd_deploy_serverside() {
+function hrd_deploy_server() {
     # Server-side script for deploying the latest changes to the production server
     set -e
     cd /hurado/
     git pull --ff-only origin main
     ./scripts/next_build.sh
-    hrd compose restart
-    hrd shell npm run db:migrate
+    $HRD_CMD compose restart
+    $HRD_CMD shell npm run db:migrate
 }
 
 
@@ -178,7 +179,7 @@ function hrd_main() {
             ;;
         deploy_server)
             shift
-            hrd_deploy_serverside $@
+            hrd_deploy_server $@
             ;;
         *)
             echo "Usage: hrd {install|compose|shell|sql|connect|deploy}"

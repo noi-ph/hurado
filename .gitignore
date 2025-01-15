@@ -136,5 +136,9 @@ dist
 /volumes
 /private
 
+# Build artifacts
+/build
+/build.bak
+
 # For the mac users out there
 .DS_Store

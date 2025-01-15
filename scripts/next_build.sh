@@ -22,6 +22,12 @@ function run_outside() {
         -v "$PROJECT_ROOT:/app" \
         -w /app \
         noiph/hurado:latest ./scripts/next_build.sh inside
+
+    if [ -d "$PROJECT_ROOT/build.bak" ]; then
+        rm -rf "$PROJECT_ROOT/build.bak"
+    fi
+    mv "$PROJECT_ROOT/build" "$PROJECT_ROOT/build.bak"
+    mv "$PROJECT_ROOT/.next" "$PROJECT_ROOT/build"
 }
 
 
