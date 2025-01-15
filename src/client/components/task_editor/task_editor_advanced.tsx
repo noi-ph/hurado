@@ -42,12 +42,9 @@ export const TaskEditorPublic = ({ task, setTask }: TaskEditorPublicProps) => {
       <input
         type='checkbox'
         className="border-2 border-gray-250 rounded-md h-6 w-6 self-center"
-        id="public-checkbox"
-        value=""
-        checked={task.is_public === true}
+        checked={task.is_public}
         onChange={onChangePublic}
       />
-      {task.is_public === true ? 'YES' : 'NO'}
     </>
   );
 }
