@@ -6,7 +6,7 @@ import { memo } from "react";
 import { LatexDisplay } from "client/components/latex_display";
 import { getPath, Path } from "client/paths";
 import { ProblemSetViewerDTO } from "common/types";
-import { TaskCard } from "../task_card";
+import { TaskCard } from "../cards";
 
 type ProblemSetTitleDisplayProps = {
   title: string;

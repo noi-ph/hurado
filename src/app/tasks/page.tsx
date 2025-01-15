@@ -1,5 +1,5 @@
 import { db } from "db";
-import { TaskCard } from "client/components/task_card";
+import { TaskCard } from "client/components/cards";
 import { TaskSummaryDTO } from "common/types";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { EmptyNoticePage } from "client/components/empty_notice";

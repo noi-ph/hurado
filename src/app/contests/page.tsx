@@ -1,5 +1,5 @@
 import { db } from "db";
-import { ContestCard } from "client/components/contest_card/contest_card";
+import { ContestCard } from "client/components/cards";
 import { ContestSummaryDTO } from "common/types";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { EmptyNoticePage } from "client/components/empty_notice";

@@ -3,23 +3,6 @@
 @tailwind utilities;
 @import url("boxicons/css/boxicons.min.css");
 
-:root {
-  --purple: rgb(109, 117, 254);
-  --purple-light: rgb(197, 195, 255);
-  --purple-white: rgb(237, 235, 255);
-
-  --yellow: rgb(234, 233, 126);
-  --yellow-light: rgb(243, 243, 215);
-
-  --darken: rgb(0, 0, 0, 0.1);
-  --lighten: rgb(255, 255, 255, 0.1);
-}
-
-a:hover,
-button:hover {
-  cursor: pointer;
-}
-
 html {
   height: 100%;
 }
@@ -37,4 +20,13 @@ footer {
   width: 100%;
   height: fit-content;
   padding: 5px 20px;
+}
+
+a:hover,
+button:hover {
+  cursor: pointer;
+}
+
+input:focus-visible {
+  outline: none;
 }

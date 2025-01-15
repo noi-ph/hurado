@@ -1,7 +1,7 @@
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ProblemSetSummaryDTO } from "common/types/problem_sets";
-import { ProblemSetCard } from "client/components/problem_set_card/problem_set_card";
+import { ProblemSetCard } from "client/components/cards";
 import { EmptyNoticePage } from "client/components/empty_notice";
 
 async function getProblemSetsData(): Promise<ProblemSetSummaryDTO[]> {
