@@ -58,6 +58,7 @@ export function coerceTaskED(dto: TaskDTO): TaskED {
     flavor: 'flavor' in dto ? dto.flavor : null,
     subtasks: dto.subtasks.map((x) => coerceTaskSubtaskED(x)),
     sample_IO: dto.sample_IO.map((x) => coerceTaskSampleIO(x)),
+    is_public: dto.is_public,
   };
   return task;
 }

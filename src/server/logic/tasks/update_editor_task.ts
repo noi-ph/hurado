@@ -534,6 +534,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
         description: task.description ?? undefined,
         statement: task.statement,
         score_max: task.score_max,
+        is_public: task.is_public,
         type: task.type,
         checker_kind: task.checker_kind,
         checker_id: getScriptId(task.checker_file_name, false),

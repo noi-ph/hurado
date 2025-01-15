@@ -23,6 +23,7 @@ import { TaskEditorSubmissions } from "./task_editor_submissions";
 import { saveTask } from "./task_editor_saving";
 import { coerceTaskED } from "./coercion";
 import { TaskED } from "./types";
+import { TaskEditorAdvanced } from "./task_editor_advanced";
 
 type TaskEditorProps = {
   dto: TaskDTO;
@@ -68,6 +69,9 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
         <TaskEditorSubmissions taskId={task.id} cache={submissions.current} />
       );
       break;
+    case TaskEditorTab.Advanced:
+      content = <TaskEditorAdvanced task={task} setTask={setTask}/>;
+      break;
     default:
       content = null;
   }
@@ -112,6 +116,7 @@ export enum TaskEditorTab {
   Details = "details",
   Judging = "judging",
   Submissions = "submissions",
+  Advanced = "advanced",
 }
 
 type TaskEditorTabProps = {
@@ -128,6 +133,7 @@ export const TaskEditorTabComponent = memo(({ tab, slug }: TaskEditorTabProps) =
       <CommonEditorTabItem tab={TaskEditorTab.Details} current={tab} label="Details"/>
       <CommonEditorTabItem tab={TaskEditorTab.Judging} current={tab} label="Judging"/>
       <CommonEditorTabItem tab={TaskEditorTab.Submissions} current={tab} label="Submissions"/>
+      <CommonEditorTabItem tab={TaskEditorTab.Advanced} current={tab} label="Advanced"/>
       <CommonEditorViewLink slug={slug} label="View" url={viewURL} />
     </CommonEditorTabComponent>
   );
@@ -141,6 +147,7 @@ export function coerceTaskEditorTab(hash: string): TaskEditorTab {
     case TaskEditorTab.Details:
     case TaskEditorTab.Judging:
     case TaskEditorTab.Submissions:
+    case TaskEditorTab.Advanced:
       return real;
     default:
       return TaskEditorTab.Statement;

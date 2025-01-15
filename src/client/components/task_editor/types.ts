@@ -15,6 +15,7 @@ export type TaskED = {
   attachments: CommonAttachmentED[];
   subtasks: TaskSubtaskED[];
   sample_IO: TaskSampleIO_ED[];
+  is_public: boolean;
 };
 
 export type TaskCheckerED = {
