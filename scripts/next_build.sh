@@ -26,7 +26,9 @@ function run_outside() {
     if [ -d "$PROJECT_ROOT/build.bak" ]; then
         rm -rf "$PROJECT_ROOT/build.bak"
     fi
-    mv "$PROJECT_ROOT/build" "$PROJECT_ROOT/build.bak"
+    if [ -d "$PROJECT_ROOT/build" ]; then
+        mv "$PROJECT_ROOT/build" "$PROJECT_ROOT/build.bak"
+    fi
     mv "$PROJECT_ROOT/.next" "$PROJECT_ROOT/build"
 }
 
