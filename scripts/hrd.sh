@@ -131,7 +131,7 @@ function hrd_deploy() {
 
     case "$1" in
         production)
-            $HRD_CMD connect production hrd deploy_server
+            $HRD_CMD connect production /hurado/scripts/hrd.sh deploy_server
             ;;
         *)
             echo "Unknown server: $1"

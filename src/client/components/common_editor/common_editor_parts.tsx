@@ -17,6 +17,7 @@ import styles from "./common_editor.module.css";
 import { Scrollable } from "../scrollable";
 import { toast } from "react-toastify";
 import { CommonFileED, CommonFileLocal, EditorKind } from "./types";
+import { getPath, Path } from "client/paths";
 
 type CommonEditorPageProps = {
   isStatement: boolean;
@@ -352,6 +353,11 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
       </>
     );
   } else {
+    const downloadUrl = getPath({
+      kind: Path.AdminFileDownload,
+      hash: file.hash,
+      filename: filename ?? 'unnamed_file',
+    });
     return (
       <div className="flex flex-row gap-2">
         <CommonEditorInputSubtle
@@ -362,7 +368,9 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
         />
         {!disabled && (
           <>
-            <CommonEditorActionLink icon="bx-download" href="#" tabIndex={-1} />
+            {file.kind === EditorKind.Saved
+              ? <CommonEditorActionLink icon="bx-download" href={downloadUrl} tabIndex={-1} target="_blank" />
+              : null}
             <CommonEditorActionButton icon="bx-x" onClick={onFileRemove} tabIndex={-1} />
           </>
         )}

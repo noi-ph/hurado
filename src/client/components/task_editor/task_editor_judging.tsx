@@ -1,14 +1,13 @@
 import classNames from "classnames";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
-import { CommonEditorAddButton, CommonEditorDetails, CommonEditorInput, CommonEditorLabel, CommonEditorSelect, EditorKind } from "client/components/common_editor";
+import { CommonEditorDetails, CommonEditorLabel, CommonEditorSelect, EditorKind } from "client/components/common_editor";
 import styles from "client/components/common_editor/common_editor.module.css";
-import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
+import { SelectChangeEvent } from "common/types/events";
 import { CheckerKind, Language, TaskFlavor, TaskType } from "common/types/constants";
 import { TaskEditorSubtasks } from "./task_editor_subtasks";
 import { TaskED, TaskScriptED } from "./types";
 import { UnreachableError } from "common/errors";
-import { Arrays } from "common/utils/arrays";
 import { TaskEditorScript } from "./task_editor_script";
 import { createEmptyScript } from "./task_editor_utils";
 

@@ -24,6 +24,7 @@ export enum Path {
   AdminTaskList = "AdminTaskList",
   AdminProblemSetList = "AdminProblemSetList",
   AdminContestList = "AdminContestList",
+  AdminFileDownload = "AdminFileDownload",
 }
 
 export type PathArguments =
@@ -32,7 +33,7 @@ export type PathArguments =
   | { kind: Path.AccountLogout }
   | { kind: Path.AccountRegister }
   | { kind: Path.AccountForgotPassword }
-  | { kind: Path.AccountPasswordReset, token: string }
+  | { kind: Path.AccountPasswordReset; token: string }
   | { kind: Path.Submission; uuid: string }
   | { kind: Path.TaskList }
   | { kind: Path.TaskView; slug: string }
@@ -48,7 +49,8 @@ export type PathArguments =
   | { kind: Path.AdminHome }
   | { kind: Path.AdminTaskList }
   | { kind: Path.AdminProblemSetList }
-  | { kind: Path.AdminContestList };
+  | { kind: Path.AdminContestList }
+  | { kind: Path.AdminFileDownload; hash: string; filename: string };
 
 export function getPath(args: PathArguments) {
   switch (args.kind) {
@@ -96,6 +98,8 @@ export function getPath(args: PathArguments) {
       return "/admin/sets";
     case Path.AdminContestList:
       return "/admin/contests";
+    case Path.AdminFileDownload:
+      return `/admin/files/${args.hash}/${args.filename}`;
     default:
       throw new UnreachableError(args);
   }
@@ -136,7 +140,7 @@ export type APIPathArguments =
   | { kind: APIPath.TaskCreateSimple }
   | { kind: APIPath.TaskUpdate; id: string }
   | { kind: APIPath.TaskLookup; id: string }
-  | { kind: APIPath.TaskOverallScoreLookup; id: string, contestId: string | null }
+  | { kind: APIPath.TaskOverallScoreLookup; id: string; contestId: string | null }
   | { kind: APIPath.TaskSubmissions; id: string }
   | { kind: APIPath.ProblemSetCreate }
   | { kind: APIPath.ProblemSetUpdate; id: string }
