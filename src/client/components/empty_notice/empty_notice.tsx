@@ -32,14 +32,23 @@ function GooglyEyes() {
     y: 0
   });
 
-
-  const handler = useCallback((event: MouseEvent) => {
+  const onMouseMove = useCallback((event: MouseEvent) => {
     setMouse({ x: event.clientX, y: event.clientY });
   }, []);
 
+  const onTouchMove = useCallback((event: TouchEvent) => {
+    if (event.touches.length > 0) {
+      setMouse({ x: event.touches[0].clientX, y: event.touches[0].clientX });
+    }
+  }, []);
+
   useEffect(() => {
-    window.addEventListener("mousemove", handler);
-    return () => window.removeEventListener("mousemove", handler);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("touchmove", onTouchMove);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("touchmove", onTouchMove);
+    };
   }, []);
 
   return (
@@ -65,7 +74,7 @@ function getPupilStyle(socket: HTMLDivElement | null, mouse: MouseLocation): CSS
   const mouseY = mouse.y - cy;
 
   const rotationRadians = Math.atan2(mouseX, mouseY);
-  const rotationDegrees = rotationRadians * (180 / Math.PI) * -1 + 180;
+  const rotationDegrees = rotationRadians * (180 / Math.PI) * -1 + 90;
 
   return { transform: `rotate(${rotationDegrees}deg)` };
 }

@@ -1,8 +1,8 @@
 
 .pupil {
   position: absolute;
-  top: 0;
-  left: calc(50% - 12px);
+  top: calc(50% - 12px);
+  right: 0;
   width: 24px;
   height: 24px;
 }
