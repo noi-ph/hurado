@@ -58,8 +58,8 @@ export function RegisterPage() {
       });
 
       setSession(response.data.data);
-      router.push(getPath({ kind: Path.Home }));
       router.refresh();
+      router.push(getPath({ kind: Path.Home }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
         const response: AxiosResponse<UserRegisterError> = e.response;

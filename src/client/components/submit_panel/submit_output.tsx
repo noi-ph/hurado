@@ -1,18 +1,19 @@
 "use client";
 
+import { AxiosResponse } from "axios";
+import { useRouter } from "next/navigation";
 import { useCallback, useContext, useState } from "react";
 import { SubmissionSummaryDTO, TaskViewerOutputDTO } from "common/types";
 import { Language, TaskFlavor, TaskFlavorOutput } from "common/types/constants";
 import { SubmissionRequestDTO } from "common/validation/submission_validation";
 import http from "client/http";
 import { APIPath, Path, getAPIPath, getPath } from "client/paths";
+import { SubmissionsCacheContext } from "client/submissions";
 import styles from "./submit_panel.module.css";
 import { UnreachableError } from "common/errors";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
-import { RefreshSubmissionsContext } from "../task_viewer/task_viewer";
-import { useRouter } from "next/navigation";
-import { AxiosResponse } from "axios";
+
 
 type SubtaskState = {
   text: string;
@@ -24,8 +25,8 @@ type SubmitOutputProps = {
 };
 
 export function SubmitOutput({ task }: SubmitOutputProps) {
+  const submissions = useContext(SubmissionsCacheContext);
   const router = useRouter();
-  const {refresh, setRefresh} = useContext(RefreshSubmissionsContext);
 
   const [subtasks, setSubtasks] = useState<SubtaskState[]>(
     task.subtasks.map(() => ({
@@ -81,7 +82,10 @@ export function SubmitOutput({ task }: SubmitOutputProps) {
       });
       if (response.status == 200) {
         const submission = response.data;
-        setRefresh(true);
+        if (submissions) {
+          submissions.clear();
+        }
+        router.refresh();
         router.push(getPath({ kind: Path.Submission, uuid: submission.id }));
       }
     } finally {

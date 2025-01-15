@@ -2,8 +2,10 @@
 
 import { FunctionComponent, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSessionWithUpdate } from "client/sessions";
 import http from "client/http";
+import { getPath, Path } from "client/paths";
+import { useSessionWithUpdate } from "client/sessions";
+
 
 const Page: FunctionComponent = () => {
   const router = useRouter();
@@ -16,8 +18,8 @@ const Page: FunctionComponent = () => {
 
     http.delete("/api/v1/auth/logout").then(() => {
       setSession(null);
-      router.push("/login");
       router.refresh();
+      router.push(getPath({ kind: Path.AccountLogin }));
     });
   });
 

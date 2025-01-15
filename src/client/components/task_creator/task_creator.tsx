@@ -45,6 +45,7 @@ export function TaskCreator() {
   const onSubmit = async (data: TaskForm) => {
     try {
       const response: AxiosResponse<TaskCreateSimpleSuccess> = await http.post(getAPIPath({ kind: APIPath.TaskCreateSimple }), data);
+      router.refresh();
       router.push(getPath({ kind: Path.TaskEdit, uuid: response.data.data.id }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {

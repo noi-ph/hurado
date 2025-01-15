@@ -1,19 +1,20 @@
 import { useCallback } from "react";
 import { SubmissionsTable } from "client/components/submissions_table";
 import commonStyles from 'client/components/common_editor/common_editor.module.css';
-import { TaskSubmissionsCache } from "client/submissions";
+import { SubmissionsCache } from "client/submissions";
 
-type TaskViewerSubmissionsProps = {
+
+type TaskEditorSubmissionsProps = {
   taskId: string;
-  cache: TaskSubmissionsCache;
-  setCache(cache: TaskSubmissionsCache): void;
+  cache: SubmissionsCache;
 };
 
-export const TaskEditorSubmissions = ({ taskId, cache, setCache }: TaskViewerSubmissionsProps) => {
-  const loadSubmissions = useCallback(() => {
-    return TaskSubmissionsCache.loadTaskSubmissions(taskId).then((next) => {
-      setCache(next);
-    });
+export const TaskEditorSubmissions = ({ taskId, cache }: TaskEditorSubmissionsProps) => {
+  const loadSubmissions = useCallback(async () => {
+    if (cache.loaded) {
+      return cache.submissions;
+    }
+    return cache.loadTaskSubmissions(taskId);
   }, [cache]);
 
   return (

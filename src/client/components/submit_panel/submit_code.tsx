@@ -11,10 +11,10 @@ import { humanizeLanguage, Language } from "common/types/constants";
 import { SelectChangeEvent } from "common/types/events";
 import styles from "./submit_panel.module.css";
 import "./submit_panel.css"; // This is not a mistake
-import { redirect, useRouter } from "next/navigation";
-import { RefreshSubmissionsContext } from "../task_viewer/task_viewer";
+import { useRouter } from "next/navigation";
 import { SubmissionSummaryDTO } from "common/types";
 import { AxiosResponse } from "axios";
+import { SubmissionsCacheContext } from "client/submissions";
 
 
 const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
@@ -33,8 +33,8 @@ export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
   const [language, setLanguage] = useState<Language>(Language.Python3);
   const [submitting, setSubmitting] = useState(false);
 
+  const submissions = useContext(SubmissionsCacheContext);
   const router = useRouter();
-  const {refresh, setRefresh} = useContext(RefreshSubmissionsContext);
 
   const onChangeCode = useCallback((value: string | undefined) => {
     setCode(value ?? "");
@@ -70,7 +70,10 @@ export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
       });
       if (response.status == 200) {
         const submission = response.data;
-        setRefresh(true);
+        if (submissions) {
+          submissions.clear();
+        }
+        router.refresh();
         router.push(getPath({ kind: Path.Submission, uuid: submission.id }));
       }
     } finally {

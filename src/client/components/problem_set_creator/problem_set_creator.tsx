@@ -45,6 +45,7 @@ export function ProblemSetCreator() {
   const onSubmit = async (data: ProblemSetForm) => {
     try {
       const response: AxiosResponse<ProblemSetCreateSuccess> = await http.post(getAPIPath({ kind: APIPath.ProblemSetCreate }), data);
+      router.refresh();
       router.push(getPath({ kind: Path.ProblemSetEdit, uuid: response.data.data.id }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {

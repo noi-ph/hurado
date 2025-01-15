@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { Navbar } from "client/components/navbar";
 import {
@@ -15,7 +15,7 @@ import {
 } from "client/components/common_editor";
 import commonStyles from "client/components/common_editor/common_editor.module.css";
 import { getPath, Path } from "client/paths";
-import { TaskSubmissionsCache } from "client/submissions";
+import { SubmissionsCache } from "client/submissions";
 import { TaskDTO } from "common/validation/task_validation";
 import { TaskEditorDetails } from "./task_editor_details";
 import { TaskEditorJudging } from "./task_editor_judging";
@@ -34,9 +34,7 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
   }, [dto]);
   const [tab, setTab] = useState(coerceTaskEditorTab(getLocationHash()));
   const [task, setTask] = useState<TaskED>(initialTask);
-  const [submissions, setSubmissions] = useState<TaskSubmissionsCache>(
-    TaskSubmissionsCache.empty()
-  );
+  const submissions = useRef(new SubmissionsCache());
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -67,7 +65,7 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
       break;
     case TaskEditorTab.Submissions:
       content = (
-        <TaskEditorSubmissions taskId={task.id} cache={submissions} setCache={setSubmissions} />
+        <TaskEditorSubmissions taskId={task.id} cache={submissions.current} />
       );
       break;
     default:

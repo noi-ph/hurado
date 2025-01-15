@@ -45,6 +45,7 @@ export function ContestCreator() {
   const onSubmit = async (data: ContestForm) => {
     try {
       const response: AxiosResponse<ContestCreateSuccess> = await http.post(getAPIPath({ kind: APIPath.ContestCreate }), data);
+      router.refresh();
       router.push(getPath({ kind: Path.ContestEdit, uuid: response.data.data.id }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {

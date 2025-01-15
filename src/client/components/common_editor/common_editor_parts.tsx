@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { useRouter } from "next/navigation";
 import {
   useCallback,
   useState,
@@ -71,6 +72,7 @@ export const CommonEditorFooter = <T extends {}>({
   setObject,
   saveObject,
 }: CommonEditorFooterProps<T>) => {
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const handleSave = useCallback(async () => {
     setSaving(true);
@@ -79,6 +81,7 @@ export const CommonEditorFooter = <T extends {}>({
       if (result.success) {
         setObject(result.value);
         toast("Great success!", { type: "success" });
+        router.refresh();
       } else {
         toast("Errors:\n" + result.errors.join("\n"), { type: "error" });
       }

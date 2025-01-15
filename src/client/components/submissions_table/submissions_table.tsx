@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import Link from "next/link";
-import { memo, ReactNode, useContext, useEffect } from "react";
+import { memo, ReactNode, useEffect } from "react";
 import { SubmissionSummaryDTO } from "common/types";
 import { humanizeLanguage, humanizeVerdict, Verdict } from "common/types/constants";
 import { uuidToHuradoID } from "common/utils/uuid";
@@ -8,13 +8,12 @@ import { humanizeTimeAgo } from "common/utils/dates";
 import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
 import styles from "./submission_table.module.css";
-import { RefreshProvidedValue, RefreshSubmissionsContext } from "../task_viewer/task_viewer";
 import { OverallVerdictDisplayDTO } from "common/types/verdicts";
 
 type SubmissionTableProps = {
   loaded: boolean;
   submissions: SubmissionSummaryDTO[];
-  loadSubmissions(): Promise<void>;
+  loadSubmissions(): Promise<SubmissionSummaryDTO[]>;
   showUser: boolean;
 };
 
@@ -24,24 +23,9 @@ export const SubmissionsTable = ({
   loadSubmissions,
   showUser,
 }: SubmissionTableProps) => {
-  const context: RefreshProvidedValue | undefined = useContext(RefreshSubmissionsContext);
-  let refresh: boolean | undefined, setRefresh: ((refresh: boolean) => void) | undefined;
-  if (context == undefined) {
-    refresh = undefined;
-    setRefresh = undefined;
-  } else {
-    refresh = context.refresh;
-    setRefresh = context.setRefresh;
-  }
-
   useEffect(() => {
-    if (!loaded || refresh) {
-      loadSubmissions();
-      if (setRefresh) {
-        setRefresh(false);
-      }
-    }
-  }, [submissions]);
+    loadSubmissions();
+  }, []);
 
   return (
     <div className={classNames(styles.submissions, showUser && styles.showUser)}>

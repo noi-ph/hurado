@@ -9,7 +9,7 @@ type TaskViewerStatementProps = {
   task: TaskViewerDTO;
 };
 
-export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
+export const TaskViewerStatement = ({ task, clearSubmissionsCache }: TaskViewerStatementProps) => {
   const session = useSession();
   const isLoggedIn = session != null && session.user != null;
 
@@ -28,7 +28,7 @@ export const TaskViewerStatement = ({ task }: TaskViewerStatementProps) => {
           />
         ))}
       </div>
-      {isLoggedIn && <SubmitPanel task={task}/>}
+      {isLoggedIn && <SubmitPanel task={task} />}
     </>
   );
 };

@@ -1,7 +1,6 @@
 "use client";
 
 import { AxiosError, AxiosResponse } from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,8 +55,8 @@ export function LoginPage() {
       });
 
       setSession(response.data.data);
-      router.push(getPath({ kind: Path.Home }));
       router.refresh();
+      router.push(getPath({ kind: Path.Home }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
         const response: AxiosResponse<UserLoginError> = e.response;

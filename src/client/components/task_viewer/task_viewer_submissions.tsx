@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { TaskViewerDTO } from "common/types";
-import { TaskSubmissionsCache } from "client/submissions";
+import { SubmissionsCache } from "client/submissions";
 import { TaskViewerTitle } from "./task_viewer_utils";
 import { OverallScoreDisplay, SubmissionsTable } from "client/components/submissions_table";
 import http from "client/http";
@@ -9,15 +9,15 @@ import { OverallVerdictDisplayDTO } from "common/types/verdicts";
 
 type TaskViewerSubmissionsProps = {
   task: TaskViewerDTO;
-  cache: TaskSubmissionsCache;
-  setCache(cache: TaskSubmissionsCache): void;
+  cache: SubmissionsCache;
 };
 
-export const TaskViewerSubmissions = ({ task, cache, setCache }: TaskViewerSubmissionsProps) => {
-  const loadSubmissions = useCallback(() => {
-    return TaskSubmissionsCache.loadUserTaskSubmissions(task.id).then((next) => {
-      setCache(next);
-    });
+export const TaskViewerSubmissions = ({ task, cache }: TaskViewerSubmissionsProps) => {
+  const loadSubmissions = useCallback(async () => {
+    if (cache.loaded) {
+      return cache.submissions;
+    }
+    return cache.loadUserTaskSubmissions(task.id);
   }, [cache]);
   
   const [overallVerdict, setOverallVerdict] = useState<OverallVerdictDisplayDTO | undefined>(undefined);
