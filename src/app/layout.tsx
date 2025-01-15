@@ -1,4 +1,3 @@
-import "@root/reset.css";
 import "@root/global.css";
 import "react-toastify/dist/ReactToastify.css";
 
