@@ -14,8 +14,8 @@ import {
   LatexNodeRoot,
   LatexNodeVerbatim,
 } from "./latex_types";
-import { LATEX_ENVIRONMENTS, LATEX_MACROS } from "./latex_macros";
-import { mergeLatexNodeStrings } from "./latex_strings";
+import { LATEX_ENVIRONMENTS, LATEX_MACROS, LATEX_STRINGS } from "./latex_macros";
+import { latexProcessNode } from "./latex_postprocess";
 import 'katex/dist/katex.css';
 import { LatexBulletOrdered, latexEnvironmentList, LatexMacroBulletOrdered, LatexNodeList } from "./latex_list";
 import { latexBrokenBlock, latexBrokenInline, latexPositionalString } from "./latex_utils";
@@ -32,8 +32,8 @@ type RenderLatexResult = { node: ReactNode } | { error: unknown };
 export function renderLatex(source: string): RenderLatexResult {
   const parsed = LatexParser.parse(source) as unknown as LatexNode;
   try {
-    const merged = mergeLatexNodeStrings(parsed);
-    const node = <LatexNodeAnyX node={merged} source={source} />;
+    const processed = latexProcessNode(parsed);
+    const node = <LatexNodeAnyX node={processed} source={source} />;
     return { node };
   } catch (e) {
     return { error: e };
@@ -45,7 +45,12 @@ export function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): Reac
     case "whitespace":
       return " ";
     case "string":
-      return node.content;
+      if (node.content in LATEX_STRINGS) {
+        const Substitution = LATEX_STRINGS[node.content as keyof typeof LATEX_STRINGS];
+        return <Substitution/>;
+      } else {
+        return node.content;
+      }
     case "inlinemath":
       return <LatexNodeInlineMathX node={node} source={source} />;
     case "displaymath":

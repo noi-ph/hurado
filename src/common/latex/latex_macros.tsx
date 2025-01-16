@@ -1,3 +1,5 @@
+import type React from "react";
+
 type EnvInfo = {
   renderInfo?: {
     inMathMode?: boolean;
@@ -121,3 +123,14 @@ export const LATEX_ENVIRONMENTS = {
     signature: "o",
   },
 } satisfies Record<string, EnvInfo>;
+
+export const LATEX_STRINGS = {
+  "``": () => {
+    return <>&ldquo;</>;
+  },
+  "''": () => {
+    return <>&rdquo;</>;
+  },
+  "--": () => <>&ndash;</>,
+  "---": () => <>&mdash;</>,
+} satisfies Record<string, React.ComponentType>;
