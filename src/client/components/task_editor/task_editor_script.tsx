@@ -62,6 +62,7 @@ export const TaskEditorScript = ({ script, setScript }: TaskEditorScriptProps): 
       </CommonEditorSelect>
       <CommonEditorLabel label="Source Code" />
       <CommonEditorFileInput
+        style="detail"
         file={script.file}
         filename={script.file_name}
         onFileChange={onFileChange}

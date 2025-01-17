@@ -39,21 +39,23 @@ export const TaskEditorSubtasks = ({ task, setTask }: TaskEditorSubtasksProps) =
   }, [task]);
 
   return (
-    <>
-      <div className="text-lg text-gray-500 mb-4">Subtasks</div>
-      {task.subtasks.map((subtask, idx) => (
-        <TaskSubtaskEditor
-          key={idx}
-          subtask={subtask}
-          subtaskIndex={idx}
-          task={task}
-          setTask={setTask}
-        />
-      ))}
-      <div className="text-center">
-        <CommonEditorAddButton label="Add Subtask" onClick={onSubtaskAdd} />
+    <div className="px-4">
+      <div className="text-xl font-semibold text-gray-500 mb-6">Subtasks</div>
+      <div className="pl-4">
+        {task.subtasks.map((subtask, idx) => (
+          <TaskSubtaskEditor
+            key={idx}
+            subtask={subtask}
+            subtaskIndex={idx}
+            task={task}
+            setTask={setTask}
+          />
+        ))}
+        <div className="text-center">
+          <CommonEditorAddButton label="Add Subtask" onClick={onSubtaskAdd} />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -291,6 +293,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
       {task.type !== TaskType.OutputOnly && (
         <CommonEditorTableCell deleted={data.deleted}>
           <CommonEditorFileInput
+            style="task-data"
             file={data.input_file}
             onFileChange={onInputFileChange}
             filename={data.input_file_name}
@@ -301,6 +304,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
       )}
       <CommonEditorTableCell deleted={data.deleted}>
         <CommonEditorFileInput
+          style="task-data"
           file={data.judge_file}
           onFileChange={onJudgeFileChange}
           filename={data.judge_file_name}

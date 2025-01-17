@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
-import { CommonEditorDetails, CommonEditorLabel, CommonEditorSelect, EditorKind } from "client/components/common_editor";
+import { CommonEditorDetails, CommonEditorLabel, CommonEditorSelect, CommonEditorSection, EditorKind } from "client/components/common_editor";
 import styles from "client/components/common_editor/common_editor.module.css";
 import { SelectChangeEvent } from "common/types/events";
 import { CheckerKind, Language, TaskFlavor, TaskType } from "common/types/constants";
@@ -22,7 +22,9 @@ export const TaskEditorJudging = ({ task, setTask }: TaskEditorJudgingProps) => 
     <Scrollable className={classNames(styles.content, "p-4")}>
       <CommonEditorDetails>
         <TaskTypeEditor task={task} setTask={setTask} />
-        <TaskCheckerEditor task={task} setTask={setTask} />
+        <CommonEditorSection title="Checker">
+          <TaskCheckerEditor task={task} setTask={setTask} />
+        </CommonEditorSection>
       </CommonEditorDetails>
       <TaskEditorSubtasks task={task} setTask={setTask} />
     </Scrollable>
@@ -104,13 +106,10 @@ const TaskTypeEditor = ({ task, setTask }: TaskEditorJudgingProps) => {
         </>
       )}
       {task.type === TaskType.Communication && (
-        <>
-          <CommonEditorLabel label="Communicator" />
-          <div/>
+        <CommonEditorSection title="Communicator">
           <TaskEditorScript script={task.communicator!} setScript={setCommunicatorScript}/>
-        </>
+        </CommonEditorSection>
       )}
-
     </>
   );
 };
@@ -174,11 +173,7 @@ export const TaskCheckerEditor = ({ task, setTask }: TaskCheckerEditorProps) => 
         <option value={CheckerKind.Custom}>Custom</option>
       </CommonEditorSelect>
       {task.checker.kind === CheckerKind.Custom && (
-        <>
-          <CommonEditorLabel label="Checker Script" />
-          <div/>
-          <TaskEditorScript script={task.checker.script} setScript={setCheckerScript}/>
-        </>
+        <TaskEditorScript script={task.checker.script} setScript={setCheckerScript}/>
       )}
     </>
   );

@@ -21,7 +21,7 @@ import { getPath, Path } from "client/paths";
 
 type CommonEditorPageProps = {
   isStatement: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export const CommonEditorPage = ({ isStatement, children }: CommonEditorPageProps) => {
@@ -161,6 +161,7 @@ export const CommonEditorActionButton = ({
 };
 
 type CommonEditorActionLinkProps = {
+  size?: "bx-xs" | "bx-sm" | "bx-md" | "bx-lg" | "bx-xl";
   icon: string;
   href: string;
 } & DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>;
@@ -172,6 +173,23 @@ export const CommonEditorActionLink = ({ icon, href, ...rest }: CommonEditorActi
     </a>
   );
 };
+
+type CommonEditorSectionProps = {
+  title: string;
+  children: ReactNode;
+};
+
+export const CommonEditorSection = ({ title, children }: CommonEditorSectionProps) => {
+  return (
+    <div className="col-span-2">
+      <div className="text-xl font-semibold text-gray-500 mb-6">{title}</div>
+      <div className={classNames(styles.detailEditor, "pl-4 gap-x-12 gap-y-6")}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 
 type CommonEditorLabelProps = {
   label: string;
@@ -187,6 +205,7 @@ type CommonEditorInputProps = {
   placeholder?: string;
   type: "text" | "textarea";
   className?: string;
+  disabled?: boolean;
 };
 
 export const CommonEditorInput = ({
@@ -195,6 +214,7 @@ export const CommonEditorInput = ({
   onChange,
   placeholder,
   className,
+  disabled,
 }: CommonEditorInputProps) => {
   if (type == "text") {
     return (
@@ -204,6 +224,7 @@ export const CommonEditorInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        disabled={disabled}
       />
     );
   } else {
@@ -213,6 +234,7 @@ export const CommonEditorInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        disabled={disabled}
       />
     );
   }
@@ -264,7 +286,7 @@ export const CommonEditorSelect = ({
 }: CommonEditorSelectProps) => {
   return (
     <select
-      className={classNames(className, "font-mono p-2 border border-gray-300 rounded-lg")}
+      className={classNames(className, "font-mono p-2 border border-gray-300 rounded-lg bg-white")}
       value={value}
       onChange={onChange}
     >
@@ -275,21 +297,21 @@ export const CommonEditorSelect = ({
 
 type CommonEditorTableHeaderProps = {
   text?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export const CommonEditorTableHeader = ({ text, children }: CommonEditorTableHeaderProps) => {
-  return <div className="text-gray-500 font-roboto font-medium">{text ?? children}</div>;
+  return <div className="text-gray-500 font-roboto font-medium px-2">{text ?? children}</div>;
 };
 
 type CommonEditorTableCellProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   deleted?: boolean;
 };
 
 export const CommonEditorTableCell = ({ deleted, children }: CommonEditorTableCellProps) => {
   return (
-    <div className={classNames("font-roboto font-light text-gray-500", deleted && "line-through")}>
+    <div className={classNames("font-roboto font-light text-gray-500 px-2", deleted && "line-through")}>
       {children}
     </div>
   );
@@ -297,6 +319,7 @@ export const CommonEditorTableCell = ({ deleted, children }: CommonEditorTableCe
 
 
 type CommonEditorFileInputProps = {
+  style: "detail" | "task-data";
   file: CommonFileED | null;
   onFileChange(file: CommonFileED | null, filename: string): void;
   filename: string | null;
@@ -305,7 +328,14 @@ type CommonEditorFileInputProps = {
 };
 
 export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
-  const { filename, file, onFilenameChange, onFileChange, disabled } = props;
+  const {
+    style,
+    filename,
+    file,
+    onFilenameChange,
+    onFileChange,
+    disabled,
+  } = props;
   const pickerRef = useRef<HTMLInputElement>(null);
 
   const onPickerClick = useCallback(() => {
@@ -345,7 +375,12 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
           type="button"
           onClick={onPickerClick}
           disabled={disabled}
-          className={classNames(disabled ? "text-gray-300 hover:cursor-default" : "text-gray-500")}
+          className={classNames({
+            "font-mono px-3 py-2 border border-gray-300 rounded-lg text-start tracking-wide": style == "detail",
+            "text-gray-500 hover:cursor-default": style == "detail" && disabled,
+            "text-gray-500": style == "task-data" && !disabled,
+            "text-gray-300 hover:cursor-default": style == "task-data" && disabled,
+          })}
         >
           Select file...
         </button>
@@ -359,19 +394,42 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
       filename: filename ?? 'unnamed_file',
     });
     return (
-      <div className="flex flex-row gap-2">
-        <CommonEditorInputSubtle
-          className="flex-auto"
-          value={filename ?? ""}
-          onChange={onNameChange}
-          disabled={disabled}
-        />
+      <div className="flex flex-row items-center gap-2">
+        {style == "detail"
+          ? (
+            <CommonEditorInput
+              type="text"
+              className="px-3 py-2 flex-auto"
+              value={filename ?? ""}
+              onChange={onNameChange}
+              disabled={disabled}
+            />
+          ): (
+            <CommonEditorInputSubtle
+              className="flex-auto"
+              value={filename ?? ""}
+              onChange={onNameChange}
+              disabled={disabled}
+            />
+          )}
         {!disabled && (
           <>
             {file.kind === EditorKind.Saved
-              ? <CommonEditorActionLink icon="bx-download" href={downloadUrl} tabIndex={-1} target="_blank" />
-              : null}
-            <CommonEditorActionButton icon="bx-x" onClick={onFileRemove} tabIndex={-1} />
+              ? (
+                <CommonEditorActionLink
+                  size={style == "detail" ? "bx-sm" : "bx-xs"}
+                  icon="bx-download"
+                  href={downloadUrl}
+                  tabIndex={-1}
+                  target="_blank"
+                />
+              ) : null}
+            <CommonEditorActionButton
+              size={style == "detail" ? "bx-sm" : "bx-xs"}
+              icon="bx-x"
+              onClick={onFileRemove}
+              tabIndex={-1}
+            />
           </>
         )}
       </div>
