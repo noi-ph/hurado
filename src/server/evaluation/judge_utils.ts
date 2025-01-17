@@ -148,9 +148,12 @@ export function makeContestantArgv(
 ): string[] {
   const spec = LANGUAGE_SPECS[script.language];
 
-  const timeLimit = task.time_limit_ms != null
-    ? `${task.time_limit_ms / 1000}`
-    : "3.00"; // 3 seconds
+  const timeLimitSeconds = task.time_limit_ms != null
+    ? task.time_limit_ms / 1000
+    : 3; // 3 seconds
+
+  const timeLimit = `${timeLimitSeconds}`;
+  const wallTimeLimit = `${timeLimitSeconds + 30}`; // 30 second bonus for wall time
 
   const memLimit = task.memory_limit_byte != null
     ? `${task.memory_limit_byte / 1000}`
@@ -163,6 +166,7 @@ export function makeContestantArgv(
     `--meta=${isolate.meta}`,
     `--time=${timeLimit}`,
     `--mem=${memLimit}`,
+    `--wall-time=${wallTimeLimit}`,
     "--run",
     "--",
   ];
