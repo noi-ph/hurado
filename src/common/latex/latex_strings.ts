@@ -223,7 +223,7 @@ function linearizeSplits(fragments: StringFragment[], splits: FragmentSplit[]): 
     points.add(split.end);
   }
   // Watch out! Javascript sorting is really dumb
-  const sorted = points.keys().toArray().toSorted((a, b) => a - b);
+  const sorted = [...points.keys()].toSorted((a, b) => a - b);
   const result: FragmentSplit[] = [];
   for (let i = 1; i < sorted.length; i++) {
     result.push({ start: sorted[i-1], end: sorted[i] });

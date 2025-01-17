@@ -221,4 +221,3 @@ That's about it for deployment notes.
 
 - [Payton Yao](https://github.com/jabbawookiees)
 - [Cisco Ortega](https://github.com/gfmortega)
-- [Neomi Mendoza](https://github.com/nimendoza)
