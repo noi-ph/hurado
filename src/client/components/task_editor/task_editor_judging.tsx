@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
-import { CommonEditorDetails, CommonEditorLabel, CommonEditorSelect, CommonEditorSection, EditorKind } from "client/components/common_editor";
+import { CommonEditorDetails, CommonEditorLabel, CommonEditorSelect, CommonEditorSection, EditorKind, CommonEditorInput } from "client/components/common_editor";
 import styles from "client/components/common_editor/common_editor.module.css";
-import { SelectChangeEvent } from "common/types/events";
+import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
 import { CheckerKind, Language, TaskFlavor, TaskType } from "common/types/constants";
 import { TaskEditorSubtasks } from "./task_editor_subtasks";
 import { TaskED, TaskScriptED } from "./types";
@@ -24,6 +24,9 @@ export const TaskEditorJudging = ({ task, setTask }: TaskEditorJudgingProps) => 
         <TaskTypeEditor task={task} setTask={setTask} />
         <CommonEditorSection title="Checker">
           <TaskCheckerEditor task={task} setTask={setTask} />
+        </CommonEditorSection>
+        <CommonEditorSection title="Limits">
+          <TaskLimitsEditor task={task} setTask={setTask} />
         </CommonEditorSection>
       </CommonEditorDetails>
       <TaskEditorSubtasks task={task} setTask={setTask} />
@@ -179,6 +182,78 @@ export const TaskCheckerEditor = ({ task, setTask }: TaskCheckerEditorProps) => 
   );
 };
 
+type TaskLimitsEditorProps = {
+  task: TaskED;
+  setTask(task: TaskED): void;
+};
+
+export const TaskLimitsEditor = ({ task, setTask }: TaskLimitsEditorProps) => {
+  const onChangeTimeLimitMS = useCallback((event: InputChangeEvent) => {
+    setTask({ ...task, time_limit_ms: event.target.value});
+  }, [task]);
+
+  const onChangeMemoryLimitByte = useCallback((event: InputChangeEvent) => {
+    setTask({ ...task, memory_limit_byte: event.target.value});
+  }, [task]);
+
+  const onChangeCompileTimeLimitMS = useCallback((event: InputChangeEvent) => {
+    setTask({ ...task, compile_time_limit_ms: event.target.value});
+  }, [task]);
+
+  const onChangeCompileMemoryLimitMS = useCallback((event: InputChangeEvent) => {
+    setTask({ ...task, compile_memory_limit_byte: event.target.value});
+  }, [task]);
+
+  const onChangeSubmissionSizeLimitByte = useCallback((event: InputChangeEvent) => {
+    setTask({ ...task, submission_size_limit_byte: event.target.value});
+  }, [task]);
+
+  // time_limit_ms: number | null;
+  // memory_limit_byte: number | null;
+  // compile_time_limit_ms: number | null;
+  // compile_memory_limit_byte: number | null;
+  // submission_size_limit_byte: number | null;
+
+  return (
+    <>
+      <CommonEditorLabel label="Time Limit (ms)" />
+      <CommonEditorInput
+        type="text"
+        value={task.time_limit_ms}
+        onChange={onChangeTimeLimitMS}
+        placeholder="3000"
+      />
+      <CommonEditorLabel label="Memory Limit (byte)" />
+      <CommonEditorInput
+        type="text"
+        value={task.memory_limit_byte}
+        onChange={onChangeMemoryLimitByte}
+        placeholder="104857600"
+      />
+      <CommonEditorLabel label="Compile Time (ms)" />
+      <CommonEditorInput
+        type="text"
+        value={task.compile_time_limit_ms}
+        onChange={onChangeCompileTimeLimitMS}
+        placeholder="3000"
+      />
+      <CommonEditorLabel label="Compile Memory (byte)" />
+      <CommonEditorInput
+        type="text"
+        value={task.compile_memory_limit_byte}
+        onChange={onChangeCompileMemoryLimitMS}
+        placeholder="104857600"
+      />
+      <CommonEditorLabel label="Submission Size (byte)" />
+      <CommonEditorInput
+        type="text"
+        value={task.submission_size_limit_byte}
+        onChange={onChangeSubmissionSizeLimitByte}
+        placeholder="64000"
+      />
+    </>
+  );
+};
 
 function coerceTaskType(type: string): TaskType {
   switch (type) {

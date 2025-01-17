@@ -120,7 +120,7 @@ export const CommonEditorContent = ({ children }: PropsWithChildren) => {
 };
 
 export const CommonEditorDetails = ({ children }: PropsWithChildren) => {
-  return <div className={classNames(styles.detailEditor, "p-4 gap-x-12 gap-y-6")}>{children}</div>;
+  return <div className={classNames(styles.detailEditor, "p-4 gap-x-12 gap-y-6 items-center")}>{children}</div>;
 };
 
 type CommonEditorAddButtonProps = {
@@ -183,7 +183,7 @@ export const CommonEditorSection = ({ title, children }: CommonEditorSectionProp
   return (
     <div className="col-span-2">
       <div className="text-xl font-semibold text-gray-500 mb-6">{title}</div>
-      <div className={classNames(styles.detailEditor, "pl-4 gap-x-12 gap-y-6")}>
+      <div className={classNames(styles.detailEditor, "pl-4 gap-x-12 gap-y-6 items-center")}>
         {children}
       </div>
     </div>

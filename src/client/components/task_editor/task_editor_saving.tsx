@@ -274,11 +274,11 @@ function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
     sample_IO: ed.sample_IO.map(coerceSampleIO_DTO).filter(notNull),
     // Batch only
     type: TaskType.Batch,
-    time_limit_ms: 3000,
-    memory_limit_byte: 1000000,
-    compile_time_limit_ms: null,
-    compile_memory_limit_byte: null,
-    submission_size_limit_byte: null,
+    time_limit_ms: coerceNonNegativeIntegerOrNull(ed.time_limit_ms),
+    memory_limit_byte: coerceNonNegativeIntegerOrNull(ed.memory_limit_byte),
+    compile_time_limit_ms: coerceNonNegativeIntegerOrNull(ed.compile_time_limit_ms),
+    compile_memory_limit_byte: coerceNonNegativeIntegerOrNull(ed.compile_memory_limit_byte),
+    submission_size_limit_byte: coerceNonNegativeIntegerOrNull(ed.submission_size_limit_byte),
     checker_kind: ed.checker.kind,
     checker_file_name: CheckerKind.Custom === ed.checker.kind
       ? ed.checker.script.file_name
@@ -359,7 +359,11 @@ function coerceTaskOutputDTO(ed: TaskED): TaskOutputDTO {
     // OutputOnly only
     type: TaskType.OutputOnly,
     flavor: ed.flavor ?? TaskFlavor.OutputText,
-    submission_size_limit_byte: null,
+    time_limit_ms: null,
+    memory_limit_byte: null,
+    compile_time_limit_ms: null,
+    compile_memory_limit_byte: null,
+    submission_size_limit_byte: coerceNonNegativeIntegerOrNull(ed.submission_size_limit_byte),
     checker_kind: ed.checker.kind,
     checker_file_name: CheckerKind.Custom === ed.checker.kind
       ? ed.checker.script.file_name
@@ -436,11 +440,11 @@ function coerceTaskCommunicationDTO(ed: TaskED): TaskCommunicationDTO {
     sample_IO: ed.sample_IO.map(coerceSampleIO_DTO).filter(notNull),
     // Communication only
     type: TaskType.Communication,
-    time_limit_ms: 3000,
-    memory_limit_byte: 1000000,
-    compile_time_limit_ms: null,
-    compile_memory_limit_byte: null,
-    submission_size_limit_byte: null,
+    time_limit_ms: coerceNonNegativeIntegerOrNull(ed.time_limit_ms),
+    memory_limit_byte: coerceNonNegativeIntegerOrNull(ed.memory_limit_byte),
+    compile_time_limit_ms: coerceNonNegativeIntegerOrNull(ed.compile_time_limit_ms),
+    compile_memory_limit_byte: coerceNonNegativeIntegerOrNull(ed.compile_memory_limit_byte),
+    submission_size_limit_byte: coerceNonNegativeIntegerOrNull(ed.submission_size_limit_byte),
     checker_kind: ed.checker.kind,
     checker_file_name: CheckerKind.Custom === ed.checker.kind
       ? ed.checker.script.file_name
@@ -448,4 +452,12 @@ function coerceTaskCommunicationDTO(ed: TaskED): TaskCommunicationDTO {
     communicator_file_name: ed.communicator != null ? ed.communicator.file_name : '',
     subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
   };
+}
+
+function coerceNonNegativeIntegerOrNull(value: string): number | null {
+  const numberValue = Math.round(+value);
+  if (value == '' || isNaN(numberValue) || numberValue < 0) {
+    return null;
+  }
+  return numberValue;
 }

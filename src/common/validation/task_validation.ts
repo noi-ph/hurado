@@ -2,6 +2,7 @@ import { z } from "zod";
 import { zCheckerKind, zLanguageKind, zReducerKind, zTaskFlavorOutput } from "./constant_validation";
 import { CheckerKind, TaskType } from "common/types/constants";
 import { REGEX_SLUG } from "./common_validation";
+import { memo } from "react";
 
 export type TaskCreditDTO = z.infer<typeof zTaskCredit>;
 export type TaskAttachmentDTO = z.infer<typeof zTaskAttachment>;
@@ -115,6 +116,10 @@ export const zTaskTypeOutput = z.object({
   ...zTaskCommon,
   type: z.literal(TaskType.OutputOnly),
   flavor: zTaskFlavorOutput,
+  time_limit_ms: z.null(),
+  memory_limit_byte: z.null(),
+  compile_time_limit_ms: z.null(),
+  compile_memory_limit_byte: z.null(),
   submission_size_limit_byte: z.number().nonnegative().nullable(),
   checker_kind: zCheckerKind,
   checker_file_name: z.string().optional(),

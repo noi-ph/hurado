@@ -11,6 +11,11 @@ export type TaskED = {
   communicator: TaskScriptED | null;
   flavor: TaskFlavor | null;
   checker: TaskCheckerED;
+  time_limit_ms: string;
+  memory_limit_byte: string;
+  compile_time_limit_ms: string;
+  compile_memory_limit_byte: string;
+  submission_size_limit_byte: string;
   credits: TaskCreditED[];
   attachments: CommonAttachmentED[];
   subtasks: TaskSubtaskED[];
