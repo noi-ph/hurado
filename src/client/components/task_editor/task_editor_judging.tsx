@@ -208,12 +208,6 @@ export const TaskLimitsEditor = ({ task, setTask }: TaskLimitsEditorProps) => {
     setTask({ ...task, submission_size_limit_byte: event.target.value});
   }, [task]);
 
-  // time_limit_ms: number | null;
-  // memory_limit_byte: number | null;
-  // compile_time_limit_ms: number | null;
-  // compile_memory_limit_byte: number | null;
-  // submission_size_limit_byte: number | null;
-
   return (
     <>
       <CommonEditorLabel label="Time Limit (ms)" />

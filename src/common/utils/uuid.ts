@@ -15,8 +15,6 @@ export function checkUUIDv4(uuid: string | null): string | null {
   }
 }
 
-// TODO(Bonus): Test that these functions are actually bulletproof
-// These were just generated with ChatGPT and they seem to work
 export function uuidToHuradoID(uuid: string): string | null {
   try {
     // Remove hyphens from the UUID
