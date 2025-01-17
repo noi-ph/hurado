@@ -81,7 +81,16 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
   const task = await trx
     .selectFrom("tasks")
     .where("id", "=", taskId)
-    .select(["tasks.type", "tasks.checker_kind", "tasks.checker_id", "tasks.communicator_id"])
+    .select([
+      "tasks.type",
+      "tasks.checker_kind",
+      "tasks.checker_id",
+      "tasks.communicator_id",
+      "tasks.time_limit_ms",
+      "tasks.memory_limit_byte",
+      "tasks.compile_time_limit_ms",
+      "tasks.compile_memory_limit_byte",
+    ])
     .executeTakeFirstOrThrow();
 
   const dbScripts = await trx
@@ -112,6 +121,10 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
         scripts,
       }),
       scripts,
+      time_limit_ms: task.time_limit_ms,
+      memory_limit_byte: task.memory_limit_byte,
+      compile_time_limit_ms: task.compile_time_limit_ms,
+      compile_memory_limit_byte: task.compile_memory_limit_byte,
     };
   } else if (task.type === TaskType.Communication) {
     const subtasks = await loadSubtasksCommunication(trx, taskId);
@@ -131,6 +144,10 @@ async function loadTask(trx: Transaction<Models>, taskId: string): Promise<Judge
         scripts,
       }),
       scripts,
+      time_limit_ms: task.time_limit_ms,
+      memory_limit_byte: task.memory_limit_byte,
+      compile_time_limit_ms: task.compile_time_limit_ms,
+      compile_memory_limit_byte: task.compile_memory_limit_byte,
     };
   } else if (task.type === TaskType.OutputOnly) {
     const subtasks = await loadSubtasksOutput(trx, taskId);

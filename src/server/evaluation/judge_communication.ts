@@ -1,6 +1,6 @@
 import path from "path";
 import ChildProcess from "child_process";
-import { JudgeChecker, JudgeScript, JudgeTaskDataCommunication } from "common/types/judge";
+import { JudgeChecker, JudgeScript, JudgeTaskCommunication, JudgeTaskDataCommunication } from "common/types/judge";
 import { EvaluationResult, IsolateResult, JudgeEvaluationContextCommunication } from "./types";
 import { checkSubmissionOutput } from "./judge_checker";
 import { LANGUAGE_SPECS } from "./judge_compile";
@@ -10,10 +10,12 @@ import { UnreachableError } from "common/errors";
 
 export async function evaluateTaskDataForCommunication(
   context: JudgeEvaluationContextCommunication,
+  task: JudgeTaskCommunication,
   data: JudgeTaskDataCommunication
 ): Promise<EvaluationResult> {
   return IsolateUtils.with2(async (isoContestant, isoCommunicator) => {
     const argvContestant = makeContestantArgv(
+      task,
       context.contestant,
       isoContestant,
       context.submission_root

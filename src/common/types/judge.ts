@@ -8,6 +8,10 @@ export type JudgeTaskBatch = {
   subtasks: JudgeSubtaskBatch[];
   checker: JudgeChecker;
   scripts: JudgeScript[];
+  time_limit_ms: number | null;
+  memory_limit_byte: number | null;
+  compile_time_limit_ms: number | null;
+  compile_memory_limit_byte: number | null;
 };
 
 export type JudgeSubtaskBatch = {
@@ -51,6 +55,10 @@ export type JudgeTaskCommunication = {
   checker: JudgeChecker;
   communicator: JudgeScript;
   scripts: JudgeScript[];
+  time_limit_ms: number | null;
+  memory_limit_byte: number | null;
+  compile_time_limit_ms: number | null;
+  compile_memory_limit_byte: number | null;
 };
 
 export type JudgeSubtaskCommunication = {

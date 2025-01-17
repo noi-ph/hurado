@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { WriteStream } from "tty";
 import ChildProcess from "child_process";
-import { ContestantScript, JudgeTaskDataBatch } from "common/types/judge";
+import { ContestantScript, JudgeTaskBatch, JudgeTaskDataBatch } from "common/types/judge";
 import { EvaluationResult, IsolateResult, JudgeEvaluationContextBatch } from "./types";
 import { checkSubmissionOutput } from "./judge_checker";
 import { Verdict } from "common/types/constants";
@@ -11,11 +11,13 @@ import { ISOLATE_BIN, IsolateUtils, makeContestantArgv } from "./judge_utils";
 
 export async function evaluateTaskDataForBatch(
   context: JudgeEvaluationContextBatch,
+  task: JudgeTaskBatch,
   data: JudgeTaskDataBatch
 ): Promise<EvaluationResult> {
   const inputPath = path.join(context.task_root, data.input_file_name);
   const outputPath = path.join(context.output_root, data.judge_file_name);
   const isolateResult = await runContestantScript(
+    task,
     context.contestant,
     context.submission_root,
     inputPath,
@@ -58,15 +60,15 @@ export async function evaluateTaskDataForBatch(
 }
 
 async function runContestantScript(
+  task: JudgeTaskBatch,
   script: ContestantScript,
   submissionRoot: string,
   inputPath: string,
   outputPath: string,
   stderr: WriteStream | null
 ): Promise<IsolateResult> {
-  // TODO: Enable memory / time limits
   return IsolateUtils.with(async (isolate) => {
-    const argv = makeContestantArgv(script, isolate, submissionRoot);
+    const argv = makeContestantArgv(task, script, isolate, submissionRoot);
 
     const inputFile = await fs.promises.open(inputPath, "r");
     const outputFile = await fs.promises.open(outputPath, "w");

@@ -2,7 +2,7 @@ import fs from "fs";
 import ChildProcess from "child_process";
 import { Verdict } from "common/types/constants";
 import { IsolateResult } from "./types";
-import { ContestantScript } from "common/types/judge";
+import { ContestantScript, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
 import { LANGUAGE_SPECS } from "./judge_compile";
 
 export const ISOLATE_BIN = "/usr/local/bin/isolate";
@@ -141,20 +141,28 @@ function generateRandomInt(min: number, max: number) {
 }
 
 export function makeContestantArgv(
+  task: JudgeTaskBatch | JudgeTaskCommunication,
   script: ContestantScript,
   isolate: IsolateInstance,
   submissionRoot: string
 ): string[] {
-  // TODO Memory / Time limits
   const spec = LANGUAGE_SPECS[script.language];
 
-  const argv: string[] = [
+  const timeLimit = task.time_limit_ms != null
+    ? `${task.time_limit_ms / 1000}`
+    : "3.00"; // 3 seconds
+
+  const memLimit = task.memory_limit_byte != null
+    ? `${task.memory_limit_byte / 1000}`
+    : "100000"; // 100MB
+
+    const argv: string[] = [
     `--box-id=${isolate.name}`,
     `--dir=/submission=${submissionRoot}`,
     "--chdir=/submission",
     `--meta=${isolate.meta}`,
-    "--time=3.00", // 3 seconds
-    "--mem=100000", // 100MB
+    `--time=${timeLimit}`,
+    `--mem=${memLimit}`,
     "--run",
     "--",
   ];

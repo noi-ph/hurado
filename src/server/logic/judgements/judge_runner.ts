@@ -145,7 +145,14 @@ async function judgeTask<Type extends TaskType>(
   var score_max = 0;
   const verdict_cache = new Map<string, JudgeVerdictTaskData>();
   for (const subtask of task.subtasks) {
-    const child = await judgeSubtask(type, context, subtask as JudgeSubtaskFor<Type>, dbVerdict.id, verdict_cache);
+    const child = await judgeSubtask(
+      type,
+      context,
+      task,
+      subtask as JudgeSubtaskFor<Type>,
+      dbVerdict.id,
+      verdict_cache,
+    );
     allVerdictSubtasks.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -247,6 +254,7 @@ async function judgeTask<Type extends TaskType>(
 async function judgeSubtask<Type extends TaskType>(
   type: Type,
   context: JudgeContextFor<Type>,
+  task: JudgeTaskFor<Type>,
   subtask: JudgeSubtaskFor<Type>,
   verdict_id: string,
   verdict_cache: Map<string, JudgeVerdictTaskData>
@@ -267,7 +275,15 @@ async function judgeSubtask<Type extends TaskType>(
   let running_memory_byte = 0;
   let bad_subtask = false;
   for (const data of subtask.data) {
-    const child = await judgeTaskData(type, context, data as JudgeTaskDataFor<Type>, dbSubtask.id, verdict_cache, bad_subtask);
+    const child = await judgeTaskData(
+      type,
+      context,
+      task,
+      data as JudgeTaskDataFor<Type>,
+      dbSubtask.id,
+      verdict_cache,
+      bad_subtask,
+    );
     allVerdictData.push(child);
 
     running_memory_byte = Math.max(running_memory_byte, child.running_memory_byte);
@@ -308,6 +324,7 @@ async function judgeSubtask<Type extends TaskType>(
 async function judgeTaskData<Type extends TaskType>(
   type: Type,
   context: JudgeContextFor<Type>,
+  task: JudgeTaskFor<Type>,
   task_data: JudgeTaskDataFor<Type>,
   verdict_subtask_id: string,
   verdict_cache: Map<string, JudgeVerdictTaskData>,
@@ -329,19 +346,21 @@ async function judgeTaskData<Type extends TaskType>(
       case TaskType.Batch:
         result = await evaluateTaskDataForBatch(
           context as JudgeContextFor<TaskType.Batch>,
-          task_data as JudgeTaskDataFor<TaskType.Batch>
+          task as JudgeTaskFor<TaskType.Batch>,
+          task_data as JudgeTaskDataFor<TaskType.Batch>,
         );
         break;
       case TaskType.OutputOnly:
         result = await evaluateTaskDataForOutput(
           context as JudgeContextFor<TaskType.OutputOnly>,
-          task_data as JudgeTaskDataFor<TaskType.OutputOnly>
+          task_data as JudgeTaskDataFor<TaskType.OutputOnly>,
         );
         break;
       case TaskType.Communication:
         result = await evaluateTaskDataForCommunication(
           context as JudgeContextFor<TaskType.Communication>,
-          task_data as JudgeTaskDataFor<TaskType.Communication>
+          task as JudgeTaskFor<TaskType.Communication>,
+          task_data as JudgeTaskDataFor<TaskType.Communication>,
         );
         break;
       default:
