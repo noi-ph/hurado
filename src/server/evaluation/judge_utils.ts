@@ -4,6 +4,7 @@ import { Verdict } from "common/types/constants";
 import { IsolateResult } from "./types";
 import { ContestantScript, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
 import { LANGUAGE_SPECS } from "./judge_compile";
+import { getWallTimeLimit, LIMITS_DEFAULT_RUN_MEMORY_LIMIT_KB, LIMITS_DEFAULT_RUN_TIME_LIMIT_SECONDS } from "./judge_constants";
 
 export const ISOLATE_BIN = "/usr/local/bin/isolate";
 const ISOLATE_DIRECTORY = "/var/local/lib/isolate";
@@ -150,14 +151,13 @@ export function makeContestantArgv(
 
   const timeLimitSeconds = task.time_limit_ms != null
     ? task.time_limit_ms / 1000
-    : 3; // 3 seconds
+    : LIMITS_DEFAULT_RUN_TIME_LIMIT_SECONDS;
 
   const timeLimit = `${timeLimitSeconds}`;
-  const wallTimeLimit = `${timeLimitSeconds + 30}`; // 30 second bonus for wall time
-
+  const wallTimeLimit = `${getWallTimeLimit(timeLimitSeconds)}`;
   const memLimit = task.memory_limit_byte != null
     ? `${task.memory_limit_byte / 1000}`
-    : "100000"; // 100MB
+    : `${LIMITS_DEFAULT_RUN_MEMORY_LIMIT_KB}`;
 
     const argv: string[] = [
     `--box-id=${isolate.name}`,
@@ -165,8 +165,8 @@ export function makeContestantArgv(
     "--chdir=/submission",
     `--meta=${isolate.meta}`,
     `--time=${timeLimit}`,
-    `--mem=${memLimit}`,
     `--wall-time=${wallTimeLimit}`,
+    `--mem=${memLimit}`,
     "--processes=1",
     "--run",
     "--",

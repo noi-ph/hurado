@@ -3,6 +3,7 @@ import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
 import { JudgeScript, JudgeSubmission, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
 import { CompilationResult } from "./types";
 import { ISOLATE_BIN, IsolateUtils } from "./judge_utils";
+import { getWallTimeLimit, LIMITS_DEFAULT_COMPILE_MEMORY_LIMIT_KB, LIMITS_DEFAULT_COMPILE_TIME_LIMIT_SECONDS } from "./judge_constants";
 
 type LanguageSpec = {
   getExecutableName(source: string): string;
@@ -100,14 +101,13 @@ export async function compileLocalSource(
 
   const timeLimitSeconds = time_limit_ms != null
     ? time_limit_ms / 1000
-    : 10; // 10 seconds
+    : LIMITS_DEFAULT_COMPILE_TIME_LIMIT_SECONDS;
 
   const timeLimit = `${timeLimitSeconds}`;
-  const wallTimeLimit = `${timeLimitSeconds + 30}`; // 30 second bonus for wall time
-
+  const wallTimeLimit = `${getWallTimeLimit(timeLimitSeconds)}`;
   const memLimit = memory_limit_byte != null
     ? `${memory_limit_byte / 1000}`
-    : "256000"; // 256 MB
+    : `${LIMITS_DEFAULT_COMPILE_MEMORY_LIMIT_KB}`;
 
   return IsolateUtils.with(async (isolate) => {
     const argv: string[] = [
@@ -117,8 +117,8 @@ export async function compileLocalSource(
       "--env=PATH",
       `--meta=${isolate.meta}`,
       `--time=${timeLimit}`,
-      `--mem=${memLimit}`,
       `--wall-time=${wallTimeLimit}`,
+      `--mem=${memLimit}`,
       "--processes=1",
       "--run",
       "--",

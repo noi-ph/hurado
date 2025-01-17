@@ -6,6 +6,7 @@ import { UnreachableError } from "common/errors";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, runChildProcess } from "./judge_utils";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { CheckerResult } from "./types";
+import { getWallTimeLimit, LIMITS_JUDGE_MEMORY_LIMIT_KB, LIMITS_JUDGE_TIME_LIMIT_SECONDS, LIMITS_WALL_TIME_BONUS } from "./judge_constants";
 
 export async function checkSubmissionOutput(opts: {
   checker: JudgeChecker;
@@ -92,12 +93,9 @@ function makeCheckerArgv(opts: {
     output_file_name,
   } = opts;
 
-  // Checkers are allowed to run for up to one minute
-  const timeLimitSeconds = 60; // 60 seconds
-
-  const timeLimit = `${timeLimitSeconds}`;
-  const wallTimeLimit = `${timeLimitSeconds + 30}`; // 30 second bonus for wall time
-  const memLimit = "1024000"; // 1024MB
+  const timeLimit = `${LIMITS_JUDGE_TIME_LIMIT_SECONDS}`;
+  const wallTimeLimit = `${getWallTimeLimit(LIMITS_JUDGE_TIME_LIMIT_SECONDS)}`;
+  const memLimit = `${LIMITS_JUDGE_MEMORY_LIMIT_KB}`;
 
   const spec = LANGUAGE_SPECS[checker.language];
   const argv: string[] = [
@@ -107,8 +105,8 @@ function makeCheckerArgv(opts: {
     "--chdir=/task",
     `--meta=${isolate.meta}`,
     `--time=${timeLimit}`,
-    `--mem=${memLimit}`,
     `--wall-time=${wallTimeLimit}`,
+    `--mem=${memLimit}`,
     "--processes=1",
     "--run",
     "--",
