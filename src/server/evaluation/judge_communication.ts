@@ -77,6 +77,14 @@ function makeCommunicatorArgv(opts: {
   judge_file_name: string;
 }): string[] {
   const { communicator, isolate, task_root, output_root, input_file_name, judge_file_name } = opts;
+
+  // Communicators are allowed to run for up to one minute
+  const timeLimitSeconds = 60; // 60 seconds
+
+  const timeLimit = `${timeLimitSeconds}`;
+  const wallTimeLimit = `${timeLimitSeconds + 30}`; // 30 second bonus for wall time
+  const memLimit = "1024000"; // 1024MB
+
   const spec = LANGUAGE_SPECS[communicator.language];
   const argv: string[] = [
     `--box-id=${isolate.name}`,
@@ -84,6 +92,10 @@ function makeCommunicatorArgv(opts: {
     `--dir=/output=${output_root}:rw`,
     "--chdir=/task",
     `--meta=${isolate.meta}`,
+    `--time=${timeLimit}`,
+    `--mem=${memLimit}`,
+    `--wall-time=${wallTimeLimit}`,
+    "--processes=1",
     "--run",
     "--",
   ];

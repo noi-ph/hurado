@@ -40,7 +40,7 @@ export class JudgeRunner {
   ): Promise<JudgeVerdict> {
     switch (task.type) {
       case TaskType.Batch: {
-        const compilation = await compileSubmission(submission, submissionRoot);
+        const compilation = await compileSubmission(task, submission, submissionRoot);
         const context: JudgeEvaluationContextBatch = {
           task_root: taskRoot,
           output_root: outputRoot,
@@ -62,7 +62,7 @@ export class JudgeRunner {
         return judgeTask(task.type, context, null, task, submission);
       }
       case TaskType.Communication: {
-        const compilation = await compileSubmission(submission, submissionRoot);
+        const compilation = await compileSubmission(task, submission, submissionRoot);
         const context: JudgeEvaluationContextCommunication = {
           task_root: taskRoot,
           output_root: outputRoot,

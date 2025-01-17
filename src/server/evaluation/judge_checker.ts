@@ -92,6 +92,13 @@ function makeCheckerArgv(opts: {
     output_file_name,
   } = opts;
 
+  // Checkers are allowed to run for up to one minute
+  const timeLimitSeconds = 60; // 60 seconds
+
+  const timeLimit = `${timeLimitSeconds}`;
+  const wallTimeLimit = `${timeLimitSeconds + 30}`; // 30 second bonus for wall time
+  const memLimit = "1024000"; // 1024MB
+
   const spec = LANGUAGE_SPECS[checker.language];
   const argv: string[] = [
     `--box-id=${isolate.name}`,
@@ -99,6 +106,10 @@ function makeCheckerArgv(opts: {
     `--dir=/output=${output_root}`,
     "--chdir=/task",
     `--meta=${isolate.meta}`,
+    `--time=${timeLimit}`,
+    `--mem=${memLimit}`,
+    `--wall-time=${wallTimeLimit}`,
+    "--processes=1",
     "--run",
     "--",
   ];

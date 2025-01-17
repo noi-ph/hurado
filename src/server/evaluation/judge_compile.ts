@@ -1,7 +1,6 @@
-import path from "path";
 import ChildProcess from "child_process";
 import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
-import { JudgeScript, JudgeSubmission } from "common/types/judge";
+import { JudgeScript, JudgeSubmission, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
 import { CompilationResult } from "./types";
 import { ISOLATE_BIN, IsolateUtils } from "./judge_utils";
 
@@ -42,6 +41,7 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
 };
 
 export async function compileSubmission(
+  task: JudgeTaskBatch | JudgeTaskCommunication,
   submission: JudgeSubmission,
   submissionDir: string
 ): Promise<CompilationResult> {
@@ -49,7 +49,14 @@ export async function compileSubmission(
   const spec = LANGUAGE_SPECS[language];
   const srcName = getLanguageFilename(language);
   const exeName = spec.getExecutableName(srcName);
-  return compileLocalSource(language, submissionDir, srcName, exeName);
+  return compileLocalSource(
+    language,
+    task.time_limit_ms,
+    task.memory_limit_byte,
+    submissionDir,
+    srcName,
+    exeName,
+  );
 }
 
 export async function compileJudgeScriptAndMutate(
@@ -60,13 +67,22 @@ export async function compileJudgeScriptAndMutate(
   const specs = LANGUAGE_SPECS[script.language];
   const srcName = script.file_name;
   const exeName = specs.getExecutableName(srcName);
-  const result = await compileLocalSource(script.language, taskDir, srcName, exeName);
+  const result = await compileLocalSource(
+    script.language,
+    null, // Judges get the default time limit
+    null, // Judges get the default memory limit
+    taskDir,
+    srcName,
+    exeName,
+  );
   script.exe_name = result.exe_name;
   return script;
 }
 
 export async function compileLocalSource(
   language: ProgrammingLanguage,
+  time_limit_ms: number | null,
+  memory_limit_byte: number | null,
   root: string,
   src_name: string,
   exe_name: string,
@@ -82,16 +98,28 @@ export async function compileLocalSource(
     };
   }
 
+  const timeLimitSeconds = time_limit_ms != null
+    ? time_limit_ms / 1000
+    : 10; // 10 seconds
+
+  const timeLimit = `${timeLimitSeconds}`;
+  const wallTimeLimit = `${timeLimitSeconds + 30}`; // 30 second bonus for wall time
+
+  const memLimit = memory_limit_byte != null
+    ? `${memory_limit_byte / 1000}`
+    : "256000"; // 256 MB
+
   return IsolateUtils.with(async (isolate) => {
     const argv: string[] = [
       `--box-id=${isolate.name}`,
       `--dir=/mount=${root}:rw`,
       "--chdir=/mount",
       "--env=PATH",
-      "--mem=512000",   // 512 MB memory limit to compile
-      "--time=10",      // 10 seconds time limit to compile
-      "--processes=8",  // 8 processes to compile
       `--meta=${isolate.meta}`,
+      `--time=${timeLimit}`,
+      `--mem=${memLimit}`,
+      `--wall-time=${wallTimeLimit}`,
+      "--processes=1",
       "--run",
       "--",
       ...command,
@@ -104,7 +132,7 @@ export async function compileLocalSource(
       child.on("exit", async () => {
         try {
           const result = await IsolateUtils.readResult(isolate);
-          
+
           resolve({
             verdict: result.verdict,
             compile_memory_byte: result.running_memory_byte,

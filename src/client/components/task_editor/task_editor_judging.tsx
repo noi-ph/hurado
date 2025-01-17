@@ -222,21 +222,21 @@ export const TaskLimitsEditor = ({ task, setTask }: TaskLimitsEditorProps) => {
         type="text"
         value={task.memory_limit_byte}
         onChange={onChangeMemoryLimitByte}
-        placeholder="104857600"
+        placeholder="100000000"
       />
       <CommonEditorLabel label="Compile Time (ms)" />
       <CommonEditorInput
         type="text"
         value={task.compile_time_limit_ms}
         onChange={onChangeCompileTimeLimitMS}
-        placeholder="3000 (Not Yet Implemented)"
+        placeholder="10000"
       />
       <CommonEditorLabel label="Compile Memory (byte)" />
       <CommonEditorInput
         type="text"
         value={task.compile_memory_limit_byte}
         onChange={onChangeCompileMemoryLimitMS}
-        placeholder="104857600 (Not Yet Implemented)"
+        placeholder="256000000"
       />
       <CommonEditorLabel label="Submission Size (byte)" />
       <CommonEditorInput

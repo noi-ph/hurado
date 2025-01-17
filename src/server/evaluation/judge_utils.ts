@@ -167,6 +167,7 @@ export function makeContestantArgv(
     `--time=${timeLimit}`,
     `--mem=${memLimit}`,
     `--wall-time=${wallTimeLimit}`,
+    "--processes=1",
     "--run",
     "--",
   ];
