@@ -5,7 +5,6 @@ import {
   LatexNodeMacro,
 } from "./latex_types";
 import { LatexNodeStringLike, latexProcessStringLike } from "./latex_strings";
-import { Arrays } from "common/utils/arrays";
 
 export function latexProcessNode(node: LatexNode): LatexNode {
   switch (node.type) {
@@ -50,42 +49,13 @@ export function latexProcessNode(node: LatexNode): LatexNode {
 export function latexProcessMacro(node: LatexNodeMacro): LatexNodeMacro {
   let merged: LatexNodeMacro;
   if (node.args == null) {
-    merged = node;
+    return node;
   } else {
-    merged = {
+    return {
       ...node,
       args: node.args.map(mergeArgumentStrings),
     };
   }
-
-  switch(merged.content) {
-    case "url": {
-      return latexProcessVerbatimArgument(merged, 0);
-    }
-    case "href": {
-      return latexProcessVerbatimArgument(merged, 0);
-    }
-    default:
-      return merged;
-  }
-}
-
-export function latexProcessVerbatimArgument(node: LatexNodeMacro, index: number): LatexNodeMacro {
-  // Looks at an argument, for example \macro{my-argument-with-nonsense-characters}
-  // Then returns "my-argument-with-nonsense-characters" as a string literal
-  if (node.args == null) {
-    return node;
-  }
-
-  const args = node.args;
-  function extractVerbatim() {
-    return args[index];
-  }
-
-  return {
-    ...node,
-    args: Arrays.replaceNth(node.args, index, extractVerbatim()),
-  };
 }
 
 function mergeArgumentStrings(arg: LatexArgument): LatexArgument {

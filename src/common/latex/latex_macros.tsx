@@ -14,6 +14,8 @@ type EnvInfo = {
 export const LATEX_MACROS = {
   '%': {
   },
+  '\\': {
+  },
   '$': {
   },
   bf: {

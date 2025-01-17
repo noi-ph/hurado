@@ -1,4 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
 import katex from "katex";
 import { getParser } from "@unified-latex/unified-latex-util-parse";
 import { UnreachableCheck } from "common/errors";
@@ -158,25 +160,25 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
     case "HUGE":
       return <span className="text-5xl">{renderArgumentContent(node.args, source)}</span>;
     case "url": {
-      const href = latexPositionalString(node.args, 0);
-      if (href == null) {
-        return latexBrokenInline(node, source);
-      }
       return (
-        <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
-          {href}
-        </a>
+        <LatexArgumentInnerText args={node.args} index={0} source={source}>
+          {href => (
+            <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
+              {href}
+            </a>
+          )}
+        </LatexArgumentInnerText>
       );
     }
     case "href": {
-      const href = latexPositionalString(node.args, 0);
-      if (href == null) {
-        return latexBrokenInline(node, source);
-      }
       return (
-        <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
-          {renderArgumentContent(node.args, source, 1)}
-        </a>
+        <LatexArgumentInnerText args={node.args} index={0} source={source}>
+          {href => (
+            <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
+              {renderArgumentContent(node.args, source, 1)}
+            </a>
+          )}
+        </LatexArgumentInnerText>
       );
     }
     case "section": {
@@ -210,6 +212,7 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       return <LatexImageX node={node as LatexMacroImage} source={source} />;
     case "$":
     case "%":
+    case "\\":
       return node.content;
     case "item":
       return null;
@@ -222,7 +225,8 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
     default:
       // Functionally useless type assertion
       UnreachableCheck(node.content)
-      // It's important to return the content here. This allows for users to escape special strings using \x
+      // It's important to return the content here.
+      // This allows for users to escape special strings using \x
       return node.content;
   }
 }
@@ -275,4 +279,32 @@ function renderArgumentContent(
   return args[index].content.map((child, idx) => (
     <LatexNodeAnyX key={idx} node={child} source={source} />
   ));
+}
+
+type LatexArgumentInnerTextProps = {
+  args: LatexArgument[] | undefined;
+  index: number;
+  source: string;
+  children(innerHTML: string | undefined): ReactNode;
+};
+
+function LatexArgumentInnerText({ args, index, source, children }: LatexArgumentInnerTextProps) {
+  if (args == null || args.length <= index) {
+    return null;
+  }
+  const arg = args[index];
+  const [innerText, setInnerText] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    setInnerText(undefined);
+    setTimeout(() => {
+      const div = document.createElement('div');
+      const root = createRoot(div);
+      const argchildren = arg.content.map((node, idx) => <LatexNodeAnyX key={idx} node={node} source={source} />);
+      flushSync(() => root.render(argchildren));
+      setInnerText(div.innerText);
+    });
+  }, [args, index]);
+
+  return children(innerText);
 }
