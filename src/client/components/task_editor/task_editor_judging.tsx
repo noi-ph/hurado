@@ -243,7 +243,7 @@ export const TaskLimitsEditor = ({ task, setTask }: TaskLimitsEditorProps) => {
         type="text"
         value={task.submission_size_limit_byte}
         onChange={onChangeSubmissionSizeLimitByte}
-        placeholder="64000 (Not Yet Implemented)"
+        placeholder="64000"
       />
     </>
   );
