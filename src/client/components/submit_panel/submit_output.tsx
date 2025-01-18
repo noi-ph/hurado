@@ -39,7 +39,7 @@ export function SubmitOutput({ task }: SubmitOutputProps) {
 
     setSubmitting(true);
     const data = createSubmissionOutput(task, subtasks);
-    postSubmission(data, submissions, router);
+    await postSubmission(data, submissions, router);
     setSubmitting(false);
   }, [task, subtasks, submitting]);
 

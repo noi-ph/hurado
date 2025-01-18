@@ -1,6 +1,6 @@
 import "@root/global.css";
 import "react-toastify/dist/ReactToastify.css";
-
+import HuradoPNG from "assets/images/hurado.png"
 import { Montserrat, Roboto, Space_Mono } from "next/font/google";
 
 import type { FunctionComponent, ReactNode } from "react";
@@ -10,7 +10,6 @@ import { ToastContainer, Zoom } from "react-toastify";
 import { SessionProvider } from "client/sessions";
 import { getSession } from "server/sessions";
 import classNames from "classnames";
-import Head from "next/head";
 
 const fontMontserrat = Montserrat({
   subsets: ["latin"],
@@ -52,6 +51,9 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
         lang="en"
         className={classNames(fontMontserrat.variable, fontRoboto.variable, fontSpaceMono.variable)}
       >
+        <head>
+          <link rel="icon" href={HuradoPNG.src} />
+        </head>
         <body className="flex flex-col min-h-full items-stretch">
           <ToastContainer
             position="top-center"

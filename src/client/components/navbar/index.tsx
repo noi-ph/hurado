@@ -6,6 +6,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "client/sessions";
 import { getPath, Path } from "client/paths";
 import HamburgerSVG from "assets/icons/hamburger.svg";
+import HuradoPNG from "assets/images/hurado.png";
 
 type NavbarProps = {
   className?: string;
@@ -41,7 +42,10 @@ export const Navbar = memo(({ className }: NavbarProps) => {
     <div className={classNames("flex bg-blue-400 text-white", className)}>
       <div className="lg:flex lg:items-center lg:gap-2 w-full max-w-[64rem] px-4 py-3 mx-auto">
         <div className="flex justify-between items-center">
-          <NavbarLink href={getPath({ kind: Path.Home })}>Home</NavbarLink>
+          <Link href={getPath({ kind: Path.Home })} className="flex items-center hover:opacity-75 mr-2">
+            <img src={HuradoPNG.src} alt="Hurado" className="w-7 h-7" />
+            <span className="text-2xl">Hurado</span>
+          </Link>
           <button
             type="button"
             className="text-white rounded border-2 hover:opacity-70 focus:outline-none lg:hidden"
@@ -54,7 +58,7 @@ export const Navbar = memo(({ className }: NavbarProps) => {
           className="h-0 lg:h-auto flex flex-col items-start lg:flex-row lg:items-center gap-2 flex-1 box-border overflow-hidden transition-[height] duration-300 ease-in-out"
           ref={linksRef}
         >
-          <NavbarLink href={getPath({ kind: Path.ProblemSetList })}>Problems</NavbarLink>
+          <NavbarLink href={getPath({ kind: Path.ProblemSetList })} className="mt-2 lg:mt-0">Problems</NavbarLink>
           <NavbarLink href={getPath({ kind: Path.ContestList })}>Contests</NavbarLink>
           <NavbarAccount />
         </div>

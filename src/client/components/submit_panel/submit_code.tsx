@@ -47,7 +47,7 @@ export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
 
     setSubmitting(true);
     const data = createSubmissionCode(taskId, language, code);
-    postSubmission(data, submissions, router);
+    await postSubmission(data, submissions, router);
     setSubmitting(false);
   }, [taskId, submitting, language, code]);
 
