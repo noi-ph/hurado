@@ -1,21 +1,16 @@
 "use client";
 
-import { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useContext, useState } from "react";
-import { SubmissionSummaryDTO, TaskViewerOutputDTO } from "common/types";
-import { Language, TaskFlavor, TaskFlavorOutput } from "common/types/constants";
-import { SubmissionRequestDTO } from "common/validation/submission_validation";
-import http from "client/http";
-import { APIPath, Path, getAPIPath, getPath } from "client/paths";
+import { TaskViewerOutputDTO } from "common/types";
+import { TaskFlavor, TaskFlavorOutput } from "common/types/constants";
 import { SubmissionsCacheContext } from "client/submissions";
 import styles from "./submit_panel.module.css";
-import { UnreachableError } from "common/errors";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
+import { createSubmissionOutput, postSubmission } from "./submit_utils";
 
-
-type SubtaskState = {
+export type SubtaskState = {
   text: string;
   file: File | null;
 };
@@ -43,54 +38,9 @@ export function SubmitOutput({ task }: SubmitOutputProps) {
     }
 
     setSubmitting(true);
-    try {
-      const data = new FormData();
-      const request: SubmissionRequestDTO = {
-        task_id: task.id,
-        language: Language.PlainText,
-      };
-
-      const blobRequest = new Blob([JSON.stringify(request)], { type: "application/json" });
-      data.set("request", blobRequest);
-
-      for (let i = 0; i < task.subtasks.length; i++) {
-        // Task-provided file names are prepended with $ to not collide with internal stuff
-        const filename = "$" + task.subtasks[i].file_name;
-
-        let blob: Blob | null = null;
-        if (task.flavor === TaskFlavor.OutputText) {
-          const text = subtasks[i].text;
-          if (text.trim() != "") {
-            blob = new Blob([text]);
-          }
-        } else if (task.flavor === TaskFlavor.OutputFile) {
-          blob = subtasks[i].file;
-        } else {
-          throw new UnreachableError(task.flavor);
-        }
-
-        if (blob != null) {
-          data.set(filename, blob);
-        }
-      }
-
-      const submissionCreateURL = getAPIPath({ kind: APIPath.SubmissionCreate });
-      const response: AxiosResponse<SubmissionSummaryDTO> = await http.post(submissionCreateURL, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      if (response.status == 200) {
-        const submission = response.data;
-        if (submissions) {
-          submissions.clear();
-        }
-        router.refresh();
-        router.push(getPath({ kind: Path.Submission, uuid: submission.id }));
-      }
-    } finally {
-      setSubmitting(false);
-    }
+    const data = createSubmissionOutput(task, subtasks);
+    postSubmission(data, submissions, router);
+    setSubmitting(false);
   }, [task, subtasks, submitting]);
 
   return (

@@ -1,62 +1,78 @@
 import { NextRequest, NextResponse } from "next/server";
+import { db } from "db";
+import {
+  APIForbiddenError,
+  APIForbiddenErrorType,
+  APISuccessResponse,
+  APIValidationErrorCustomType,
+  customValidationError,
+  makeSuccessResponse,
+  zodValidationError,
+} from "common/responses";
+import { SubmissionSummaryDTO } from "common/types";
+import { Language, TaskType } from "common/types/constants";
 import { SubmissionRequestDTO, zSubmissionRequest } from "common/validation/submission_validation";
+import { canManageTasks } from "server/authorization";
+import { LIMITS_DEFAULT_SUBMISSION_SIZE_LIMIT_BYTE } from "server/evaluation/judge_constants";
 import { createSubmission, SubmissionFileCreate } from "server/logic/submissions/create_submission";
 import { getSession } from "server/sessions";
 import { enqueueSubmissionJudgement } from "worker/queue";
-import { db } from "db";
-import { Language, TaskType } from "common/types/constants";
-import { SubmissionFileStorage } from "server/files";
+import { z } from "zod";
+
+type CreateSubmissionValidationErrors = {
+  request: true,
+  file_size: true,
+} & z.infer<typeof zSubmissionRequest>;
+
+export type CreateSubmissionError = APIValidationErrorCustomType<CreateSubmissionValidationErrors>;
+export type CreateSubmissionSuccess = APISuccessResponse<SubmissionSummaryDTO>;
+
+export type CreateSubmissionResponse =
+  | APIForbiddenErrorType
+  | CreateSubmissionError
+  | CreateSubmissionSuccess;
 
 export async function POST(request: NextRequest) {
   const session = await getSession(request);
   if (session == null) {
-    return NextResponse.json({}, { status: 401 });
+    return NextResponse.json(APIForbiddenError, { status: 401 });
   }
 
   const formData = await request.formData();
   const formRequest = formData.get("request") as File;
   if (!(formRequest instanceof File)) {
-    return NextResponse.json(
-      {
-        error: "Missing File: request",
-      },
-      { status: 400 }
-    );
+    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
+      request: ["Missing File: Request"],
+    }), { status: 400 });
   }
+
   const jsonRequest = JSON.parse(await formRequest.text());
   const zodRequest = zSubmissionRequest.safeParse(jsonRequest);
   if (!zodRequest.success) {
-    return NextResponse.json(
-      {
-        error: zodRequest.error,
-      },
-      { status: 400 }
-    );
+    const errors = zodValidationError(zodRequest.error);
+    return NextResponse.json(errors, { status: 400 });
   }
+
   const submissionReq: SubmissionRequestDTO = zodRequest.data;
 
   const task = await db
     .selectFrom("tasks")
-    .select(["type", "allowed_languages"])
+    .select(["type", "allowed_languages", "submission_size_limit_byte", "is_public"])
     .where("id", "=", submissionReq.task_id)
     .executeTakeFirst();
 
   if (task == null) {
-    return NextResponse.json(
-      {
-        error: "Invalid task",
-      },
-      { status: 400 }
-    );
+    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
+      task_id: ["Invalid task"],
+    }), { status: 400 });
+  } else if (!task.is_public && !canManageTasks(session)) {
+    return NextResponse.json(APIForbiddenError, { status: 401 });
   }
 
   if (!isAllowedLanguage(task.type, task.allowed_languages, submissionReq.language)) {
-    return NextResponse.json(
-      {
-        error: "Invalid language",
-      },
-      { status: 400 }
-    );
+    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
+      language: ["Invalid language"],
+    }), { status: 400 });
   }
 
   let sources: SubmissionFileCreate[];
@@ -86,16 +102,12 @@ export async function POST(request: NextRequest) {
         filename: filename,
       });
     }
-    
   } else {
     const formSource = formData.get("source");
     if (!(formSource instanceof File)) {
-      return NextResponse.json(
-        {
-          error: "Missing File: source",
-        },
-        { status: 400 }
-      );
+      return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
+        request: ["Missing File: Source"],
+      }), { status: 400 });
     }
     sources = [
       {
@@ -105,13 +117,19 @@ export async function POST(request: NextRequest) {
     ];
   }
 
+  if (!areAllowedFileSizes(sources, task.submission_size_limit_byte)) {
+    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
+      file_size: ["Submission files are too big"],
+    }), { status: 400 });
+  }
+
   const submission = await createSubmission(sources, submissionReq, session.user);
 
   enqueueSubmissionJudgement({
     id: submission.id,
   });
 
-  return NextResponse.json(submission);
+  return NextResponse.json(makeSuccessResponse<SubmissionSummaryDTO>(submission));
 }
 
 function isAllowedLanguage(type: TaskType, allowed: Language[] | null, language: Language) {
@@ -120,6 +138,11 @@ function isAllowedLanguage(type: TaskType, allowed: Language[] | null, language:
   }
 
   return allowed == null || allowed.includes(language);
+}
+
+function areAllowedFileSizes(files: SubmissionFileCreate[], size_limit: number | null) {
+  const limit = size_limit || LIMITS_DEFAULT_SUBMISSION_SIZE_LIMIT_BYTE;
+  return files.every((f) => f.file.size <= limit);
 }
 
 async function loadAllowedFilenames(taskId: string): Promise<string[]> {

@@ -21,6 +21,11 @@ export type APIValidationErrorType<T extends z.ZodType> = {
   errors: ObjectErrors<z.infer<T>>;
 };
 
+export type APIValidationErrorCustomType<Custom> = {
+  kind: ResponseKind.ValidationError;
+  errors: ObjectErrors<Custom>;
+};
+
 export type APISuccessResponse<T> = {
   kind: ResponseKind.Success;
   data: T;
@@ -46,7 +51,7 @@ export function zodValidationError<T extends z.ZodType>(errors: ZodError): APIVa
   };
 }
 
-export function customValidationError<T extends z.ZodType>(errors: ObjectErrors<z.infer<T>>): APIValidationErrorType<T> {
+export function customValidationError<Custom>(errors: ObjectErrors<Custom>): APIValidationErrorCustomType<Custom> {
   return {
     kind: ResponseKind.ValidationError,
     errors: errors,
