@@ -27,7 +27,7 @@ export async function checkSubmissionOutput(opts: {
   const outputPath = path.join(opts.output_root, opts.output_file_name);
   switch (checker.kind) {
     case CheckerKind.LenientDiff: {
-      const diffStatus = await runChildProcess(["diff", "-b", judgePath, outputPath]);
+      const diffStatus = await runChildProcess(["diff", "-b", "-B", judgePath, outputPath]);
       if (diffStatus == 0) {
         return {
           verdict: Verdict.Accepted,
