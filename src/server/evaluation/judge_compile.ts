@@ -119,7 +119,7 @@ export async function compileLocalSource(
       `--time=${timeLimit}`,
       `--wall-time=${wallTimeLimit}`,
       `--mem=${memLimit}`,
-      "--processes=8",
+      "--processes=4",
       "--run",
       "--",
       ...command,
