@@ -106,7 +106,7 @@ export async function compileLocalSource(
   const timeLimit = `${timeLimitSeconds}`;
   const wallTimeLimit = `${getWallTimeLimit(timeLimitSeconds)}`;
   const memLimit = memory_limit_byte != null
-    ? `${memory_limit_byte / 1000}`
+    ? `${Math.floor(memory_limit_byte / 1000)}`
     : `${LIMITS_DEFAULT_COMPILE_MEMORY_LIMIT_KB}`;
 
   return IsolateUtils.with(async (isolate) => {
