@@ -1,0 +1,15 @@
+[Unit]
+Description=Run the Hurado docker compose
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/hurado
+Type=oneshot
+RemainAfterExit=yes
+Environment=HURADO_ENV=production
+ExecStart=/hurado/scripts/hrd.sh compose up -d
+ExecStop=/hurado/scripts/hrd.sh compose down
+
+[Install]
+WantedBy=multi-user.target

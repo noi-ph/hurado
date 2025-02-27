@@ -1,0 +1,20 @@
+# This service disables Transparent Huge Pages.
+# This is not automatically run as part of any docker compose scripts. Copy this into the host machine yourself.
+# Check that it's working by running `cat /sys/kernel/mm/transparent_hugepage/enabled`
+# The output should look like this "always madvise [never]"
+# Same with `cat /sys/kernel/mm/transparent_hugepage/defrag`
+# As an additional tip while you're here, you might want to isolate the CPUs used to run judge workers.
+# Look up isolcpus on the internet to learn how
+
+[Unit]
+Description=Disable Transparent Huge Pages (THP)
+After=sysinit.target local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/enabled'
+ExecStart=/bin/sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/defrag'
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
