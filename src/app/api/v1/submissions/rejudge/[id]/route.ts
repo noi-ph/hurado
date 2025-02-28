@@ -35,7 +35,6 @@ export async function PUT(request: NextRequest, context: NextContext<RouteParams
     return NextResponse.json({}, { status: 403 });
   }
 
-  console.log('qrys');
   const [submission, task] = await db.transaction().execute(async (trx) => {
     const sub = await loadSubmission(trx, context.params.id);
     const tsk = await loadTask(trx, sub.task_id);
