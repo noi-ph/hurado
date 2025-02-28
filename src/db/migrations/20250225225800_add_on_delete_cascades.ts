@@ -9,7 +9,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("submission_files")
     .addForeignKeyConstraint(
-      'submission_files_submission_id_fkey_cascade',
+      'submission_files_submission_id_fkey',
       ['submission_id'],
       'submissions',
       ['id'],
@@ -25,7 +25,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("verdicts")
     .addForeignKeyConstraint(
-      'verdicts_submission_id_fkey_cascade',
+      'verdicts_submission_id_fkey',
       ['submission_id'],
       'submissions',
       ['id'],
@@ -41,7 +41,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("verdict_task_data")
     .addForeignKeyConstraint(
-      'verdict_task_data_verdict_subtask_id_fkey_cascade',
+      'verdict_task_data_verdict_subtask_id_fkey',
       ['verdict_subtask_id'],
       'verdict_subtasks',
       ['id'],
@@ -53,14 +53,14 @@ export async function up(db: Kysely<any>): Promise<void> {
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("verdict_task_data")
-    .dropConstraint('verdict_task_data_verdict_subtask_id_fkey_cascade')
+    .dropConstraint('verdict_task_data_verdict_subtask_id_fkey')
     .execute();
   
   
   await db.schema
     .alterTable("verdict_task_data")
     .addForeignKeyConstraint(
-      'verdict_task_data_verdict_subtask_id_fkey_cascade',
+      'verdict_task_data_verdict_subtask_id_fkey',
       ['verdict_subtask_id'],
       'verdict_subtasks',
       ['id'],
@@ -69,13 +69,13 @@ export async function down(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .alterTable("verdicts")
-    .dropConstraint('verdicts_submission_id_fkey_cascade')
+    .dropConstraint('verdicts_submission_id_fkey')
     .execute();
 
   await db.schema
     .alterTable("verdicts")
     .addForeignKeyConstraint(
-      'verdicts_submission_id_fkey_cascade',
+      'verdicts_submission_id_fkey',
       ['submission_id'],
       'submissions',
       ['id'],
@@ -84,14 +84,14 @@ export async function down(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .alterTable("submission_files")
-    .dropConstraint('submission_files_submission_id_fkey_cascade')
+    .dropConstraint('submission_files_submission_id_fkey')
     .execute();
 
 
   await db.schema
     .alterTable("submission_files")
     .addForeignKeyConstraint(
-      'submission_files_submission_id_fkey_cascade',
+      'submission_files_submission_id_fkey',
       ['submission_id'],
       'submissions',
       ['id'],
