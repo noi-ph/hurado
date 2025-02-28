@@ -2,25 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "db";
 import {
   APIForbiddenError,
-  APIForbiddenErrorType,
-  APISuccessResponse,
-  APIValidationErrorCustomType,
-  customValidationError,
-  makeSuccessResponse,
-  zodValidationError,
 } from "common/responses";
-import { SubmissionSummaryDTO } from "common/types";
-import { Language, TaskType } from "common/types/constants";
-import { SubmissionRequestDTO, zSubmissionRequest } from "common/validation/submission_validation";
 import { canManageTasks } from "server/authorization";
-import { LIMITS_DEFAULT_SUBMISSION_SIZE_LIMIT_BYTE } from "server/evaluation/judge_constants";
-import { createSubmission, SubmissionFileCreate } from "server/logic/submissions/create_submission";
 import { getSession } from "server/sessions";
 import { enqueueSubmissionJudgement } from "worker/queue";
-import { z } from "zod";
 import { NextContext } from "types/nextjs";
 import { upsertOverallVerdict } from "server/logic/judgements/judge_runner";
-import { loadSubmission, loadTask } from "server/logic/submissions/judge_submission";
+import { loadTask } from "server/logic/submissions/judge_submission";
 
 type RouteParams = {
   id: string;
