@@ -29,6 +29,8 @@ import {
   JudgeEvaluationContextCommunication,
   JudgeEvaluationContextOutput,
 } from "server/evaluation";
+import { Kysely, Transaction } from "kysely";
+import { Models } from "common/types";
 
 export class JudgeRunner {
   static async evaluate(
@@ -176,67 +178,8 @@ async function judgeTask<Type extends TaskType>(
     .where("id", "=", dbVerdict.id)
     .returning(["id"])
     .execute();
-
-  // compute the overall verdict from all past submissions
-  const allSubmissions = await db
-    .selectFrom("task_subtasks")
-    .where("task_subtasks.task_id", "=", task.id)
-    .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
-    .select(["task_subtasks.order", "verdict_subtasks.score_raw"])
-    .execute();
-
-  const allScoreOverall = computeScoreOverall(allSubmissions);
-  await db
-    .insertInto("overall_verdicts")
-    .values({
-      task_id: task.id,
-      user_id: submission.user_id,
-      contest_id: null,
-      score_overall: allScoreOverall,
-      score_max,
-    })
-    .onConflict((conflict) => {
-      return conflict
-        .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
-        .doUpdateSet({
-          score_overall: (eb) => eb.ref("excluded.score_overall"),
-          score_max: (eb) => eb.ref("excluded.score_max"),
-      });
-    })
-    .execute();
-
-  if (submission.contest_id != null) {
-    const contestSubmissions = await db
-      .selectFrom("task_subtasks")
-      .where("task_subtasks.task_id", "=", task.id)
-      .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
-      .innerJoin("verdicts", "verdicts.id", "verdict_subtasks.verdict_id")
-      .innerJoin("submissions", "submissions.id", "verdicts.submission_id")
-      .where("submissions.contest_id", "=", submission.contest_id)
-      .select(["task_subtasks.order", "verdict_subtasks.score_raw"])
-      .execute();
-
-    const contestScoreOverall = computeScoreOverall(contestSubmissions);
-
-    await db
-      .insertInto("overall_verdicts")
-      .values({
-        task_id: task.id,
-        user_id: submission.user_id,
-        contest_id: submission.contest_id,
-        score_overall: contestScoreOverall,
-        score_max,
-      })
-      .onConflict((conflict) => {
-        return conflict
-          .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
-          .doUpdateSet({
-            score_overall: (eb) => eb.ref("excluded.score_overall"),
-            score_max: (eb) => eb.ref("excluded.score_max"),
-        });
-      })
-      .execute();
-  }
+  
+  upsertOverallVerdict(task, submission.user_id, submission.contest_id);
 
   return {
     id: dbVerdict.id,
@@ -393,6 +336,75 @@ async function judgeTaskData<Type extends TaskType>(
   return returnResult;
 }
 
+export async function upsertOverallVerdict(task: JudgeTask, user_id: string, contest_id: string | null) {
+  let score_max = 0;
+  for (const subtask of task.subtasks) {
+    score_max += subtask.score_max;
+  }
+
+  // compute the overall verdict from all past submissions
+  const allSubmissions = await db
+    .selectFrom("task_subtasks")
+    .where("task_subtasks.task_id", "=", task.id)
+    .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
+    .innerJoin("verdicts", "verdicts.id", "verdict_subtasks.verdict_id")
+    .where("verdicts.is_official", "=", true)
+    .select(["task_subtasks.order", "verdict_subtasks.score_raw"])
+    .execute();
+
+  const allScoreOverall = computeScoreOverall(allSubmissions);
+  await db
+    .insertInto("overall_verdicts")
+    .values({
+      task_id: task.id,
+      user_id: user_id,
+      contest_id: null,
+      score_overall: allScoreOverall,
+      score_max,
+    })
+    .onConflict((conflict) => {
+      return conflict
+        .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
+        .doUpdateSet({
+          score_overall: (eb) => eb.ref("excluded.score_overall"),
+          score_max: (eb) => eb.ref("excluded.score_max"),
+      });
+    })
+    .execute();
+    
+  if (contest_id != null) {
+    const contestSubmissions = await db
+      .selectFrom("task_subtasks")
+      .where("task_subtasks.task_id", "=", task.id)
+      .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
+      .innerJoin("verdicts", "verdicts.id", "verdict_subtasks.verdict_id")
+      .innerJoin("submissions", "submissions.id", "verdicts.submission_id")
+      .where("submissions.contest_id", "=", contest_id)
+      .where("verdicts.is_official", "=", true)
+      .select(["task_subtasks.order", "verdict_subtasks.score_raw"])
+      .execute();
+
+    const contestScoreOverall = computeScoreOverall(contestSubmissions);
+    await db
+      .insertInto("overall_verdicts")
+      .values({
+        task_id: task.id,
+        user_id: user_id,
+        contest_id: contest_id,
+        score_overall: contestScoreOverall,
+        score_max,
+      })
+      .onConflict((conflict) => {
+        return conflict
+          .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
+          .doUpdateSet({
+            score_overall: (eb) => eb.ref("excluded.score_overall"),
+            score_max: (eb) => eb.ref("excluded.score_max"),
+        });
+      })
+      .execute();
+  }
+}
 
 type SubtaskVerdict = {
   order: number;

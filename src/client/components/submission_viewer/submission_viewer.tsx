@@ -3,7 +3,7 @@
 import classNames from "classnames";
 import type { editor } from "monaco-editor";
 import MonacoEditor, { Monaco } from "@monaco-editor/react";
-import { useCallback, useRef } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import Link from "next/link";
 import {
   SubmissionViewerDTO,
@@ -18,7 +18,11 @@ import { uuidToHuradoID } from "common/utils/uuid";
 import BoxIcon from "client/components/box_icon";
 import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
-
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { rejudgeSubmission } from "../submit_panel/submit_utils";
+import { SubmissionsCacheContext } from "client/submissions";
+import button_styles from "../submit_panel/submit_panel.module.css";
 type SubmissionViewerProps = {
   submission: SubmissionViewerDTO;
 };
@@ -33,7 +37,7 @@ const MonacoOptions: editor.IStandaloneEditorConstructionOptions = Object.freeze
 
 const CodeEditorMinimumHeight = 72;
 
-export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
+export const SubmissionViewer = ({ submission, isAdmin }: SubmissionViewerProps & { isAdmin: boolean }) => {
   const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task.slug });
   const taskURL = `${baseTaskURL}`;
   const submissionsURL = `${baseTaskURL}#submissions`;
@@ -57,6 +61,7 @@ export const SubmissionViewer = ({ submission }: SubmissionViewerProps) => {
           </div>
         </div>
       </div>
+      <RejudgeButton submission={submission} isAdmin={isAdmin}/>
       <SubmissionVerdictSummary submission={submission} />
       {submission.verdict != null ? (
         <>
@@ -305,6 +310,40 @@ const SubmissionOutputViewer = ({ file }: SubmissionOutputViewerProps): React.Re
       <div className="text-lg mb-1">{title}</div>
       <pre className="space-mono p-2 border border-gray-300 bg-gray-200">{content}</pre>
     </div>
+  );
+};
+
+
+export const RejudgeButton = ({ submission, isAdmin }: SubmissionViewerProps & { isAdmin: boolean }) => {
+  if (!isAdmin) {
+    return null;
+  }
+
+  const [rejudging, setRejudging] = useState(false);
+  const router = useRouter();
+  const submissions = useContext(SubmissionsCacheContext);
+
+  const rejudge = useCallback(async () => {
+    if (rejudging) {
+      return;
+    }
+    setRejudging(true);
+    await rejudgeSubmission(submission.id, submissions, router);
+    toast.info('This submission will be rejudged...');
+    if (submissions) {
+      submissions.clear();
+    }
+    router.refresh();
+    router.push(getPath({ kind: Path.Submission, uuid: submission.id }));
+
+    setRejudging(false);
+  }, []);
+
+  return (
+
+    <button type="submit" className={button_styles.button} onClick={rejudge} disabled={rejudging}>
+      Rejudge
+    </button>
   );
 };
 

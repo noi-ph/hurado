@@ -51,13 +51,13 @@ export async function judgeSubmission(submissionId: string) {
   }
 }
 
-async function loadSubmission(
+export async function loadSubmission(
   trx: Transaction<Models>,
   submissionId: string
 ): Promise<JudgeSubmission> {
   const dbsub = await trx
     .selectFrom("submissions")
-    .select(["id", "task_id", "user_id", "contest_id", "language"])
+    .select(["id", "task_id", "user_id", "contest_id", "language", "official_verdict_id"])
     .where("id", "=", submissionId)
     .executeTakeFirstOrThrow();
 
@@ -74,10 +74,11 @@ async function loadSubmission(
     contest_id: dbsub.contest_id,
     language: dbsub.language as Language,
     files: files,
+    official_verdict_id: dbsub.official_verdict_id,
   };
 }
 
-async function loadTask(trx: Transaction<Models>, taskId: string): Promise<JudgeTask> {
+export async function loadTask(trx: Transaction<Models>, taskId: string): Promise<JudgeTask> {
   const task = await trx
     .selectFrom("tasks")
     .where("id", "=", taskId)

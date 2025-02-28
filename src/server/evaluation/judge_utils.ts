@@ -89,11 +89,11 @@ export class IsolateUtils {
     }
 
     if (maxRSS != null && !isNaN(+maxRSS)) {
-      result.running_memory_byte = (+maxRSS) * 1000;
+      result.running_memory_byte = Math.round((+maxRSS) * 1000);
     }
 
     if (time != null && !isNaN(+time)) {
-      result.running_time_ms = (+time) * 1000;
+      result.running_time_ms = Math.round((+time) * 1000);
     }
 
     return result;

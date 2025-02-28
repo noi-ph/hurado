@@ -31,7 +31,7 @@ async function Page(props: SubmissionPageProps) {
 
   return (
     <DefaultLayout>
-      <SubmissionViewer submission={submission} />
+      <SubmissionViewer submission={submission} isAdmin={session.user.role === 'admin'}/>
     </DefaultLayout>
   );
 }

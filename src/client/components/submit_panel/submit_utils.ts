@@ -110,10 +110,33 @@ export async function postSubmission(
         default:
           UnreachableCheck(data);
           toast.error("An unexpected error occurred");
+          console.log(e);
       }
     } else {
       toast.error("An network error occurred. Please try again.");
       throw e;
     }
+  }
+}
+
+export async function rejudgeSubmission(submission_id: string, submissions: SubmissionsCache | null, router: AppRouterInstance) {
+  try {
+    const submissionRejudgeURL = getAPIPath({ kind: APIPath.SubmissionRejudge, id: submission_id });
+    await http.put(submissionRejudgeURL);
+    if (submissions) {
+      submissions.clear();
+    }
+    router.refresh();
+    location.reload(); // force the page to re-load itself
+  
+  } catch(e) {
+    if (e instanceof AxiosError && e.response) {
+      toast.error("An unexpected error occurred in rejudging the submission");
+      console.log(e.response);
+    } else {
+      toast.error("An network error occurred. Please try again.");
+      throw e;
+    }
+    return null;
   }
 }

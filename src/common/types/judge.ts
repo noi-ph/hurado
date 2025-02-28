@@ -82,6 +82,7 @@ export type JudgeSubmission = {
   contest_id: string | null;
   files: JudgeSubmissionFile[];
   language: Language;
+  official_verdict_id: string | null;
 };
 
 type JudgeSubmissionFile = {

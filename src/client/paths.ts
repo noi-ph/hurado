@@ -112,6 +112,7 @@ export enum APIPath {
   ResetPassword = "ResetPassword",
   AttachmentFile = "AttachmentFile",
   SubmissionCreate = "SubmissionCreate",
+  SubmissionRejudge = "SubmissionRejudge",
   UserSubmissions = "UserSubmissions",
   FileHashes = "FileHashes",
   FileUpload = "FileUpload",
@@ -133,6 +134,7 @@ export type APIPathArguments =
   | { kind: APIPath.ForgotPassword }
   | { kind: APIPath.ResetPassword }
   | { kind: APIPath.SubmissionCreate }
+  | { kind: APIPath.SubmissionRejudge; id: string }
   | { kind: APIPath.UserSubmissions; taskId?: string }
   | { kind: APIPath.FileHashes }
   | { kind: APIPath.FileUpload }
@@ -159,6 +161,8 @@ export function getAPIPath(args: APIPathArguments) {
       return "api/v1/auth/reset-password";
     case APIPath.SubmissionCreate:
       return "/api/v1/submissions";
+    case APIPath.SubmissionRejudge:
+      return `/api/v1/submissions/rejudge/${args.id}`;
     case APIPath.UserSubmissions:
       return addSearchParameters("/api/v1/user/submissions", {
         taskId: args.taskId,
