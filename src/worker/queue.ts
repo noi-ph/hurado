@@ -19,9 +19,15 @@ const connection = new Redis({
 export const JobQueue = new Queue(__MAIN_QUEUE_NAME__, { connection });
 
 export async function enqueueSubmissionJudgement(data: SubmissionJudgementData) {
-  return await JobQueue.add(JobName.SubmissionJudgement, data);
+  return await JobQueue.add(JobName.SubmissionJudgement, data, {
+    removeOnComplete: true,
+    removeOnFail: 100,
+  });
 }
 
 export async function enqueuePasswordReset(data: PasswordResetData) {
-  return await JobQueue.add(JobName.PasswordReset, data);
+  return await JobQueue.add(JobName.PasswordReset, data, {
+    removeOnComplete: true,
+    removeOnFail: 100,
+  });
 }
