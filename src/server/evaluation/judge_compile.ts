@@ -26,7 +26,7 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
       return removeLastExtension(source);
     },
     getCompileCommand: (source: string, exe: string) => {
-      return ["/usr/bin/g++", "-O2", "-std=c++11", "-o", exe, source];
+      return ["/usr/bin/g++", "-O2", "-std=c++17", "-o", exe, source];
     },
     interpreter: null,
   },
@@ -35,7 +35,7 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
       return removeLastExtension(source);
     },
     getCompileCommand: (source: string, exe: string) => {
-      return ["/usr/bin/g++", "-O2", "-std=c++11", "-o", exe, source];
+      return ["/usr/bin/g++", "-O2", "-std=c++17", "-o", exe, source];
     },
     interpreter: "/usr/bin/java",
   },

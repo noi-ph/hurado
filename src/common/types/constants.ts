@@ -49,7 +49,7 @@ export function humanizeLanguage(language: Language): string {
     case Language.Python3:
       return "Python 3.9.2";
     case Language.CPP:
-      return "C++";
+      return "C++ 17";
     case Language.Java:
       return "Java";
     default:
