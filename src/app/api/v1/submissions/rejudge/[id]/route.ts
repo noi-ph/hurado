@@ -36,12 +36,16 @@ export async function PUT(request: NextRequest, context: NextContext<RouteParams
   }
 
   const [submission, task] = await db.transaction().execute(async (trx) => {
-    const sub = await loadSubmission(trx, context.params.id);
+    const sub = await trx
+      .selectFrom("submissions")
+      .where("submissions.id", "=", context.params.id)
+      .select(["task_id", "official_verdict_id", "user_id", "contest_id"])
+      .executeTakeFirstOrThrow();
     const tsk = await loadTask(trx, sub.task_id);
     
     await trx
       .updateTable("submissions")
-      .where("submissions.id", "=", sub.id)
+      .where("submissions.id", "=", context.params.id)
       .set({
         official_verdict_id: null,
       })
