@@ -193,72 +193,123 @@ async function getSubmissionVerdict(
   const subtaskIds = subverdicts.map((sv) => sv.subtask_id);
   const verdictSubtaskIds = subverdicts.map((sv) => sv.verdict_subtask_id).filter(notNull);
 
-  const dataVerdictsQuery = db
-    .selectFrom("task_data")
-    .where("task_data.subtask_id", "in", subtaskIds)
-    .leftJoin(
-      (eb) => {
-        const base = eb
-          .selectFrom("verdict_task_data")
-          .select([
-            "id",
-            "task_data_id",
-            "verdict",
-            "score_raw",
-            "running_time_ms",
-            "running_memory_byte",
-          ]);
-        const filtered =
-          verdictSubtaskIds.length > 0
-            ? base.where("verdict_subtask_id", "in", verdictSubtaskIds)
-            : base.where("verdict_subtask_id", "is", null);
-        return filtered.as("verdict_task_data");
-      },
-      (join) => join.onRef("verdict_task_data.task_data_id", "=", "task_data.id")
-    )
-    .select([
-      "task_data.subtask_id as subtask_id",
-      "verdict_task_data.id as verdict_task_data_id",
-      "verdict_task_data.verdict",
-      "verdict_task_data.score_raw",
-      "verdict_task_data.running_time_ms",
-      "verdict_task_data.running_memory_byte",
-    ])
-    .orderBy(["task_data.subtask_id", "task_data.order asc"]);
-
-  const dataVerdicts =
-    subtaskIds.length >= 0 && verdictSubtaskIds.length >= 0
-      ? await dataVerdictsQuery.execute()
-      : [];
-
-  function toVerdictTaskData(dv: (typeof dataVerdicts)[number]): VerdictTaskDataViewerDTO {
+  if (subtaskIds.length == 0) {
+    // No subtasks at all
     return {
-      verdict: dv.verdict as Verdict,
-      score_raw: dv.score_raw,
-      running_time_ms: dv.running_time_ms,
-      running_memory_byte: dv.running_memory_byte,
+      verdict: verdict.verdict as Verdict | null,
+      score_raw: verdict.score_raw,
+      score_max: task.score_max,
+      running_time_ms: verdict.running_time_ms,
+      running_memory_byte: verdict.running_memory_byte,
+      compile_time_ms: verdict.compile_time_ms,
+      compile_memory_byte: verdict.compile_memory_byte,
+      subtasks: [],
+    };
+  } else if (verdictSubtaskIds.length == 0) {
+    // Subtasks exist but subverdicts do not. Only need to query task_data
+    // In fact, we really only need the counts per subtask_id
+    const dataVerdictsQuery = db
+      .selectFrom("task_data")
+      .where("task_data.subtask_id", "in", subtaskIds)
+      .select(["task_data.subtask_id as subtask_id"])
+      .orderBy(["task_data.subtask_id"]);
+
+    const dataVerdicts = await dataVerdictsQuery.execute();
+
+    // No verdict subtask => no verdict task data => empty objects
+    function toVerdictTaskData(): VerdictTaskDataViewerDTO {
+      return {
+        verdict: null,
+        score_raw: null,
+        running_time_ms: null,
+        running_memory_byte: null,
+      };
+    }
+
+    function toVerdictSubtask(sv: (typeof subverdicts)[number]): VerdictSubtaskViewerDTO {
+      return {
+        verdict: sv.verdict,
+        score_raw: sv.score_raw,
+        score_max: sv.score_max,
+        running_time_ms: sv.running_time_ms,
+        running_memory_byte: sv.running_memory_byte,
+        data: dataVerdicts.filter((dv) => dv.subtask_id === sv.subtask_id).map(toVerdictTaskData),
+      };
+    }
+
+    return {
+      verdict: verdict.verdict as Verdict | null,
+      score_raw: verdict.score_raw,
+      score_max: task.score_max,
+      running_time_ms: verdict.running_time_ms,
+      running_memory_byte: verdict.running_memory_byte,
+      compile_time_ms: verdict.compile_time_ms,
+      compile_memory_byte: verdict.compile_memory_byte,
+      subtasks: subverdicts.map(toVerdictSubtask),
+    };
+  } else {
+    // Subtasks exist and at least one verdict subtask exists
+    // We need to find all task_data and left join them to verdict_task_data
+    const dataVerdictsQuery = db
+      .selectFrom("task_data")
+      .where("task_data.subtask_id", "in", subtaskIds)
+      .leftJoin(
+        (eb) => {
+          return eb
+            .selectFrom("verdict_task_data")
+            .select([
+              "id",
+              "task_data_id",
+              "verdict",
+              "score_raw",
+              "running_time_ms",
+              "running_memory_byte",
+            ])
+            .where("verdict_subtask_id", "in", verdictSubtaskIds)
+            .as("verdict_task_data");
+        },
+        (join) => join.onRef("verdict_task_data.task_data_id", "=", "task_data.id")
+      )
+      .select([
+        "task_data.subtask_id as subtask_id",
+        "verdict_task_data.id as verdict_task_data_id",
+        "verdict_task_data.verdict",
+        "verdict_task_data.score_raw",
+        "verdict_task_data.running_time_ms",
+        "verdict_task_data.running_memory_byte",
+      ])
+      .orderBy(["task_data.subtask_id", "task_data.order asc"]);
+
+    const dataVerdicts = await dataVerdictsQuery.execute();
+    function toVerdictTaskData(dv: (typeof dataVerdicts)[number]): VerdictTaskDataViewerDTO {
+      return {
+        verdict: dv.verdict as Verdict,
+        score_raw: dv.score_raw,
+        running_time_ms: dv.running_time_ms,
+        running_memory_byte: dv.running_memory_byte,
+      };
+    }
+
+    function toVerdictSubtask(sv: (typeof subverdicts)[number]): VerdictSubtaskViewerDTO {
+      return {
+        verdict: sv.verdict,
+        score_raw: sv.score_raw,
+        score_max: sv.score_max,
+        running_time_ms: sv.running_time_ms,
+        running_memory_byte: sv.running_memory_byte,
+        data: dataVerdicts.filter((dv) => dv.subtask_id === sv.subtask_id).map(toVerdictTaskData),
+      };
+    }
+
+    return {
+      verdict: verdict.verdict as Verdict | null,
+      score_raw: verdict.score_raw,
+      score_max: task.score_max,
+      running_time_ms: verdict.running_time_ms,
+      running_memory_byte: verdict.running_memory_byte,
+      compile_time_ms: verdict.compile_time_ms,
+      compile_memory_byte: verdict.compile_memory_byte,
+      subtasks: subverdicts.map(toVerdictSubtask),
     };
   }
-
-  function toVerdictSubtask(sv: (typeof subverdicts)[number]): VerdictSubtaskViewerDTO {
-    return {
-      verdict: sv.verdict,
-      score_raw: sv.score_raw,
-      score_max: sv.score_max,
-      running_time_ms: sv.running_time_ms,
-      running_memory_byte: sv.running_memory_byte,
-      data: dataVerdicts.filter((dv) => dv.subtask_id === sv.subtask_id).map(toVerdictTaskData),
-    };
-  }
-
-  return {
-    verdict: verdict.verdict as Verdict,
-    score_raw: verdict.score_raw,
-    score_max: task.score_max,
-    running_time_ms: verdict.running_time_ms,
-    running_memory_byte: verdict.running_memory_byte,
-    compile_time_ms: verdict.compile_time_ms,
-    compile_memory_byte: verdict.compile_memory_byte,
-    subtasks: subverdicts.map(toVerdictSubtask),
-  };
 }
