@@ -48,8 +48,8 @@ export async function PUT(request: NextRequest, context: NextContext<RouteParams
       .execute();
     return [sub, tsk];
   });
-  upsertOverallVerdict(task, submission.user_id, submission.contest_id);
-  enqueueSubmissionJudgement({ id: context.params.id });
+  await upsertOverallVerdict(task, submission.user_id, submission.contest_id);
+  await enqueueSubmissionJudgement({ id: context.params.id });
 
   return NextResponse.json(null);
 }
