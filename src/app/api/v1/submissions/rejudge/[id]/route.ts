@@ -23,7 +23,7 @@ export async function PUT(request: NextRequest, context: NextContext<RouteParams
     return NextResponse.json({}, { status: 403 });
   }
 
-  const [submission, task] = await db.transaction().execute(async (trx) => {
+  await db.transaction().execute(async (trx) => {
     const sub = await trx
       .selectFrom("submissions")
       .where("submissions.id", "=", context.params.id)
@@ -46,9 +46,9 @@ export async function PUT(request: NextRequest, context: NextContext<RouteParams
       })
       .where("verdicts.id", "=", sub.official_verdict_id)
       .execute();
-    return [sub, tsk];
+
+    await upsertOverallVerdict(tsk, sub.user_id, sub.contest_id, trx);
   });
-  await upsertOverallVerdict(task, submission.user_id, submission.contest_id);
   await enqueueSubmissionJudgement({ id: context.params.id });
 
   return NextResponse.json(null);

@@ -1,5 +1,4 @@
-import fs from "fs";
-import { UnreachableCheck, UnreachableError } from "common/errors";
+import { UnreachableError } from "common/errors";
 import { ProgrammingLanguage, TaskType, Verdict } from "common/types/constants";
 import {
   JudgeSubmission,
@@ -179,7 +178,7 @@ async function judgeTask<Type extends TaskType>(
     .returning(["id"])
     .execute();
   
-  upsertOverallVerdict(task, submission.user_id, submission.contest_id);
+  upsertOverallVerdict(task, submission.user_id, submission.contest_id, db);
 
   return {
     id: dbVerdict.id,
@@ -336,14 +335,14 @@ async function judgeTaskData<Type extends TaskType>(
   return returnResult;
 }
 
-export async function upsertOverallVerdict(task: JudgeTask, user_id: string, contest_id: string | null) {
+export async function upsertOverallVerdict(task: JudgeTask, user_id: string, contest_id: string | null, trx: Kysely<Models> | Transaction<Models>) {
   let score_max = 0;
   for (const subtask of task.subtasks) {
     score_max += subtask.score_max;
   }
 
   // compute the overall verdict from all past submissions
-  const allSubmissions = await db
+  const allSubmissions = await trx
     .selectFrom("task_subtasks")
     .where("task_subtasks.task_id", "=", task.id)
     .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
@@ -353,7 +352,7 @@ export async function upsertOverallVerdict(task: JudgeTask, user_id: string, con
     .execute();
 
   const allScoreOverall = computeScoreOverall(allSubmissions);
-  await db
+  await trx
     .insertInto("overall_verdicts")
     .values({
       task_id: task.id,
@@ -373,7 +372,7 @@ export async function upsertOverallVerdict(task: JudgeTask, user_id: string, con
     .execute();
     
   if (contest_id != null) {
-    const contestSubmissions = await db
+    const contestSubmissions = await trx
       .selectFrom("task_subtasks")
       .where("task_subtasks.task_id", "=", task.id)
       .innerJoin("verdict_subtasks", "verdict_subtasks.subtask_id", "task_subtasks.id")
@@ -385,7 +384,7 @@ export async function upsertOverallVerdict(task: JudgeTask, user_id: string, con
       .execute();
 
     const contestScoreOverall = computeScoreOverall(contestSubmissions);
-    await db
+    await trx
       .insertInto("overall_verdicts")
       .values({
         task_id: task.id,
