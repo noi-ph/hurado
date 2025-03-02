@@ -1,5 +1,5 @@
 import { Readable } from "stream";
-import { createWriteStream } from "fs";
+import { createWriteStream, promises as fsPromises } from "fs";
 import { S3, HeadBucketCommand, CreateBucketCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
   AWS_S3_ENDPOINT,
@@ -7,15 +7,17 @@ import {
   AWS_SECRET_ACCESS_KEY,
   AWS_REGION,
   AWS_UPLOAD_BUCKET,
+  MAX_LOCAL_FILE_CACHE_MB,
 } from "../secrets";
 import { FileStorage, FileStorageClients } from "./abstract";
 
-class S3FileStorage implements FileStorage {
+class S3FileStorage extends FileStorage {
   s3: S3;
   bucket: string;
   prefix: string;
 
-  constructor(s3: S3, bucket: string, prefix: string) {
+  constructor(s3: S3, bucket: string, prefix: string, maxCacheSizeMB: number = 0) {
+    super(maxCacheSizeMB);
     this.s3 = s3;
     this.bucket = bucket;
     this.prefix = prefix;
@@ -35,9 +37,18 @@ class S3FileStorage implements FileStorage {
   }
 
   async downloadToBuffer(filename: string): Promise<Buffer> {
+    const prefixed = this.getFilename(filename);
+    
+    // Try to get from cache first
+    const cachedPath = await this.cache.get('s3', this.bucket, prefixed);
+    if (cachedPath) {
+      return await fsPromises.readFile(cachedPath);
+    }
+    
+    // Not in cache, download from S3
     const params = {
       Bucket: this.bucket,
-      Key: this.getFilename(filename),
+      Key: prefixed,
     };
     const data = await this.s3.send(new GetObjectCommand(params));
     const stream = data.Body as Readable;
@@ -45,11 +56,31 @@ class S3FileStorage implements FileStorage {
     for await (const chunk of stream) {
       chunks.push(chunk);
     }
-    return Buffer.concat(chunks);
+    
+    const buffer = Buffer.concat(chunks);
+    
+    // Cache the downloaded buffer
+    try {
+      await this.cache.putBuffer('s3', this.bucket, prefixed, buffer);
+    } catch (error) {
+      console.error('Error caching file:', error);
+      // Continue even if caching fails
+    }
+    
+    return buffer;
   }
 
   async downloadToFile(filename: string, destination: string): Promise<unknown> {
     const prefixed = this.getFilename(filename);
+    
+    // Try to get from cache first
+    const cachedPath = await this.cache.get('s3', this.bucket, prefixed);
+    if (cachedPath) {
+      await fsPromises.copyFile(cachedPath, destination);
+      return;
+    }
+    
+    // Not in cache, download from S3
     const params = {
       Bucket: this.bucket,
       Key: prefixed,
@@ -61,11 +92,21 @@ class S3FileStorage implements FileStorage {
       throw new Error(`Missing file '${prefixed}'`);
     }
 
-    return await new Promise<void>((resolve, reject) => {
+    const result = await new Promise<void>((resolve, reject) => {
       body.pipe(createWriteStream(destination))
         .on('error', err => reject(err))
         .on('close', () => resolve())
     });
+    
+    // Cache the downloaded file
+    try {
+      await this.cache.put('s3', this.bucket, prefixed, destination);
+    } catch (error) {
+      console.error('Error caching file:', error);
+      // Continue even if caching fails
+    }
+    
+    return result;
   }
 
   async createIfNotExists() {
@@ -101,8 +142,8 @@ export function makeStorageClientsS3(): FileStorageClients<S3FileStorage> {
     },
   });
 
-  const TaskFileStorage = new S3FileStorage(s3, AWS_UPLOAD_BUCKET, TASK_FILE_PREFIX);
-  const SubmissionFileStorage = new S3FileStorage(s3, AWS_UPLOAD_BUCKET, SUBMISSION_FILE_PREFIX);
+  const TaskFileStorage = new S3FileStorage(s3, AWS_UPLOAD_BUCKET, TASK_FILE_PREFIX, MAX_LOCAL_FILE_CACHE_MB);
+  const SubmissionFileStorage = new S3FileStorage(s3, AWS_UPLOAD_BUCKET, SUBMISSION_FILE_PREFIX, MAX_LOCAL_FILE_CACHE_MB);
 
   return {
     TaskFileStorage,

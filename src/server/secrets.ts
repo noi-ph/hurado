@@ -51,3 +51,8 @@ export const EMAIL_PROVIDER = parseEmailProvider();
 export const AWS_SES_ACCESS_KEY_ID = process.env.AWS_SES_ACCESS_KEY_ID!;
 export const AWS_SES_SECRET_ACCESS_KEY = process.env.AWS_SES_SECRET_ACCESS_KEY!;
 export const AWS_SES_REGION = process.env.AWS_SES_REGION!;
+
+// File cache configuration
+export const MAX_LOCAL_FILE_CACHE_MB = process.env.MAX_LOCAL_FILE_CACHE_MB 
+  ? parseInt(process.env.MAX_LOCAL_FILE_CACHE_MB, 10) 
+  : 0; // Default to 0 (disabled) if not set
