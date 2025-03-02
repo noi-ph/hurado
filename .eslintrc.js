@@ -3,16 +3,21 @@ module.exports = {
   parserOptions: {
     project: "./tsconfig.json",
     tsconfigRootDir: __dirname,
+    ecmaVersion: 2020,
+    sourceType: "module",
+    ecmaFeatures: {
+      jsx: true,
+    },
   },
   plugins: ["@typescript-eslint"],
-  extends: ["eslint:recommended", "next/core-web-vitals", "prettier"],
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "next/core-web-vitals",
+    "prettier"
+  ],
   rules: {
-    "no-console": [
-      "warn",
-      {
-        allow: ["info", "warn", "error"],
-      },
-    ],
+    "no-console": "off",
     "no-unused-vars": "off",
     "consistent-return": "off",
     "import/extensions": ["error", "never"],
@@ -44,5 +49,6 @@ module.exports = {
     ],
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-non-null-assertion": "off",
   },
 };

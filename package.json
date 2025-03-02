@@ -78,6 +78,8 @@
     "@types/node": "20.11.24",
     "@types/pg": "^8.11.6",
     "@types/react": "^18.2.61",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -89,7 +91,6 @@
     "server-only": "^0.0.1",
     "tailwindcss": "^3.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.1"
+    "typescript": "^5.5.4"
   }
 }
