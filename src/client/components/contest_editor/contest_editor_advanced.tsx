@@ -1,7 +1,7 @@
 import { useCallback } from "react";
+import { InputChangeEvent } from "common/types/events";
 import { CommonEditorContent, CommonEditorDetails, CommonEditorLabel } from "../common_editor";
 import { ContestED } from "./types";
-import { InputChangeEvent } from "common/types/events";
 
 type ContestEditorAdvancedProps = {
   contest: ContestED;

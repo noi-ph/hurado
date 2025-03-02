@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { zTaskCreateSimple } from "common/validation/task_validation";
 import { db } from "db";
 import { getSession } from "server/sessions";
@@ -13,7 +14,6 @@ import {
   makeSuccessResponse,
   zodValidationError,
 } from "common/responses";
-import { z } from "zod";
 
 export type TaskCreateSimpleError =
   | APIForbiddenErrorType

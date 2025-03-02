@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { ReactNode, useCallback, useRef } from "react";
+import { toast } from "react-toastify";
 import { Arrays } from "common/utils/arrays";
 import { InputChangeEvent } from "common/types/events";
 import { normalizeAttachmentPath } from "common/utils/attachments";
@@ -19,7 +20,6 @@ import {
 } from "./common_editor_parts";
 import { destructivelyComputeSHA1 } from "./common_editor_utils";
 import styles from "./common_editor.module.css";
-import { toast } from "react-toastify";
 
 type CommonAttachmentSavedProps = {
   index: number;

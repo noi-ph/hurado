@@ -10,14 +10,14 @@ import {
   PropsWithChildren,
   useRef,
 } from "react";
+import { toast } from "react-toastify";
 import BoxIcon from "client/components/box_icon";
 import { InputChangeEvent, SelectChangeEvent, TextAreaChangeEvent } from "common/types/events";
+import { getPath, Path } from "client/paths";
+import { Scrollable } from "../scrollable";
 import { destructivelyComputeSHA1, IncompleteHashesException } from "./common_editor_utils";
 import styles from "./common_editor.module.css";
-import { Scrollable } from "../scrollable";
-import { toast } from "react-toastify";
 import { CommonFileED, CommonFileLocal, EditorKind } from "./types";
-import { getPath, Path } from "client/paths";
 
 type CommonEditorPageProps = {
   isStatement: boolean;

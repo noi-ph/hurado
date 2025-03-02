@@ -1,3 +1,5 @@
+import { Readable } from "stream";
+import { createWriteStream } from "fs";
 import { S3, HeadBucketCommand, CreateBucketCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
   AWS_S3_ENDPOINT,
@@ -7,8 +9,6 @@ import {
   AWS_UPLOAD_BUCKET,
 } from "../secrets";
 import { FileStorage, FileStorageClients } from "./abstract";
-import { Readable } from "stream";
-import { createWriteStream } from "fs";
 
 class S3FileStorage implements FileStorage {
   s3: S3;

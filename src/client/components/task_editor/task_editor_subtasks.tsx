@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { useCallback, useRef, useState } from "react";
 import { InputChangeEvent } from "common/types/events";
-import { TaskDataED, TaskDataLocal, TaskED, TaskSubtaskED } from "./types";
 import { Arrays } from "common/utils/arrays";
 import { TaskType } from "common/types/constants";
 import {
@@ -14,6 +13,7 @@ import {
   CommonFileED,
   EditorKind,
 } from "client/components/common_editor";
+import { TaskDataED, TaskDataLocal, TaskED, TaskSubtaskED } from "./types";
 import styles from "./task_editor.module.css";
 
 type TaskEditorSubtasksProps = {

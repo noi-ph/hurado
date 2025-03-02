@@ -1,11 +1,11 @@
 import { DetailedHTMLProps, HTMLAttributes, TableHTMLAttributes } from "react";
+import classNames from "classnames";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { getSession } from "server/sessions";
 import { ForbiddenPage } from "server/errors/forbidden";
 import { canManageContests } from "server/authorization";
 import { ContestSummaryDTO } from "common/types";
 import { db } from "db";
-import classNames from "classnames";
 
 type TableProps = DetailedHTMLProps<HTMLAttributes<HTMLTableElement>, HTMLTableElement>;
 type TableSectionProps = DetailedHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;

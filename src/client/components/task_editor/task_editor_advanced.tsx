@@ -1,10 +1,10 @@
 import classNames from "classnames";
+import { useCallback } from "react";
 import styles from "client/components/common_editor/common_editor.module.css";
+import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
 import { CommonEditorContent, CommonEditorDetails, CommonEditorLabel, CommonEditorSelect } from "../common_editor";
 import { Scrollable } from "../scrollable";
 import { TaskED } from "./types";
-import { useCallback } from "react";
-import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
 
 type TaskEditorAdvancedProps = {
   task: TaskED;

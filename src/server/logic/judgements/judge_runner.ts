@@ -1,3 +1,4 @@
+import { Kysely, Transaction } from "kysely";
 import { UnreachableError } from "common/errors";
 import { ProgrammingLanguage, TaskType, Verdict } from "common/types/constants";
 import {
@@ -28,7 +29,6 @@ import {
   JudgeEvaluationContextCommunication,
   JudgeEvaluationContextOutput,
 } from "server/evaluation";
-import { Kysely, Transaction } from "kysely";
 import { Models } from "common/types";
 
 export class JudgeRunner {
@@ -143,7 +143,7 @@ async function judgeTask<Type extends TaskType>(
   let running_time_ms = 0;
   let running_memory_byte = 0;
 
-  var score_max = 0;
+  let score_max = 0;
   const verdict_cache = new Map<string, JudgeVerdictTaskData>();
   for (const subtask of task.subtasks) {
     const child = await judgeSubtask(

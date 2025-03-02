@@ -7,8 +7,8 @@ import { uuidToHuradoID } from "common/utils/uuid";
 import { humanizeTimeAgo } from "common/utils/dates";
 import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
-import styles from "./submission_table.module.css";
 import { OverallVerdictDisplayDTO } from "common/types/verdicts";
+import styles from "./submission_table.module.css";
 
 type SubmissionTableProps = {
   loaded: boolean;

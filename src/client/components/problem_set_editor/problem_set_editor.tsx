@@ -5,6 +5,7 @@ import classNames from "classnames";
 import Link from "next/link";
 import { ReactNode, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useParams } from "next/navigation";
 import { Navbar } from "client/components/navbar";
 import {
   CommonEditorFooter,
@@ -36,7 +37,6 @@ import { ProblemSetED, ProblemSetTaskED } from "./types";
 import { coerceProblemSetED } from "./problem_set_coercion";
 import { saveProblemSet } from "./problem_set_editor_saving";
 import styles from "./problem_set_editor.module.css";
-import { useParams } from "next/navigation";
 
 type ProblemSetEditorProps = {
   dto: ProblemSetEditorDTO;

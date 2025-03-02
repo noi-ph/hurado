@@ -1,8 +1,8 @@
 import classNames from "classnames";
-import { getPath, Path } from "client/paths";
-import { useSession } from "client/sessions";
 import Link from "next/link";
 import { memo } from "react";
+import { getPath, Path } from "client/paths";
+import { useSession } from "client/sessions";
 
 export enum TaskViewerTab {
   Statement = "statement",

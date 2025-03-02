@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext } from "react";
-import { LatexArgument, LatexBaseNode, LatexNode, LatexNodeProps } from "./latex_types";
 import { UnreachableCheck } from "common/errors";
+import { LatexArgument, LatexBaseNode, LatexNode, LatexNodeProps } from "./latex_types";
 import { latexBrokenBlock, latexParseKwargs, latexPositionalArgument, latexPositionalString } from "./latex_utils";
 import { LatexNodeAnyX } from "./latex_render";
 import { LatexCounterContext } from "./latex_counters";

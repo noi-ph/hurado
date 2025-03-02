@@ -1,7 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
 import { Language, Verdict } from "common/types/constants";
 import { SubmissionSummaryDTO } from "common/types/submissions";
 import { db } from "db";
-import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "server/sessions";
 
 export async function GET(request: NextRequest) {

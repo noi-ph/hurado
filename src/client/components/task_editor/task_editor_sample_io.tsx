@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { CommonEditorAddButton, CommonEditorInput, EditorKind } from "../common_editor";
-import { TaskED, TaskSampleIO_ED } from "./types";
 import { InputChangeEvent } from "common/types/events";
+import { CommonEditorAddButton, CommonEditorInput, EditorKind } from "../common_editor";
 import BoxIcon from "../box_icon";
+import { TaskED, TaskSampleIO_ED } from "./types";
 
 type TaskEditorSampleProps = {
   task: TaskED;

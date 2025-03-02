@@ -1,3 +1,4 @@
+import { Transaction } from "kysely";
 import { db } from "db";
 import type {
   JudgeChecker,
@@ -11,7 +12,6 @@ import type {
 import { JudgeFiles } from "server/logic/judgements/judge_files";
 import { JudgeRunner } from "server/logic/judgements/judge_runner";
 import { CheckerKind, Language, TaskType } from "common/types/constants";
-import { Transaction } from "kysely";
 import { Models } from "common/types";
 import { TaskConfigurationError, UnreachableError } from "common/errors";
 

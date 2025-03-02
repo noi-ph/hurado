@@ -580,7 +580,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
       task.id,
       task.subtasks
     );
-    let dbSampleIO = await upsertTaskSampleIO(trx, task.id, task.sample_IO);
+    const dbSampleIO = await upsertTaskSampleIO(trx, task.id, task.sample_IO);
     const dbTaskData = await upsertTaskData(trx, subtasksWithData);
 
     const currentScriptIds = dbTaskScripts.map((script) => script.id);

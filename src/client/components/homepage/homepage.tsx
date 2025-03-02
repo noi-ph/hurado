@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import Link from "next/link";
+import { ComponentType, DetailedHTMLProps, HTMLAttributes, ReactNode } from "react";
 import { getPath, Path } from "client/paths";
 import FreeSVG from 'assets/icons/free.svg';
 import FastSVG from 'assets/icons/fast.svg';
@@ -7,10 +8,9 @@ import ChallengeSVG from 'assets/icons/challenge.svg';
 import CreativeSVG from 'assets/icons/creative.svg';
 import DOSTSEI from 'assets/images/dost-sei.png'
 import { Navbar } from "../navbar";
+import { Footer } from "../footer";
 import styles from "./homepage.module.css";
 import { FaqAnswer, FaqItem, FaqQuestion } from "./homepage_faq";
-import { Footer } from "../footer";
-import { ComponentType, DetailedHTMLProps, HTMLAttributes, ReactNode } from "react";
 
 
 const HeroBanner = () => {

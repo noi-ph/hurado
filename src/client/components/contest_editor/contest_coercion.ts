@@ -1,10 +1,10 @@
-import { ContestED, ContestTaskED } from "./types";
-import { CommonAttachmentED, EditorKind } from "../common_editor";
 import {
   ContestAttachmentEditorDTO,
   ContestEditorDTO,
   ContestTaskEditorDTO,
 } from "common/validation/contest_validation";
+import { CommonAttachmentED, EditorKind } from "../common_editor";
+import { ContestED, ContestTaskED } from "./types";
 
 export function coerceContestED(dto: ContestEditorDTO): ContestED {
   const contest: ContestED = {

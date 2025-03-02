@@ -1,15 +1,15 @@
 import "@root/global.css";
 import "react-toastify/dist/ReactToastify.css";
-import HuradoPNG from "assets/images/hurado.png"
 import { Montserrat, Roboto, Space_Mono } from "next/font/google";
 
 import type { FunctionComponent, ReactNode } from "react";
 import type { Metadata } from "next";
 import { ToastContainer, Zoom } from "react-toastify";
 
+import classNames from "classnames";
 import { SessionProvider } from "client/sessions";
 import { getSession } from "server/sessions";
-import classNames from "classnames";
+import HuradoPNG from "assets/images/hurado.png"
 
 const fontMontserrat = Montserrat({
   subsets: ["latin"],

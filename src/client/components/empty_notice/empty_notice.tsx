@@ -1,8 +1,8 @@
 "use client";
 
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
-import styles from './empty_notice.module.css';
 import classNames from "classnames";
+import styles from './empty_notice.module.css';
 
 type MouseLocation = {
   x: number;

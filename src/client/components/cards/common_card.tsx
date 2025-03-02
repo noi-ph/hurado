@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import classNames from "classnames";
 import { ContestSummaryDTO, ProblemSetSummaryDTO, TaskScoredSummaryDTO, TaskSummaryDTO } from "common/types";
 import { getPath, Path } from "client/paths";
-import classNames from "classnames";
 
 type CommonCardProps = {
   url: string;
@@ -66,7 +66,7 @@ export function TaskCard({ task }: TaskCardProps) {
   const url = getPath({ kind: Path.TaskView, slug: task.slug });
 
   let top_class = "p-[1rem] border-t border-l border-r border-black rounded-tl-2xl rounded-tr-2xl group-hover:bg-gray-150";
-  let bottom_class = "p-0 bg-[#cccccc] border-l border-r border-b border-black rounded-bl-2xl rounded-br-2xl overflow-hidden";
+  const bottom_class = "p-0 bg-[#cccccc] border-l border-r border-b border-black rounded-bl-2xl rounded-br-2xl overflow-hidden";
   let pbar_class = "p-[0.25rem]";
   let pbar_style = {};
 

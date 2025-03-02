@@ -5,9 +5,9 @@ import { CommonEditorDetails, CommonEditorLabel, CommonEditorSelect, CommonEdito
 import styles from "client/components/common_editor/common_editor.module.css";
 import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
 import { CheckerKind, Language, TaskFlavor, TaskType } from "common/types/constants";
+import { UnreachableError } from "common/errors";
 import { TaskEditorSubtasks } from "./task_editor_subtasks";
 import { TaskED, TaskScriptED } from "./types";
-import { UnreachableError } from "common/errors";
 import { TaskEditorScript } from "./task_editor_script";
 import { createEmptyScript } from "./task_editor_utils";
 

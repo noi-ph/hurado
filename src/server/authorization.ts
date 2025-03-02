@@ -1,5 +1,5 @@
-import { SessionData } from "common/types";
 import { NextRequest } from "next/server";
+import { SessionData } from "common/types";
 import { KOMPGEN_SECRET } from "./secrets";
 
 export function canManageTasks(session: SessionData | null, request: NextRequest | undefined = undefined): boolean {

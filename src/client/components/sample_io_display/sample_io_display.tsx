@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
-import { LatexDisplay } from "../latex_display";
 import { toast } from "react-toastify";
+import { LatexDisplay } from "../latex_display";
 import BoxIcon from "../box_icon";
 
 type SampleIODisplayProps = {

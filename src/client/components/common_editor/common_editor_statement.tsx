@@ -4,9 +4,9 @@ import MonacoEditor from "@monaco-editor/react";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
 import { LatexDisplay } from "client/components/latex_display";
-import styles from "./common_editor.module.css";
 import { TaskED } from "../task_editor/types";
 import { SampleIODisplay } from "../sample_io_display/sample_io_display";
+import styles from "./common_editor.module.css";
 
 const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
   language: 'latex',

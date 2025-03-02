@@ -11,8 +11,8 @@ import {
   CommonFileED,
   EditorKind,
 } from "client/components/common_editor";
-import { TaskScriptED } from "../task_editor/types";
 import { Language } from "common/types/constants";
+import { TaskScriptED } from "../task_editor/types";
 
 
 type TaskEditorScriptProps = {

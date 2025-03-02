@@ -1,8 +1,8 @@
-import { ProblemSetED, ProblemSetTaskED } from "./types";
 import {
   ProblemSetEditorDTO,
   ProblemSetTaskEditorDTO,
 } from "common/validation/problem_set_validation";
+import { ProblemSetED, ProblemSetTaskED } from "./types";
 
 export function coerceProblemSetED(dto: ProblemSetEditorDTO): ProblemSetED {
   const set: ProblemSetED = {

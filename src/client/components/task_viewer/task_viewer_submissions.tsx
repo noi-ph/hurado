@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { TaskViewerDTO } from "common/types";
 import { SubmissionsCache } from "client/submissions";
-import { TaskViewerTitle } from "./task_viewer_utils";
 import { OverallScoreDisplay, SubmissionsTable } from "client/components/submissions_table";
 import http from "client/http";
 import { APIPath, getAPIPath } from "client/paths";
 import { OverallVerdictDisplayDTO } from "common/types/verdicts";
+import { TaskViewerTitle } from "./task_viewer_utils";
 
 type TaskViewerSubmissionsProps = {
   task: TaskViewerDTO;

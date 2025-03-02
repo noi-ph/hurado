@@ -1,5 +1,5 @@
-import { FileStorage } from "./abstract";
 import { UPLOAD_STORAGE_PROVIDER } from "../secrets";
+import { FileStorage } from "./abstract";
 import { makeStorageClientsAzure } from "./azure";
 import { makeStorageClientsS3 } from "./s3";
 

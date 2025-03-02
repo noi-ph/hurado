@@ -5,6 +5,8 @@ import type { editor } from "monaco-editor";
 import MonacoEditor, { Monaco } from "@monaco-editor/react";
 import { useCallback, useContext, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import {
   SubmissionViewerDTO,
   SubmissionViewerFileDTO,
@@ -18,10 +20,8 @@ import { uuidToHuradoID } from "common/utils/uuid";
 import BoxIcon from "client/components/box_icon";
 import { getPath, Path } from "client/paths";
 import { getVerdictColorClass } from "client/verdicts";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { rejudgeSubmission } from "../submit_panel/submit_utils";
 import { SubmissionsCacheContext } from "client/submissions";
+import { rejudgeSubmission } from "../submit_panel/submit_utils";
 import button_styles from "../submit_panel/submit_panel.module.css";
 type SubmissionViewerProps = {
   submission: SubmissionViewerDTO;

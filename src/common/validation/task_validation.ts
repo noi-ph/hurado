@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { zCheckerKind, zLanguageKind, zReducerKind, zTaskFlavorOutput } from "./constant_validation";
-import { CheckerKind, TaskType } from "common/types/constants";
-import { REGEX_SLUG } from "./common_validation";
 import { memo } from "react";
+import { CheckerKind, TaskType } from "common/types/constants";
+import { zCheckerKind, zLanguageKind, zReducerKind, zTaskFlavorOutput } from "./constant_validation";
+import { REGEX_SLUG } from "./common_validation";
 
 export type TaskCreditDTO = z.infer<typeof zTaskCredit>;
 export type TaskAttachmentDTO = z.infer<typeof zTaskAttachment>;

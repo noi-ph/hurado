@@ -271,7 +271,7 @@ function renderEnvironmentContent(node: LatexNodeEnvironment, source: string): R
 function renderArgumentContent(
   args: LatexArgument[] | undefined,
   source: string,
-  index: number = 0
+  index = 0
 ): ReactNode {
   if (args == null || args.length <= index) {
     return null;

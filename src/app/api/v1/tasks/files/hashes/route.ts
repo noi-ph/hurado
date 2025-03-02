@@ -1,8 +1,8 @@
-import { db } from "db";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { db } from "db";
 import { canManageTasks } from "server/authorization";
 import { getSession } from "server/sessions";
-import { z } from "zod";
 
 const schema = z.array(z.string());
 

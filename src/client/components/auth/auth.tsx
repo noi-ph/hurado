@@ -10,8 +10,8 @@ import {
   LabelHTMLAttributes,
 } from 'react';
 import { FieldError } from 'react-hook-form';
-import styles from './auth.module.css';
 import Link, { LinkProps } from 'next/link';
+import styles from './auth.module.css';
 
 type AuthMainProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 

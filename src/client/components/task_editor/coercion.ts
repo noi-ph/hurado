@@ -7,6 +7,8 @@ import {
   TaskScriptDTO,
   TaskSampleIO_DTO,
 } from "common/validation/task_validation";
+import { CheckerKind, Language, TaskType } from "common/types/constants";
+import { CommonAttachmentED, EditorKind } from "../common_editor";
 import {
   TaskCreditED,
   TaskED,
@@ -16,8 +18,6 @@ import {
   TaskCheckerED,
   TaskSampleIO_ED,
 } from "./types";
-import { CheckerKind, Language, TaskType } from "common/types/constants";
-import { CommonAttachmentED, EditorKind } from "../common_editor";
 import { createEmptyScript } from "./task_editor_utils";
 
 export function coerceTaskED(dto: TaskDTO): TaskED {

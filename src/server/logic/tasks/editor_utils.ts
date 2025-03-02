@@ -1,6 +1,6 @@
+import { Selectable } from "kysely";
 import { TaskDataTable } from "common/types";
 import { TaskDataBatchDTO, TaskDataCommunicationDTO, TaskDataOutputDTO } from "common/validation/task_validation";
-import { Selectable } from "kysely";
 
 type TaskDataDatabaseResponseKey =
   | 'id'

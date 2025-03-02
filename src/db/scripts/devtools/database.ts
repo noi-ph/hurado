@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
-import { FileMigrationProvider, Migrator, sql } from "kysely";
 import path from "path";
+import { FileMigrationProvider, Migrator, sql } from "kysely";
 import { db } from "db";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
 import { __DO_NOT_IMPORT__DeveloperSeeds } from "../seed";

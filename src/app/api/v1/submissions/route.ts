@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { db } from "db";
 import {
   APIForbiddenError,
@@ -17,7 +18,6 @@ import { LIMITS_DEFAULT_SUBMISSION_SIZE_LIMIT_BYTE } from "server/evaluation/jud
 import { createSubmission, SubmissionFileCreate } from "server/logic/submissions/create_submission";
 import { getSession } from "server/sessions";
 import { enqueueSubmissionJudgement } from "worker/queue";
-import { z } from "zod";
 
 type CreateSubmissionValidationErrors = {
   request: true,

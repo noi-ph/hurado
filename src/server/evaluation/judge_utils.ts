@@ -1,8 +1,8 @@
 import fs from "fs";
 import ChildProcess from "child_process";
 import { Verdict } from "common/types/constants";
-import { IsolateResult } from "./types";
 import { ContestantScript, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
+import { IsolateResult } from "./types";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { getWallTimeLimit, LIMITS_DEFAULT_RUN_MEMORY_LIMIT_KB, LIMITS_DEFAULT_RUN_TIME_LIMIT_SECONDS } from "./judge_constants";
 

@@ -1,5 +1,8 @@
 import classNames from "classnames";
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { AxiosError, AxiosResponse } from "axios";
+import { toast } from "react-toastify";
 import { APIPath, getAPIPath, getPath, Path } from "client/paths";
 import {
   CommonEditorAttachments,
@@ -17,13 +20,10 @@ import {
 } from "client/components/common_editor";
 import { ButtonClickEvent, InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
+import http from "client/http";
+import { TaskLookupDTO } from "common/types";
 import { ContestED, ContestTaskED, ContestTaskTaskED } from "./types";
 import styles from "./contest_editor.module.css";
-import Link from "next/link";
-import http from "client/http";
-import { AxiosError, AxiosResponse } from "axios";
-import { TaskLookupDTO } from "common/types";
-import { toast } from "react-toastify";
 
 type ContestEditorDetailsProps = {
   contest: ContestED;

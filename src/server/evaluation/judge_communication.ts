@@ -1,12 +1,12 @@
 import path from "path";
 import ChildProcess from "child_process";
 import { JudgeChecker, JudgeScript, JudgeTaskCommunication, JudgeTaskDataCommunication } from "common/types/judge";
+import { Verdict } from "common/types/constants";
+import { UnreachableError } from "common/errors";
 import { EvaluationResult, IsolateResult, JudgeEvaluationContextCommunication } from "./types";
 import { checkSubmissionOutput } from "./judge_checker";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, makeContestantArgv } from "./judge_utils";
-import { Verdict } from "common/types/constants";
-import { UnreachableError } from "common/errors";
 import { getWallTimeLimit, LIMITS_JUDGE_MEMORY_LIMIT_KB, LIMITS_JUDGE_TIME_LIMIT_SECONDS } from "./judge_constants";
 
 export async function evaluateTaskDataForCommunication(

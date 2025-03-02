@@ -3,10 +3,10 @@ import path from "path";
 import { WriteStream } from "tty";
 import ChildProcess from "child_process";
 import { ContestantScript, JudgeTaskBatch, JudgeTaskDataBatch } from "common/types/judge";
-import { EvaluationResult, IsolateResult, JudgeEvaluationContextBatch } from "./types";
-import { checkSubmissionOutput } from "./judge_checker";
 import { Verdict } from "common/types/constants";
 import { UnreachableError } from "common/errors";
+import { EvaluationResult, IsolateResult, JudgeEvaluationContextBatch } from "./types";
+import { checkSubmissionOutput } from "./judge_checker";
 import { ISOLATE_BIN, IsolateUtils, makeContestantArgv } from "./judge_utils";
 
 export async function evaluateTaskDataForBatch(

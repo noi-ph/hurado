@@ -5,9 +5,9 @@ import { useCallback, useContext, useState } from "react";
 import { TaskViewerOutputDTO } from "common/types";
 import { TaskFlavor, TaskFlavorOutput } from "common/types/constants";
 import { SubmissionsCacheContext } from "client/submissions";
-import styles from "./submit_panel.module.css";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
+import styles from "./submit_panel.module.css";
 import { createSubmissionOutput, postSubmission } from "./submit_utils";
 
 export type SubtaskState = {
