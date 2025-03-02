@@ -33,7 +33,16 @@ class S3FileStorage extends FileStorage {
       Key: this.getFilename(filename),
       Body: buffer,
     };
-    return await this.s3.send(new PutObjectCommand(params));
+    const resp = await this.s3.send(new PutObjectCommand(params));
+
+    // Cache the uploaded file
+    try {
+      await this.cache.putBuffer('s3', this.bucket, filename, buffer);
+    } catch (error) {
+      console.error('Error caching file:', error);
+      // Continue even if caching fails
+    }
+    return resp;
   }
 
   async downloadToBuffer(filename: string): Promise<Buffer> {

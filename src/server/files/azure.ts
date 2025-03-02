@@ -15,7 +15,15 @@ class AzureFileStorage extends FileStorage {
 
   async uploadFromBuffer(filename: string, buffer: Buffer): Promise<BlobUploadCommonResponse> {
     const blobClient = this.storage.getBlockBlobClient(filename);
-    return await blobClient.uploadData(buffer);
+    const resp = await blobClient.uploadData(buffer);
+    // Cache the uploaded file
+    try {
+      await this.cache.putBuffer('s3', this.bucket, filename, buffer);
+    } catch (error) {
+      console.error('Error caching file:', error);
+      // Continue even if caching fails
+    }
+    return resp;
   }
 
   async downloadToBuffer(filename: string): Promise<Buffer> {
