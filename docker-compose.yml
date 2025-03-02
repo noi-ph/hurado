@@ -50,10 +50,12 @@ services:
   hurado-redis:
     container_name: hurado-redis
     image: redis:7-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - "6379"  # Blob service
     volumes:
       - ./volumes/redis:/data
+      - ./config/development/redis/redis.conf:/usr/local/etc/redis/redis.conf
   hurado-minio:
     container_name: hurado-minio
     image: minio/minio:latest

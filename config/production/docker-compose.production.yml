@@ -50,10 +50,12 @@ services:
   hurado-redis:
     container_name: hurado-redis
     image: redis:7-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - "6379"
     volumes:
       - ./volumes/redis:/data
+      - ./config/production/redis/redis.conf:/usr/local/etc/redis/redis.conf
   hurado-nginx:
     container_name: hurado-nginx
     image: nginx:1-alpine
