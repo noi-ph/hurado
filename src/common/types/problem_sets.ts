@@ -1,4 +1,5 @@
 import { Generated, Insertable, Selectable, Updateable } from "kysely";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { TaskScoredSummaryDTO, TaskSummaryDTO } from "./tasks";
 
 export type ProblemSetTable = {

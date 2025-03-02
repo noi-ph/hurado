@@ -22,8 +22,11 @@ export async function judgeSubmission(submissionId: string) {
     return [sub, tsk];
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   let tTaskRoot: string | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   let tOutputRoot: string | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   let tSubmissionRoot: string | null = null;
   try {
     const pTask = JudgeFiles.setupTask(task).then((newTaskRoot) => {

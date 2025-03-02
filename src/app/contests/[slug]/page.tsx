@@ -5,6 +5,7 @@ import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { canManageContests } from "server/authorization";
 import { getSession } from "server/sessions";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { ContestViewerDTO, TaskScoredSummaryDTO, TaskSummaryDTO } from "common/types";
 import { ContestViewer } from "client/components/contest_viewer/contest_viewer";
 

@@ -78,6 +78,7 @@ function TaskEditorAttachments({ task, setTask }: TaskEditorAttachmentsProps) {
         attachments,
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [task]
   );
 
@@ -117,6 +118,7 @@ const TaskEditorCredits = ({ task, setTask }: TaskEditorCreditsProps) => {
         },
       ],
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task]);
 
   return (
@@ -170,6 +172,7 @@ const TaskEditorCreditSavedX = ({ index, credit, task, setTask }: TaskEditorCred
         }),
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [task, credit, index]
   );
 
@@ -183,6 +186,7 @@ const TaskEditorCreditSavedX = ({ index, credit, task, setTask }: TaskEditorCred
         }),
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [task, credit, index]
   );
 
@@ -194,6 +198,7 @@ const TaskEditorCreditSavedX = ({ index, credit, task, setTask }: TaskEditorCred
         deleted: !credit.deleted,
       }),
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task, credit, index]);
 
   return (
@@ -241,6 +246,7 @@ const TaskEditorCreditLocalX = ({ index, credit, task, setTask }: TaskEditorCred
         }),
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [task, credit, index]
   );
 
@@ -254,6 +260,7 @@ const TaskEditorCreditLocalX = ({ index, credit, task, setTask }: TaskEditorCred
         }),
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [task, credit, index]
   );
 
@@ -262,6 +269,7 @@ const TaskEditorCreditLocalX = ({ index, credit, task, setTask }: TaskEditorCred
       ...task,
       credits: [...task.credits.slice(0, index), ...task.credits.slice(index + 1)],
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task, credit, index]);
 
   return (

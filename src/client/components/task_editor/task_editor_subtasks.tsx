@@ -1,4 +1,5 @@
 import classNames from "classnames";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { useCallback, useRef, useState } from "react";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
@@ -36,6 +37,7 @@ export const TaskEditorSubtasks = ({ task, setTask }: TaskEditorSubtasksProps) =
         },
       ],
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task]);
 
   return (
@@ -76,6 +78,7 @@ const TaskSubtaskEditor = ({ subtask, subtaskIndex, task, setTask }: TaskSubtask
         subtasks: Arrays.replaceNth(task.subtasks, subtaskIndex, newSubtask),
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [task, subtaskIndex]
   );
 
@@ -197,6 +200,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
         }),
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [task, subtask, subtaskIndex, dataIndex]
   );
 
@@ -260,6 +264,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
         data: Arrays.moveUp(subtask.data, dataIndex),
       }),
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [data, replaceThisTaskData]);
 
   const onTaskDataMoveDown = useCallback(() => {
@@ -270,6 +275,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
         data: Arrays.moveDown(subtask.data, dataIndex),
       }),
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [data, replaceThisTaskData]);
 
   const onTaskDataRemove = useCallback(() => {

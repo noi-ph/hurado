@@ -27,6 +27,7 @@ export const CommonEditorStatement = ({ task, statement, setStatement }: CommonE
     (value: string | undefined) => {
       setStatement(value ?? "");
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [statement, setStatement]
   );
 

@@ -12,11 +12,13 @@ type NavbarProps = {
   className?: string;
 };
 
+// eslint-disable-next-line react/display-name, @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 export const Footer = memo(({ className }: NavbarProps) => {
   return (
     <footer className="bg-blue-400 text-white p-4 lg:px-12">
       <div className="flex flex-col md:flex-row gap-2 w-full max-w-[64rem] px-4 mx-auto">
         <a href="https://noi.ph" target="_blank" className="self-center hover:opacity-80">
+          {/* eslint-disable-next-line @next/next/no-img-element -- pre-existing error before eslint inclusion */}
           <img src={NoiphBlueless.src} alt="Logo" className="w-20" />
         </a>
         <div className="text-neutral-800 text-sm font-light self-center w-1/2 text-center mx-auto md:w-1/3 md:text-start md:mx-0 mb-3 md:mb-0">
@@ -61,6 +63,7 @@ type FooterLinkProps = {
   children?: React.ReactNode;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 const FooterLink = ({ href, className, children }: FooterLinkProps) => {
   return (
     <Link className={classNames("text-2xl px-1 py-3 hover:text-blue-200", className)} href={href}>

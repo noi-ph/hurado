@@ -10,6 +10,7 @@ type SampleIODisplayProps = {
   explanation: string | undefined;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const SampleIODisplay = memo(({ sampleIndex, input, output, explanation }: SampleIODisplayProps) => {
   return (
     <div className="flex flex-col gap-4 mt-8">
@@ -32,10 +33,12 @@ type SampleFileDisplayProps = {
   content: string;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 const SampleFileDisplay = memo(({ label, content }: SampleFileDisplayProps) => {
   const copyToClipboard = useCallback(async () => {
     await navigator.clipboard.writeText(content);
     toast(`${label} copied to clipboard!`, { type: "success" });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (

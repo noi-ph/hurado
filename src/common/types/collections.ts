@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { Generated, Insertable, Selectable, Updateable } from "kysely";
 
 export type CollectionTable = {

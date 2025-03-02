@@ -26,6 +26,7 @@ type ProblemSetSummaryAdminDTO = {
   order: number;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 async function getProblemSetsData(session: SessionData): Promise<ProblemSetSummaryAdminDTO[]> {
   const sets = await db
     .selectFrom("problem_sets")

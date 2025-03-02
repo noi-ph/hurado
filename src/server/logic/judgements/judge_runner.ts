@@ -417,6 +417,7 @@ function computeScoreOverall(submissions: SubtaskVerdict[]) {
   }
 
   let overall = 0;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   for (const [_order, score] of maxOfEachSubtask.entries()) {
     overall += score;
   }

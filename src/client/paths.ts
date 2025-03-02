@@ -205,6 +205,7 @@ function addSearchParameters(base: string, params: Record<string, string | numbe
   let hasKey = false;
   const search = new URLSearchParams();
   for (const key in params) {
+    // eslint-disable-next-line no-prototype-builtins -- pre-existing error before eslint inclusion
     if (params.hasOwnProperty(key) && params[key] !== undefined) {
       hasKey = true;
       search.set(key, `${params[key]}`);

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import classNames from "classnames";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { ContestSummaryDTO, ProblemSetSummaryDTO, TaskScoredSummaryDTO, TaskSummaryDTO } from "common/types";
 import { getPath, Path } from "client/paths";
 

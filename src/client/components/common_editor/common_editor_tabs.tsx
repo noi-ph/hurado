@@ -36,6 +36,7 @@ type CommonEditorTabProps = {
   children: ReactNode;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const CommonEditorTabComponent = memo(({ children }: CommonEditorTabProps) => {
   return (
     <div className={classNames(styles.tabs, "flex flex-row justify-start flex-none mb-1 mx-3 gap-2")}>

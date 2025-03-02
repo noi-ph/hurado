@@ -67,6 +67,7 @@ type CommonEditorFooterProps<T> = {
   saveObject(object: T): Promise<SaveResult<T>>;
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types -- pre-existing error before eslint inclusion
 export const CommonEditorFooter = <T extends {}>({
   initial,
   object,
@@ -95,6 +96,7 @@ export const CommonEditorFooter = <T extends {}>({
     } finally {
       setSaving(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [object, saveObject]);
 
   return (
@@ -355,10 +357,12 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
       destructivelyComputeSHA1(newFile);
       onFileChange(newFile, curr.name);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [file, filename, onFileChange]);
 
   const onFileRemove = useCallback(() => {
     onFileChange(null, "");
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [file, filename, onFileChange]);
 
   const onNameChange = useCallback(

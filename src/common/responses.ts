@@ -65,15 +65,18 @@ export function makeSuccessResponse<T>(data: T): APISuccessResponse<T> {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types -- pre-existing error before eslint inclusion
 export function applyValidationErrors<T extends {}>(setError: UseFormSetError<T>, errors: ObjectErrors<T>) {
   const keys = Object.keys(errors);
   for (const key of keys) {
+    // eslint-disable-next-line no-prototype-builtins -- pre-existing error before eslint inclusion
     if (!errors.hasOwnProperty(key)) {
       continue;
     }
     const keyt = key as keyof T;
     const err = errors[keyt];
     if (err && err.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
       setError(key as any, { message: err[0] });
     }
   }

@@ -7,6 +7,7 @@ import {
   TaskScriptDTO,
   TaskSampleIO_DTO,
 } from "common/validation/task_validation";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { CheckerKind, Language, TaskType } from "common/types/constants";
 import { CommonAttachmentED, EditorKind } from "../common_editor";
 import {

@@ -6,6 +6,7 @@ type TaskTitleDisplayProps = {
   className?: string;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const TaskViewerTitle = memo(({ title, className }: TaskTitleDisplayProps) => {
   return (
     <div
@@ -27,6 +28,7 @@ type TaskDetailsDisplayProps = {
   className?: string;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const TaskViewerDetails = memo(({ time_limit_ms, memory_limit_byte, className }: TaskDetailsDisplayProps) => {
   return (
     <>

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { ProblemSetViewerDTO, TaskScoredSummaryDTO, TaskSummaryDTO } from "common/types";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";

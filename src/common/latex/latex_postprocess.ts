@@ -47,6 +47,7 @@ export function latexProcessNode(node: LatexNode): LatexNode {
 }
 
 export function latexProcessMacro(node: LatexNodeMacro): LatexNodeMacro {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   let merged: LatexNodeMacro;
   if (node.args == null) {
     return node;

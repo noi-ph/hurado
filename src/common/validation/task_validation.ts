@@ -1,4 +1,5 @@
 import { z } from "zod";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { memo } from "react";
 import { CheckerKind, TaskType } from "common/types/constants";
 import { zCheckerKind, zLanguageKind, zReducerKind, zTaskFlavorOutput } from "./constant_validation";

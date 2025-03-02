@@ -217,6 +217,7 @@ async function getSubmissionVerdict(
     const dataVerdicts = await dataVerdictsQuery.execute();
 
     // No verdict subtask => no verdict task data => empty objects
+    // eslint-disable-next-line no-inner-declarations -- pre-existing error before eslint inclusion
     function toVerdictTaskData(): VerdictTaskDataViewerDTO {
       return {
         verdict: null,
@@ -226,6 +227,7 @@ async function getSubmissionVerdict(
       };
     }
 
+    // eslint-disable-next-line no-inner-declarations -- pre-existing error before eslint inclusion
     function toVerdictSubtask(sv: (typeof subverdicts)[number]): VerdictSubtaskViewerDTO {
       return {
         verdict: sv.verdict,
@@ -281,6 +283,7 @@ async function getSubmissionVerdict(
       .orderBy(["task_data.subtask_id", "task_data.order asc"]);
 
     const dataVerdicts = await dataVerdictsQuery.execute();
+    // eslint-disable-next-line no-inner-declarations -- pre-existing error before eslint inclusion
     function toVerdictTaskData(dv: (typeof dataVerdicts)[number]): VerdictTaskDataViewerDTO {
       return {
         verdict: dv.verdict as Verdict,
@@ -290,6 +293,7 @@ async function getSubmissionVerdict(
       };
     }
 
+    // eslint-disable-next-line no-inner-declarations -- pre-existing error before eslint inclusion
     function toVerdictSubtask(sv: (typeof subverdicts)[number]): VerdictSubtaskViewerDTO {
       return {
         verdict: sv.verdict,

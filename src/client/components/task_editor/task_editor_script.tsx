@@ -103,6 +103,7 @@ export const TaskEditorScriptArgument = ({ index, script, setScript }: TaskEdito
       ...script,
       argv: Arrays.replaceNth(script.argv, index, event.target.value),
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [script, setScript]);
 
   const onArgumentRemove = useCallback(() => {
@@ -110,6 +111,7 @@ export const TaskEditorScriptArgument = ({ index, script, setScript }: TaskEdito
       ...script,
       argv: Arrays.removeNth(script.argv, index),
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [script, setScript]);
 
   return (

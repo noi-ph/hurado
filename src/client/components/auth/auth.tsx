@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
   DetailedHTMLProps,
@@ -10,6 +11,7 @@ import {
   LabelHTMLAttributes,
 } from 'react';
 import { FieldError } from 'react-hook-form';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import Link, { LinkProps } from 'next/link';
 import styles from './auth.module.css';
 
@@ -81,6 +83,7 @@ export function AuthLabel(props: AuthLabelProps) {
 
 type AuthInputProps = DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>((props, ref) => {
   return (
     <input

@@ -49,6 +49,7 @@ function GooglyEyes() {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("touchmove", onTouchMove);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (
@@ -88,6 +89,7 @@ export function EmptyNotice({ className }: EmptyNoticeProps) {
     <div className={classNames(className, "text-center w-fit mx-auto py-12 px-6 rounded-lg border border-gray-800")}>
       <GooglyEyes/>
       <div className="max-w-96 mt-6 mx-auto text-gray-800">
+        {/* eslint-disable-next-line react/no-unescaped-entities -- pre-existing error before eslint inclusion */}
         We searched everywhere, but there's nothing to see here right now. Please come back later.
       </div>
     </div>

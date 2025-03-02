@@ -12,6 +12,7 @@ type NavbarProps = {
   className?: string;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const Navbar = memo(({ className }: NavbarProps) => {
   const [isOpen, setIsOpen] =  useState(false);
 
@@ -43,6 +44,7 @@ export const Navbar = memo(({ className }: NavbarProps) => {
       <div className="lg:flex lg:items-center lg:gap-2 w-full max-w-[64rem] px-4 py-3 mx-auto">
         <div className="flex justify-between items-center">
           <Link href={getPath({ kind: Path.Home })} className="flex items-center hover:opacity-75 mr-2">
+            {/* eslint-disable-next-line @next/next/no-img-element -- pre-existing error before eslint inclusion */}
             <img src={HuradoPNG.src} alt="Hurado" className="w-7 h-7" />
             <span className="text-2xl">Hurado</span>
           </Link>
@@ -67,6 +69,7 @@ export const Navbar = memo(({ className }: NavbarProps) => {
   );
 });
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const NavbarAccount = memo(() => {
   const session = useSession();
   if (session == null || session.user == null) {

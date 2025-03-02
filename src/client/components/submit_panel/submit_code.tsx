@@ -51,6 +51,7 @@ export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
     const data = createSubmissionCode(taskId, language, code);
     await postSubmission(data, submissions, router);
     setSubmitting(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [taskId, submitting, language, code]);
 
   // .submit-panel is a non-module class used to style the monaco editor's line numbers

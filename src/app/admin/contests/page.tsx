@@ -25,6 +25,7 @@ type ContestSummaryAdminDTO = {
   created_at: Date;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 async function getContestsData(session: SessionData): Promise<ContestSummaryAdminDTO[]> {
   const contests = await db
     .selectFrom("contests")

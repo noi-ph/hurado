@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { canManageTasks } from "server/authorization";
 import { getSession } from "server/sessions";
 import { NextContext } from "types/nextjs";

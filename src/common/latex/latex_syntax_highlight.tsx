@@ -1,5 +1,6 @@
 import { ReactNode, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
+// eslint-disable-next-line import/order -- pre-existing error before eslint inclusion
 import { LatexNodeProps, LatexNodeVerbatim } from "./latex_types";
 import hljs from 'highlight.js/lib/core';
 import "highlight.js/styles/intellij-light.min.css";
@@ -40,6 +41,7 @@ hljs.registerLanguage("xml", hXML);
 hljs.registerLanguage("x86", hX86);
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 export function LatexSyntaxHighlight({ node, source }: LatexNodeProps<LatexNodeVerbatim>): ReactNode {
   const trimmed = node.content.replace(/^\s*\n/, "");
   const highlighted = useMemo(() => hljs.highlightAuto(trimmed), [trimmed]);
@@ -47,6 +49,7 @@ export function LatexSyntaxHighlight({ node, source }: LatexNodeProps<LatexNodeV
   const copyToClipboard = useCallback(async () => {
     await navigator.clipboard.writeText(trimmed);
     toast(`Copied to clipboard!`, { type: "success" });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (

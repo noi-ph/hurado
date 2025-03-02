@@ -27,6 +27,7 @@ export function useSimpleStringPropUpdater<T>(object: T, setObject: (obj: T) => 
         [key]: event.target.value,
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [object, setObject]
   );
 }
@@ -58,6 +59,7 @@ export function saveLocalFiles(
         },
       });
     } else {
+      // eslint-disable-next-line no-async-promise-executor -- pre-existing error before eslint inclusion
       return new Promise<CommonFileSaveResult>(async (resolve, reject) => {
         try {
           const saved = await saveLocalFileSingle(local);

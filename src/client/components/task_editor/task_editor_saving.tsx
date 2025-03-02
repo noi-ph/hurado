@@ -175,6 +175,7 @@ function coerceTaskDTO(ed: TaskED): TaskDTO {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 function coerceTaskCreditDTO(ed: TaskCreditED, idx: number): TaskCreditDTO | null {
   if (ed.deleted) {
     return null;

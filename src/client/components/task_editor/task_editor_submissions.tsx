@@ -15,6 +15,7 @@ export const TaskEditorSubmissions = ({ taskId, cache }: TaskEditorSubmissionsPr
       return cache.submissions;
     }
     return cache.loadTaskSubmissions(taskId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [cache]);
 
   return (

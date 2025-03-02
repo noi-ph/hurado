@@ -62,6 +62,7 @@ async function upsertProblemSetTasks(
   const taskToOrder = new Map(dbProblemSetTasks.map((t) => [t.task_id, t.order]));
 
   const dtos: ProblemSetTaskEditorDTO[] = dbProblemSetTasks
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
     .map((ct, index) => {
       const task = taskMap.get(ct.task_id);
       const order = taskToOrder.get(ct.task_id);

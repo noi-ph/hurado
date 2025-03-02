@@ -9,6 +9,7 @@ export function FormLabel(props: DetailedHTMLProps<InputHTMLAttributes<HTMLLabel
 
 type HTMLInputProps = DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const FormInput = forwardRef<HTMLInputElement, HTMLInputProps>((props, ref) => {
   return <input {...props} ref={ref} className={classNames('block w-full border-b border-gray-500', props.className)}/>;
 });

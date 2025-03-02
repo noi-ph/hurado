@@ -54,6 +54,7 @@ type TaskViewerTabProps = {
   canEdit: boolean;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const TaskViewerTabComponent = memo(
   ({ className, tab, taskId, canEdit }: TaskViewerTabProps) => {
     const session = useSession();

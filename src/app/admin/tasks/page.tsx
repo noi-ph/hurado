@@ -25,6 +25,7 @@ type TaskSummaryAdminDTO = {
   created_at: Date;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 async function getTasksData(session: SessionData): Promise<TaskSummaryAdminDTO[]> {
   const tasks = await db
     .selectFrom("tasks")

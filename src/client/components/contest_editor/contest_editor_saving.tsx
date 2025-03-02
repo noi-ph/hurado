@@ -53,6 +53,7 @@ export async function saveContest(contest: ContestED): Promise<SaveResult<Contes
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 function validateContest(contest: ContestED): string[] {
   return [];
 }

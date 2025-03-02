@@ -13,6 +13,7 @@ type ProblemSetTitleDisplayProps = {
   className?: string;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const ProblemSetViewerTitle = memo(({ title, className }: ProblemSetTitleDisplayProps) => {
   return (
     <div

@@ -59,6 +59,7 @@ export class IsolateUtils {
           status = value;
           break;
         case "exitsig":
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
           exitsig = value;
           break;
         case "exitcode":
@@ -71,6 +72,7 @@ export class IsolateUtils {
           time = value;
           break;
         case "time-wall":
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
           timeWall = value;
           break;
         default:
@@ -127,6 +129,7 @@ export class IsolateUtils {
     // Generate an un-taken number within this range inclusive. Why this range? Trip lang.
     const min = 17;
     const max = 999;
+    // eslint-disable-next-line no-constant-condition -- pre-existing error before eslint inclusion
     while (true) {
       const id = generateRandomInt(min, max).toString();
       if (!taken.has(id)) {

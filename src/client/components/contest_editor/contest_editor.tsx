@@ -112,6 +112,7 @@ type ContestEditorTabProps = {
   slug: string;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const ContestEditorTabComponent = memo(({ tab, slug }: ContestEditorTabProps) => {
   const viewURL = getPath({ kind: Path.ContestView, slug: slug });
 

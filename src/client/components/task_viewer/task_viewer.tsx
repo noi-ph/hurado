@@ -15,6 +15,7 @@ type TaskViewerProps = {
   clearSubmissionsCache?(): void;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 export const TaskViewer = ({ task, canEdit, clearSubmissionsCache }: TaskViewerProps) => {
   const submissions = useRef(new SubmissionsCache());
   const [tab, setTab] = useState(coerceTaskViewerTab(getLocationHash()));

@@ -16,6 +16,7 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
     getExecutableName: (source: string) => {
       return source;
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
     getCompileCommand: (source: string, exe: string) => {
       return null;
     },

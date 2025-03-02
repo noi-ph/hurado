@@ -83,11 +83,13 @@ async function updateKgTask(task: KgTaskDTO) {
       ])
       .executeTakeFirstOrThrow();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
     const { subtasks: dbSubtasks, subtasksWithData } = await upsertTaskSubtasks(
       trx,
       task.id,
       task.subtasks
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
     const dbTaskData = await upsertTaskData(trx, subtasksWithData);
 
     return {

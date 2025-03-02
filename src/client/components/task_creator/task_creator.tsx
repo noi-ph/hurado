@@ -27,6 +27,7 @@ export function TaskCreator() {
 
   const onButtonClick = useCallback(() => {
     setShowModal(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [showModal]);
 
   const onModalHide = useCallback(() => {

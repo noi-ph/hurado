@@ -94,6 +94,7 @@ const CommonAttachmentLocalX = ({
   );
 
   const onBlurPath = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
     (_event: InputChangeEvent) => {
       setAttachments(
         Arrays.replaceNth(attachments, index, {
@@ -107,6 +108,7 @@ const CommonAttachmentLocalX = ({
 
   const onClickDelete = useCallback(() => {
     setAttachments([...attachments.slice(0, index), ...attachments.slice(index + 1)]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [index, attachment, setAttachments]);
 
   return (
@@ -176,6 +178,7 @@ export function CommonEditorAttachments({
       return;
     }
     pickerRef.current.click();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [attachments, setAttachments]);
 
   return (

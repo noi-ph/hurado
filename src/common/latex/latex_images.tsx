@@ -27,9 +27,12 @@ export function LatexImageX({ node, source }: LatexNodeProps<LatexMacroImage>) {
     scale = isNaN(parsedScale) ? null : parsedScale;
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
   const [width, setWidth] = useState<number | undefined>(undefined);
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
   const [ratio, setRatio] = useState<number | undefined>(undefined);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
   useEffect(() => {
     getImageDimensions(src).then(dimensions => {
       const aspectRatio = dimensions.width / dimensions.height;
@@ -47,11 +50,13 @@ export function LatexImageX({ node, source }: LatexNodeProps<LatexMacroImage>) {
     aspectRatio: ratio,
   };
 
+  // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- pre-existing error before eslint inclusion
   return <img style={style} className="max-w-full" src={src} />;
 }
 
 
 async function getImageDimensions(src: string): Promise<{ width: number, height: number }> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = src;

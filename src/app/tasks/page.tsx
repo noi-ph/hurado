@@ -1,5 +1,6 @@
 import { db } from "db";
 import { TaskCard } from "client/components/cards";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { TaskScoredSummaryDTO, TaskSummaryDTO } from "common/types";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { EmptyNoticePage } from "client/components/empty_notice";

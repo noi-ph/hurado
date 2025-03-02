@@ -1,5 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { Kysely, sql } from "kysely";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("submission_files")
@@ -50,6 +52,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("verdict_task_data")

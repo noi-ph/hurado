@@ -16,6 +16,7 @@ export const TaskViewerEditorial = ({ task }: TaskViewerEditorialProps) => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 const TaskViewerEditorialSection = ({ task }: TaskViewerEditorialProps) => {
   return <div className="text-center">No editorials yet!</div>;
 };

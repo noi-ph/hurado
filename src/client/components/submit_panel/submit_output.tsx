@@ -41,6 +41,7 @@ export function SubmitOutput({ task }: SubmitOutputProps) {
     const data = createSubmissionOutput(task, subtasks);
     await postSubmission(data, submissions, router);
     setSubmitting(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task, subtasks, submitting]);
 
   return (
@@ -93,6 +94,7 @@ function SubmitOutputSubtask({
         );
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [subtasks, subtaskIndex]
   );
 
@@ -105,6 +107,7 @@ function SubmitOutputSubtask({
         })
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     [subtasks, subtaskIndex]
   );
 

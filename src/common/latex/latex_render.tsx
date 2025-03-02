@@ -91,6 +91,7 @@ function LatexNodeInlineMathX({ node, source }: LatexNodeProps<LatexNodeInlineMa
       displayMode: false,
     });
     return <span dangerouslySetInnerHTML={{ __html: html }} />;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
   } catch (e: any) {
     if ("message" in e) {
       return <span className="font-mono text-red-500">{e.message}</span>;
@@ -112,6 +113,7 @@ function LatexNodeDisplayMathX({ node, source }: LatexNodeProps<LatexNodeDisplay
       displayMode: true,
     });
     return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
   } catch (e: any) {
     if ("message" in e) {
       return <div className="font-mono text-red-500">{e.message}</div>;
@@ -293,8 +295,10 @@ function LatexArgumentInnerText({ args, index, source, children }: LatexArgument
     return null;
   }
   const arg = args[index];
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
   const [innerText, setInnerText] = useState<string | undefined>(undefined);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
   useEffect(() => {
     setInnerText(undefined);
     setTimeout(() => {
@@ -304,6 +308,7 @@ function LatexArgumentInnerText({ args, index, source, children }: LatexArgument
       flushSync(() => root.render(argchildren));
       setInnerText(div.innerText);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [args, index]);
 
   return children(innerText);

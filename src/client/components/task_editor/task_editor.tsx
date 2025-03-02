@@ -124,6 +124,7 @@ type TaskEditorTabProps = {
   slug: string;
 };
 
+// eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
 export const TaskEditorTabComponent = memo(({ tab, slug }: TaskEditorTabProps) => {
   const viewURL = getPath({ kind: Path.TaskView, slug: slug });
 

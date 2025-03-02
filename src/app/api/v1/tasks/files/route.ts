@@ -7,6 +7,7 @@ import { TaskFileStorage } from "server/files";
 import { getSession } from "server/sessions";
 
 function isFile(obj: FormDataEntryValue): obj is File {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
   return typeof (obj as any)['arrayBuffer'] === 'function';
 }
 

@@ -22,6 +22,7 @@ import {
 import { zUserResetPassword } from "common/validation/user_validation";
 import { applyValidationErrors, ResponseKind } from "common/responses";
 import { UnreachableCheck } from "common/errors";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { ResetPasswordError, ResetPasswordSuccess } from "@root/api/v1/auth/reset-password/route";
 
 type PasswordResetForm = {

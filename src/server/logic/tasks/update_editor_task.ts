@@ -433,6 +433,7 @@ export async function upsertTaskData(
       : await trx
           .insertInto("task_data")
           .values(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
             dataNew.map((data, index) => ({
               name: data.name,
               order: data.order,

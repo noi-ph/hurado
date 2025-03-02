@@ -18,6 +18,7 @@ export const TaskViewerSubmissions = ({ task, cache }: TaskViewerSubmissionsProp
       return cache.submissions;
     }
     return cache.loadUserTaskSubmissions(task.id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [cache]);
   
   const [overallVerdict, setOverallVerdict] = useState<OverallVerdictDisplayDTO | undefined>(undefined);
@@ -32,6 +33,7 @@ export const TaskViewerSubmissions = ({ task, cache }: TaskViewerSubmissionsProp
       setOverallVerdict(overall_verdict.verdict as OverallVerdictDisplayDTO | undefined);
     };
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (

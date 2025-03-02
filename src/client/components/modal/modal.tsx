@@ -1,6 +1,7 @@
 "use client";
 
 import classNames from 'classnames';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import React, { MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 

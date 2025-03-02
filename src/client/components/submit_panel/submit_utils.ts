@@ -96,7 +96,9 @@ export async function postSubmission(
         case ResponseKind.ValidationError:
           // Iterate over the errors and display them
           for (const key in data.errors) {
+            // eslint-disable-next-line no-prototype-builtins -- pre-existing error before eslint inclusion
             if (data.errors.hasOwnProperty(key)) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
               const errorMessages = (data.errors as any)[key];
               errorMessages.forEach((message: string) => {
                 toast.error(message);

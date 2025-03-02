@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 function censorEmail(email: string): string {
   const [username, domain] = email.split("@");
   // Show only the first two characters of the username

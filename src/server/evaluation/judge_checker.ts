@@ -6,6 +6,7 @@ import { UnreachableError } from "common/errors";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, runChildProcess } from "./judge_utils";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { CheckerResult } from "./types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { getWallTimeLimit, LIMITS_JUDGE_MEMORY_LIMIT_KB, LIMITS_JUDGE_TIME_LIMIT_SECONDS, LIMITS_WALL_TIME_BONUS } from "./judge_constants";
 
 export async function checkSubmissionOutput(opts: {

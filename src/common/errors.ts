@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { UseFormSetError } from "react-hook-form";
 
 export class UnreachableError extends Error {
@@ -7,6 +8,7 @@ export class UnreachableError extends Error {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 export function UnreachableCheck(_value: never): null {
   // This is a noop function that lets you tell typescript that you expect
   // a value to be unreachable. This is useful for exhaustiveness checks.

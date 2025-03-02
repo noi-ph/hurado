@@ -28,6 +28,7 @@ export async function saveProblemSet(set: ProblemSetED): Promise<SaveResult<Prob
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 function validateProblemSet(set: ProblemSetED): string[] {
   return [];
 }

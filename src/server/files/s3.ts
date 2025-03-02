@@ -75,6 +75,7 @@ class S3FileStorage implements FileStorage {
 
     try {
       await this.s3.send(new HeadBucketCommand(params));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
     } catch (err: any) {
       if (err.name === "NotFound") {
         await this.s3.send(new CreateBucketCommand(params));

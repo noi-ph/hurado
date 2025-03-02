@@ -8,6 +8,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
+    warnOnUnsupportedTypeScriptVersion: false,
   },
   plugins: ["@typescript-eslint"],
   extends: [
