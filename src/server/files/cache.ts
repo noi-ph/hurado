@@ -44,7 +44,7 @@ export class FileCache {
   // Generate a unique key for a file
   private generateKey(storageType: string, container: string, filename: string): string {
     return crypto
-      .createHash('md5')
+      .createHash('sha512')
       .update(`${storageType}:${container}:${filename}`)
       .digest('hex');
   }
