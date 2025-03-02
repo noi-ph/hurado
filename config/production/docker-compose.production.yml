@@ -19,6 +19,7 @@ services:
       - hurado-postgres
     volumes:
       - .:/app
+      - /tmp/hurado-cache:/tmp/file-storage-cache
   hurado-judge:
     container_name: hurado-judge
     image: noiph/hurado:latest
@@ -36,6 +37,7 @@ services:
       - hurado-postgres
     volumes:
       - ./:/app/
+      - /tmp/hurado-cache:/tmp/file-storage-cache
   hurado-postgres:
     container_name: hurado-postgres
     image: postgres:17-alpine
