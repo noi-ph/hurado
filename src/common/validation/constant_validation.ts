@@ -6,6 +6,7 @@ export const zLanguageKind = z.union([
   z.literal(Language.CPP),
   z.literal(Language.Java),
   z.literal(Language.Python3),
+  z.literal(Language.PyPy3),
   z.literal(Language.PlainText),
 ]);
 

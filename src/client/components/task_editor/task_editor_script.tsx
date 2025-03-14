@@ -56,9 +56,10 @@ export const TaskEditorScript = ({ script, setScript }: TaskEditorScriptProps): 
     <>
       <CommonEditorLabel label="Language" />
       <CommonEditorSelect value={script.language} onChange={onLanguageChange}>
-        <option value={Language.Python3}>Python 3</option>
-        <option value={Language.Java}>Java</option>
         <option value={Language.CPP}>C++</option>
+        <option value={Language.Java}>Java</option>
+        <option value={Language.Python3}>Python 3</option>
+        <option value={Language.PyPy3}>PyPy 3</option>
       </CommonEditorSelect>
       <CommonEditorLabel label="Source Code" />
       <CommonEditorFileInput

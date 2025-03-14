@@ -1,4 +1,5 @@
 import ChildProcess from "child_process";
+import { UnreachableCheck } from "common/errors";
 import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
 import { JudgeScript, JudgeSubmission, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
 import { CompilationResult } from "./types";
@@ -12,16 +13,6 @@ type LanguageSpec = {
 };
 
 export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
-  [Language.Python3]: {
-    getExecutableName: (source: string) => {
-      return source;
-    },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-    getCompileCommand: (source: string, exe: string) => {
-      return null;
-    },
-    interpreter: "/usr/bin/python3",
-  },
   [Language.CPP]: {
     getExecutableName: (source: string) => {
       return removeLastExtension(source);
@@ -39,6 +30,26 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
       return ["/usr/bin/g++", "-O2", "-std=c++17", "-o", exe, source];
     },
     interpreter: "/usr/bin/java",
+  },
+  [Language.Python3]: {
+    getExecutableName: (source: string) => {
+      return source;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
+    getCompileCommand: (source: string, exe: string) => {
+      return null;
+    },
+    interpreter: "/usr/bin/python3",
+  },
+  [Language.PyPy3]: {
+    getExecutableName: (source: string) => {
+      return source;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
+    getCompileCommand: (source: string, exe: string) => {
+      return null;
+    },
+    interpreter: "/usr/bin/pypy3",
   },
 };
 
@@ -163,7 +174,12 @@ export function getLanguageFilename(language: Language) {
       return "main.java";
     case Language.Python3:
       return "main.py";
+    case Language.PyPy3:
+      return "main.py";
+    case Language.PlainText:
+      return "main.txt";
     default:
+      UnreachableCheck(language);
       return "main.txt";
   }
 }

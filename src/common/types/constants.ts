@@ -1,3 +1,5 @@
+import { UnreachableCheck } from "common/errors";
+
 export enum TaskType {
   Batch = "batch",
   OutputOnly = "output",
@@ -13,6 +15,7 @@ export type TaskFlavorOutput = TaskFlavor.OutputText | TaskFlavor.OutputFile;
 
 export enum Language {
   Python3 = "python3",
+  PyPy3 = "pypy3",
   CPP = "cpp",
   Java = "java",
   PlainText = "text",
@@ -20,7 +23,7 @@ export enum Language {
 
 export type ProgrammingLanguage = Exclude<Language, Language.PlainText>;
 
-export type JudgeLanguage = Language.Python3 | Language.CPP;
+export type JudgeLanguage = Language.PyPy3 | Language.Python3 | Language.CPP;
 
 export enum Verdict {
   Accepted = "ac",
@@ -46,13 +49,18 @@ export enum ReducerKind {
 
 export function humanizeLanguage(language: Language): string {
   switch (language) {
-    case Language.Python3:
-      return "Python 3.9.2";
     case Language.CPP:
       return "C++ 17";
     case Language.Java:
       return "Java";
+    case Language.Python3:
+      return "Python 3.9.2";
+    case Language.PyPy3:
+      return "PyPy 3.9.2";
+    case Language.PlainText:
+      return "Plain Text";
     default:
+      UnreachableCheck(language);
       return language;
   }
 }
