@@ -56,7 +56,7 @@ export function humanizeLanguage(language: Language): string {
     case Language.Python3:
       return "Python 3.9.2";
     case Language.PyPy3:
-      return "PyPy 3.9.2";
+      return "PyPy 3.11";
     case Language.PlainText:
       return "Plain Text";
     default:
