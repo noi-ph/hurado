@@ -44,13 +44,13 @@ export async function judgeSubmission(submissionId: string) {
     const [taskRoot, outputRoot, submissionRoot] = await Promise.all([pTask, pOutput, pSubmission]);
     await JudgeRunner.evaluate(task, submission, taskRoot, outputRoot, submissionRoot);
   } finally {
-    // Don't clean up judge root
-    // if (tSubmissionRoot != null) {
-    //   await JudgeFiles.cleanDirectory(tSubmissionRoot);
-    // }
-    // if (tOutputRoot != null) {
-    //   await JudgeFiles.cleanDirectory(tOutputRoot);
-    // }
+    // Don't clean up judge root. but clean up the others
+    if (tSubmissionRoot != null) {
+      await JudgeFiles.cleanDirectory(tSubmissionRoot);
+    }
+    if (tOutputRoot != null) {
+      await JudgeFiles.cleanDirectory(tOutputRoot);
+    }
   }
 }
 
@@ -126,9 +126,9 @@ export async function loadTask(trx: Transaction<Models>, taskId: string): Promis
       }),
       scripts,
       time_limit_ms: task.time_limit_ms,
-      memory_limit_byte: task.memory_limit_byte,
+      memory_limit_byte: task.memory_limit_byte != null ? +task.memory_limit_byte : null,
       compile_time_limit_ms: task.compile_time_limit_ms,
-      compile_memory_limit_byte: task.compile_memory_limit_byte,
+      compile_memory_limit_byte: task.compile_memory_limit_byte != null ? + task.compile_memory_limit_byte : null,
     };
   } else if (task.type === TaskType.Communication) {
     const subtasks = await loadSubtasksCommunication(trx, taskId);
@@ -149,9 +149,9 @@ export async function loadTask(trx: Transaction<Models>, taskId: string): Promis
       }),
       scripts,
       time_limit_ms: task.time_limit_ms,
-      memory_limit_byte: task.memory_limit_byte,
+      memory_limit_byte: task.memory_limit_byte != null ? +task.memory_limit_byte : null,
       compile_time_limit_ms: task.compile_time_limit_ms,
-      compile_memory_limit_byte: task.compile_memory_limit_byte,
+      compile_memory_limit_byte: task.compile_memory_limit_byte != null ? + task.compile_memory_limit_byte : null,
     };
   } else if (task.type === TaskType.OutputOnly) {
     const subtasks = await loadSubtasksOutput(trx, taskId);

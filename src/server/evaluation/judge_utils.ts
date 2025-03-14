@@ -4,7 +4,13 @@ import { Verdict } from "common/types/constants";
 import { ContestantScript, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
 import { IsolateResult } from "./types";
 import { LANGUAGE_SPECS } from "./judge_compile";
-import { getWallTimeLimit, LIMITS_DEFAULT_RUN_MEMORY_LIMIT_KB, LIMITS_DEFAULT_RUN_TIME_LIMIT_SECONDS } from "./judge_constants";
+import {
+  LIMITS_DEFAULT_RUN_MEMORY_LIMIT_BYTE,
+  LIMITS_DEFAULT_RUN_TIME_LIMIT_MS,
+  MemoryLimitKilobytes,
+  TimeLimitSeconds,
+  WallTimeLimitSeconds,
+} from "./judge_constants";
 
 export const ISOLATE_BIN = "/usr/local/bin/isolate";
 const ISOLATE_DIRECTORY = "/var/local/lib/isolate";
@@ -152,17 +158,15 @@ export function makeContestantArgv(
 ): string[] {
   const spec = LANGUAGE_SPECS[script.language];
 
-  const timeLimitSeconds = task.time_limit_ms != null
-    ? task.time_limit_ms / 1000
-    : LIMITS_DEFAULT_RUN_TIME_LIMIT_SECONDS;
+  const timeLimitMS = task.time_limit_ms ?? LIMITS_DEFAULT_RUN_TIME_LIMIT_MS;
+  const memoryLimitByte = task.memory_limit_byte ?? LIMITS_DEFAULT_RUN_MEMORY_LIMIT_BYTE;
 
-  const timeLimit = `${timeLimitSeconds}`;
-  const wallTimeLimit = `${getWallTimeLimit(timeLimitSeconds)}`;
-  const memLimit = task.memory_limit_byte != null
-    ? `${Math.floor(task.memory_limit_byte / 1000)}`
-    : `${LIMITS_DEFAULT_RUN_MEMORY_LIMIT_KB}`;
+  const timeLimit = TimeLimitSeconds(timeLimitMS);
+  const wallTimeLimit = WallTimeLimitSeconds(timeLimitMS);
+  const memLimit = MemoryLimitKilobytes(memoryLimitByte + spec.runtimeBonusMemoryByte);
+  const procLimit = spec.runtimeProcessLimit ?? 1;
 
-    const argv: string[] = [
+  const argv: string[] = [
     `--box-id=${isolate.name}`,
     "--dir=/opt/lang=/opt/lang",
     `--dir=/submission=${submissionRoot}`,
@@ -171,16 +175,19 @@ export function makeContestantArgv(
     `--time=${timeLimit}`,
     `--wall-time=${wallTimeLimit}`,
     `--mem=${memLimit}`,
-    "--processes=1",
+    `--processes=${procLimit}`,
     "--run",
     "--",
   ];
 
-  if (spec.interpreter == null) {
+  if (spec.getInterpreterCommand == null) {
     argv.push(`/submission/${script.exe_name}`);
   } else if (script.exe_name != null) {
-    argv.push(spec.interpreter);
-    argv.push(script.exe_name);
+    argv.push(...spec.getInterpreterCommand(
+      script.exe_name,
+      timeLimitMS,
+      memoryLimitByte,
+    ));
   } else {
     throw new Error("Missing script exe name");
   }

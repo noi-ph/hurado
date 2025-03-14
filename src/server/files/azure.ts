@@ -2,8 +2,7 @@ import { BlobDownloadResponseParsed, BlobServiceClient, BlobUploadCommonResponse
 import { AZURE_STORAGE_CONNECTION_STRING, MAX_LOCAL_FILE_CACHE_MB } from "../secrets";
 import { FileStorageClients, FileStorage } from "./abstract";
 import { promises as fsPromises } from "fs";
-import path from "path";
-import os from "os";
+
 
 class AzureFileStorage extends FileStorage {
   storage: ContainerClient;

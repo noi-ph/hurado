@@ -7,7 +7,7 @@ import { EvaluationResult, IsolateResult, JudgeEvaluationContextCommunication } 
 import { checkSubmissionOutput } from "./judge_checker";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, makeContestantArgv } from "./judge_utils";
-import { getWallTimeLimit, LIMITS_JUDGE_MEMORY_LIMIT_KB, LIMITS_JUDGE_TIME_LIMIT_SECONDS } from "./judge_constants";
+import { WallTimeLimitSeconds, LIMITS_JUDGE_MEMORY_LIMIT_BYTE, LIMITS_JUDGE_TIME_LIMIT_MS, TimeLimitSeconds, MemoryLimitKilobytes } from "./judge_constants";
 
 export async function evaluateTaskDataForCommunication(
   context: JudgeEvaluationContextCommunication,
@@ -79,11 +79,12 @@ function makeCommunicatorArgv(opts: {
 }): string[] {
   const { communicator, isolate, task_root, output_root, input_file_name, judge_file_name } = opts;
 
-  const timeLimit = `${LIMITS_JUDGE_TIME_LIMIT_SECONDS}`;
-  const wallTimeLimit = `${getWallTimeLimit(LIMITS_JUDGE_TIME_LIMIT_SECONDS)}`;
-  const memLimit = `${LIMITS_JUDGE_MEMORY_LIMIT_KB}`;
-
   const spec = LANGUAGE_SPECS[communicator.language];
+  const timeLimit = TimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
+  const wallTimeLimit = WallTimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
+  const memLimit = MemoryLimitKilobytes(LIMITS_JUDGE_MEMORY_LIMIT_BYTE + spec.runtimeBonusMemoryByte);
+  const procLimit = spec.runtimeProcessLimit ?? 1;
+
   const argv: string[] = [
     `--box-id=${isolate.name}`,
     "--dir=/opt/lang=/opt/lang",
@@ -94,16 +95,21 @@ function makeCommunicatorArgv(opts: {
     `--time=${timeLimit}`,
     `--wall-time=${wallTimeLimit}`,
     `--mem=${memLimit}`,
-    "--processes=1",
+    `--processes=${procLimit}`,
     "--run",
     "--",
   ];
 
-  if (spec.interpreter == null) {
-    argv.push(`/submission/${communicator.exe_name}`);
-  } else if (communicator.exe_name != null) {
-    argv.push(spec.interpreter);
-    argv.push(communicator.exe_name);
+  if (communicator.exe_name != null) {
+    if (spec.getInterpreterCommand == null) {
+      argv.push(`/submission/${communicator.exe_name}`);
+    } else {
+      argv.push(...spec.getInterpreterCommand(
+        communicator.exe_name,
+        LIMITS_JUDGE_TIME_LIMIT_MS,
+        LIMITS_JUDGE_MEMORY_LIMIT_BYTE,
+      ));
+    }
   } else {
     throw new Error("Missing communicator exe_name");
   }

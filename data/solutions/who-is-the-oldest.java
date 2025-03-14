@@ -1,38 +1,33 @@
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Main {
+    static class Person implements Comparable<Person> {
+        String name;
+        int age;
+
+        Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        public int compareTo(Person other) {
+            return this.age - other.age;
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // We have 3 fixed names
         String[] names = {"Alvin", "Berto", "Carlo"};
-        // We will store the ages in a separate array
-        int[] ages = new int[3];
-
-        // Read the 3 ages
+        Person[] people = new Person[3];
         for (int i = 0; i < 3; i++) {
-            ages[i] = scanner.nextInt();
+            int age = scanner.nextInt();
+            people[i] = new Person(names[i], age);
         }
 
-        // Sort both arrays in tandem based on the age
-        for (int i = 0; i < 3; i++) {
-            for (int j = i + 1; j < 3; j++) {
-                // If an earlier age is bigger, swap with the later one
-                if (ages[i] > ages[j]) {
-                    // Swap the ages
-                    int tempAge = ages[i];
-                    ages[i] = ages[j];
-                    ages[j] = tempAge;
-
-                    // Swap the corresponding names so they stay in sync
-                    String tempName = names[i];
-                    names[i] = names[j];
-                    names[j] = tempName;
-                }
-            }
-        }
-
+        Arrays.sort(people);
         // The largest age is now at the last index (2)
-        System.out.println(names[2]);
+        System.out.println(people[2].name);
     }
 }

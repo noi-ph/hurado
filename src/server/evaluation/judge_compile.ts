@@ -4,12 +4,28 @@ import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
 import { JudgeScript, JudgeSubmission, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
 import { CompilationResult } from "./types";
 import { ISOLATE_BIN, IsolateUtils } from "./judge_utils";
-import { getWallTimeLimit, LIMITS_DEFAULT_COMPILE_MEMORY_LIMIT_KB, LIMITS_DEFAULT_COMPILE_TIME_LIMIT_SECONDS } from "./judge_constants";
+import {
+  WallTimeLimitSeconds,
+  LIMITS_DEFAULT_COMPILE_MEMORY_LIMIT_BYTE,
+  LIMITS_DEFAULT_COMPILE_TIME_LIMIT_MS,
+  TimeLimitSeconds,
+  MemoryLimitKilobytes,
+} from "./judge_constants";
+
+type GetInterpreterCommandFunction = (
+  executable_name: string,
+  time_limit_ms: number,
+  memory_limit_byte: number,
+) => string[];
 
 type LanguageSpec = {
   getExecutableName(source: string): string;
   getCompileCommand(source: string, exe: string): string[] | null;
-  interpreter: string | null;
+  getInterpreterCommand: GetInterpreterCommandFunction | null;
+  compileProcessLimit: number | null;
+  compileBonusMemoryByte: number;
+  runtimeProcessLimit: number | null;
+  runtimeBonusMemoryByte: number; // Bonus memory for interpreter overhead
 };
 
 export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
@@ -20,16 +36,38 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
     getCompileCommand: (source: string, exe: string) => {
       return ["/usr/bin/g++", "-O2", "-std=c++17", "-o", exe, source];
     },
-    interpreter: null,
+    getInterpreterCommand: null,
+    compileProcessLimit: 4,
+    compileBonusMemoryByte: 0,
+    runtimeProcessLimit: null,
+    runtimeBonusMemoryByte: 0,
   },
   [Language.Java]: {
     getExecutableName: (source: string) => {
       return removeLastExtension(source);
     },
-    getCompileCommand: (source: string, _exe: string) => {
+    getCompileCommand: (source: string) => {
       return ["/usr/bin/javac", source];
     },
-    interpreter: "/usr/bin/java",
+    getInterpreterCommand: (executable_name, _time_limit_ms, memory_limit_byte) => {
+      return [
+        "/usr/bin/java",
+        "-XX:ActiveProcessorCount=1",
+        "-XX:+UseSerialGC",
+        "-XX:ParallelGCThreads=1",
+        "-XX:ConcGCThreads=0",
+        "-XX:CICompilerCount=2",
+        "-XX:MaxMetaspaceSize=32m",
+        "-XX:ReservedCodeCacheSize=32m",
+        "-XX:-UseCompressedOops",
+        `-Xmx${Math.floor(memory_limit_byte / 1_000_000)}m`,
+        executable_name,
+      ];
+    },
+    compileProcessLimit: 20,
+    compileBonusMemoryByte: 4_000_000_000,
+    runtimeProcessLimit: 20,
+    runtimeBonusMemoryByte: 1_000_000_000,
   },
   [Language.Python3]: {
     getExecutableName: (source: string) => {
@@ -39,7 +77,11 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
     getCompileCommand: (source: string, exe: string) => {
       return null;
     },
-    interpreter: "/usr/bin/python3",
+    getInterpreterCommand: (executable_name) => ["/usr/bin/python3", executable_name],
+    compileProcessLimit: null,
+    compileBonusMemoryByte: 0,
+    runtimeProcessLimit: null,
+    runtimeBonusMemoryByte: 0,
   },
   [Language.PyPy3]: {
     getExecutableName: (source: string) => {
@@ -49,7 +91,11 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
     getCompileCommand: (source: string, exe: string) => {
       return null;
     },
-    interpreter: "/usr/bin/pypy3",
+    getInterpreterCommand: (executable_name) => ["/usr/bin/pypy3", executable_name],
+    compileProcessLimit: null,
+    compileBonusMemoryByte: 0,
+    runtimeProcessLimit: null,
+    runtimeBonusMemoryByte: 0,
   },
 };
 
@@ -111,15 +157,13 @@ export async function compileLocalSource(
     };
   }
 
-  const timeLimitSeconds = time_limit_ms != null
-    ? time_limit_ms / 1000
-    : LIMITS_DEFAULT_COMPILE_TIME_LIMIT_SECONDS;
+  const timeLimitMS = time_limit_ms ?? LIMITS_DEFAULT_COMPILE_TIME_LIMIT_MS;
+  const memoryLimitByte = memory_limit_byte ?? LIMITS_DEFAULT_COMPILE_MEMORY_LIMIT_BYTE;
 
-  const timeLimit = `${timeLimitSeconds}`;
-  const wallTimeLimit = `${getWallTimeLimit(timeLimitSeconds)}`;
-  const memLimit = memory_limit_byte != null
-    ? `${Math.floor(memory_limit_byte / 1000)}`
-    : `${LIMITS_DEFAULT_COMPILE_MEMORY_LIMIT_KB}`;
+  const timeLimit = TimeLimitSeconds(timeLimitMS);
+  const wallTimeLimit = WallTimeLimitSeconds(timeLimitMS);
+  const memLimit = MemoryLimitKilobytes(memoryLimitByte + specs.compileBonusMemoryByte);
+  const procLimit = specs.compileProcessLimit ?? 1;
 
   return IsolateUtils.with(async (isolate) => {
     const argv: string[] = [
@@ -132,11 +176,12 @@ export async function compileLocalSource(
       `--time=${timeLimit}`,
       `--wall-time=${wallTimeLimit}`,
       `--mem=${memLimit}`,
-      "--processes=4",
+      `--processes=${procLimit}`,
       "--run",
       "--",
       ...command,
     ];
+
     const child = ChildProcess.spawn(ISOLATE_BIN, argv, {
       stdio: [null, process.stdout, process.stderr],
     });

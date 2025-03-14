@@ -6,8 +6,7 @@ import { UnreachableError } from "common/errors";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, runChildProcess } from "./judge_utils";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { CheckerResult } from "./types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-import { getWallTimeLimit, LIMITS_JUDGE_MEMORY_LIMIT_KB, LIMITS_JUDGE_TIME_LIMIT_SECONDS, LIMITS_WALL_TIME_BONUS } from "./judge_constants";
+import { LIMITS_JUDGE_MEMORY_LIMIT_BYTE, LIMITS_JUDGE_TIME_LIMIT_MS, MemoryLimitKilobytes, TimeLimitSeconds, WallTimeLimitSeconds } from "./judge_constants";
 
 export async function checkSubmissionOutput(opts: {
   checker: JudgeChecker;
@@ -94,11 +93,12 @@ function makeCheckerArgv(opts: {
     output_file_name,
   } = opts;
 
-  const timeLimit = `${LIMITS_JUDGE_TIME_LIMIT_SECONDS}`;
-  const wallTimeLimit = `${getWallTimeLimit(LIMITS_JUDGE_TIME_LIMIT_SECONDS)}`;
-  const memLimit = `${LIMITS_JUDGE_MEMORY_LIMIT_KB}`;
-
   const spec = LANGUAGE_SPECS[checker.language];
+  const timeLimit = TimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
+  const wallTimeLimit = WallTimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
+  const memLimit = MemoryLimitKilobytes(LIMITS_JUDGE_MEMORY_LIMIT_BYTE + spec.runtimeBonusMemoryByte);
+  const procLimit = spec.runtimeProcessLimit ?? 1;
+
   const argv: string[] = [
     `--box-id=${isolate.name}`,
     "--dir=/opt/lang=/opt/lang",
@@ -109,16 +109,21 @@ function makeCheckerArgv(opts: {
     `--time=${timeLimit}`,
     `--wall-time=${wallTimeLimit}`,
     `--mem=${memLimit}`,
-    "--processes=1",
+    `--processes=${procLimit}`,
     "--run",
     "--",
   ];
 
-  if (spec.interpreter == null) {
-    argv.push(`/task/${checker.exe_name}`);
-  } else if (checker.exe_name != null) {
-    argv.push(spec.interpreter);
-    argv.push(checker.exe_name);
+  if (checker.exe_name != null) {
+    if (spec.getInterpreterCommand == null) {
+      argv.push(`/task/${checker.exe_name}`);
+    } else {
+      argv.push(...spec.getInterpreterCommand(
+        checker.exe_name,
+        LIMITS_JUDGE_TIME_LIMIT_MS,
+        LIMITS_JUDGE_MEMORY_LIMIT_BYTE,
+      ));
+    }
   } else {
     throw new Error("Missing communicator exe_name");
   }
