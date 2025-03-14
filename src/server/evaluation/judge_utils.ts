@@ -2,6 +2,7 @@ import fs from "fs";
 import ChildProcess from "child_process";
 import { Verdict } from "common/types/constants";
 import { ContestantScript, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
+import { isInteger } from "common/utils/guards";
 import { IsolateResult } from "./types";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import {
@@ -14,6 +15,7 @@ import {
 
 export const ISOLATE_BIN = "/usr/local/bin/isolate";
 const ISOLATE_DIRECTORY = "/var/local/lib/isolate";
+const SIGSEGV = 11; // Signal number for segmentation fault
 
 export type IsolateInstance = {
   name: string;
@@ -91,7 +93,11 @@ export class IsolateUtils {
     } else if (status === "RE") {
       result.verdict = Verdict.RuntimeError;
     } else if (status === "SG") {
-      result.verdict = Verdict.MemoryLimitExceeded;
+      if (exitsig != null && isInteger(exitsig) && +exitsig === SIGSEGV) {
+        result.verdict = Verdict.MemoryLimitExceeded;
+      } else {
+        result.verdict = Verdict.RuntimeError;
+      }
     } else if (exitcode === "0") {
       result.verdict = Verdict.Accepted;
     }
