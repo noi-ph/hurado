@@ -164,6 +164,7 @@ export function makeContestantArgv(
 
     const argv: string[] = [
     `--box-id=${isolate.name}`,
+    "--dir=/opt/lang=/opt/lang",
     `--dir=/submission=${submissionRoot}`,
     "--chdir=/submission",
     `--meta=${isolate.meta}`,

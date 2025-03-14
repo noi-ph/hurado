@@ -26,8 +26,8 @@ export const LANGUAGE_SPECS: Record<ProgrammingLanguage, LanguageSpec> = {
     getExecutableName: (source: string) => {
       return removeLastExtension(source);
     },
-    getCompileCommand: (source: string, exe: string) => {
-      return ["/usr/bin/g++", "-O2", "-std=c++17", "-o", exe, source];
+    getCompileCommand: (source: string, _exe: string) => {
+      return ["/usr/bin/javac", source];
     },
     interpreter: "/usr/bin/java",
   },
@@ -64,8 +64,8 @@ export async function compileSubmission(
   const exeName = spec.getExecutableName(srcName);
   return compileLocalSource(
     language,
-    task.time_limit_ms,
-    task.memory_limit_byte,
+    task.compile_time_limit_ms,
+    task.compile_memory_limit_byte,
     submissionDir,
     srcName,
     exeName,
@@ -76,7 +76,7 @@ export async function compileJudgeScriptAndMutate(
   script: JudgeScript,
   taskDir: string
 ): Promise<JudgeScript> {
-  // Note: This function mutates JudgeScript!!
+  // Note: This function mutates the JudgeScript argument!!
   const specs = LANGUAGE_SPECS[script.language];
   const srcName = script.file_name;
   const exeName = specs.getExecutableName(srcName);
@@ -124,6 +124,7 @@ export async function compileLocalSource(
   return IsolateUtils.with(async (isolate) => {
     const argv: string[] = [
       `--box-id=${isolate.name}`,
+      "--dir=/opt/lang=/opt/lang",
       `--dir=/mount=${root}:rw`,
       "--chdir=/mount",
       "--env=PATH",
@@ -171,7 +172,7 @@ export function getLanguageFilename(language: Language) {
     case Language.CPP:
       return "main.cpp";
     case Language.Java:
-      return "main.java";
+      return "Main.java";
     case Language.Python3:
       return "main.py";
     case Language.PyPy3:

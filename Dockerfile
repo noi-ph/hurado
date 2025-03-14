@@ -1,7 +1,5 @@
 FROM node:20-bullseye
 
-# Local development only. Manage your own dependencies.
-
 # Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -21,5 +19,14 @@ RUN make isolate
 RUN make install
 
 RUN cp /isolate/isolate /bin/isolate
+
+COPY ./config/languages/install_java.sh /languages/install_java.sh
+RUN /languages/install_java.sh
+
+COPY ./config/languages/install_pypy3.sh /languages/install_pypy3.sh
+RUN /languages/install_pypy3.sh
+
+# Remove the entire /languages directory
+RUN rm -rf /languages
 
 WORKDIR /app/

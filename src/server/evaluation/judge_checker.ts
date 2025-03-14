@@ -101,6 +101,7 @@ function makeCheckerArgv(opts: {
   const spec = LANGUAGE_SPECS[checker.language];
   const argv: string[] = [
     `--box-id=${isolate.name}`,
+    "--dir=/opt/lang=/opt/lang",
     `--dir=/task=${task_root}`,
     `--dir=/output=${output_root}`,
     "--chdir=/task",
