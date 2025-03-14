@@ -240,7 +240,7 @@ function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnviron
       // (it would be arranged vertically by the flex-col)
       return (
         <div className="flex flex-col items-center text-center">
-          <div className="w-full">
+          <div>
             {renderEnvironmentContent(node, source)}
           </div>
         </div>
@@ -248,7 +248,7 @@ function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnviron
     case "flushright":
       return (
         <div className="flex flex-col items-right text-right">
-          <div className="w-full">
+          <div>
             {renderEnvironmentContent(node, source)}
           </div>
         </div>
@@ -256,7 +256,7 @@ function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnviron
     case "flushleft":
       return (
         <div className="flex flex-col items-left text-left">
-          <div className="w-full">
+          <div>
             {renderEnvironmentContent(node, source)}
           </div>
         </div>
