@@ -17,7 +17,7 @@ services:
     env_file:
       - .env
     ports:
-      - 10000:10000
+      - 3000:3000
     restart: always
     depends_on:
       - hurado-postgres
