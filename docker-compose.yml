@@ -28,7 +28,7 @@ services:
       - /tmp/hurado-cache:/tmp/file-storage-cache
     networks:
       - internal-net
-      - host-net
+      - host-net  # For internet access
     logging: *default-logging
   hurado-judge:
     container_name: hurado-judge
@@ -50,6 +50,7 @@ services:
       - /tmp/hurado-cache:/tmp/file-storage-cache
     networks:
       - internal-net
+      - host-net  # For internet access
     logging: *default-logging
   hurado-postgres:
     container_name: hurado-postgres
