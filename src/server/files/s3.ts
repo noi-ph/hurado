@@ -16,7 +16,7 @@ class S3FileStorage extends FileStorage {
   bucket: string;
   prefix: string;
 
-  constructor(s3: S3, bucket: string, prefix: string, maxCacheSizeMB: number = 0) {
+  constructor(s3: S3, bucket: string, prefix: string, maxCacheSizeMB = 0) {
     super(maxCacheSizeMB);
     this.s3 = s3;
     this.bucket = bucket;

@@ -3,7 +3,7 @@ import { FileCache } from './cache';
 export abstract class FileStorage {
   protected cache: FileCache;
 
-  constructor(maxCacheSizeMB: number = 0) {
+  constructor(maxCacheSizeMB = 0) {
     this.cache = new FileCache(maxCacheSizeMB);
   }
 

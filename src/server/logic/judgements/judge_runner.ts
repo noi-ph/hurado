@@ -205,7 +205,7 @@ async function judgeSubtask<Type extends TaskType>(
   subtask: JudgeSubtaskFor<Type>,
   verdict_id: string,
   verdict_cache: Map<string, JudgeVerdictTaskData>,
-  doomed_subtask: boolean = false,
+  doomed_subtask = false,
 ): Promise<JudgeVerdictSubtask> {
   const dbSubtask = await db
     .insertInto("verdict_subtasks")

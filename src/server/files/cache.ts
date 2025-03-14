@@ -20,7 +20,7 @@ export class FileCache {
   private indexFilePath: string;
   private lockFilePath: string;
 
-  constructor(maxSizeMB: number = 0) {
+  constructor(maxSizeMB = 0) {
     // Default cache directory is in the OS temp directory
     this.cacheDir = path.join(process.env.TEMP || '/tmp', 'file-storage-cache');
     this.maxSizeBytes = maxSizeMB * 1024 * 1024; // Convert MB to bytes

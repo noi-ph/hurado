@@ -1,13 +1,13 @@
+import { promises as fsPromises } from "fs";
 import { BlobDownloadResponseParsed, BlobServiceClient, BlobUploadCommonResponse, ContainerClient, ContainerCreateIfNotExistsResponse } from "@azure/storage-blob";
 import { AZURE_STORAGE_CONNECTION_STRING, MAX_LOCAL_FILE_CACHE_MB } from "../secrets";
 import { FileStorageClients, FileStorage } from "./abstract";
-import { promises as fsPromises } from "fs";
 
 
 class AzureFileStorage extends FileStorage {
   storage: ContainerClient;
 
-  constructor(client: BlobServiceClient, container: string, maxCacheSizeMB: number = 0) {
+  constructor(client: BlobServiceClient, container: string, maxCacheSizeMB = 0) {
     super(maxCacheSizeMB);
     this.storage = client.getContainerClient(container);
   }
