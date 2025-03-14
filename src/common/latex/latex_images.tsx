@@ -51,7 +51,7 @@ export function LatexImageX({ node, source }: LatexNodeProps<LatexMacroImage>) {
   };
 
   // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- pre-existing error before eslint inclusion
-  return <img style={style} className="max-w-full" src={src} />;
+  return <img style={style} className="max-w-full inline-block" src={src} />;
 }
 
 

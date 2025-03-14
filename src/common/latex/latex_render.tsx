@@ -240,19 +240,25 @@ function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnviron
       // (it would be arranged vertically by the flex-col)
       return (
         <div className="flex flex-col items-center text-center">
-          {renderEnvironmentContent(node, source)}
+          <div className="max-w-full">
+            {renderEnvironmentContent(node, source)}
+          </div>
         </div>
       );
     case "flushright":
       return (
         <div className="flex flex-col items-right text-right">
-          {renderEnvironmentContent(node, source)}
+          <div className="max-w-full">
+            {renderEnvironmentContent(node, source)}
+          </div>
         </div>
       );
     case "flushleft":
       return (
         <div className="flex flex-col items-left text-left">
-          {renderEnvironmentContent(node, source)}
+          <div className="max-w-full">
+            {renderEnvironmentContent(node, source)}
+          </div>
         </div>
       );
     case "enumerate":
