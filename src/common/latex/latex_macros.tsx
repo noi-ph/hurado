@@ -118,6 +118,8 @@ export const LATEX_MACROS = {
 
 export const LATEX_ENVIRONMENTS = {
   center: {},
+  flushright: {},
+  flushleft: {},
   enumerate: {
     signature: "o",
   },

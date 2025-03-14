@@ -236,7 +236,31 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
 function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnvironment>) {
   switch (node.env) {
     case "center":
-      return <div className="flex flex-col items-center text-center">{renderEnvironmentContent(node, source)}</div>;
+      // Without this inner div, you can't nest e.g. \textit within a \center
+      // (it would be arranged vertically by the flex-col)
+      return (
+        <div className="flex flex-col items-center text-center">
+          <div className="w-full">
+            {renderEnvironmentContent(node, source)}
+          </div>
+        </div>
+      );
+    case "flushright":
+      return (
+        <div className="flex flex-col items-right text-right">
+          <div className="w-full">
+            {renderEnvironmentContent(node, source)}
+          </div>
+        </div>
+      );
+    case "flushleft":
+      return (
+        <div className="flex flex-col items-left text-left">
+          <div className="w-full">
+            {renderEnvironmentContent(node, source)}
+          </div>
+        </div>
+      );
     case "enumerate":
     case "itemize":
       return latexEnvironmentList(node as LatexNodeList, source);
