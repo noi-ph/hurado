@@ -143,8 +143,7 @@ function hrd_deploy() {
 function hrd_deploy_server() {
     # Server-side script for deploying the latest changes to the production server
     set -e
-    cd /hurado/
-    git pull --ff-only origin main
+    cd ~/hurado/
     ./scripts/next_build.sh
     $HRD_CMD compose restart
     $HRD_CMD shell npm run db:migrate
