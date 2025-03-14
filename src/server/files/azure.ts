@@ -17,7 +17,7 @@ class AzureFileStorage extends FileStorage {
     const resp = await blobClient.uploadData(buffer);
     // Cache the uploaded file
     try {
-      await this.cache.putBuffer('s3', this.bucket, filename, buffer);
+      await this.cache.putBuffer('azure', this.storage.containerName, filename, buffer);
     } catch (error) {
       console.error('Error caching file:', error);
       // Continue even if caching fails
