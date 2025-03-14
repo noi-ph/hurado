@@ -1,5 +1,11 @@
 version: '3.3'
  
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   hurado-main:
     container_name: hurado-main
@@ -20,6 +26,9 @@ services:
     volumes:
       - .:/app
       - /tmp/hurado-cache:/tmp/file-storage-cache
+    networks:
+      - internal-net
+    logging: *default-logging
   hurado-judge:
     container_name: hurado-judge
     image: noiph/hurado:latest
@@ -38,6 +47,9 @@ services:
     volumes:
       - ./:/app/
       - /tmp/hurado-cache:/tmp/file-storage-cache
+    networks:
+      - internal-net
+    logging: *default-logging
   hurado-postgres:
     container_name: hurado-postgres
     image: postgres:17-alpine
@@ -49,6 +61,9 @@ services:
       - 5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
+    networks:
+      - internal-net
+    logging: *default-logging
   hurado-redis:
     container_name: hurado-redis
     image: redis:7-alpine
@@ -58,12 +73,25 @@ services:
     volumes:
       - ./volumes/redis:/data
       - ./config/production/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - internal-net
+    logging: *default-logging
   hurado-nginx:
     container_name: hurado-nginx
     image: nginx:1-alpine
     ports:
-      - "443:443"
+      - "0.0.0.0:443:443"
     volumes:
       - ./config/production/nginx/:/etc/nginx/
       - ./private/nginx-certs/:/etc/nginx-certs/
       - ./build/:/var/www/hurado/:ro
+    networks:
+      - internal-net
+      - host-net
+    logging: *default-logging
+
+networks:
+  internal-net:
+    internal: true  # Restricts access to containers only
+  host-net:
+    internal: false

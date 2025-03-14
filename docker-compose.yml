@@ -1,5 +1,11 @@
 version: '3.3'
- 
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "1"
+
 services:
   hurado-main:
     container_name: hurado-main
@@ -11,7 +17,7 @@ services:
     env_file:
       - .env
     ports:
-      - 10000:10000
+      - 127.0.0.1:10000:10000
     restart: always
     depends_on:
       - hurado-postgres
@@ -20,6 +26,10 @@ services:
     volumes:
       - ./:/app/
       - /tmp/hurado-cache:/tmp/file-storage-cache
+    networks:
+      - internal-net
+      - host-net
+    logging: *default-logging
   hurado-judge:
     container_name: hurado-judge
     image: noiph/hurado:latest
@@ -38,6 +48,9 @@ services:
     volumes:
       - ./:/app/
       - /tmp/hurado-cache:/tmp/file-storage-cache
+    networks:
+      - internal-net
+    logging: *default-logging
   hurado-postgres:
     container_name: hurado-postgres
     image: postgres:17-alpine
@@ -49,6 +62,9 @@ services:
       - 5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
+    networks:
+      - internal-net
+    logging: *default-logging
   hurado-redis:
     container_name: hurado-redis
     image: redis:7-alpine
@@ -58,6 +74,9 @@ services:
     volumes:
       - ./volumes/redis:/data
       - ./config/development/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - internal-net
+    logging: *default-logging
   hurado-minio:
     container_name: hurado-minio
     image: minio/minio:latest
@@ -70,3 +89,13 @@ services:
       - "9001:9001"
     volumes:
       - ./volumes/minio:/data
+    networks:
+      - internal-net
+      - host-net
+    logging: *default-logging
+
+networks:
+  internal-net:
+    internal: true  # Restricts access to containers only
+  host-net:
+    internal: false
