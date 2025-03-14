@@ -331,7 +331,9 @@ async function judgeTaskData<Type extends TaskType>(
     running_time_ms: result.running_time_ms,
     running_memory_byte: result.running_memory_byte,
   };
-  verdict_cache.set(task_data.judge_file_hash, returnResult);
+  if (returnResult.verdict !== Verdict.Skipped) {
+    verdict_cache.set(task_data.judge_file_hash, returnResult);
+  }
   return returnResult;
 }
 
