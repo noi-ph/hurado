@@ -15,7 +15,6 @@ import {
 
 export const ISOLATE_BIN = "/usr/local/bin/isolate";
 const ISOLATE_DIRECTORY = "/var/local/lib/isolate";
-const SIGSEGV = 11; // Signal number for segmentation fault
 
 export type IsolateInstance = {
   name: string;
@@ -93,11 +92,11 @@ export class IsolateUtils {
     } else if (status === "RE") {
       result.verdict = Verdict.RuntimeError;
     } else if (status === "SG") {
-      if (exitsig != null && isInteger(exitsig) && +exitsig === SIGSEGV) {
-        result.verdict = Verdict.MemoryLimitExceeded;
-      } else {
-        result.verdict = Verdict.RuntimeError;
-      }
+      result.verdict = Verdict.RuntimeError;
+      // isolate tells us that we can check for SIGSEGV (Segmentation Fault)
+      // to detect a memory limit error. Unfortunately, SIGSEGV is also
+      // thrown whenever an actual segmentation fault occurs, so we can't
+      // rely on this to detect memory limit errors.
     } else if (exitcode === "0") {
       result.verdict = Verdict.Accepted;
     }

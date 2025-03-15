@@ -1,13 +1,16 @@
-#include <stdio.h>
+#include <iostream>
 #include <malloc.h>
+using namespace std;
 
-int LIMIT = 1000000;
+int LIMIT = 10000000;
+int CHUNK_SIZE = 1000000;
 
 int main() {
+    cerr << "This program will crash with a memory limit error" << endl;
     char** arr = (char**)malloc(LIMIT * sizeof(char*));
     for (int i = 0; i<LIMIT; i++) {
-        arr[i] = (char*)malloc(1000 * sizeof(char));
-        arr[i][i % 1000] = i % 256; // Force CoW to actually allocate the page
+        arr[i] = (char*)malloc(CHUNK_SIZE * sizeof(char));
+        arr[i][i % CHUNK_SIZE] = i % 256; // Force CoW to actually allocate the page
     }
-    printf("Done\n");
+    cout << "Done" << endl;
 }
