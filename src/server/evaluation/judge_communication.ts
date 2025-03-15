@@ -3,12 +3,12 @@ import ChildProcess from "child_process";
 import { JudgeChecker, JudgeScript, JudgeTaskCommunication, JudgeTaskDataCommunication } from "common/types/judge";
 import { Verdict } from "common/types/constants";
 import { UnreachableError } from "common/errors";
+import { FORWARD_CHILD_STDERR } from "server/secrets";
 import { EvaluationResult, IsolateResult, JudgeEvaluationContextCommunication } from "./types";
 import { checkSubmissionOutput } from "./judge_checker";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, makeContestantArgv } from "./judge_utils";
 import { WallTimeLimitSeconds, LIMITS_JUDGE_MEMORY_LIMIT_BYTE, LIMITS_JUDGE_TIME_LIMIT_MS, TimeLimitSeconds, MemoryLimitKilobytes } from "./judge_constants";
-import { FORWARD_CHILD_STDERR } from "server/secrets";
 
 export async function evaluateTaskDataForCommunication(
   context: JudgeEvaluationContextCommunication,

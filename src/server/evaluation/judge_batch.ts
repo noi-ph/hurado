@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { WriteStream } from "tty";
 import ChildProcess from "child_process";
 import { ContestantScript, JudgeTaskBatch, JudgeTaskDataBatch } from "common/types/judge";
 import { Verdict } from "common/types/constants";
