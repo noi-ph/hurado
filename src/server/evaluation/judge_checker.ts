@@ -3,6 +3,7 @@ import ChildProcess from "child_process";
 import { JudgeChecker, JudgeScript } from "common/types/judge";
 import { CheckerKind, Verdict } from "common/types/constants";
 import { UnreachableError } from "common/errors";
+import { FORWARD_CHILD_STDERR } from "server/secrets";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, runChildProcess } from "./judge_utils";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { CheckerResult } from "./types";
@@ -59,8 +60,9 @@ async function runCustomChecker(opts: {
     });
     const pCheckerOut = new Promise<string>((resolve) => {
       const chunks: string[] = [];
-      const child = ChildProcess.spawn(ISOLATE_BIN, argv);
-      child.stderr.pipe(process.stderr);
+      const child = ChildProcess.spawn(ISOLATE_BIN, argv, {
+        stdio: ["ignore", "pipe", FORWARD_CHILD_STDERR ? process.stderr : "ignore"],
+      });
 
       child.stdout.on("data", (chunk: string) => {
         chunks.push(chunk);

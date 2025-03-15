@@ -15,6 +15,10 @@ function parseEmailProvider(): "console" | "ses" {
   return process.env.EMAIL_PROVIDER;
 }
 
+function parseBoolean(envvar: string | undefined): boolean {
+  return envvar === "true";
+}
+
 export const WEB_ACCESSIBLE_ORIGIN = process.env.WEB_ACCESSIBLE_ORIGIN;
 
 // Maybe have some validation here for various process.env variables
@@ -56,3 +60,6 @@ export const AWS_SES_REGION = process.env.AWS_SES_REGION!;
 export const MAX_LOCAL_FILE_CACHE_MB = process.env.MAX_LOCAL_FILE_CACHE_MB 
   ? parseInt(process.env.MAX_LOCAL_FILE_CACHE_MB, 10) 
   : 0; // Default to 0 (disabled) if not set
+
+// Allow for debugging contestant and judge scripts
+export const FORWARD_CHILD_STDERR = parseBoolean(process.env.FORWARD_CHILD_STDERR);
