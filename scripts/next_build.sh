@@ -12,6 +12,7 @@ function run_inside() {
     # Since /app is mounted as a volume, the files in /app/.next/ will be available on the host machine
     npm ci
     npm run build
+    chown -R $BUILD_USER:$BUILD_GROUP .next
 }
 
 function run_outside() {
@@ -19,6 +20,8 @@ function run_outside() {
     docker run \
         -it \
         --env-file "$PROJECT_ROOT/.env" \
+        -e BUILD_USER=$(id -u) \
+        -e BUILD_GROUP=$(id -g) \
         -v "$PROJECT_ROOT:/app" \
         -w /app \
         noiph/hurado:latest ./scripts/next_build.sh inside
