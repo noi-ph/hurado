@@ -2,7 +2,6 @@ import fs from "fs";
 import ChildProcess from "child_process";
 import { Verdict } from "common/types/constants";
 import { ContestantScript, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
-import { isInteger } from "common/utils/guards";
 import { IsolateResult } from "./types";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import {

@@ -80,7 +80,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<UserRegis
         role: raw.role,
       },
     };
-    cookies().set("session", tokenizeSession(session));
+    cookies().set("session", tokenizeSession(session), { maxAge: 60 * 60 * 24 * 365 });
 
     return NextResponse.json(makeSuccessResponse(session));
   });
