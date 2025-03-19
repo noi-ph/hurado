@@ -71,9 +71,9 @@ export function humanizeVerdict(verdict: Verdict, score: number | null): string 
       return "Accepted";
     case Verdict.Partial: {
       if (score == null) {
-        return 'Partial';
+        return "Partial";
       } else {
-        return `Partial: ${score} point${score == 1 ? '' : 's'}`; // TODO: i18n
+        return `Partial: ${score} point${score == 1 ? "" : "s"}`; // TODO: i18n
       }
     }
     case Verdict.WrongAnswer:

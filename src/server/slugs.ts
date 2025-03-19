@@ -10,11 +10,14 @@ export enum SlugLookup {
 type SlugLookupResult =
   | { kind: SlugLookup.HID; uuid: string }
   | { kind: SlugLookup.Slug; uuid: string }
-  | { kind: SlugLookup.NotFound }
+  | { kind: SlugLookup.NotFound };
 
 type SlugLookupFn = (slug: string) => Promise<string | undefined>;
 
-async function uncachedFindFromSlugOrHID(slug: string, lookup: SlugLookupFn): Promise<SlugLookupResult> {
+async function uncachedFindFromSlugOrHID(
+  slug: string,
+  lookup: SlugLookupFn
+): Promise<SlugLookupResult> {
   const uuid = huradoIDToUUID(slug);
   if (uuid == null) {
     const objID = await lookup(slug);

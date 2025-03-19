@@ -12,7 +12,6 @@ import styles from "./submit_panel.module.css";
 import "./submit_panel.css"; // This is not a mistake
 import { createSubmissionCode, postSubmission } from "./submit_utils";
 
-
 const MonacoOptions: editor.IStandaloneEditorConstructionOptions = {
   language: Language.Python3,
   minimap: {
@@ -25,9 +24,13 @@ type SubmitCodeProps = {
 };
 
 export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
-  const savedLanguage = localStorage.getItem('_language');
+  const savedLanguage = localStorage.getItem("_language");
   const [code, setCode] = useState<string>("");
-  const [language, setLanguage] = useState<Language>(Object.values(Language).includes(savedLanguage as Language) ? savedLanguage as Language : Language.Python3);
+  const [language, setLanguage] = useState<Language>(
+    Object.values(Language).includes(savedLanguage as Language)
+      ? (savedLanguage as Language)
+      : Language.Python3
+  );
   const [submitting, setSubmitting] = useState(false);
 
   const submissions = useContext(SubmissionsCacheContext);
@@ -38,7 +41,7 @@ export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
   }, []);
 
   const onChangeLanguage = useCallback((event: SelectChangeEvent) => {
-    localStorage.setItem('_language', event.target.value);
+    localStorage.setItem("_language", event.target.value);
     setLanguage(event.target.value as Language);
   }, []);
 
@@ -51,7 +54,7 @@ export const SubmitCode = ({ taskId }: SubmitCodeProps) => {
     const data = createSubmissionCode(taskId, language, code);
     await postSubmission(data, submissions, router);
     setSubmitting(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [taskId, submitting, language, code]);
 
   // .submit-panel is a non-module class used to style the monaco editor's line numbers

@@ -58,7 +58,9 @@ export const ProblemSetViewer = ({ set, canEdit }: ProblemSetViewerProps) => {
         {set.description && <LatexDisplay>{set.description}</LatexDisplay>}
       </div>
       <div className="flex flex-col items-center gap-4 mt-8">
-        {set.tasks.map(task => <TaskCard key={task.slug} task={task}/>)}
+        {set.tasks.map((task) => (
+          <TaskCard key={task.slug} task={task} />
+        ))}
       </div>
     </>
   );

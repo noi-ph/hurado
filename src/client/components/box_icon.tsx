@@ -8,7 +8,7 @@ interface BoxIconProps {
 }
 
 const BoxIcon: React.FC<BoxIconProps> = ({ name, className }) => {
-  return <i className={classNames('bx', name, className)} />;
+  return <i className={classNames("bx", name, className)} />;
 };
 
 export default BoxIcon;

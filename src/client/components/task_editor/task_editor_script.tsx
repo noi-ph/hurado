@@ -14,20 +14,25 @@ import {
 import { Language } from "common/types/constants";
 import { TaskScriptED } from "../task_editor/types";
 
-
 type TaskEditorScriptProps = {
   script: TaskScriptED;
   setScript(script: TaskScriptED): void;
 };
 
-export const TaskEditorScript = ({ script, setScript }: TaskEditorScriptProps): React.ReactElement => {
-  const onLanguageChange = useCallback((event: SelectChangeEvent) => {
-    const language = event.target.value as Language;
-    setScript({
-      ...script,
-      language,
-    });
-  }, [script, setScript]);
+export const TaskEditorScript = ({
+  script,
+  setScript,
+}: TaskEditorScriptProps): React.ReactElement => {
+  const onLanguageChange = useCallback(
+    (event: SelectChangeEvent) => {
+      const language = event.target.value as Language;
+      setScript({
+        ...script,
+        language,
+      });
+    },
+    [script, setScript]
+  );
 
   const onArgumentAdd = useCallback(() => {
     setScript({
@@ -36,21 +41,27 @@ export const TaskEditorScript = ({ script, setScript }: TaskEditorScriptProps): 
     });
   }, [script, setScript]);
 
-  const onFileChange = useCallback((file: CommonFileED | null, filename: string) => {
-    setScript({
-      ...script,
-      kind: EditorKind.Local,
-      file: file,
-      file_name: filename,
-    });
-  }, [script, setScript]);
+  const onFileChange = useCallback(
+    (file: CommonFileED | null, filename: string) => {
+      setScript({
+        ...script,
+        kind: EditorKind.Local,
+        file: file,
+        file_name: filename,
+      });
+    },
+    [script, setScript]
+  );
 
-  const onFilenameChange = useCallback((filename: string) => {
-    setScript({
-      ...script,
-      file_name: filename,
-    });
-  }, [script, setScript]);
+  const onFilenameChange = useCallback(
+    (filename: string) => {
+      setScript({
+        ...script,
+        file_name: filename,
+      });
+    },
+    [script, setScript]
+  );
 
   return (
     <>
@@ -81,16 +92,12 @@ export const TaskEditorScript = ({ script, setScript }: TaskEditorScriptProps): 
           />
         ))}
         <div>
-          <CommonEditorAddButton
-            onClick={onArgumentAdd}
-            label="Add Argument"
-          />
+          <CommonEditorAddButton onClick={onArgumentAdd} label="Add Argument" />
         </div>
       </div>
     </>
   );
 };
-
 
 type TaskEditorScriptArgumentProps = {
   index: number;
@@ -98,21 +105,28 @@ type TaskEditorScriptArgumentProps = {
   setScript(script: TaskScriptED): void;
 };
 
-export const TaskEditorScriptArgument = ({ index, script, setScript }: TaskEditorScriptArgumentProps): React.ReactElement => {
-  const onArgumentChange = useCallback((event: InputChangeEvent) => {
-    setScript({
-      ...script,
-      argv: Arrays.replaceNth(script.argv, index, event.target.value),
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-  }, [script, setScript]);
+export const TaskEditorScriptArgument = ({
+  index,
+  script,
+  setScript,
+}: TaskEditorScriptArgumentProps): React.ReactElement => {
+  const onArgumentChange = useCallback(
+    (event: InputChangeEvent) => {
+      setScript({
+        ...script,
+        argv: Arrays.replaceNth(script.argv, index, event.target.value),
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    },
+    [script, setScript]
+  );
 
   const onArgumentRemove = useCallback(() => {
     setScript({
       ...script,
       argv: Arrays.removeNth(script.argv, index),
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [script, setScript]);
 
   return (

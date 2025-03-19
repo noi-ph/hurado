@@ -26,7 +26,6 @@ import { zUserRegister } from "common/validation/user_validation";
 import { applyValidationErrors, ResponseKind } from "common/responses";
 import { UserRegisterError, UserRegisterSuccess } from "@root/api/v1/auth/register/route";
 
-
 type RegisterForm = {
   email: string;
   username: string;
@@ -50,7 +49,7 @@ export function RegisterPage() {
   const onSubmit = async (data: RegisterForm) => {
     try {
       const url = getAPIPath({ kind: APIPath.Register });
-    const response: AxiosResponse<UserRegisterSuccess> = await http.post(url, {
+      const response: AxiosResponse<UserRegisterSuccess> = await http.post(url, {
         email: data.email,
         username: data.username,
         password: data.password,
@@ -110,9 +109,7 @@ export function RegisterPage() {
         </AuthButton>
       </AuthForm>
       <AuthLinks>
-        <AuthLink href={getPath({ kind: Path.AccountLogin })}>
-          Already have an account
-        </AuthLink>
+        <AuthLink href={getPath({ kind: Path.AccountLogin })}>Already have an account</AuthLink>
       </AuthLinks>
     </AuthMain>
   );

@@ -1,12 +1,11 @@
 import { hashSync } from "bcryptjs";
 import { Transaction } from "kysely";
 import { UniquenessConflictError } from "common/errors";
-import { Models, UserPublic  } from "common/types";
+import { Models, UserPublic } from "common/types";
 import { db } from "db";
 import { EmailSender } from "server/email";
 import { getPath, Path } from "client/paths";
 import { WEB_ACCESSIBLE_ORIGIN } from "server/secrets";
-
 
 type CreateUserData = {
   email: string;
@@ -15,14 +14,14 @@ type CreateUserData = {
   role?: "admin" | "user";
 };
 
-export async function createUser(trx: Transaction<Models>, data: CreateUserData): Promise<UserPublic> {
+export async function createUser(
+  trx: Transaction<Models>,
+  data: CreateUserData
+): Promise<UserPublic> {
   const existing = await trx
     .selectFrom("users")
     .select("id")
-    .where((eb) => eb.or([
-      eb("email", "=", data.email),
-      eb("username", "=", data.username),
-    ]))
+    .where((eb) => eb.or([eb("email", "=", data.email), eb("username", "=", data.username)]))
     .executeTakeFirst();
 
   if (existing) {
@@ -80,15 +79,14 @@ export async function resetPassword(username: string): Promise<unknown> {
 
     await EmailSender.send(
       user.email,
-      'no-reply@noi.ph',
+      "no-reply@noi.ph",
       "Password Reset",
-      `Your password reset link is ${url}`,
+      `Your password reset link is ${url}`
     );
 
     return user;
   });
 }
-
 
 function generatePasswordResetToken(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

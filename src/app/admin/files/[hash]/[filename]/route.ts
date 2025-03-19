@@ -18,11 +18,8 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
   // There's no way to limit access to files. All we keep track of is their hash and size.
   // If someone knows the hash of a file, they might as well know the file itself.
   const session = await getSession(request);
-  const isAdmin = (
-    canManageTasks(session) ||
-    canManageContests(session) ||
-    canManageContests(session)
-  );
+  const isAdmin =
+    canManageTasks(session) || canManageContests(session) || canManageContests(session);
 
   if (!isAdmin) {
     return NextResponse.json({}, { status: 403 });

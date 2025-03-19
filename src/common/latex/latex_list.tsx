@@ -1,7 +1,12 @@
 import { createContext, ReactNode, useContext } from "react";
 import { UnreachableCheck } from "common/errors";
 import { LatexArgument, LatexBaseNode, LatexNode, LatexNodeProps } from "./latex_types";
-import { latexBrokenBlock, latexParseKwargs, latexPositionalArgument, latexPositionalString } from "./latex_utils";
+import {
+  latexBrokenBlock,
+  latexParseKwargs,
+  latexPositionalArgument,
+  latexPositionalString,
+} from "./latex_utils";
 import { LatexNodeAnyX } from "./latex_render";
 import { LatexCounterContext } from "./latex_counters";
 
@@ -29,13 +34,12 @@ export type LatexNodeList = LatexBaseNode<{
 }>;
 
 export function latexEnvironmentList(node: LatexNodeList, source: string): ReactNode {
-
-  switch(node.env) {
+  switch (node.env) {
     case "enumerate": {
-      return <ListOrdered node={node} source={source}/>;
+      return <ListOrdered node={node} source={source} />;
     }
     case "itemize":
-      return <ListUnordered node={node} source={source}/>;
+      return <ListUnordered node={node} source={source} />;
     default:
       UnreachableCheck(node.env);
       return latexBrokenBlock(node, source);
@@ -57,7 +61,7 @@ export function LatexBulletOrdered({ node }: LatexBulletOrderedProps) {
 
   const order = counters[counter] ?? 0;
 
-  switch(node.content) {
+  switch (node.content) {
     case "alph":
       return orderToAlphabet(order);
     case "Alph":
@@ -72,7 +76,11 @@ export function LatexBulletOrdered({ node }: LatexBulletOrderedProps) {
   }
 }
 
-function latexEnvironmentListChildren(node: LatexNodeList, source: string, ordered: boolean): ReactNode {
+function latexEnvironmentListChildren(
+  node: LatexNodeList,
+  source: string,
+  ordered: boolean
+): ReactNode {
   const children: React.ReactNode[] = [];
 
   let order = 0;
@@ -125,12 +133,7 @@ class ItemBuilder {
   build(key: number): ReactNode {
     const bullet = latexPositionalArgument(this.node.args, 0);
     return (
-      <ListItem
-        key={key}
-        bullet={bullet}
-        order={this.order}
-        ordered={this.ordered}
-      >
+      <ListItem key={key} bullet={bullet} order={this.order} ordered={this.ordered}>
         {this.items}
       </ListItem>
     );
@@ -156,9 +159,9 @@ function ListItem({ bullet: itemBullet, order, ordered, children }: ListItemProp
   } else if (parentBullet) {
     rxBullet = parentBullet.map((child, idx) => <LatexNodeAnyX key={idx} node={child} source="" />);
   } else if (ordered) {
-    rxBullet = <BulletDefaultOrdered depth={depthOrdered}/>;
+    rxBullet = <BulletDefaultOrdered depth={depthOrdered} />;
   } else {
-    rxBullet = <BulletDefaultUnordered depth={depthUnordered}/>;
+    rxBullet = <BulletDefaultUnordered depth={depthUnordered} />;
   }
 
   let nextCounters = counters;
@@ -170,9 +173,7 @@ function ListItem({ bullet: itemBullet, order, ordered, children }: ListItemProp
   return (
     <LatexCounterContext.Provider value={nextCounters}>
       <li className="[list-style-type:none] relative">
-        <span className="absolute left-[-.5rem] translate-x-[-100%]">
-          {rxBullet}
-        </span>
+        <span className="absolute left-[-.5rem] translate-x-[-100%]">{rxBullet}</span>
         {children}
       </li>
     </LatexCounterContext.Provider>
@@ -188,12 +189,10 @@ function ListOrdered({ node, source }: LatexNodeProps<LatexNodeList>) {
   return (
     <ListBulletContext.Provider value={label}>
       <ListOrderedDepthContext.Provider value={depth + 1}>
-        <ol className="pl-6 list-decimal">
-          {children}
-        </ol>
+        <ol className="pl-6 list-decimal">{children}</ol>
       </ListOrderedDepthContext.Provider>
     </ListBulletContext.Provider>
-  )
+  );
 }
 
 function ListUnordered({ node, source }: LatexNodeProps<LatexNodeList>) {
@@ -205,14 +204,11 @@ function ListUnordered({ node, source }: LatexNodeProps<LatexNodeList>) {
   return (
     <ListBulletContext.Provider value={label}>
       <ListUnorderedDepthContext.Provider value={depth + 1}>
-        <ol className="pl-6 list-decimal">
-          {children}
-        </ol>
+        <ol className="pl-6 list-decimal">{children}</ol>
       </ListUnorderedDepthContext.Provider>
     </ListBulletContext.Provider>
-  )
+  );
 }
-
 
 type BulletDefaultOrderedProps = {
   depth: number;
@@ -267,14 +263,32 @@ function orderToAlphabet(order: number): string {
 function orderToRoman(order: number): string {
   const capped = Math.min(order, 20);
   const romanNumerals = [
-    "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x",
-    "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx"
+    "i",
+    "ii",
+    "iii",
+    "iv",
+    "v",
+    "vi",
+    "vii",
+    "viii",
+    "ix",
+    "x",
+    "xi",
+    "xii",
+    "xiii",
+    "xiv",
+    "xv",
+    "xvi",
+    "xvii",
+    "xviii",
+    "xix",
+    "xx",
   ];
   return romanNumerals[capped];
 }
 
 function getDefaultListCounter(depth: number): string {
-  switch(depth) {
+  switch (depth) {
     case 0:
       return "enumi";
     case 1:

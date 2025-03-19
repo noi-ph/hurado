@@ -4,19 +4,19 @@
 
 .language {
   margin-left: auto;
-  padding: .5rem 1.5rem .5rem 1rem;
+  padding: 0.5rem 1.5rem 0.5rem 1rem;
   color: var(--color-gray-700);
   border: 1px solid var(--color-gray-300);
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   user-select: none;
 }
 
 .button {
   margin-left: auto;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   color: var(--color-white);
   background: var(--color-blue-300);
-  border-radius: .25rem;
+  border-radius: 0.25rem;
 }
 
 .button:hover {
@@ -34,7 +34,7 @@
 .outputGrid {
   display: grid;
   align-items: center;
-  grid-column-gap: .5rem;
-  grid-row-gap: .5rem;
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.5rem;
   grid-template-columns: auto 1fr;
 }

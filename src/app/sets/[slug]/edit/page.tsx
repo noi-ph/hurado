@@ -41,14 +41,14 @@ export async function generateMetadata(props: ProblemSetEditPageProps): Promise<
 
   return {
     title: `Admin | ${set.title}`,
-    description: set.description
+    description: set.description,
   };
-};
+}
 
 export default async function ProblemSetEditPage(props: ProblemSetEditPageProps) {
   const session = await getSession();
   if (session == null || session.user.role != "admin") {
-    return <ForbiddenPage/>;
+    return <ForbiddenPage />;
   }
 
   const lookup = await findFromSlugOrHID(props.params.slug);

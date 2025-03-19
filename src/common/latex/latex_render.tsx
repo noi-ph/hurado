@@ -18,8 +18,13 @@ import {
 } from "./latex_types";
 import { LATEX_ENVIRONMENTS, LATEX_MACROS, LATEX_STRINGS } from "./latex_macros";
 import { latexProcessNode } from "./latex_postprocess";
-import 'katex/dist/katex.css';
-import { LatexBulletOrdered, latexEnvironmentList, LatexMacroBulletOrdered, LatexNodeList } from "./latex_list";
+import "katex/dist/katex.css";
+import {
+  LatexBulletOrdered,
+  latexEnvironmentList,
+  LatexMacroBulletOrdered,
+  LatexNodeList,
+} from "./latex_list";
 import { latexBrokenBlock, latexBrokenInline, latexPositionalString } from "./latex_utils";
 import { LatexSyntaxHighlight } from "./latex_syntax_highlight";
 import { LatexImageX, LatexMacroImage } from "./latex_images";
@@ -49,7 +54,7 @@ export function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): Reac
     case "string":
       if (node.content in LATEX_STRINGS) {
         const Substitution = LATEX_STRINGS[node.content as keyof typeof LATEX_STRINGS];
-        return <Substitution/>;
+        return <Substitution />;
       } else {
         return node.content;
       }
@@ -91,7 +96,7 @@ function LatexNodeInlineMathX({ node, source }: LatexNodeProps<LatexNodeInlineMa
       displayMode: false,
     });
     return <span dangerouslySetInnerHTML={{ __html: html }} />;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
   } catch (e: any) {
     if ("message" in e) {
       return <span className="font-mono text-red-500">{e.message}</span>;
@@ -113,7 +118,7 @@ function LatexNodeDisplayMathX({ node, source }: LatexNodeProps<LatexNodeDisplay
       displayMode: true,
     });
     return <div dangerouslySetInnerHTML={{ __html: html }} />;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
   } catch (e: any) {
     if ("message" in e) {
       return <div className="font-mono text-red-500">{e.message}</div>;
@@ -164,7 +169,7 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
     case "url": {
       return (
         <LatexArgumentInnerText args={node.args} index={0} source={source}>
-          {href => (
+          {(href) => (
             <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
               {href}
             </a>
@@ -175,7 +180,7 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
     case "href": {
       return (
         <LatexArgumentInnerText args={node.args} index={0} source={source}>
-          {href => (
+          {(href) => (
             <a className="text-blue-500 hover:text-blue-400" target="_blank" href={href}>
               {renderArgumentContent(node.args, source, 1)}
             </a>
@@ -185,28 +190,38 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
     }
     case "section": {
       const maybeStar = latexPositionalString(node.args, 0);
-      if (maybeStar == '*') {
-        return <h3 className="text-3xl font-bold">{renderArgumentContent(node.args, source, 1)}</h3>;
+      if (maybeStar == "*") {
+        return (
+          <h3 className="text-3xl font-bold">{renderArgumentContent(node.args, source, 1)}</h3>
+        );
       } else if (maybeStar == null) {
-        return <h3 className="text-3xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h3>;
+        return (
+          <h3 className="text-3xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h3>
+        );
       }
       return latexBrokenInline(node, source);
     }
     case "subsection": {
       const maybeStar = latexPositionalString(node.args, 0);
-      if (maybeStar == '*') {
-        return <h4 className="text-2xl font-bold">{renderArgumentContent(node.args, source, 1)}</h4>;
+      if (maybeStar == "*") {
+        return (
+          <h4 className="text-2xl font-bold">{renderArgumentContent(node.args, source, 1)}</h4>
+        );
       } else if (maybeStar == null) {
-        return <h4 className="text-2xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h4>;
+        return (
+          <h4 className="text-2xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h4>
+        );
       }
       return latexBrokenInline(node, source);
     }
     case "subsubsection": {
       const maybeStar = latexPositionalString(node.args, 0);
-      if (maybeStar == '*') {
+      if (maybeStar == "*") {
         return <h5 className="text-xl font-bold">{renderArgumentContent(node.args, source, 1)}</h5>;
       } else if (maybeStar == null) {
-        return <h5 className="text-xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h5>;
+        return (
+          <h5 className="text-xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h5>
+        );
       }
       return latexBrokenInline(node, source);
     }
@@ -226,7 +241,7 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       return <LatexBulletOrdered node={node as LatexMacroBulletOrdered} />;
     default:
       // Functionally useless type assertion
-      UnreachableCheck(node.content)
+      UnreachableCheck(node.content);
       // It's important to return the content here.
       // This allows for users to escape special strings using \x
       return node.content;
@@ -240,25 +255,19 @@ function LatexNodeEnvironmentX({ node, source }: LatexNodeProps<LatexNodeEnviron
       // (it would be arranged vertically by the flex-col)
       return (
         <div className="flex flex-col items-center text-center">
-          <div className="max-w-full">
-            {renderEnvironmentContent(node, source)}
-          </div>
+          <div className="max-w-full">{renderEnvironmentContent(node, source)}</div>
         </div>
       );
     case "flushright":
       return (
         <div className="flex flex-col items-right text-right">
-          <div className="max-w-full">
-            {renderEnvironmentContent(node, source)}
-          </div>
+          <div className="max-w-full">{renderEnvironmentContent(node, source)}</div>
         </div>
       );
     case "flushleft":
       return (
         <div className="flex flex-col items-left text-left">
-          <div className="max-w-full">
-            {renderEnvironmentContent(node, source)}
-          </div>
+          <div className="max-w-full">{renderEnvironmentContent(node, source)}</div>
         </div>
       );
     case "enumerate":
@@ -275,7 +284,9 @@ function LatexNodeVerbatimX({ node, source }: LatexNodeProps<LatexNodeVerbatim>)
     case "verbatim": {
       const trimmed = node.content.replace(/^\s*\n/, "");
       return (
-        <pre className="text-sm bg-gray-150 border border-gray-250 rounded-md p-2.5 [letter-spacing:0.001em]">{trimmed}</pre>
+        <pre className="text-sm bg-gray-150 border border-gray-250 rounded-md p-2.5 [letter-spacing:0.001em]">
+          {trimmed}
+        </pre>
       );
     }
     case "lstlisting":
@@ -326,13 +337,15 @@ function LatexArgumentInnerText({ args, index, source, children }: LatexArgument
   useEffect(() => {
     setInnerText(undefined);
     setTimeout(() => {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       const root = createRoot(div);
-      const argchildren = arg.content.map((node, idx) => <LatexNodeAnyX key={idx} node={node} source={source} />);
+      const argchildren = arg.content.map((node, idx) => (
+        <LatexNodeAnyX key={idx} node={node} source={source} />
+      ));
       flushSync(() => root.render(argchildren));
       setInnerText(div.innerText);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [args, index]);
 
   return children(innerText);

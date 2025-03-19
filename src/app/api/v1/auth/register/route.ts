@@ -7,17 +7,19 @@ import { SessionData, UserPublic } from "common/types";
 import { tokenizeSession } from "server/sessions";
 import { createUser } from "server/logic/users";
 import { zUserRegister } from "common/validation/user_validation";
-import { APISuccessResponse, APIValidationErrorType, customValidationError, makeSuccessResponse, zodValidationError } from "common/responses";
-
+import {
+  APISuccessResponse,
+  APIValidationErrorType,
+  customValidationError,
+  makeSuccessResponse,
+  zodValidationError,
+} from "common/responses";
 
 export type UserRegisterError = APIValidationErrorType<typeof zUserRegister>;
 
-export type UserRegisterSuccess = APISuccessResponse<SessionData>
+export type UserRegisterSuccess = APISuccessResponse<SessionData>;
 
-export type UserRegisterResponse =
-  | UserRegisterError
-  | UserRegisterSuccess;
-
+export type UserRegisterResponse = UserRegisterError | UserRegisterSuccess;
 
 type CustomValidationErrors = {
   email?: string[];
@@ -43,10 +45,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<UserRegis
     // Check if the email or username already exists
     const current = await trx
       .selectFrom("users")
-      .where((eb) => eb.or([
-        eb("email", "=", parsed.data.email),
-        eb("username", "=", parsed.data.username),
-      ]))
+      .where((eb) =>
+        eb.or([eb("email", "=", parsed.data.email), eb("username", "=", parsed.data.username)])
+      )
       .select(["id", "email", "username"])
       .execute();
 
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<UserRegis
       email: parsed.data.email,
       username: parsed.data.username,
       password: parsed.data.password,
-      role: 'user',
+      role: "user",
     });
 
     const session: SessionData = {

@@ -14,7 +14,7 @@ import type { SubtaskState } from "./submit_output";
 
 export function createSubmissionOutput(
   task: TaskViewerOutputDTO,
-  subtasks: SubtaskState[],
+  subtasks: SubtaskState[]
 ): FormData {
   const data = new FormData();
   const request: SubmissionRequestDTO = {
@@ -49,11 +49,7 @@ export function createSubmissionOutput(
   return data;
 }
 
-export function createSubmissionCode(
-  taskId: string,
-  language: Language,
-  code: string,
-): FormData {
+export function createSubmissionCode(taskId: string, language: Language, code: string): FormData {
   const data = new FormData();
   const request: SubmissionRequestDTO = {
     task_id: taskId,
@@ -71,23 +67,28 @@ export function createSubmissionCode(
 export async function postSubmission(
   data: FormData,
   submissions: SubmissionsCache | null,
-  router: AppRouterInstance,
+  router: AppRouterInstance
 ): Promise<void> {
   try {
     const submissionCreateURL = getAPIPath({ kind: APIPath.SubmissionCreate });
-    const response: AxiosResponse<CreateSubmissionSuccess> = await http.post(submissionCreateURL, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response: AxiosResponse<CreateSubmissionSuccess> = await http.post(
+      submissionCreateURL,
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     if (submissions) {
       submissions.clear();
     }
     router.refresh();
     router.push(getPath({ kind: Path.Submission, uuid: response.data.data.id }));
-  } catch(e) {
+  } catch (e) {
     if (e instanceof AxiosError && e.response) {
-      const response: AxiosResponse<Exclude<CreateSubmissionResponse, CreateSubmissionSuccess>> = e.response;
+      const response: AxiosResponse<Exclude<CreateSubmissionResponse, CreateSubmissionSuccess>> =
+        e.response;
       const data = response.data;
       switch (data.kind) {
         case ResponseKind.ForbiddenError:
@@ -121,7 +122,11 @@ export async function postSubmission(
   }
 }
 
-export async function rejudgeSubmission(submission_id: string, submissions: SubmissionsCache | null, router: AppRouterInstance) {
+export async function rejudgeSubmission(
+  submission_id: string,
+  submissions: SubmissionsCache | null,
+  router: AppRouterInstance
+) {
   try {
     const submissionRejudgeURL = getAPIPath({ kind: APIPath.SubmissionRejudge, id: submission_id });
     await http.put(submissionRejudgeURL);
@@ -130,8 +135,7 @@ export async function rejudgeSubmission(submission_id: string, submissions: Subm
     }
     router.refresh();
     location.reload(); // force the page to re-load itself
-  
-  } catch(e) {
+  } catch (e) {
     if (e instanceof AxiosError && e.response) {
       toast.error("An unexpected error occurred in rejudging the submission");
       console.log(e.response);

@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
     task.id = dbTasks[0].id; // overwrite the dummy value
     await updateEditorTask(task);
     return NextResponse.json(task);
-
   } else {
     return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
   }

@@ -9,7 +9,6 @@ import {
 } from "server/secrets";
 import { Models } from "common/types"; // this is the Database interface we defined earlier
 
-
 const dialect = new PostgresDialect({
   pool: new Pool({
     database: POSTGRES_DB,

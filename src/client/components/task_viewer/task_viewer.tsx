@@ -8,7 +8,6 @@ import { TaskViewerStatement } from "./task_viewer_statement";
 import { TaskViewerEditorial } from "./task_viewer_editorial";
 import { TaskViewerSubmissions } from "./task_viewer_submissions";
 
-
 type TaskViewerProps = {
   task: TaskViewerDTO;
   canEdit: boolean;
@@ -41,9 +40,7 @@ export const TaskViewer = ({ task, canEdit, clearSubmissionsCache }: TaskViewerP
       content = <TaskViewerStatement task={task} />;
       break;
     case TaskViewerTab.Submissions:
-      content = (
-        <TaskViewerSubmissions task={task} cache={submissions.current} />
-      );
+      content = <TaskViewerSubmissions task={task} cache={submissions.current} />;
       break;
     case TaskViewerTab.Editorial:
       content = <TaskViewerEditorial task={task} />;
@@ -54,12 +51,7 @@ export const TaskViewer = ({ task, canEdit, clearSubmissionsCache }: TaskViewerP
 
   return (
     <SubmissionsCacheContext.Provider value={submissions.current}>
-      <TaskViewerTabComponent
-        className="flex gap-2"
-        tab={tab}
-        taskId={task.id}
-        canEdit={canEdit}
-      />
+      <TaskViewerTabComponent className="flex gap-2" tab={tab} taskId={task.id} canEdit={canEdit} />
       {content}
     </SubmissionsCacheContext.Provider>
   );

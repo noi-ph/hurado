@@ -1,7 +1,17 @@
 "use client";
 
 import classNames from "classnames";
-import { createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Chevron from "assets/icons/chevron.svg";
 import styles from "./homepage.module.css";
 
@@ -20,11 +30,16 @@ export function FaqQuestion({ children }: FaqQuestionProps) {
   }, [open, setOpen]);
 
   return (
-    <h4 className='inline-flex items-center text-white hover:opacity-75 cursor-pointer select-none' onClick={toggleOpen}>
-      <Chevron className={classNames('inline mr-2', styles.chevron, open && styles.expanded)} height='12px' width='12px'/>
-      <div className='text-2xl font-semibold '>
-        {children}
-      </div>
+    <h4
+      className="inline-flex items-center text-white hover:opacity-75 cursor-pointer select-none"
+      onClick={toggleOpen}
+    >
+      <Chevron
+        className={classNames("inline mr-2", styles.chevron, open && styles.expanded)}
+        height="12px"
+        width="12px"
+      />
+      <div className="text-2xl font-semibold ">{children}</div>
     </h4>
   );
 }
@@ -50,22 +65,20 @@ export function FaqAnswer({ children }: FaqAnswerProps) {
     };
 
     updateState();
-    window.addEventListener('resize', updateState);
+    window.addEventListener("resize", updateState);
 
     return () => {
-      window.removeEventListener('resize', updateState);
+      window.removeEventListener("resize", updateState);
     };
   }, [open]);
 
   return (
     <h4
-      className='transition-all duration-200 overflow-hidden'
+      className="transition-all duration-200 overflow-hidden"
       style={{ height, opacity }}
       ref={answer}
     >
-      <div className='text-lg text-white box-border mx-4 mt-3'>
-        {children}
-      </div>
+      <div className="text-lg text-white box-border mx-4 mt-3">{children}</div>
     </h4>
   );
 }
@@ -78,10 +91,8 @@ export function FaqItem({ children }: FaqItemProps) {
   const openState = useState(true);
 
   return (
-    <div className='py-3'>
-      <FaqOpen.Provider value={openState}>
-        {children}
-      </FaqOpen.Provider>
+    <div className="py-3">
+      <FaqOpen.Provider value={openState}>{children}</FaqOpen.Provider>
     </div>
   );
 }

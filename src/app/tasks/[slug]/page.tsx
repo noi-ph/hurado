@@ -14,7 +14,18 @@ async function getTaskData(slug: string): Promise<TaskViewerDTO | null> {
   return db.transaction().execute(async (trx) => {
     const task = await trx
       .selectFrom("tasks")
-      .select(["id", "slug", "title", "description", "statement", "score_max", "type", "flavor", "time_limit_ms", "memory_limit_byte"])
+      .select([
+        "id",
+        "slug",
+        "title",
+        "description",
+        "statement",
+        "score_max",
+        "type",
+        "flavor",
+        "time_limit_ms",
+        "memory_limit_byte",
+      ])
       .where("slug", "=", slug)
       .executeTakeFirst();
 
@@ -130,9 +141,9 @@ export async function generateMetadata(props: TaskPageProps): Promise<Metadata |
 
   return {
     title: task.title,
-    description: task.description
+    description: task.description,
   };
-};
+}
 
 async function Page(props: TaskPageProps) {
   const task = await getCachedTaskData(props.params.slug);

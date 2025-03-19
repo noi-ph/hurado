@@ -4,7 +4,6 @@ import { getSession } from "server/sessions";
 import { Homepage } from "client/components/homepage";
 import ProblemSetListPage from "./sets/page";
 
-
 export async function generateMetadata(): Promise<Metadata | null> {
   const session = await getSession();
 
@@ -17,19 +16,15 @@ export async function generateMetadata(): Promise<Metadata | null> {
       title: "Hurado | Problem Sets",
     };
   }
-};
+}
 
-const Page: FunctionComponent = async() => {
+const Page: FunctionComponent = async () => {
   const session = await getSession();
 
   if (session == null) {
-    return (
-      <Homepage/>
-    );
+    return <Homepage />;
   } else {
-    return (
-      <ProblemSetListPage/>
-    );
+    return <ProblemSetListPage />;
   }
 };
 

@@ -2,7 +2,6 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { AWS_SES_REGION, AWS_SES_ACCESS_KEY_ID, AWS_SES_SECRET_ACCESS_KEY } from "server/secrets";
 import { EmailSenderAbstract } from "./abstract";
 
-
 export class EmailSenderSES implements EmailSenderAbstract {
   async send(recipient: string, sender: string, subject: string, text: string): Promise<unknown> {
     const client = new SESClient({
@@ -32,5 +31,5 @@ export class EmailSenderSES implements EmailSenderAbstract {
 
     const command = new SendEmailCommand(params);
     return await client.send(command);
-  }  
+  }
 }

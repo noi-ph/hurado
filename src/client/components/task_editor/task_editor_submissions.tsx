@@ -1,8 +1,7 @@
 import { useCallback } from "react";
 import { SubmissionsTable } from "client/components/submissions_table";
-import commonStyles from 'client/components/common_editor/common_editor.module.css';
+import commonStyles from "client/components/common_editor/common_editor.module.css";
 import { SubmissionsCache } from "client/submissions";
-
 
 type TaskEditorSubmissionsProps = {
   taskId: string;
@@ -15,7 +14,7 @@ export const TaskEditorSubmissions = ({ taskId, cache }: TaskEditorSubmissionsPr
       return cache.submissions;
     }
     return cache.loadTaskSubmissions(taskId);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [cache]);
 
   return (

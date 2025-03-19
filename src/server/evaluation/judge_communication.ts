@@ -1,6 +1,11 @@
 import path from "path";
 import ChildProcess from "child_process";
-import { JudgeChecker, JudgeScript, JudgeTaskCommunication, JudgeTaskDataCommunication } from "common/types/judge";
+import {
+  JudgeChecker,
+  JudgeScript,
+  JudgeTaskCommunication,
+  JudgeTaskDataCommunication,
+} from "common/types/judge";
 import { Verdict } from "common/types/constants";
 import { UnreachableError } from "common/errors";
 import { FORWARD_CHILD_STDERR } from "server/secrets";
@@ -8,7 +13,13 @@ import { EvaluationResult, IsolateResult, JudgeEvaluationContextCommunication } 
 import { checkSubmissionOutput } from "./judge_checker";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, makeContestantArgv } from "./judge_utils";
-import { WallTimeLimitSeconds, LIMITS_JUDGE_MEMORY_LIMIT_BYTE, LIMITS_JUDGE_TIME_LIMIT_MS, TimeLimitSeconds, MemoryLimitKilobytes } from "./judge_constants";
+import {
+  WallTimeLimitSeconds,
+  LIMITS_JUDGE_MEMORY_LIMIT_BYTE,
+  LIMITS_JUDGE_TIME_LIMIT_MS,
+  TimeLimitSeconds,
+  MemoryLimitKilobytes,
+} from "./judge_constants";
 
 export async function evaluateTaskDataForCommunication(
   context: JudgeEvaluationContextCommunication,
@@ -35,7 +46,11 @@ export async function evaluateTaskDataForCommunication(
       stdio: ["pipe", "pipe", FORWARD_CHILD_STDERR ? process.stderr : "ignore"],
     });
     const procCommunicator = ChildProcess.spawn(ISOLATE_BIN, argvCommunicator, {
-      stdio: [procContestant.stdout, procContestant.stdin, FORWARD_CHILD_STDERR ? process.stderr : "ignore"],
+      stdio: [
+        procContestant.stdout,
+        procContestant.stdin,
+        FORWARD_CHILD_STDERR ? process.stderr : "ignore",
+      ],
     });
 
     const promiseContestant = new Promise<void>((resolve) => {
@@ -84,7 +99,9 @@ function makeCommunicatorArgv(opts: {
   const spec = LANGUAGE_SPECS[communicator.language];
   const timeLimit = TimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
   const wallTimeLimit = WallTimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
-  const memLimit = MemoryLimitKilobytes(LIMITS_JUDGE_MEMORY_LIMIT_BYTE + spec.runtimeBonusMemoryByte);
+  const memLimit = MemoryLimitKilobytes(
+    LIMITS_JUDGE_MEMORY_LIMIT_BYTE + spec.runtimeBonusMemoryByte
+  );
   const procLimit = spec.runtimeProcessLimit ?? 1;
 
   const argv: string[] = [
@@ -106,11 +123,13 @@ function makeCommunicatorArgv(opts: {
     if (spec.getInterpreterCommand == null) {
       argv.push(`/submission/${communicator.exe_name}`);
     } else {
-      argv.push(...spec.getInterpreterCommand(
-        communicator.exe_name,
-        LIMITS_JUDGE_TIME_LIMIT_MS,
-        LIMITS_JUDGE_MEMORY_LIMIT_BYTE,
-      ));
+      argv.push(
+        ...spec.getInterpreterCommand(
+          communicator.exe_name,
+          LIMITS_JUDGE_TIME_LIMIT_MS,
+          LIMITS_JUDGE_MEMORY_LIMIT_BYTE
+        )
+      );
     }
   } else {
     throw new Error("Missing communicator exe_name");

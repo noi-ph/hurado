@@ -41,14 +41,14 @@ export async function generateMetadata(props: TaskEditPageProps): Promise<Metada
 
   return {
     title: `Admin | ${task.title}`,
-    description: task.description
+    description: task.description,
   };
-};
+}
 
 export default async function TaskEditPage(props: TaskEditPageProps) {
   const session = await getSession();
   if (session == null || session.user.role != "admin") {
-    return <ForbiddenPage/>;
+    return <ForbiddenPage />;
   }
 
   const lookup = await findFromSlugOrHID(props.params.slug);

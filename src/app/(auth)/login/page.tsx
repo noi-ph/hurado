@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Login",
 };
 
-const Page: FunctionComponent = async() => {
+const Page: FunctionComponent = async () => {
   const session = await getSession();
   if (session != null) {
     redirect("/");

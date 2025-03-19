@@ -7,7 +7,13 @@ import { FORWARD_CHILD_STDERR } from "server/secrets";
 import { ISOLATE_BIN, IsolateInstance, IsolateUtils, runChildProcess } from "./judge_utils";
 import { LANGUAGE_SPECS } from "./judge_compile";
 import { CheckerResult } from "./types";
-import { LIMITS_JUDGE_MEMORY_LIMIT_BYTE, LIMITS_JUDGE_TIME_LIMIT_MS, MemoryLimitKilobytes, TimeLimitSeconds, WallTimeLimitSeconds } from "./judge_constants";
+import {
+  LIMITS_JUDGE_MEMORY_LIMIT_BYTE,
+  LIMITS_JUDGE_TIME_LIMIT_MS,
+  MemoryLimitKilobytes,
+  TimeLimitSeconds,
+  WallTimeLimitSeconds,
+} from "./judge_constants";
 
 export async function checkSubmissionOutput(opts: {
   checker: JudgeChecker;
@@ -86,19 +92,14 @@ function makeCheckerArgv(opts: {
   output_root: string;
   output_file_name: string;
 }): string[] {
-  const {
-    checker,
-    isolate,
-    task_root,
-    judge_file_name,
-    output_root,
-    output_file_name,
-  } = opts;
+  const { checker, isolate, task_root, judge_file_name, output_root, output_file_name } = opts;
 
   const spec = LANGUAGE_SPECS[checker.language];
   const timeLimit = TimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
   const wallTimeLimit = WallTimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
-  const memLimit = MemoryLimitKilobytes(LIMITS_JUDGE_MEMORY_LIMIT_BYTE + spec.runtimeBonusMemoryByte);
+  const memLimit = MemoryLimitKilobytes(
+    LIMITS_JUDGE_MEMORY_LIMIT_BYTE + spec.runtimeBonusMemoryByte
+  );
   const procLimit = spec.runtimeProcessLimit ?? 1;
 
   const argv: string[] = [
@@ -120,11 +121,13 @@ function makeCheckerArgv(opts: {
     if (spec.getInterpreterCommand == null) {
       argv.push(`/task/${checker.exe_name}`);
     } else {
-      argv.push(...spec.getInterpreterCommand(
-        checker.exe_name,
-        LIMITS_JUDGE_TIME_LIMIT_MS,
-        LIMITS_JUDGE_MEMORY_LIMIT_BYTE,
-      ));
+      argv.push(
+        ...spec.getInterpreterCommand(
+          checker.exe_name,
+          LIMITS_JUDGE_TIME_LIMIT_MS,
+          LIMITS_JUDGE_MEMORY_LIMIT_BYTE
+        )
+      );
     }
   } else {
     throw new Error("Missing communicator exe_name");

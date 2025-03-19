@@ -17,12 +17,9 @@ export type ProblemSetCreateError =
   | APIForbiddenErrorType
   | APIValidationErrorType<typeof zProblemSetCreate>;
 
-export type ProblemSetCreateSuccess = APISuccessResponse<{ id: string }>
+export type ProblemSetCreateSuccess = APISuccessResponse<{ id: string }>;
 
-export type ProblemSetCreateResponse =
-  | ProblemSetCreateError
-  | ProblemSetCreateSuccess;
-
+export type ProblemSetCreateResponse = ProblemSetCreateError | ProblemSetCreateSuccess;
 
 export async function POST(request: NextRequest): Promise<NextResponse<ProblemSetCreateResponse>> {
   const session = await getSession(request);
@@ -46,9 +43,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProblemSe
       .execute();
 
     if (current.length > 0) {
-      return NextResponse.json(customValidationError({
-        slug: ["Slug already exists"],
-      }), { status: 400 });
+      return NextResponse.json(
+        customValidationError({
+          slug: ["Slug already exists"],
+        }),
+        { status: 400 }
+      );
     }
 
     const dbProblemSet = await trx
@@ -65,8 +65,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProblemSe
       .returning(["id"])
       .executeTakeFirstOrThrow();
 
-    return NextResponse.json(makeSuccessResponse({
-      id: dbProblemSet.id,
-    }));
+    return NextResponse.json(
+      makeSuccessResponse({
+        id: dbProblemSet.id,
+      })
+    );
   });
 }

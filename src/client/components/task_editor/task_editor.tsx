@@ -65,12 +65,10 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
       content = <TaskEditorJudging task={task} setTask={setTask} />;
       break;
     case TaskEditorTab.Submissions:
-      content = (
-        <TaskEditorSubmissions taskId={task.id} cache={submissions.current} />
-      );
+      content = <TaskEditorSubmissions taskId={task.id} cache={submissions.current} />;
       break;
     case TaskEditorTab.Advanced:
-      content = <TaskEditorAdvanced task={task} setTask={setTask}/>;
+      content = <TaskEditorAdvanced task={task} setTask={setTask} />;
       break;
     default:
       content = null;
@@ -108,7 +106,9 @@ export function TaskEditorStatement({ task, setTask }: TaskCommonProps) {
     },
     [task, setTask]
   );
-  return <CommonEditorStatement task={task} statement={task.statement} setStatement={setStatement} />;
+  return (
+    <CommonEditorStatement task={task} statement={task.statement} setStatement={setStatement} />
+  );
 }
 
 export enum TaskEditorTab {
@@ -130,11 +130,11 @@ export const TaskEditorTabComponent = memo(({ tab, slug }: TaskEditorTabProps) =
 
   return (
     <CommonEditorTabComponent>
-      <CommonEditorTabItem tab={TaskEditorTab.Statement} current={tab} label="Statement"/>
-      <CommonEditorTabItem tab={TaskEditorTab.Details} current={tab} label="Details"/>
-      <CommonEditorTabItem tab={TaskEditorTab.Judging} current={tab} label="Judging"/>
-      <CommonEditorTabItem tab={TaskEditorTab.Submissions} current={tab} label="Submissions"/>
-      <CommonEditorTabItem tab={TaskEditorTab.Advanced} current={tab} label="Advanced"/>
+      <CommonEditorTabItem tab={TaskEditorTab.Statement} current={tab} label="Statement" />
+      <CommonEditorTabItem tab={TaskEditorTab.Details} current={tab} label="Details" />
+      <CommonEditorTabItem tab={TaskEditorTab.Judging} current={tab} label="Judging" />
+      <CommonEditorTabItem tab={TaskEditorTab.Submissions} current={tab} label="Submissions" />
+      <CommonEditorTabItem tab={TaskEditorTab.Advanced} current={tab} label="Advanced" />
       <CommonEditorViewLink slug={slug} label="View" url={viewURL} />
     </CommonEditorTabComponent>
   );

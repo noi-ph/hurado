@@ -6,7 +6,6 @@ import http from "client/http";
 import { getPath, Path } from "client/paths";
 import { useSessionWithUpdate } from "client/sessions";
 
-
 export const LogoutRedirect: FunctionComponent = () => {
   const { setSession } = useSessionWithUpdate();
   const router = useRouter();

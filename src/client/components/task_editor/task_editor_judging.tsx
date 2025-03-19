@@ -1,7 +1,14 @@
 import classNames from "classnames";
 import { useCallback } from "react";
 import { Scrollable } from "client/components/scrollable";
-import { CommonEditorDetails, CommonEditorLabel, CommonEditorSelect, CommonEditorSection, EditorKind, CommonEditorInput } from "client/components/common_editor";
+import {
+  CommonEditorDetails,
+  CommonEditorLabel,
+  CommonEditorSelect,
+  CommonEditorSection,
+  EditorKind,
+  CommonEditorInput,
+} from "client/components/common_editor";
 import styles from "client/components/common_editor/common_editor.module.css";
 import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
 import { CheckerKind, Language, TaskFlavor, TaskType } from "common/types/constants";
@@ -10,7 +17,6 @@ import { TaskEditorSubtasks } from "./task_editor_subtasks";
 import { TaskED, TaskScriptED } from "./types";
 import { TaskEditorScript } from "./task_editor_script";
 import { createEmptyScript } from "./task_editor_utils";
-
 
 type TaskEditorJudgingProps = {
   task: TaskED;
@@ -60,7 +66,7 @@ const TaskTypeEditor = ({ task, setTask }: TaskEditorJudgingProps) => {
           communicator: createEmptyScript(),
         });
       } else {
-        throw new UnreachableError(type)
+        throw new UnreachableError(type);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
@@ -112,7 +118,7 @@ const TaskTypeEditor = ({ task, setTask }: TaskEditorJudgingProps) => {
       )}
       {task.type === TaskType.Communication && (
         <CommonEditorSection title="Communicator">
-          <TaskEditorScript script={task.communicator!} setScript={setCommunicatorScript}/>
+          <TaskEditorScript script={task.communicator!} setScript={setCommunicatorScript} />
         </CommonEditorSection>
       )}
     </>
@@ -128,28 +134,28 @@ export const TaskCheckerEditor = ({ task, setTask }: TaskCheckerEditorProps) => 
   const onChangeTaskChecker = useCallback(
     (event: SelectChangeEvent) => {
       const kind = coerceTaskCheckerKind(event.target.value);
-      switch(kind) {
+      switch (kind) {
         case CheckerKind.LenientDiff:
           setTask({
             ...task,
             checker: { kind },
-          })
+          });
           break;
         case CheckerKind.Custom:
-            setTask({
-              ...task,
-              checker: {
-                kind,
-                script: {
-                  kind: EditorKind.Local,
-                  language: Language.Python3,
-                  file_name: '',
-                  file: null,
-                  argv: [],
-                },
+          setTask({
+            ...task,
+            checker: {
+              kind,
+              script: {
+                kind: EditorKind.Local,
+                language: Language.Python3,
+                file_name: "",
+                file: null,
+                argv: [],
               },
-            })
-            break;
+            },
+          });
+          break;
         default:
           throw new UnreachableError(kind);
       }
@@ -179,7 +185,7 @@ export const TaskCheckerEditor = ({ task, setTask }: TaskCheckerEditorProps) => 
         <option value={CheckerKind.Custom}>Custom</option>
       </CommonEditorSelect>
       {task.checker.kind === CheckerKind.Custom && (
-        <TaskEditorScript script={task.checker.script} setScript={setCheckerScript}/>
+        <TaskEditorScript script={task.checker.script} setScript={setCheckerScript} />
       )}
     </>
   );
@@ -191,30 +197,45 @@ type TaskLimitsEditorProps = {
 };
 
 export const TaskLimitsEditor = ({ task, setTask }: TaskLimitsEditorProps) => {
-  const onChangeTimeLimitMS = useCallback((event: InputChangeEvent) => {
-    setTask({ ...task, time_limit_ms: event.target.value});
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-  }, [task]);
+  const onChangeTimeLimitMS = useCallback(
+    (event: InputChangeEvent) => {
+      setTask({ ...task, time_limit_ms: event.target.value });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    },
+    [task]
+  );
 
-  const onChangeMemoryLimitByte = useCallback((event: InputChangeEvent) => {
-    setTask({ ...task, memory_limit_byte: event.target.value});
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-  }, [task]);
+  const onChangeMemoryLimitByte = useCallback(
+    (event: InputChangeEvent) => {
+      setTask({ ...task, memory_limit_byte: event.target.value });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    },
+    [task]
+  );
 
-  const onChangeCompileTimeLimitMS = useCallback((event: InputChangeEvent) => {
-    setTask({ ...task, compile_time_limit_ms: event.target.value});
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-  }, [task]);
+  const onChangeCompileTimeLimitMS = useCallback(
+    (event: InputChangeEvent) => {
+      setTask({ ...task, compile_time_limit_ms: event.target.value });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    },
+    [task]
+  );
 
-  const onChangeCompileMemoryLimitMS = useCallback((event: InputChangeEvent) => {
-    setTask({ ...task, compile_memory_limit_byte: event.target.value});
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-  }, [task]);
+  const onChangeCompileMemoryLimitMS = useCallback(
+    (event: InputChangeEvent) => {
+      setTask({ ...task, compile_memory_limit_byte: event.target.value });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    },
+    [task]
+  );
 
-  const onChangeSubmissionSizeLimitByte = useCallback((event: InputChangeEvent) => {
-    setTask({ ...task, submission_size_limit_byte: event.target.value});
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-  }, [task]);
+  const onChangeSubmissionSizeLimitByte = useCallback(
+    (event: InputChangeEvent) => {
+      setTask({ ...task, submission_size_limit_byte: event.target.value });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    },
+    [task]
+  );
 
   return (
     <>
@@ -277,7 +298,6 @@ function coerceTaskFlavor(flavor: string): TaskFlavor {
       return TaskFlavor.OutputText;
   }
 }
-
 
 function coerceTaskCheckerKind(kind: string): CheckerKind {
   switch (kind) {

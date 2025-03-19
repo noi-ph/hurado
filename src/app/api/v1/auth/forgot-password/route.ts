@@ -13,12 +13,9 @@ import { enqueuePasswordReset } from "worker/queue";
 
 export type ForgotPasswordError = APIValidationErrorType<typeof zUserForgotPassword>;
 
-export type ForgotPasswordSuccess = APISuccessResponse<{ email: string }>
+export type ForgotPasswordSuccess = APISuccessResponse<{ email: string }>;
 
-export type ForgotPasswordResponse =
-  | ForgotPasswordError
-  | ForgotPasswordSuccess;
-
+export type ForgotPasswordResponse = ForgotPasswordError | ForgotPasswordSuccess;
 
 export async function POST(request: NextRequest) {
   const { username } = await request.json();
@@ -38,21 +35,25 @@ export async function POST(request: NextRequest) {
       .executeTakeFirst();
 
     if (user == null) {
-      return NextResponse.json(customValidationError({
-        username: ["User not found"],
-      }), { status: 400 });
+      return NextResponse.json(
+        customValidationError({
+          username: ["User not found"],
+        }),
+        { status: 400 }
+      );
     }
 
     await enqueuePasswordReset({
       username: parsed.data.username,
     });
 
-    return NextResponse.json(makeSuccessResponse({
-      email: censorEmail(user.email),
-    }));
+    return NextResponse.json(
+      makeSuccessResponse({
+        email: censorEmail(user.email),
+      })
+    );
   });
 }
-
 
 function censorEmail(email: string): string {
   const [username, domain] = email.split("@");

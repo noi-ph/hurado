@@ -23,7 +23,7 @@ export const TaskEditorSampleIO = ({ task, setTask }: TaskEditorSampleProps) => 
         },
       ],
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task]);
 
   return (
@@ -53,19 +53,20 @@ type TaskSampleIOEditorProps = {
 
 const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIOEditorProps) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
-  const updateField = (field: 'input' | 'output' | 'explanation') => useCallback(
-    (event: InputChangeEvent) => {
-      const samples = [...task.sample_IO];
-      samples[sampleIndex] = {...samples[sampleIndex]};
-      samples[sampleIndex][field] = event.target.value;
-      setTask({
-        ...task,
-        sample_IO: samples,
-      });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-    [task, setTask],
-  );
+  const updateField = (field: "input" | "output" | "explanation") =>
+    useCallback(
+      (event: InputChangeEvent) => {
+        const samples = [...task.sample_IO];
+        samples[sampleIndex] = { ...samples[sampleIndex] };
+        samples[sampleIndex][field] = event.target.value;
+        setTask({
+          ...task,
+          sample_IO: samples,
+        });
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+      [task, setTask]
+    );
 
   const deleteSelf = useCallback(
     () => {
@@ -77,15 +78,13 @@ const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIO
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-    [task, setTask],
+    [task, setTask]
   );
 
   return (
     <>
       <div className="relative flex flex-row justify-between gap-4 w-full">
-        <div className="text-lg text-gray-500 ml-auto mr-auto">
-          {`Sample ${sampleIndex+1}`}
-        </div>
+        <div className="text-lg text-gray-500 ml-auto mr-auto">{`Sample ${sampleIndex + 1}`}</div>
         <button type="button" className="absolute right-0" onClick={deleteSelf}>
           <BoxIcon name="bx-x" className="bx-sm text-blue-300 hover:text-blue-500" />
         </button>
@@ -94,14 +93,14 @@ const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIO
         <CommonEditorInput
           type="textarea"
           value={sample.input}
-          onChange={updateField('input')}
+          onChange={updateField("input")}
           placeholder="Sample Input"
           className="flex-auto"
         />
         <CommonEditorInput
           type="textarea"
           value={sample.output}
-          onChange={updateField('output')}
+          onChange={updateField("output")}
           placeholder="Sample Output"
           className="flex-auto"
         />
@@ -109,10 +108,10 @@ const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIO
       <CommonEditorInput
         type="textarea"
         value={sample.explanation}
-        onChange={updateField('explanation')}
+        onChange={updateField("explanation")}
         placeholder="Explanation"
         className="flex-auto w-full"
       />
     </>
   );
-}
+};

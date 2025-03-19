@@ -42,7 +42,14 @@ export type ParticipationTable = {
 export type Contest = Selectable<ContestTable>;
 export type ContestSummaryDTO = Pick<Contest, "title" | "slug" | "description">;
 
-export type ContestViewerKeys = "id" | "slug" | "title" | "description" | "statement" | "start_time" | "end_time";
+export type ContestViewerKeys =
+  | "id"
+  | "slug"
+  | "title"
+  | "description"
+  | "statement"
+  | "start_time"
+  | "end_time";
 export type ContestViewerDTO = Pick<Contest, ContestViewerKeys> & {
   tasks: TaskScoredSummaryDTO[];
 };

@@ -29,7 +29,7 @@ async function Page() {
       <DefaultLayout>
         <EmptyNoticePage />
       </DefaultLayout>
-    )
+    );
   }
 
   return (

@@ -34,16 +34,18 @@ function fastMain() {
     process.exit(0);
   }
 
-  promise.then(() => {
-    process.exit(0);
-  }).catch((e) => {
-    if (e instanceof Error && e.stack) {
-      console.error(e.stack);
-    } else {
-      console.error(e);
-    }
-    process.exit(1);
-  });
+  promise
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((e) => {
+      if (e instanceof Error && e.stack) {
+        console.error(e.stack);
+      } else {
+        console.error(e);
+      }
+      process.exit(1);
+    });
 }
 
 fastMain();

@@ -72,7 +72,7 @@ export const ProblemSetEditor = ({ dto }: ProblemSetEditorProps) => {
       content = <ProblemSetEditorDetails problemSet={problemSet} setProblemSet={setProblemSet} />;
       break;
     case ProblemSetEditorTab.Advanced:
-      content = <ProblemSetEditorAdvanced problemSet={problemSet} setProblemSet={setProblemSet}/>;
+      content = <ProblemSetEditorAdvanced problemSet={problemSet} setProblemSet={setProblemSet} />;
       break;
     default:
       content = null;
@@ -82,7 +82,7 @@ export const ProblemSetEditor = ({ dto }: ProblemSetEditorProps) => {
     <CommonEditorPage isStatement={false}>
       <Navbar className={commonStyles.header} />
       <CommonEditorTitle title={problemSet.title} slug={problemSet.slug} />
-      <ProblemSetEditorTabComponent tab={tab} slug={problemSet.slug}/>
+      <ProblemSetEditorTabComponent tab={tab} slug={problemSet.slug} />
       {content}
       <CommonEditorFooter
         object={problemSet}
@@ -94,13 +94,15 @@ export const ProblemSetEditor = ({ dto }: ProblemSetEditorProps) => {
   );
 };
 
-
 type ProblemSetEditorDetailsProps = {
   problemSet: ProblemSetED;
   setProblemSet(problemSet: ProblemSetED): void;
 };
 
-export const ProblemSetEditorDetails = ({ problemSet, setProblemSet }: ProblemSetEditorDetailsProps) => {
+export const ProblemSetEditorDetails = ({
+  problemSet,
+  setProblemSet,
+}: ProblemSetEditorDetailsProps) => {
   const onChangeTitle = useSimpleStringPropUpdater(problemSet, setProblemSet, "title");
   const onChangeSlug = useSimpleStringPropUpdater(problemSet, setProblemSet, "slug");
   const onChangeDescription = useSimpleStringPropUpdater(problemSet, setProblemSet, "description");
@@ -128,27 +130,29 @@ export const ProblemSetEditorDetails = ({ problemSet, setProblemSet }: ProblemSe
   );
 };
 
-
 type ProblemSetEditorTasksProps = {
   problemSet: ProblemSetED;
   setProblemSet(problemSet: ProblemSetED): void;
 };
 
-export const ProblemSetEditorTasks = ({ problemSet, setProblemSet }: ProblemSetEditorTasksProps) => {
+export const ProblemSetEditorTasks = ({
+  problemSet,
+  setProblemSet,
+}: ProblemSetEditorTasksProps) => {
   const onAddTask = useCallback(() => {
     setProblemSet({
       ...problemSet,
       tasks: [
         ...problemSet.tasks,
         {
-          id: '',
-          slug: '',
-          title: '',
+          id: "",
+          slug: "",
+          title: "",
           deleted: false,
         },
       ],
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [problemSet]);
 
   return (
@@ -180,7 +184,12 @@ type ProblemSetTaskEditorProps = {
   setProblemSet(problemSet: ProblemSetED): void;
 };
 
-const ProblemSetTaskEditor = ({ task, taskIndex, problemSet, setProblemSet }: ProblemSetTaskEditorProps) => {
+const ProblemSetTaskEditor = ({
+  task,
+  taskIndex,
+  problemSet,
+  setProblemSet,
+}: ProblemSetTaskEditorProps) => {
   const replaceThisTask = useCallback(
     (newTask: ProblemSetTaskED) => {
       setProblemSet({
@@ -197,9 +206,9 @@ const ProblemSetTaskEditor = ({ task, taskIndex, problemSet, setProblemSet }: Pr
       if (value == null) {
         // empty id means it doesn't point to a task
         replaceThisTask({
-          id: '',
-          slug: '',
-          title: '',
+          id: "",
+          slug: "",
+          title: "",
           deleted: task.deleted,
         });
         return;
@@ -286,7 +295,7 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
     } finally {
       setSearching(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [searching, text]);
 
   const onTaskClear = useCallback(() => {
@@ -322,7 +331,6 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
   }
 };
 
-
 export enum ProblemSetEditorTab {
   Details = "details",
   Advanced = "advanced",
@@ -339,8 +347,8 @@ export const ProblemSetEditorTabComponent = memo(({ tab, slug }: ProblemSetEdito
 
   return (
     <CommonEditorTabComponent>
-      <CommonEditorTabItem tab={ProblemSetEditorTab.Details} current={tab} label="Details"/>
-      <CommonEditorTabItem tab={ProblemSetEditorTab.Advanced} current={tab} label="Advanced"/>
+      <CommonEditorTabItem tab={ProblemSetEditorTab.Details} current={tab} label="Details" />
+      <CommonEditorTabItem tab={ProblemSetEditorTab.Advanced} current={tab} label="Advanced" />
       <CommonEditorViewLink slug={slug} label="View" url={viewURL} />
     </CommonEditorTabComponent>
   );
@@ -363,12 +371,15 @@ type ProblemSetEditorAdvancedProps = {
   setProblemSet(problemSet: ProblemSetED): void;
 };
 
-export const ProblemSetEditorAdvanced = ({ problemSet, setProblemSet }: ProblemSetEditorAdvancedProps) => {
+export const ProblemSetEditorAdvanced = ({
+  problemSet,
+  setProblemSet,
+}: ProblemSetEditorAdvancedProps) => {
   return (
     <CommonEditorContent>
       <CommonEditorDetails>
         <CommonEditorLabel label="Is Public?" />
-        <ProblemSetEditorPublic problemSet={problemSet} setProblemSet={setProblemSet}/>
+        <ProblemSetEditorPublic problemSet={problemSet} setProblemSet={setProblemSet} />
       </CommonEditorDetails>
     </CommonEditorContent>
   );
@@ -377,8 +388,11 @@ export const ProblemSetEditorAdvanced = ({ problemSet, setProblemSet }: ProblemS
 type ProblemSetEditorPublicProps = {
   problemSet: ProblemSetED;
   setProblemSet(problemSet: ProblemSetED): void;
-}
-export const ProblemSetEditorPublic = ({ problemSet, setProblemSet }: ProblemSetEditorPublicProps) => {
+};
+export const ProblemSetEditorPublic = ({
+  problemSet,
+  setProblemSet,
+}: ProblemSetEditorPublicProps) => {
   const onChangePublic = useCallback(
     (event: InputChangeEvent) => {
       setProblemSet({
@@ -391,11 +405,11 @@ export const ProblemSetEditorPublic = ({ problemSet, setProblemSet }: ProblemSet
   return (
     <>
       <input
-        type='checkbox'
+        type="checkbox"
         className="border-2 border-gray-250 rounded-md h-6 w-6 self-center"
         checked={problemSet.is_public}
         onChange={onChangePublic}
       />
     </>
   );
-}
+};

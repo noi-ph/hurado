@@ -18,29 +18,33 @@ export const TaskViewerSubmissions = ({ task, cache }: TaskViewerSubmissionsProp
       return cache.submissions;
     }
     return cache.loadUserTaskSubmissions(task.id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [cache]);
-  
-  const [overallVerdict, setOverallVerdict] = useState<OverallVerdictDisplayDTO | undefined>(undefined);
+
+  const [overallVerdict, setOverallVerdict] = useState<OverallVerdictDisplayDTO | undefined>(
+    undefined
+  );
   useEffect(() => {
-    const fetchData = async() => {
-      const response = await http.get(getAPIPath({
-        kind: APIPath.TaskOverallScoreLookup,
-        id: task.id,
-        contestId: null,
-      }));
+    const fetchData = async () => {
+      const response = await http.get(
+        getAPIPath({
+          kind: APIPath.TaskOverallScoreLookup,
+          id: task.id,
+          contestId: null,
+        })
+      );
       const overall_verdict = response.data;
       setOverallVerdict(overall_verdict.verdict as OverallVerdictDisplayDTO | undefined);
     };
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (
     <div>
       <div className="flex items-end mt-2 mb-4">
-        <TaskViewerTitle title={task.title}/>
-        <OverallScoreDisplay overallVerdict={overallVerdict} className="ml-auto"/>
+        <TaskViewerTitle title={task.title} />
+        <OverallScoreDisplay overallVerdict={overallVerdict} className="ml-auto" />
       </div>
       <SubmissionsTable
         loaded={cache.loaded}

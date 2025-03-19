@@ -5,7 +5,6 @@ import { db } from "db";
 import { SubmissionFileStorage, TaskFileStorage } from "server/files";
 import { __DO_NOT_IMPORT__DeveloperSeeds } from "../seed";
 
-
 export class DeveloperToolsDatabase {
   static async resetDatabase() {
     console.log("Creating");

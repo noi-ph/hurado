@@ -1,1 +1,1 @@
-export * from './latex_display';
+export * from "./latex_display";

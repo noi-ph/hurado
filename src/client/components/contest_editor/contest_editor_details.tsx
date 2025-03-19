@@ -121,7 +121,7 @@ export const ContestEditorTasks = ({ contest, setContest }: ContestEditorTasksPr
         },
       ],
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [contest]);
 
   return (
@@ -292,7 +292,7 @@ const ContestTaskPicker = (props: ContestTaskPickerProps) => {
     } finally {
       setSearching(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [searching, text]);
 
   const onTaskClear = useCallback(() => {

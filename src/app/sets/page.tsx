@@ -28,7 +28,7 @@ export async function ProblemSetListPage() {
       <DefaultLayout>
         <EmptyNoticePage />
       </DefaultLayout>
-    )
+    );
   }
 
   return (

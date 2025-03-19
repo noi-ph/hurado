@@ -1,5 +1,5 @@
-import z from 'zod';
-import { zLanguageKind } from './constant_validation';
+import z from "zod";
+import { zLanguageKind } from "./constant_validation";
 
 export type SubmissionRequestDTO = z.infer<typeof zSubmissionRequest>;
 

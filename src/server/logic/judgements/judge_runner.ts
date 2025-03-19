@@ -154,7 +154,7 @@ async function judgeTask<Type extends TaskType>(
       subtask as JudgeSubtaskFor<Type>,
       dbVerdict.id,
       verdict_cache,
-      is_compile_error, // Compile Error, skip all
+      is_compile_error // Compile Error, skip all
     );
     allVerdictSubtasks.push(child);
 
@@ -182,7 +182,7 @@ async function judgeTask<Type extends TaskType>(
     .where("id", "=", dbVerdict.id)
     .returning(["id"])
     .execute();
-  
+
   upsertOverallVerdict(task, submission.user_id, submission.contest_id, db);
 
   return {
@@ -205,7 +205,7 @@ async function judgeSubtask<Type extends TaskType>(
   subtask: JudgeSubtaskFor<Type>,
   verdict_id: string,
   verdict_cache: Map<string, JudgeVerdictTaskData>,
-  doomed_subtask = false,
+  doomed_subtask = false
 ): Promise<JudgeVerdictSubtask> {
   const dbSubtask = await db
     .insertInto("verdict_subtasks")
@@ -230,7 +230,7 @@ async function judgeSubtask<Type extends TaskType>(
       data as JudgeTaskDataFor<Type>,
       dbSubtask.id,
       verdict_cache,
-      bad_subtask,
+      bad_subtask
     );
     allVerdictData.push(child);
 
@@ -276,7 +276,7 @@ async function judgeTaskData<Type extends TaskType>(
   task_data: JudgeTaskDataFor<Type>,
   verdict_subtask_id: string,
   verdict_cache: Map<string, JudgeVerdictTaskData>,
-  bad_subtask: boolean,
+  bad_subtask: boolean
 ): Promise<JudgeVerdictTaskData> {
   const cached_verdict = verdict_cache.get(task_data.judge_file_hash);
   let result: EvaluationResult;
@@ -295,20 +295,20 @@ async function judgeTaskData<Type extends TaskType>(
         result = await evaluateTaskDataForBatch(
           context as JudgeContextFor<TaskType.Batch>,
           task as JudgeTaskFor<TaskType.Batch>,
-          task_data as JudgeTaskDataFor<TaskType.Batch>,
+          task_data as JudgeTaskDataFor<TaskType.Batch>
         );
         break;
       case TaskType.OutputOnly:
         result = await evaluateTaskDataForOutput(
           context as JudgeContextFor<TaskType.OutputOnly>,
-          task_data as JudgeTaskDataFor<TaskType.OutputOnly>,
+          task_data as JudgeTaskDataFor<TaskType.OutputOnly>
         );
         break;
       case TaskType.Communication:
         result = await evaluateTaskDataForCommunication(
           context as JudgeContextFor<TaskType.Communication>,
           task as JudgeTaskFor<TaskType.Communication>,
-          task_data as JudgeTaskDataFor<TaskType.Communication>,
+          task_data as JudgeTaskDataFor<TaskType.Communication>
         );
         break;
       default:
@@ -343,7 +343,12 @@ async function judgeTaskData<Type extends TaskType>(
   return returnResult;
 }
 
-export async function upsertOverallVerdict(task: JudgeTask, user_id: string, contest_id: string | null, trx: Kysely<Models> | Transaction<Models>) {
+export async function upsertOverallVerdict(
+  task: JudgeTask,
+  user_id: string,
+  contest_id: string | null,
+  trx: Kysely<Models> | Transaction<Models>
+) {
   let score_max = 0;
   for (const subtask of task.subtasks) {
     score_max += subtask.score_max;
@@ -370,15 +375,13 @@ export async function upsertOverallVerdict(task: JudgeTask, user_id: string, con
       score_max,
     })
     .onConflict((conflict) => {
-      return conflict
-        .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
-        .doUpdateSet({
-          score_overall: (eb) => eb.ref("excluded.score_overall"),
-          score_max: (eb) => eb.ref("excluded.score_max"),
+      return conflict.constraint("idx_overall_verdicts_contest_id_user_id_task_id").doUpdateSet({
+        score_overall: (eb) => eb.ref("excluded.score_overall"),
+        score_max: (eb) => eb.ref("excluded.score_max"),
       });
     })
     .execute();
-    
+
   if (contest_id != null) {
     const contestSubmissions = await trx
       .selectFrom("task_subtasks")
@@ -402,11 +405,9 @@ export async function upsertOverallVerdict(task: JudgeTask, user_id: string, con
         score_max,
       })
       .onConflict((conflict) => {
-        return conflict
-          .constraint("idx_overall_verdicts_contest_id_user_id_task_id")
-          .doUpdateSet({
-            score_overall: (eb) => eb.ref("excluded.score_overall"),
-            score_max: (eb) => eb.ref("excluded.score_max"),
+        return conflict.constraint("idx_overall_verdicts_contest_id_user_id_task_id").doUpdateSet({
+          score_overall: (eb) => eb.ref("excluded.score_overall"),
+          score_max: (eb) => eb.ref("excluded.score_max"),
         });
       })
       .execute();

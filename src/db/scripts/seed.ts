@@ -14,7 +14,6 @@ import { hashPassword } from "server/logic/users";
 import { updateContest } from "server/logic/contests/update_contest";
 import { updateProblemSet } from "server/logic/problem_sets/update_problem_set";
 
-
 // Hard-code these UUIDs so that you don't need to re-login after a db:reset, etc
 const users: Insertable<UserTable>[] = [
   {
@@ -289,12 +288,14 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>): TaskD
         {
           input: "1 2\n",
           output: "SAD\n",
-          explanation: "In the first case, either Alvin gets 1 chocolate and Berto gets 2 chocolates, or Alvin gets 2 chocolates and Berto gets 1 chocolate. In either case, they cannot share their chocolates fairly, so they are sad.",
+          explanation:
+            "In the first case, either Alvin gets 1 chocolate and Berto gets 2 chocolates, or Alvin gets 2 chocolates and Berto gets 1 chocolate. In either case, they cannot share their chocolates fairly, so they are sad.",
         },
         {
           input: "4 2\n",
           output: "HAPPY\n",
-          explanation: "In the second case, Alvin can receive 3 chocolates, and Berto can receive 3 chocolates, and so they are happy that they can share the chocolates fairly.",
+          explanation:
+            "In the second case, Alvin can receive 3 chocolates, and Berto can receive 3 chocolates, and so they are happy that they can share the chocolates fairly.",
         },
       ],
       credits: [
@@ -702,7 +703,10 @@ function makeTasks(ids: Map<string, string>, hashes: Map<string, string>): TaskD
   return tasks;
 }
 
-function makeContests(contestids: Map<string, string>, taskids: Map<string, string>): ContestUpdateDTO[] {
+function makeContests(
+  contestids: Map<string, string>,
+  taskids: Map<string, string>
+): ContestUpdateDTO[] {
   const contests: ContestUpdateDTO[] = [
     {
       id: getOrThrow(contestids, "noi-elims"),
@@ -769,7 +773,10 @@ function makeContests(contestids: Map<string, string>, taskids: Map<string, stri
   return contests;
 }
 
-function makeProblemSets(setids: Map<string, string>, taskids: Map<string, string>): ProblemSetUpdateDTO[] {
+function makeProblemSets(
+  setids: Map<string, string>,
+  taskids: Map<string, string>
+): ProblemSetUpdateDTO[] {
   const psets: ProblemSetUpdateDTO[] = [
     {
       id: getOrThrow(setids, "beginner"),

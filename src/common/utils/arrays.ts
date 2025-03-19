@@ -11,12 +11,7 @@ export class Arrays {
     if (index <= 0) {
       return arr;
     } else {
-      return [
-        ...arr.slice(0, index - 1),
-        arr[index],
-        arr[index - 1],
-        ...arr.slice(index + 1),
-      ];
+      return [...arr.slice(0, index - 1), arr[index], arr[index - 1], ...arr.slice(index + 1)];
     }
   }
 
@@ -24,12 +19,7 @@ export class Arrays {
     if (index >= arr.length - 1) {
       return arr;
     } else {
-      return [
-        ...arr.slice(0, index),
-        arr[index + 1],
-        arr[index],
-        ...arr.slice(index + 2),
-      ];
+      return [...arr.slice(0, index), arr[index + 1], arr[index], ...arr.slice(index + 2)];
     }
   }
 }

@@ -9,7 +9,12 @@ import {
   TaskSampleIOTable,
 } from "./tasks";
 import { SubmissionFileTable, SubmissionTable } from "./submissions";
-import { OverallVerdictTable, VerdictSubtaskTable, VerdictTable, VerdictTaskDataTable } from "./verdicts";
+import {
+  OverallVerdictTable,
+  VerdictSubtaskTable,
+  VerdictTable,
+  VerdictTaskDataTable,
+} from "./verdicts";
 import { UserTable } from "./users";
 import { ProblemSetTable, ProblemSetTaskTable } from "./problem_sets";
 import {

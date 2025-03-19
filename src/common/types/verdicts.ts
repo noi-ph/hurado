@@ -25,7 +25,6 @@ export type VerdictSubtaskTable = {
   running_memory_byte: number | null;
 };
 
-
 export type VerdictTaskDataTable = {
   id: Generated<string>;
   verdict_subtask_id: string;

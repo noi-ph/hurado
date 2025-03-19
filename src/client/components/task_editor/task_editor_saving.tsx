@@ -31,7 +31,14 @@ import {
 import { UnreachableError } from "common/errors";
 import { CheckerKind, TaskFlavor, TaskType } from "common/types/constants";
 import { notNull } from "common/utils/guards";
-import { TaskCreditED, TaskED, TaskSubtaskED, TaskDataED, TaskScriptED, TaskSampleIO_ED } from "./types";
+import {
+  TaskCreditED,
+  TaskED,
+  TaskSubtaskED,
+  TaskDataED,
+  TaskScriptED,
+  TaskSampleIO_ED,
+} from "./types";
 import { coerceTaskED } from "./coercion";
 
 export async function saveTask(task: TaskED): Promise<SaveResult<TaskED>> {
@@ -66,7 +73,7 @@ export async function saveTask(task: TaskED): Promise<SaveResult<TaskED>> {
 
 function validateTask(task: TaskED): string[] {
   if (task.type === TaskType.Communication) {
-    if (task.communicator == null || task.communicator.file_name.trim() == '') {
+    if (task.communicator == null || task.communicator.file_name.trim() == "") {
       return ["Communication script must have a file"];
     }
   }
@@ -250,8 +257,8 @@ function coerceSampleIO_DTO(ed: TaskSampleIO_ED): TaskSampleIO_DTO {
       input: ed.input,
       output: ed.output,
       explanation: ed.explanation,
-    }
-  };
+    };
+  }
 }
 
 function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
@@ -281,9 +288,8 @@ function coerceTaskBatchDTO(ed: TaskED): TaskBatchDTO {
     compile_memory_limit_byte: coerceNonNegativeIntegerOrNull(ed.compile_memory_limit_byte),
     submission_size_limit_byte: coerceNonNegativeIntegerOrNull(ed.submission_size_limit_byte),
     checker_kind: ed.checker.kind,
-    checker_file_name: CheckerKind.Custom === ed.checker.kind
-      ? ed.checker.script.file_name
-      : undefined,
+    checker_file_name:
+      CheckerKind.Custom === ed.checker.kind ? ed.checker.script.file_name : undefined,
     subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
   };
 }
@@ -366,9 +372,8 @@ function coerceTaskOutputDTO(ed: TaskED): TaskOutputDTO {
     compile_memory_limit_byte: null,
     submission_size_limit_byte: coerceNonNegativeIntegerOrNull(ed.submission_size_limit_byte),
     checker_kind: ed.checker.kind,
-    checker_file_name: CheckerKind.Custom === ed.checker.kind
-      ? ed.checker.script.file_name
-      : undefined,
+    checker_file_name:
+      CheckerKind.Custom === ed.checker.kind ? ed.checker.script.file_name : undefined,
     subtasks: ed.subtasks.map(coerceSubtaskOutputDTO).filter(notNull),
   };
 }
@@ -447,17 +452,16 @@ function coerceTaskCommunicationDTO(ed: TaskED): TaskCommunicationDTO {
     compile_memory_limit_byte: coerceNonNegativeIntegerOrNull(ed.compile_memory_limit_byte),
     submission_size_limit_byte: coerceNonNegativeIntegerOrNull(ed.submission_size_limit_byte),
     checker_kind: ed.checker.kind,
-    checker_file_name: CheckerKind.Custom === ed.checker.kind
-      ? ed.checker.script.file_name
-      : undefined,
-    communicator_file_name: ed.communicator != null ? ed.communicator.file_name : '',
+    checker_file_name:
+      CheckerKind.Custom === ed.checker.kind ? ed.checker.script.file_name : undefined,
+    communicator_file_name: ed.communicator != null ? ed.communicator.file_name : "",
     subtasks: ed.subtasks.map(coerceSubtaskBatchDTO).filter(notNull),
   };
 }
 
 function coerceNonNegativeIntegerOrNull(value: string): number | null {
   const numberValue = Math.round(+value);
-  if (value == '' || isNaN(numberValue) || numberValue < 0) {
+  if (value == "" || isNaN(numberValue) || numberValue < 0) {
     return null;
   }
   return numberValue;

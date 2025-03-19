@@ -26,11 +26,14 @@ export async function GET(request: NextRequest, context: NextContext<RouteParams
     .where("overall_verdicts.contest_id", contestId ? "=" : "is", contestId ? contestId : null)
     .select(["overall_verdicts.score_overall", "overall_verdicts.score_max"])
     .executeTakeFirst();
-  
+
   return NextResponse.json({
-    verdict: (overall_verdict == undefined ? undefined : {
-      score_overall: overall_verdict.score_overall,
-      score_max: overall_verdict.score_max,
-    } satisfies OverallVerdictDisplayDTO),
+    verdict:
+      overall_verdict == undefined
+        ? undefined
+        : ({
+            score_overall: overall_verdict.score_overall,
+            score_max: overall_verdict.score_max,
+          } satisfies OverallVerdictDisplayDTO),
   });
 }

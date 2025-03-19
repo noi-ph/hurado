@@ -19,6 +19,6 @@ async function Page() {
       <ForgotPasswordPage />
     </DefaultLayout>
   );
-};
+}
 
 export default Page;

@@ -9,7 +9,7 @@ import { ToastContainer, Zoom } from "react-toastify";
 import classNames from "classnames";
 import { SessionProvider } from "client/sessions";
 import { getSession } from "server/sessions";
-import HuradoPNG from "assets/images/hurado.png"
+import HuradoPNG from "assets/images/hurado.png";
 
 const fontMontserrat = Montserrat({
   subsets: ["latin"],
@@ -63,7 +63,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
             closeButton={false}
           />
           {children}
-          <div id="modal-root"/>
+          <div id="modal-root" />
         </body>
       </html>
     </SessionProvider>

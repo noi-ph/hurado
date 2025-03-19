@@ -1,7 +1,6 @@
 import { checkUUIDv4, huradoIDToUUID } from "common/utils/uuid";
 import { db } from "db";
 
-
 export async function lookupFromSlugOrId(slug: string) {
   const uuid = huradoIDToUUID(slug) ?? checkUUIDv4(slug);
 
@@ -16,7 +15,6 @@ export async function lookupFromSlugOrId(slug: string) {
     })
     .select(["id", "slug", "title"])
     .execute();
-
 
   // Sort the results. Matching UUID trumps matching slug. Best result goes to lowest index.
   lookups.sort((a, b) => {

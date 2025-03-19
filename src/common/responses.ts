@@ -1,16 +1,15 @@
-import { UseFormSetError } from 'react-hook-form';
-import type { z, ZodError } from 'zod';
-
+import { UseFormSetError } from "react-hook-form";
+import type { z, ZodError } from "zod";
 
 type ObjectErrors<T> = {
   [K in keyof T]?: string[];
 };
 
 export enum ResponseKind {
-  Success = 'Success',
-  ForbiddenError = 'Forbidden',
-  ValidationError = 'Validation',
-};
+  Success = "Success",
+  ForbiddenError = "Forbidden",
+  ValidationError = "Validation",
+}
 
 export type APIForbiddenErrorType = {
   kind: ResponseKind.ForbiddenError;
@@ -35,7 +34,9 @@ export const APIForbiddenError: APIForbiddenErrorType = {
   kind: ResponseKind.ForbiddenError,
 };
 
-export function zodValidationError<T extends z.ZodType>(errors: ZodError): APIValidationErrorType<T> {
+export function zodValidationError<T extends z.ZodType>(
+  errors: ZodError
+): APIValidationErrorType<T> {
   const errs: Record<string, string[]> = {};
   for (const issue of errors.issues) {
     const key = issue.path.join(".") || "root";
@@ -51,7 +52,9 @@ export function zodValidationError<T extends z.ZodType>(errors: ZodError): APIVa
   };
 }
 
-export function customValidationError<Custom>(errors: ObjectErrors<Custom>): APIValidationErrorCustomType<Custom> {
+export function customValidationError<Custom>(
+  errors: ObjectErrors<Custom>
+): APIValidationErrorCustomType<Custom> {
   return {
     kind: ResponseKind.ValidationError,
     errors: errors,
@@ -66,7 +69,10 @@ export function makeSuccessResponse<T>(data: T): APISuccessResponse<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- pre-existing error before eslint inclusion
-export function applyValidationErrors<T extends {}>(setError: UseFormSetError<T>, errors: ObjectErrors<T>) {
+export function applyValidationErrors<T extends {}>(
+  setError: UseFormSetError<T>,
+  errors: ObjectErrors<T>
+) {
   const keys = Object.keys(errors);
   for (const key of keys) {
     // eslint-disable-next-line no-prototype-builtins -- pre-existing error before eslint inclusion

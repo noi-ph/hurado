@@ -9,7 +9,10 @@ import { ProblemSetViewer } from "client/components/problem_set_viewer/problem_s
 import { canManageProblemSets } from "server/authorization";
 import { getSession } from "server/sessions";
 
-async function getProblemSetData(slug: string, userId: string | null): Promise<ProblemSetViewerDTO | null> {
+async function getProblemSetData(
+  slug: string,
+  userId: string | null
+): Promise<ProblemSetViewerDTO | null> {
   return db.transaction().execute(async (trx) => {
     const set = await trx
       .selectFrom("problem_sets")
@@ -26,7 +29,7 @@ async function getProblemSetData(slug: string, userId: string | null): Promise<P
       .innerJoin("problem_set_tasks", "tasks.id", "problem_set_tasks.task_id")
       .orderBy(["problem_set_tasks.order", "tasks.title"])
       .where("problem_set_tasks.set_id", "=", set.id)
-      .leftJoin("overall_verdicts", (join) => 
+      .leftJoin("overall_verdicts", (join) =>
         join
           .onRef("overall_verdicts.task_id", "=", "tasks.id")
           .on("overall_verdicts.user_id", "=", userId)
@@ -81,10 +84,9 @@ export async function generateMetadata(props: ProblemSetPageProps): Promise<Meta
 
   return {
     title: set.title,
-    description: set.description
+    description: set.description,
   };
-};
-
+}
 
 async function Page(props: ProblemSetPageProps) {
   const session = await getSession();

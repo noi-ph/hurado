@@ -17,12 +17,9 @@ export type ContestCreateError =
   | APIForbiddenErrorType
   | APIValidationErrorType<typeof zContestCreate>;
 
-export type ContestCreateSuccess = APISuccessResponse<{ id: string }>
+export type ContestCreateSuccess = APISuccessResponse<{ id: string }>;
 
-export type ContestCreateResponse =
-  | ContestCreateError
-  | ContestCreateSuccess;
-
+export type ContestCreateResponse = ContestCreateError | ContestCreateSuccess;
 
 export async function POST(request: NextRequest): Promise<NextResponse<ContestCreateResponse>> {
   const session = await getSession(request);
@@ -46,9 +43,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<ContestCr
       .execute();
 
     if (current.length > 0) {
-      return NextResponse.json(customValidationError({
-        slug: ["Slug already exists"],
-      }), { status: 400 });
+      return NextResponse.json(
+        customValidationError({
+          slug: ["Slug already exists"],
+        }),
+        { status: 400 }
+      );
     }
 
     const dbContest = await trx
@@ -66,8 +66,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<ContestCr
       .returning(["id"])
       .executeTakeFirstOrThrow();
 
-    return NextResponse.json(makeSuccessResponse({
-      id: dbContest.id,
-    }));
+    return NextResponse.json(
+      makeSuccessResponse({
+        id: dbContest.id,
+      })
+    );
   });
 }

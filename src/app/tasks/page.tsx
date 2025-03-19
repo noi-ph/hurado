@@ -10,14 +10,20 @@ async function getTasksData(userId: string | null): Promise<TaskScoredSummaryDTO
   const tasks = await db
     .selectFrom("tasks")
     .where("is_public", "=", true)
-    .leftJoin("overall_verdicts", (join) => 
+    .leftJoin("overall_verdicts", (join) =>
       join
         .onRef("overall_verdicts.task_id", "=", "tasks.id")
         .on("overall_verdicts.user_id", "=", userId)
         .on("overall_verdicts.contest_id", "is", null)
     )
     .limit(1000)
-    .select(["tasks.title", "tasks.slug", "tasks.description", "overall_verdicts.score_overall", "overall_verdicts.score_max"])
+    .select([
+      "tasks.title",
+      "tasks.slug",
+      "tasks.description",
+      "overall_verdicts.score_overall",
+      "overall_verdicts.score_max",
+    ])
     .execute();
 
   return tasks;
@@ -32,7 +38,7 @@ async function Page() {
       <DefaultLayout>
         <EmptyNoticePage />
       </DefaultLayout>
-    )
+    );
   }
 
   return (

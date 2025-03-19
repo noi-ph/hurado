@@ -9,7 +9,10 @@ import { getSession } from "server/sessions";
 import { ContestViewerDTO, TaskScoredSummaryDTO, TaskSummaryDTO } from "common/types";
 import { ContestViewer } from "client/components/contest_viewer/contest_viewer";
 
-async function getContestData(slug: string, userId: string | null): Promise<ContestViewerDTO | null> {
+async function getContestData(
+  slug: string,
+  userId: string | null
+): Promise<ContestViewerDTO | null> {
   return db.transaction().execute(async (trx) => {
     const contest = await trx
       .selectFrom("contests")
@@ -26,7 +29,7 @@ async function getContestData(slug: string, userId: string | null): Promise<Cont
       .innerJoin("contest_tasks", "tasks.id", "contest_tasks.task_id")
       .orderBy(["contest_tasks.order", "tasks.title"])
       .where("contest_tasks.contest_id", "=", contest.id)
-      .leftJoin("overall_verdicts", (join) => 
+      .leftJoin("overall_verdicts", (join) =>
         join
           .onRef("overall_verdicts.task_id", "=", "tasks.id")
           .on("overall_verdicts.user_id", "=", userId)
@@ -81,9 +84,9 @@ export async function generateMetadata(props: ContestPageProps): Promise<Metadat
 
   return {
     title: contest.title,
-    description: contest.description
+    description: contest.description,
   };
-};
+}
 
 async function Page(props: ContestPageProps) {
   const session = await getSession();

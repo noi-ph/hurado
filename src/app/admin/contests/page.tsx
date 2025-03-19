@@ -2,7 +2,14 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { db } from "db";
-import { AdminTable, AdminTbody, AdminTD, AdminTH, AdminThead, AdminTR } from "client/components/admin_table/admin_table";
+import {
+  AdminTable,
+  AdminTbody,
+  AdminTD,
+  AdminTH,
+  AdminThead,
+  AdminTR,
+} from "client/components/admin_table/admin_table";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ContestCreator } from "client/components/contest_creator";
 import { EmptyNotice } from "client/components/empty_notice";
@@ -27,7 +34,7 @@ type ContestSummaryAdminDTO = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 async function getContestsData(session: SessionData): Promise<ContestSummaryAdminDTO[]> {
-  const contests = await db
+  const contests = (await db
     .selectFrom("contests")
     .innerJoin("users", "users.id", "contests.owner_id")
     .select([
@@ -39,24 +46,23 @@ async function getContestsData(session: SessionData): Promise<ContestSummaryAdmi
     ])
     .orderBy("contests.created_at", "desc")
     .limit(1000)
-    .execute() satisfies ContestSummaryAdminDTO[];
+    .execute()) satisfies ContestSummaryAdminDTO[];
 
   return contests;
 }
-
 
 async function Page() {
   const session = await getSession();
 
   if (session == null || !canManageContests(session)) {
-    return <ForbiddenPage/>;
+    return <ForbiddenPage />;
   }
 
   const contests = await getContestsData(session);
 
   let content: ReactNode = null;
   if (contests.length == 0) {
-    content = <EmptyNotice className="mt-12"/>;
+    content = <EmptyNotice className="mt-12" />;
   } else {
     content = (
       <AdminTable className="mt-6">
@@ -75,7 +81,10 @@ async function Page() {
             <AdminTR key={contest.slug}>
               <AdminTD className="font-mono text-sm">{uuidToHuradoID(contest.id)}</AdminTD>
               <AdminTD className="font-mono text-sm">
-                <Link href={getPath({ kind: Path.ContestView, slug: contest.slug })} className="text-blue-400 hover:text-blue-500">
+                <Link
+                  href={getPath({ kind: Path.ContestView, slug: contest.slug })}
+                  className="text-blue-400 hover:text-blue-500"
+                >
                   {contest.slug}
                 </Link>
               </AdminTD>
@@ -83,7 +92,10 @@ async function Page() {
               <AdminTD>{contest.owner}</AdminTD>
               <AdminTD>{contest.created_at.toLocaleDateString()}</AdminTD>
               <AdminTD>
-                <Link href={getPath({ kind: Path.ContestEdit, uuid: contest.id })} className="text-blue-400 hover:text-blue-500">
+                <Link
+                  href={getPath({ kind: Path.ContestEdit, uuid: contest.id })}
+                  className="text-blue-400 hover:text-blue-500"
+                >
                   Edit
                 </Link>
               </AdminTD>
@@ -98,11 +110,11 @@ async function Page() {
     <DefaultLayout>
       <div className="flex justify-between items-center">
         <h2 className="text-3xl">Contests</h2>
-        <ContestCreator/>
+        <ContestCreator />
       </div>
       {content}
     </DefaultLayout>
   );
-};
+}
 
 export default Page;

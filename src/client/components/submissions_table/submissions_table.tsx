@@ -26,7 +26,7 @@ export const SubmissionsTable = ({
 }: SubmissionTableProps) => {
   useEffect(() => {
     loadSubmissions();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (
@@ -68,9 +68,7 @@ const SubmissionRow = memo(({ submission, showUser }: SubmissionRowProps) => {
         </Link>
       </SubmissionCell>
       {showUser && (
-        <SubmissionCell className="whitespace-nowrap">
-          {submission.username}
-        </SubmissionCell>
+        <SubmissionCell className="whitespace-nowrap">{submission.username}</SubmissionCell>
       )}
       <SubmissionCell className="whitespace-nowrap">
         {humanizeTimeAgo(submission.created_at)}
@@ -120,7 +118,7 @@ const SubmissionCell = memo(({ className, children }: SubmissionCellProps) => {
 
 type OverallScoreProps = {
   overallVerdict: OverallVerdictDisplayDTO | undefined;
-  className?: string,
+  className?: string;
 };
 
 // eslint-disable-next-line react/display-name -- pre-existing error before eslint inclusion
@@ -132,7 +130,7 @@ export const OverallScoreDisplay = memo(({ overallVerdict, className }: OverallS
   // purely for recycling style code
   let verdict;
   if (score_overall == 0) {
-    verdict = Verdict.WrongAnswer
+    verdict = Verdict.WrongAnswer;
   } else if (score_overall < score_max) {
     verdict = Verdict.Partial;
   } else {
@@ -143,7 +141,7 @@ export const OverallScoreDisplay = memo(({ overallVerdict, className }: OverallS
       className={classNames(
         "font-sans font-bold text-4xl mt-2 mb-4",
         getVerdictColorClass(verdict),
-        className,
+        className
       )}
     >
       {score_overall == 0 ? "" : `${score_overall}/${score_max}`}

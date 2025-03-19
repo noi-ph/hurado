@@ -1,6 +1,5 @@
-import z from 'zod';
-import { CheckerKind, Language, ReducerKind, TaskFlavor, TaskType } from 'common/types/constants';
-
+import z from "zod";
+import { CheckerKind, Language, ReducerKind, TaskFlavor, TaskType } from "common/types/constants";
 
 export const zLanguageKind = z.union([
   z.literal(Language.CPP),

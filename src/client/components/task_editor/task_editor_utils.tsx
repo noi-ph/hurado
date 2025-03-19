@@ -7,7 +7,7 @@ export function createEmptyScript(): TaskScriptED {
     kind: EditorKind.Local,
     language: Language.Python3,
     file: null,
-    file_name: '',
+    file_name: "",
     argv: [],
   };
 }

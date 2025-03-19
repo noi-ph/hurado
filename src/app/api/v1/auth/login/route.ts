@@ -16,12 +16,9 @@ import { zUserLogin } from "common/validation/user_validation";
 
 export type UserLoginError = APIValidationErrorType<typeof zUserLogin>;
 
-export type UserLoginSuccess = APISuccessResponse<SessionData>
+export type UserLoginSuccess = APISuccessResponse<SessionData>;
 
-export type UserLoginResponse =
-  | UserLoginError
-  | UserLoginSuccess;
-
+export type UserLoginResponse = UserLoginError | UserLoginSuccess;
 
 export async function POST(request: NextRequest): Promise<NextResponse<UserLoginResponse>> {
   const { username, password } = await request.json();
@@ -43,9 +40,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<UserLogin
     .executeTakeFirst();
 
   if (!secret || !compareSync(password, secret.hashed_password)) {
-    return NextResponse.json(customValidationError({
-      password: ['Invalid username or password']
-    }), { status: 401 });
+    return NextResponse.json(
+      customValidationError({
+        password: ["Invalid username or password"],
+      }),
+      { status: 401 }
+    );
   }
 
   const session: SessionData = {

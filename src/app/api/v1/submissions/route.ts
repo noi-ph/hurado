@@ -20,8 +20,8 @@ import { getSession } from "server/sessions";
 import { enqueueSubmissionJudgement } from "worker/queue";
 
 type CreateSubmissionValidationErrors = {
-  request: true,
-  file_size: true,
+  request: true;
+  file_size: true;
 } & z.infer<typeof zSubmissionRequest>;
 
 export type CreateSubmissionError = APIValidationErrorCustomType<CreateSubmissionValidationErrors>;
@@ -41,9 +41,12 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const formRequest = formData.get("request") as File;
   if (!(formRequest instanceof File)) {
-    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
-      request: ["Missing File: Request"],
-    }), { status: 400 });
+    return NextResponse.json(
+      customValidationError<CreateSubmissionValidationErrors>({
+        request: ["Missing File: Request"],
+      }),
+      { status: 400 }
+    );
   }
 
   const jsonRequest = JSON.parse(await formRequest.text());
@@ -62,22 +65,28 @@ export async function POST(request: NextRequest) {
     .executeTakeFirst();
 
   if (task == null) {
-    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
-      task_id: ["Invalid task"],
-    }), { status: 400 });
+    return NextResponse.json(
+      customValidationError<CreateSubmissionValidationErrors>({
+        task_id: ["Invalid task"],
+      }),
+      { status: 400 }
+    );
   } else if (!task.is_public && !canManageTasks(session)) {
     return NextResponse.json(APIForbiddenError, { status: 401 });
   }
 
   if (!isAllowedLanguage(task.type, task.allowed_languages, submissionReq.language)) {
-    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
-      language: ["Invalid language"],
-    }), { status: 400 });
+    return NextResponse.json(
+      customValidationError<CreateSubmissionValidationErrors>({
+        language: ["Invalid language"],
+      }),
+      { status: 400 }
+    );
   }
 
   let sources: SubmissionFileCreate[];
 
-  if (task.type === TaskType.OutputOnly) {  
+  if (task.type === TaskType.OutputOnly) {
     const allowedFileNameList = await loadAllowedFilenames(submissionReq.task_id);
     const allowedFileNames = new Set(allowedFileNameList);
 
@@ -105,9 +114,12 @@ export async function POST(request: NextRequest) {
   } else {
     const formSource = formData.get("source");
     if (!(formSource instanceof File)) {
-      return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
-        request: ["Missing File: Source"],
-      }), { status: 400 });
+      return NextResponse.json(
+        customValidationError<CreateSubmissionValidationErrors>({
+          request: ["Missing File: Source"],
+        }),
+        { status: 400 }
+      );
     }
     sources = [
       {
@@ -118,9 +130,12 @@ export async function POST(request: NextRequest) {
   }
 
   if (!areAllowedFileSizes(sources, task.submission_size_limit_byte)) {
-    return NextResponse.json(customValidationError<CreateSubmissionValidationErrors>({
-      file_size: ["Submission files are too big"],
-    }), { status: 400 });
+    return NextResponse.json(
+      customValidationError<CreateSubmissionValidationErrors>({
+        file_size: ["Submission files are too big"],
+      }),
+      { status: 400 }
+    );
   }
 
   const submission = await createSubmission(sources, submissionReq, session.user);

@@ -81,7 +81,9 @@ async function upsertProblemSetTasks(
   return dtos;
 }
 
-export async function updateProblemSet(problemSet: ProblemSetUpdateDTO): Promise<ProblemSetEditorDTO> {
+export async function updateProblemSet(
+  problemSet: ProblemSetUpdateDTO
+): Promise<ProblemSetEditorDTO> {
   return db.transaction().execute(async (trx): Promise<ProblemSetEditorDTO> => {
     const dbProblemSet = await trx
       .updateTable("problem_sets")
@@ -93,14 +95,7 @@ export async function updateProblemSet(problemSet: ProblemSetUpdateDTO): Promise
         order: problemSet.order,
       })
       .where("id", "=", problemSet.id)
-      .returning([
-        "id",
-        "slug",
-        "title",
-        "description",
-        "is_public",
-        "order",
-      ])
+      .returning(["id", "slug", "title", "description", "is_public", "order"])
       .executeTakeFirstOrThrow();
 
     const problemSetTasks = await upsertProblemSetTasks(trx, problemSet.id, problemSet.tasks);

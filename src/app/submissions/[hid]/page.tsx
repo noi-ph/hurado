@@ -18,7 +18,7 @@ async function Page(props: SubmissionPageProps) {
     return notFound();
   }
   const session = await getSession();
-  if(session == null || session.user == null) {
+  if (session == null || session.user == null) {
     return notFound();
   }
 
@@ -31,7 +31,7 @@ async function Page(props: SubmissionPageProps) {
 
   return (
     <DefaultLayout>
-      <SubmissionViewer submission={submission} isAdmin={session.user.role === 'admin'}/>
+      <SubmissionViewer submission={submission} isAdmin={session.user.role === "admin"} />
     </DefaultLayout>
   );
 }

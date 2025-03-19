@@ -37,7 +37,10 @@ const MonacoOptions: editor.IStandaloneEditorConstructionOptions = Object.freeze
 
 const CodeEditorMinimumHeight = 72;
 
-export const SubmissionViewer = ({ submission, isAdmin }: SubmissionViewerProps & { isAdmin: boolean }) => {
+export const SubmissionViewer = ({
+  submission,
+  isAdmin,
+}: SubmissionViewerProps & { isAdmin: boolean }) => {
   const baseTaskURL = getPath({ kind: Path.TaskView, slug: submission.task.slug });
   const taskURL = `${baseTaskURL}`;
   const submissionsURL = `${baseTaskURL}#submissions`;
@@ -56,12 +59,10 @@ export const SubmissionViewer = ({ submission, isAdmin }: SubmissionViewerProps 
           <Link href={submissionsURL} className="text-blue-400 hover:text-blue-500 mr-4">
             My Submissions
           </Link>
-          <div className="text-gray-300 whitespace-nowrap">
-            {uuidToHuradoID(submission.id)}
-          </div>
+          <div className="text-gray-300 whitespace-nowrap">{uuidToHuradoID(submission.id)}</div>
         </div>
       </div>
-      <RejudgeButton submission={submission} isAdmin={isAdmin}/>
+      <RejudgeButton submission={submission} isAdmin={isAdmin} />
       <SubmissionVerdictSummary submission={submission} />
       {submission.verdict != null ? (
         <>
@@ -167,7 +168,9 @@ const SubtaskVerdictViewer = ({ subtask, subtaskIndex }: SubtaskVerdictViewerPro
     score = <span className="font-medium">N/A</span>;
   }
 
-  const running_times = subtask.data.some(data => data.running_time_ms == null) ? [] : subtask.data.map(data => data.running_time_ms).filter(notNull);
+  const running_times = subtask.data.some((data) => data.running_time_ms == null)
+    ? []
+    : subtask.data.map((data) => data.running_time_ms).filter(notNull);
   const worst = running_times.length == 0 ? null : running_times.reduce((a, b) => Math.max(a, b));
 
   return (
@@ -175,22 +178,10 @@ const SubtaskVerdictViewer = ({ subtask, subtaskIndex }: SubtaskVerdictViewerPro
       <div className="flex items-center px-4 py-2 rounded-t-lg bg-blue-300">
         <div className="text-lg">Subtask #{subtaskIndex + 1}</div>
         <div className="ml-auto flex flex-row gap-4">
-          {
-            worst == null
-              ? null
-              : (
-                <div>
-                  Time: {
-                    worst < 1000
-                      ? `${worst} ms`
-                      : `${worst/1000} s`
-                  }
-                </div>
-              )
-          }
-          <div>
-            Score: {score}
-          </div>
+          {worst == null ? null : (
+            <div>Time: {worst < 1000 ? `${worst} ms` : `${worst / 1000} s`}</div>
+          )}
+          <div>Score: {score}</div>
         </div>
       </div>
       <div className="grid grid-cols-4 px-4 py-2 border border-t-0 border-gray-300 rounded-b-lg">
@@ -314,8 +305,10 @@ const SubmissionOutputViewer = ({ file }: SubmissionOutputViewerProps): React.Re
   );
 };
 
-
-export const RejudgeButton = ({ submission, isAdmin }: SubmissionViewerProps & { isAdmin: boolean }) => {
+export const RejudgeButton = ({
+  submission,
+  isAdmin,
+}: SubmissionViewerProps & { isAdmin: boolean }) => {
   if (!isAdmin) {
     return null;
   }
@@ -334,7 +327,7 @@ export const RejudgeButton = ({ submission, isAdmin }: SubmissionViewerProps & {
     }
     setRejudging(true);
     await rejudgeSubmission(submission.id, submissions, router);
-    toast.info('This submission will be rejudged...');
+    toast.info("This submission will be rejudged...");
     if (submissions) {
       submissions.clear();
     }
@@ -342,11 +335,10 @@ export const RejudgeButton = ({ submission, isAdmin }: SubmissionViewerProps & {
     router.push(getPath({ kind: Path.Submission, uuid: submission.id }));
 
     setRejudging(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (
-
     <button type="submit" className={button_styles.button} onClick={rejudge} disabled={rejudging}>
       Rejudge
     </button>

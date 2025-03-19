@@ -1,7 +1,12 @@
 import ChildProcess from "child_process";
 import { UnreachableCheck } from "common/errors";
 import { Language, ProgrammingLanguage, Verdict } from "common/types/constants";
-import { JudgeScript, JudgeSubmission, JudgeTaskBatch, JudgeTaskCommunication } from "common/types/judge";
+import {
+  JudgeScript,
+  JudgeSubmission,
+  JudgeTaskBatch,
+  JudgeTaskCommunication,
+} from "common/types/judge";
 import { CompilationResult } from "./types";
 import { ISOLATE_BIN, IsolateUtils } from "./judge_utils";
 import {
@@ -15,7 +20,7 @@ import {
 type GetInterpreterCommandFunction = (
   executable_name: string,
   time_limit_ms: number,
-  memory_limit_byte: number,
+  memory_limit_byte: number
 ) => string[];
 
 type LanguageSpec = {
@@ -114,7 +119,7 @@ export async function compileSubmission(
     task.compile_memory_limit_byte,
     submissionDir,
     srcName,
-    exeName,
+    exeName
   );
 }
 
@@ -132,7 +137,7 @@ export async function compileJudgeScriptAndMutate(
     null, // Judges get the default memory limit
     taskDir,
     srcName,
-    exeName,
+    exeName
   );
   script.exe_name = result.exe_name;
   return script;
@@ -144,7 +149,7 @@ export async function compileLocalSource(
   memory_limit_byte: number | null,
   root: string,
   src_name: string,
-  exe_name: string,
+  exe_name: string
 ): Promise<CompilationResult> {
   const specs = LANGUAGE_SPECS[language];
   const command = specs.getCompileCommand(src_name, exe_name);

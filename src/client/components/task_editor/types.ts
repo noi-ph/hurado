@@ -23,12 +23,14 @@ export type TaskED = {
   is_public: boolean;
 };
 
-export type TaskCheckerED = {
-  kind: Exclude<CheckerKind, CheckerKind.Custom>,
-} | {
-  kind: CheckerKind.Custom,
-  script: TaskScriptED;
-}
+export type TaskCheckerED =
+  | {
+      kind: Exclude<CheckerKind, CheckerKind.Custom>;
+    }
+  | {
+      kind: CheckerKind.Custom;
+      script: TaskScriptED;
+    };
 
 export type TaskScriptED = TaskScriptSaved | TaskScriptLocal;
 
@@ -39,7 +41,7 @@ export type TaskScriptSaved = {
   file: CommonFileED;
   language: Language;
   argv: string[];
-}
+};
 
 export type TaskScriptLocal = {
   kind: EditorKind.Local;
@@ -47,7 +49,7 @@ export type TaskScriptLocal = {
   file: CommonFileED | null;
   language: Language;
   argv: string[];
-}
+};
 
 export type TaskCreditSaved = {
   kind: EditorKind.Saved;

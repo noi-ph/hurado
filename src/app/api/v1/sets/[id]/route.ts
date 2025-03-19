@@ -4,7 +4,6 @@ import { canManageProblemSets } from "server/authorization";
 import { getSession } from "server/sessions";
 import { updateProblemSet } from "server/logic/problem_sets/update_problem_set";
 
-
 export async function PUT(request: NextRequest) {
   const session = await getSession(request);
   if (!canManageProblemSets(session)) {

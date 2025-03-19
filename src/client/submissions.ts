@@ -4,7 +4,6 @@ import http from "client/http";
 import { APIPath, getAPIPath } from "client/paths";
 import { SubmissionSummaryDTO } from "common/types/submissions";
 
-
 export class SubmissionsCache {
   loaded: boolean;
   submissions: SubmissionSummaryDTO[];
@@ -37,7 +36,7 @@ export class SubmissionsCache {
 
   private static async loadAndCoerce(url: string): Promise<SubmissionSummaryDTO[]> {
     const response: AxiosResponse<SubmissionSummaryDTO[]> = await http.get(url);
-    const coerced: SubmissionSummaryDTO[] = response.data.map(json => ({
+    const coerced: SubmissionSummaryDTO[] = response.data.map((json) => ({
       id: json.id,
       language: json.language,
       username: json.username,

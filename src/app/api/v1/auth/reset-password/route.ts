@@ -13,12 +13,9 @@ import { hashPassword } from "server/logic/users";
 
 export type ResetPasswordError = APIValidationErrorType<typeof zUserResetPasswordServer>;
 
-export type ResetPasswordSuccess = APISuccessResponse<null>
+export type ResetPasswordSuccess = APISuccessResponse<null>;
 
-export type ResetPasswordResponse =
-  | ResetPasswordError
-  | ResetPasswordSuccess;
-
+export type ResetPasswordResponse = ResetPasswordError | ResetPasswordSuccess;
 
 export async function POST(request: NextRequest) {
   const { token, password } = await request.json();
@@ -42,9 +39,12 @@ export async function POST(request: NextRequest) {
       .executeTakeFirst();
 
     if (user == null) {
-      return NextResponse.json(customValidationError({
-        token: ["Invalid token"],
-      }), { status: 400 });
+      return NextResponse.json(
+        customValidationError({
+          token: ["Invalid token"],
+        }),
+        { status: 400 }
+      );
     }
 
     await trx
@@ -60,7 +60,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(makeSuccessResponse(null));
   });
 }
-
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 function censorEmail(email: string): string {

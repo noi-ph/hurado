@@ -91,7 +91,7 @@ export class DeveloperToolsCRUD {
     const updateRole = await confirm({ message: "Update role?" });
     if (updateRole) {
       const admin = await confirm({ message: "Is Admin?" });
-      updates.role = admin ? 'admin' : 'user';
+      updates.role = admin ? "admin" : "user";
     }
 
     const parsed = zAdminUpdate.safeParse(updates);
@@ -118,6 +118,6 @@ async function confirmUser(user: Updateable<UserTable>): Promise<boolean> {
   console.info("Username: ", user.username);
   console.info("Name: ", user.name);
   console.info("Role: ", user.role);
-  
+
   return confirm({ message: "Are you sure?" });
 }

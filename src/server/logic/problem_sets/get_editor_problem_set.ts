@@ -4,17 +4,10 @@ import { ProblemSetEditorDTO } from "common/validation/problem_set_validation";
 export async function getEditorProblemSet(uuid: string): Promise<ProblemSetEditorDTO | null> {
   return db.transaction().execute(async (trx) => {
     const set = await trx
-    .selectFrom("problem_sets")
-    .select([
-      "id",
-      "title",
-      "slug",
-      "description",
-      "is_public",
-      "order",
-    ])
-    .where("id", "=", uuid)
-    .executeTakeFirst();
+      .selectFrom("problem_sets")
+      .select(["id", "title", "slug", "description", "is_public", "order"])
+      .where("id", "=", uuid)
+      .executeTakeFirst();
 
     if (set == null) {
       return null;

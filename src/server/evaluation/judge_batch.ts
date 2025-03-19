@@ -21,7 +21,7 @@ export async function evaluateTaskDataForBatch(
     context.contestant,
     context.submission_root,
     inputPath,
-    outputPath,
+    outputPath
   );
   switch (isolateResult.verdict) {
     case Verdict.RuntimeError:
@@ -43,11 +43,12 @@ export async function evaluateTaskDataForBatch(
         output_file_name: data.judge_file_name,
       });
       return {
-        verdict: checkerResult.score_raw == 1 ?
-          Verdict.Accepted
-           : checkerResult.score_raw == 0
-            ? Verdict.WrongAnswer
-            : Verdict.Partial,
+        verdict:
+          checkerResult.score_raw == 1
+            ? Verdict.Accepted
+            : checkerResult.score_raw == 0
+              ? Verdict.WrongAnswer
+              : Verdict.Partial,
         score_raw: checkerResult.score_raw,
         running_time_ms: isolateResult.running_time_ms,
         running_memory_byte: isolateResult.running_memory_byte,
@@ -63,7 +64,7 @@ async function runContestantScript(
   script: ContestantScript,
   submissionRoot: string,
   inputPath: string,
-  outputPath: string,
+  outputPath: string
 ): Promise<IsolateResult> {
   return IsolateUtils.with(async (isolate) => {
     const argv = makeContestantArgv(task, script, isolate, submissionRoot);

@@ -19,6 +19,6 @@ async function Page() {
       <PasswordResetPage />
     </DefaultLayout>
   );
-};
+}
 
 export default Page;

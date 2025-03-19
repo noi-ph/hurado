@@ -21,7 +21,7 @@ function coerceProblemSetTaskED(dto: ProblemSetTaskEditorDTO): ProblemSetTaskED 
   return {
     id: dto.task_id,
     slug: dto.slug,
-    title: dto.title,  
+    title: dto.title,
     order: dto.order,
   };
 }

@@ -1,1 +1,1 @@
-export { ContestEditor } from './contest_editor';
+export { ContestEditor } from "./contest_editor";

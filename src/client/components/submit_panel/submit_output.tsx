@@ -41,7 +41,7 @@ export function SubmitOutput({ task }: SubmitOutputProps) {
     const data = createSubmissionOutput(task, subtasks);
     await postSubmission(data, submissions, router);
     setSubmitting(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task, subtasks, submitting]);
 
   return (

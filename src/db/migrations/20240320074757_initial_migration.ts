@@ -70,7 +70,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema.createIndex("idx_tasks_slug").on("tasks").columns(["slug"]).execute();
-  await db.schema.createIndex("idx_tasks_owner_id_created_at").on("tasks").columns(["owner_id", "created_at"]).execute();
+  await db.schema
+    .createIndex("idx_tasks_owner_id_created_at")
+    .on("tasks")
+    .columns(["owner_id", "created_at"])
+    .execute();
 
   await db.schema
     .createTable("task_scripts")
@@ -90,7 +94,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .alterTable("tasks")
-    .addForeignKeyConstraint("fk_tasks_communicator_id", ["communicator_id"], "task_scripts", ["id"])
+    .addForeignKeyConstraint("fk_tasks_communicator_id", ["communicator_id"], "task_scripts", [
+      "id",
+    ])
     .onDelete("restrict")
     .execute();
 
@@ -239,8 +245,12 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("verdict_subtasks")
     .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`))
-    .addColumn("verdict_id", "uuid", (col) => col.notNull().references("verdicts.id").onDelete('cascade'))
-    .addColumn("subtask_id", "uuid", (col) => col.notNull().references("task_subtasks.id").onDelete('cascade'))
+    .addColumn("verdict_id", "uuid", (col) =>
+      col.notNull().references("verdicts.id").onDelete("cascade")
+    )
+    .addColumn("subtask_id", "uuid", (col) =>
+      col.notNull().references("task_subtasks.id").onDelete("cascade")
+    )
     .addColumn("verdict", "text")
     .addColumn("score_raw", "real")
     .addColumn("running_time_ms", "integer")
@@ -253,7 +263,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("verdict_subtask_id", "uuid", (col) =>
       col.notNull().references("verdict_subtasks.id")
     )
-    .addColumn("task_data_id", "uuid", (col) => col.notNull().references("task_data.id").onDelete('cascade'))
+    .addColumn("task_data_id", "uuid", (col) =>
+      col.notNull().references("task_data.id").onDelete("cascade")
+    )
     .addColumn("verdict", "text")
     .addColumn("score_raw", "real")
     .addColumn("running_time_ms", "integer")
@@ -351,7 +363,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addUniqueConstraint(
       "idx_overall_verdicts_contest_id_user_id_task_id",
       ["contest_id", "user_id", "task_id"],
-      (eb) => eb.nullsNotDistinct(),
+      (eb) => eb.nullsNotDistinct()
     )
     .execute();
 

@@ -13,7 +13,7 @@ export const ContestEditorAdvanced = ({ contest, setContest }: ContestEditorAdva
     <CommonEditorContent>
       <CommonEditorDetails>
         <CommonEditorLabel label="Is Public?" />
-        <ContestEditorPublic contest={contest} setContest={setContest}/>
+        <ContestEditorPublic contest={contest} setContest={setContest} />
       </CommonEditorDetails>
     </CommonEditorContent>
   );
@@ -22,7 +22,7 @@ export const ContestEditorAdvanced = ({ contest, setContest }: ContestEditorAdva
 type ContestEditorPublicProps = {
   contest: ContestED;
   setContest(contest: ContestED): void;
-}
+};
 export const ContestEditorPublic = ({ contest, setContest }: ContestEditorPublicProps) => {
   const onChangePublic = useCallback(
     (event: InputChangeEvent) => {
@@ -36,11 +36,11 @@ export const ContestEditorPublic = ({ contest, setContest }: ContestEditorPublic
   return (
     <>
       <input
-        type='checkbox'
+        type="checkbox"
         className="border-2 border-gray-250 rounded-md h-6 w-6 self-center"
         checked={contest.is_public}
         onChange={onChangePublic}
       />
     </>
   );
-}
+};

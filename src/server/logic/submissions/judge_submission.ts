@@ -128,7 +128,8 @@ export async function loadTask(trx: Transaction<Models>, taskId: string): Promis
       time_limit_ms: task.time_limit_ms,
       memory_limit_byte: task.memory_limit_byte != null ? +task.memory_limit_byte : null,
       compile_time_limit_ms: task.compile_time_limit_ms,
-      compile_memory_limit_byte: task.compile_memory_limit_byte != null ? + task.compile_memory_limit_byte : null,
+      compile_memory_limit_byte:
+        task.compile_memory_limit_byte != null ? +task.compile_memory_limit_byte : null,
     };
   } else if (task.type === TaskType.Communication) {
     const subtasks = await loadSubtasksCommunication(trx, taskId);
@@ -151,7 +152,8 @@ export async function loadTask(trx: Transaction<Models>, taskId: string): Promis
       time_limit_ms: task.time_limit_ms,
       memory_limit_byte: task.memory_limit_byte != null ? +task.memory_limit_byte : null,
       compile_time_limit_ms: task.compile_time_limit_ms,
-      compile_memory_limit_byte: task.compile_memory_limit_byte != null ? + task.compile_memory_limit_byte : null,
+      compile_memory_limit_byte:
+        task.compile_memory_limit_byte != null ? +task.compile_memory_limit_byte : null,
     };
   } else if (task.type === TaskType.OutputOnly) {
     const subtasks = await loadSubtasksOutput(trx, taskId);

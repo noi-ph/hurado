@@ -41,7 +41,7 @@ function coerceContestTaskED(dto: ContestTaskEditorDTO): ContestTaskED {
     task: {
       id: dto.task_id,
       slug: dto.slug,
-      title: dto.title,  
+      title: dto.title,
     },
     score_max: dto.score_max,
     letter: dto.letter,

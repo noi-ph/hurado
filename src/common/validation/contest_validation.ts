@@ -64,7 +64,6 @@ export type ContestEditorDTO = Pick<Contest, ContestEditorKeys> & {
   tasks: ContestTaskEditorDTO[];
 };
 
-
 export const zContestCreate = zContest.pick({
   slug: true,
   title: true,

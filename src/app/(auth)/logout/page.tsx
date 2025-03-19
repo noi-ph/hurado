@@ -6,7 +6,6 @@ import http from "client/http";
 import { getPath, Path } from "client/paths";
 import { useSessionWithUpdate } from "client/sessions";
 
-
 const Page: FunctionComponent = () => {
   const router = useRouter();
   const { setSession } = useSessionWithUpdate();

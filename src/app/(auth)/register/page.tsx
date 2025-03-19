@@ -19,4 +19,4 @@ export default async function Page() {
       <RegisterPage />
     </DefaultLayout>
   );
-};
+}

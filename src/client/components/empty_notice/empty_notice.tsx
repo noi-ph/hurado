@@ -2,7 +2,7 @@
 
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
-import styles from './empty_notice.module.css';
+import styles from "./empty_notice.module.css";
 
 type MouseLocation = {
   x: number;
@@ -19,17 +19,20 @@ function Eye({ mouse }: EyeProps) {
   const style = getPupilStyle(socket.current, mouse);
 
   return (
-    <div ref={socket} style={style} className="relative h-14 w-14 rounded-full border border-gray-800 bg-white">
-      <div  className={classNames(styles.pupil, "absolute rounded-full bg-gray-800")}/>
+    <div
+      ref={socket}
+      style={style}
+      className="relative h-14 w-14 rounded-full border border-gray-800 bg-white"
+    >
+      <div className={classNames(styles.pupil, "absolute rounded-full bg-gray-800")} />
     </div>
   );
-};
-
+}
 
 function GooglyEyes() {
   const [mouse, setMouse] = useState({
     x: 0,
-    y: 0
+    y: 0,
   });
 
   const onMouseMove = useCallback((event: MouseEvent) => {
@@ -49,7 +52,7 @@ function GooglyEyes() {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("touchmove", onTouchMove);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, []);
 
   return (
@@ -60,8 +63,10 @@ function GooglyEyes() {
   );
 }
 
-
-function getPupilStyle(socket: HTMLDivElement | null, mouse: MouseLocation): CSSProperties | undefined {
+function getPupilStyle(
+  socket: HTMLDivElement | null,
+  mouse: MouseLocation
+): CSSProperties | undefined {
   if (socket == null) {
     return undefined;
   }
@@ -86,20 +91,25 @@ type EmptyNoticeProps = {
 
 export function EmptyNotice({ className }: EmptyNoticeProps) {
   return (
-    <div className={classNames(className, "text-center w-fit mx-auto py-12 px-6 rounded-lg border border-gray-800")}>
-      <GooglyEyes/>
+    <div
+      className={classNames(
+        className,
+        "text-center w-fit mx-auto py-12 px-6 rounded-lg border border-gray-800"
+      )}
+    >
+      <GooglyEyes />
       <div className="max-w-96 mt-6 mx-auto text-gray-800">
         {/* eslint-disable-next-line react/no-unescaped-entities -- pre-existing error before eslint inclusion */}
         We searched everywhere, but there's nothing to see here right now. Please come back later.
       </div>
     </div>
-  )
+  );
 }
 
 export function EmptyNoticePage() {
   return (
     <div className="my-16">
-      <EmptyNotice/>
+      <EmptyNotice />
     </div>
   );
 }

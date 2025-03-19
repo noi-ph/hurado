@@ -20,13 +20,7 @@ export const zProblemSet = z.object({
   tasks: z.array(zProblemSetTask),
 });
 
-type ProblemSetEditorKeys =
-  | "id"
-  | "slug"
-  | "title"
-  | "description"
-  | "is_public"
-  | "order";
+type ProblemSetEditorKeys = "id" | "slug" | "title" | "description" | "is_public" | "order";
 
 export type ProblemSetTaskEditorDTO = {
   task_id: string;

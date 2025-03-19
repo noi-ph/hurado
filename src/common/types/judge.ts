@@ -1,4 +1,11 @@
-import { CheckerKind, Language, JudgeLanguage, TaskType, Verdict, ProgrammingLanguage } from "./constants";
+import {
+  CheckerKind,
+  Language,
+  JudgeLanguage,
+  TaskType,
+  Verdict,
+  ProgrammingLanguage,
+} from "./constants";
 
 export type JudgeTask = JudgeTaskBatch | JudgeTaskOutput | JudgeTaskCommunication;
 

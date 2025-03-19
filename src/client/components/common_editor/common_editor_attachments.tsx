@@ -51,10 +51,13 @@ const CommonAttachmentSavedX = ({
       <CommonEditorTableCell deleted={attachment.deleted}>{filename}</CommonEditorTableCell>
       <CommonEditorTableCell deleted={attachment.deleted}>{attachment.path}</CommonEditorTableCell>
       <div className="flex flex-row justify-end items-center px-3 gap-2">
-        <button type="button" onClick={async() => {
-          await navigator.clipboard.writeText(getAttachmentURL(attachment));
-          toast("Filepath copied to clipboard!", { type: "success" });
-        }}>
+        <button
+          type="button"
+          onClick={async () => {
+            await navigator.clipboard.writeText(getAttachmentURL(attachment));
+            toast("Filepath copied to clipboard!", { type: "success" });
+          }}
+        >
           <BoxIcon name="bxs-copy" className="bx-sm text-blue-300 hover:text-blue-500" />
         </button>
         <a target="_blank" href={getAttachmentURL(attachment)}>
@@ -108,7 +111,7 @@ const CommonAttachmentLocalX = ({
 
   const onClickDelete = useCallback(() => {
     setAttachments([...attachments.slice(0, index), ...attachments.slice(index + 1)]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [index, attachment, setAttachments]);
 
   return (
@@ -178,7 +181,7 @@ export function CommonEditorAttachments({
       return;
     }
     pickerRef.current.click();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [attachments, setAttachments]);
 
   return (

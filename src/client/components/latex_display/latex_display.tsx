@@ -10,19 +10,11 @@ type LatexDisplayProps = {
 export const LatexDisplay = memo(({ className, children }: LatexDisplayProps) => {
   const result = renderLatex(children);
 
-  if ('error' in result) {
+  if ("error" in result) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
     const error = result.error as any;
-    return (
-      <div className="font-mono text-red-500">
-        {error.message}
-      </div>
-    );
+    return <div className="font-mono text-red-500">{error.message}</div>;
   }
 
-  return (
-    <div>
-      {result.node}
-    </div>
-  );
+  return <div>{result.node}</div>;
 });

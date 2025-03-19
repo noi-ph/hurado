@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   title: "Admin",
 };
 
-const Page: FunctionComponent = async() => {
+const Page: FunctionComponent = async () => {
   const session = await getSession();
 
   const tasks = canManageTasks(session);
   const sets = canManageProblemSets(session);
   const contests = canManageContests(session);
   if (!tasks && !sets && !contests) {
-    return <ForbiddenPage/>;
+    return <ForbiddenPage />;
   }
 
   return (

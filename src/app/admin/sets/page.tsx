@@ -2,7 +2,14 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { db } from "db";
-import { AdminTable, AdminTbody, AdminTD, AdminTH, AdminThead, AdminTR } from "client/components/admin_table/admin_table";
+import {
+  AdminTable,
+  AdminTbody,
+  AdminTD,
+  AdminTH,
+  AdminThead,
+  AdminTR,
+} from "client/components/admin_table/admin_table";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { EmptyNotice } from "client/components/empty_notice";
 import { ProblemSetCreator } from "client/components/problem_set_creator";
@@ -17,7 +24,6 @@ export const metadata: Metadata = {
   title: "Admin | Problem Sets",
 };
 
-
 type ProblemSetSummaryAdminDTO = {
   id: string;
   title: string;
@@ -28,34 +34,27 @@ type ProblemSetSummaryAdminDTO = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 async function getProblemSetsData(session: SessionData): Promise<ProblemSetSummaryAdminDTO[]> {
-  const sets = await db
+  const sets = (await db
     .selectFrom("problem_sets")
-    .select([
-      "id",
-      "title",
-      "slug",
-      "is_public",
-      "order",
-    ])
+    .select(["id", "title", "slug", "is_public", "order"])
     .orderBy("order", "asc")
     .limit(1000)
-    .execute() satisfies ProblemSetSummaryAdminDTO[];
+    .execute()) satisfies ProblemSetSummaryAdminDTO[];
 
   return sets;
 }
-
 
 async function Page() {
   const session = await getSession();
 
   if (session == null || !canManageProblemSets(session)) {
-    return <ForbiddenPage/>;
+    return <ForbiddenPage />;
   }
 
   const sets = await getProblemSetsData(session);
   let content: ReactNode = null;
   if (sets.length == 0) {
-    content = <EmptyNotice className="mt-12"/>;
+    content = <EmptyNotice className="mt-12" />;
   } else {
     content = (
       <AdminTable className="mt-6">
@@ -74,15 +73,21 @@ async function Page() {
             <AdminTR key={task.slug}>
               <AdminTD className="font-mono text-sm">{uuidToHuradoID(task.id)}</AdminTD>
               <AdminTD className="font-mono text-sm">
-                <Link href={getPath({ kind: Path.ProblemSetView, slug: task.slug })} className="text-blue-400 hover:text-blue-500">
+                <Link
+                  href={getPath({ kind: Path.ProblemSetView, slug: task.slug })}
+                  className="text-blue-400 hover:text-blue-500"
+                >
                   {task.slug}
                 </Link>
               </AdminTD>
               <AdminTD>{task.title}</AdminTD>
-              <AdminTD>{task.is_public ? "Yes" : "No" }</AdminTD>
+              <AdminTD>{task.is_public ? "Yes" : "No"}</AdminTD>
               <AdminTD>{task.order}</AdminTD>
               <AdminTD>
-                <Link href={getPath({ kind: Path.ProblemSetEdit, uuid: task.id })} className="text-blue-400 hover:text-blue-500">
+                <Link
+                  href={getPath({ kind: Path.ProblemSetEdit, uuid: task.id })}
+                  className="text-blue-400 hover:text-blue-500"
+                >
                   Edit
                 </Link>
               </AdminTD>
@@ -97,11 +102,11 @@ async function Page() {
     <DefaultLayout>
       <div className="flex justify-between items-center">
         <h2 className="text-3xl">Problem Sets</h2>
-        <ProblemSetCreator/>
+        <ProblemSetCreator />
       </div>
       {content}
     </DefaultLayout>
   );
-};
+}
 
 export default Page;

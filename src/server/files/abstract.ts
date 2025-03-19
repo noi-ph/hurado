@@ -1,4 +1,4 @@
-import { FileCache } from './cache';
+import { FileCache } from "./cache";
 
 export abstract class FileStorage {
   protected cache: FileCache;

@@ -6,7 +6,12 @@ import styles from "client/components/common_editor/common_editor.module.css";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-import { CommonEditorContent, CommonEditorDetails, CommonEditorLabel, CommonEditorSelect } from "../common_editor";
+import {
+  CommonEditorContent,
+  CommonEditorDetails,
+  CommonEditorLabel,
+  CommonEditorSelect,
+} from "../common_editor";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { Scrollable } from "../scrollable";
 import { TaskED } from "./types";
@@ -21,7 +26,7 @@ export const TaskEditorAdvanced = ({ task, setTask }: TaskEditorAdvancedProps) =
     <CommonEditorContent>
       <CommonEditorDetails>
         <CommonEditorLabel label="Is Public?" />
-        <TaskEditorPublic task={task} setTask={setTask}/>
+        <TaskEditorPublic task={task} setTask={setTask} />
       </CommonEditorDetails>
     </CommonEditorContent>
   );
@@ -30,7 +35,7 @@ export const TaskEditorAdvanced = ({ task, setTask }: TaskEditorAdvancedProps) =
 type TaskEditorPublicProps = {
   task: TaskED;
   setTask(task: TaskED): void;
-}
+};
 export const TaskEditorPublic = ({ task, setTask }: TaskEditorPublicProps) => {
   const onChangePublic = useCallback(
     (event: InputChangeEvent) => {
@@ -44,11 +49,11 @@ export const TaskEditorPublic = ({ task, setTask }: TaskEditorPublicProps) => {
   return (
     <>
       <input
-        type='checkbox'
+        type="checkbox"
         className="border-2 border-gray-250 rounded-md h-6 w-6 self-center"
         checked={task.is_public}
         onChange={onChangePublic}
       />
     </>
   );
-}
+};

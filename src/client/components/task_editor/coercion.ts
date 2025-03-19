@@ -24,25 +24,22 @@ import { createEmptyScript } from "./task_editor_utils";
 export function coerceTaskED(dto: TaskDTO): TaskED {
   let checker: TaskCheckerED;
   if (dto.checker_kind !== CheckerKind.Custom) {
-    checker =  {
-      kind: dto.checker_kind,
-    }
-  } else {
-    const checkerScript = dto.scripts.find(x => x.file_name === dto.checker_file_name);
     checker = {
       kind: dto.checker_kind,
-      script: checkerScript == null
-        ? createEmptyScript()
-        : coerceTaskScriptED(checkerScript),
+    };
+  } else {
+    const checkerScript = dto.scripts.find((x) => x.file_name === dto.checker_file_name);
+    checker = {
+      kind: dto.checker_kind,
+      script: checkerScript == null ? createEmptyScript() : coerceTaskScriptED(checkerScript),
     };
   }
 
   let communicator: TaskScriptED | null = null;
   if (dto.type === TaskType.Communication) {
-    const communicatorScript = dto.scripts.find(x => x.file_name === dto.communicator_file_name);
-    communicator = communicatorScript == null
-      ? createEmptyScript()
-      : coerceTaskScriptED(communicatorScript);
+    const communicatorScript = dto.scripts.find((x) => x.file_name === dto.communicator_file_name);
+    communicator =
+      communicatorScript == null ? createEmptyScript() : coerceTaskScriptED(communicatorScript);
   }
 
   const task: TaskED = {
@@ -51,17 +48,21 @@ export function coerceTaskED(dto: TaskDTO): TaskED {
     title: dto.title,
     description: dto.description,
     statement: dto.statement,
-    time_limit_ms: dto.time_limit_ms ? `${dto.time_limit_ms}` : '',
-    memory_limit_byte: dto.memory_limit_byte ? `${dto.memory_limit_byte}` : '',
-    compile_time_limit_ms: dto.compile_time_limit_ms ? `${dto.compile_time_limit_ms}` : '',
-    compile_memory_limit_byte: dto.compile_memory_limit_byte ? `${dto.compile_memory_limit_byte}` : '',
-    submission_size_limit_byte: dto.submission_size_limit_byte ? `${dto.submission_size_limit_byte}` : '',
+    time_limit_ms: dto.time_limit_ms ? `${dto.time_limit_ms}` : "",
+    memory_limit_byte: dto.memory_limit_byte ? `${dto.memory_limit_byte}` : "",
+    compile_time_limit_ms: dto.compile_time_limit_ms ? `${dto.compile_time_limit_ms}` : "",
+    compile_memory_limit_byte: dto.compile_memory_limit_byte
+      ? `${dto.compile_memory_limit_byte}`
+      : "",
+    submission_size_limit_byte: dto.submission_size_limit_byte
+      ? `${dto.submission_size_limit_byte}`
+      : "",
     checker: checker,
     communicator: communicator,
     credits: dto.credits.map(coerceTaskCreditED),
     attachments: dto.attachments.map((x) => coerceTaskAttachmentED(x)),
     type: dto.type,
-    flavor: 'flavor' in dto ? dto.flavor : null,
+    flavor: "flavor" in dto ? dto.flavor : null,
     subtasks: dto.subtasks.map((x) => coerceTaskSubtaskED(x)),
     sample_IO: dto.sample_IO.map((x) => coerceTaskSampleIO(x)),
     is_public: dto.is_public,
@@ -137,7 +138,7 @@ function coerceTaskScriptED(dto: TaskScriptDTO): TaskScriptED {
       kind: EditorKind.Saved,
       hash: dto.file_hash,
     },
-  }
+  };
 }
 
 function coerceTaskSampleIO(dto: TaskSampleIO_DTO): TaskSampleIO_ED {

@@ -2,9 +2,7 @@ import { LATEX_ENVIRONMENTS, LATEX_MACROS } from "./latex_macros";
 
 export type LatexMacroType = keyof typeof LATEX_MACROS;
 export type LatexEnvironmentType = keyof typeof LATEX_ENVIRONMENTS;
-export type LatexVerbatimType =
-  | "verbatim"
-  | "lstlisting";
+export type LatexVerbatimType = "verbatim" | "lstlisting";
 
 export type NodePoint = {
   offset: number;

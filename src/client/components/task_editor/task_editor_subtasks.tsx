@@ -37,7 +37,7 @@ export const TaskEditorSubtasks = ({ task, setTask }: TaskEditorSubtasksProps) =
         },
       ],
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [task]);
 
   return (
@@ -264,7 +264,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
         data: Arrays.moveUp(subtask.data, dataIndex),
       }),
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [data, replaceThisTaskData]);
 
   const onTaskDataMoveDown = useCallback(() => {
@@ -275,7 +275,7 @@ const TaskDataEditor = (props: TaskDataEditorProps) => {
         data: Arrays.moveDown(subtask.data, dataIndex),
       }),
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [data, replaceThisTaskData]);
 
   const onTaskDataRemove = useCallback(() => {

@@ -1,1 +1,1 @@
-export * from './submissions_table';
+export * from "./submissions_table";

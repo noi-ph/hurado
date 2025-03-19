@@ -1,4 +1,3 @@
-
 // These ED types represent the internal state of the task editor
 export enum EditorKind {
   Saved = "Saved",

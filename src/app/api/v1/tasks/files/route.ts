@@ -8,7 +8,7 @@ import { getSession } from "server/sessions";
 
 function isFile(obj: FormDataEntryValue): obj is File {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pre-existing error before eslint inclusion
-  return typeof (obj as any)['arrayBuffer'] === 'function';
+  return typeof (obj as any)["arrayBuffer"] === "function";
 }
 
 export async function POST(request: NextRequest) {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   }
 
   const formData = await request.formData();
-  const file = formData.get('file');
+  const file = formData.get("file");
   if (file == null || !isFile(file)) {
     return NextResponse.json({ error: "File not attached" }, { status: 400 });
   }

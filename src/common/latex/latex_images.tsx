@@ -1,12 +1,17 @@
 import { CSSProperties, useEffect, useState } from "react";
 import { LatexArgument, LatexBaseNode, LatexNodeProps } from "./latex_types";
-import { latexBrokenInline, latexParseKwargs, latexPositionalString, latexGuardString } from "./latex_utils";
+import {
+  latexBrokenInline,
+  latexParseKwargs,
+  latexPositionalString,
+  latexGuardString,
+} from "./latex_utils";
 
 export type LatexMacroImage = LatexBaseNode<{
   type: "macro";
   content: "includegraphics";
   args?: LatexArgument[];
-}>
+}>;
 
 export function LatexImageX({ node, source }: LatexNodeProps<LatexMacroImage>) {
   const kwargs = latexParseKwargs(node, 0);
@@ -18,11 +23,9 @@ export function LatexImageX({ node, source }: LatexNodeProps<LatexMacroImage>) {
   }
 
   let scale: number | null = null;
-  const texScale = kwargs.scale && kwargs.scale.length > 0
-    ? kwargs.scale[0]
-    : null;
+  const texScale = kwargs.scale && kwargs.scale.length > 0 ? kwargs.scale[0] : null;
 
-    if (texScale && latexGuardString(texScale)) {
+  if (texScale && latexGuardString(texScale)) {
     const parsedScale = +texScale.content;
     scale = isNaN(parsedScale) ? null : parsedScale;
   }
@@ -34,18 +37,16 @@ export function LatexImageX({ node, source }: LatexNodeProps<LatexMacroImage>) {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
   useEffect(() => {
-    getImageDimensions(src).then(dimensions => {
+    getImageDimensions(src).then((dimensions) => {
       const aspectRatio = dimensions.width / dimensions.height;
       setRatio(aspectRatio);
       setWidth(dimensions.width);
     });
   }, [src]);
 
-  const scaledWidth = width != null
-    ? scale != null ? width * scale : width
-    : undefined;
+  const scaledWidth = width != null ? (scale != null ? width * scale : width) : undefined;
 
-    const style: CSSProperties = {
+  const style: CSSProperties = {
     width: scaledWidth,
     aspectRatio: ratio,
   };
@@ -54,8 +55,7 @@ export function LatexImageX({ node, source }: LatexNodeProps<LatexMacroImage>) {
   return <img style={style} className="max-w-full inline-block" src={src} />;
 }
 
-
-async function getImageDimensions(src: string): Promise<{ width: number, height: number }> {
+async function getImageDimensions(src: string): Promise<{ width: number; height: number }> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
   return new Promise((resolve, reject) => {
     const img = new Image();

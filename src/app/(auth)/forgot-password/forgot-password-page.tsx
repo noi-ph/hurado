@@ -22,7 +22,10 @@ import {
 import { zUserForgotPassword } from "common/validation/user_validation";
 import { applyValidationErrors, ResponseKind } from "common/responses";
 import { UnreachableCheck } from "common/errors";
-import type { ForgotPasswordError, ForgotPasswordSuccess } from "@root/api/v1/auth/forgot-password/route";
+import type {
+  ForgotPasswordError,
+  ForgotPasswordSuccess,
+} from "@root/api/v1/auth/forgot-password/route";
 
 type ForgotPasswordForm = {
   username: string;
@@ -38,7 +41,6 @@ export function ForgotPasswordPage() {
     resolver: zodResolver(zUserForgotPassword),
   });
 
-
   const onSubmit = async (data: ForgotPasswordForm) => {
     try {
       const url = getAPIPath({ kind: APIPath.ForgotPassword });
@@ -50,16 +52,16 @@ export function ForgotPasswordPage() {
       if (e instanceof AxiosError && e.response) {
         const response: AxiosResponse<ForgotPasswordError> = e.response;
         const data = response.data;
-        switch(data.kind) {
+        switch (data.kind) {
           case ResponseKind.ValidationError:
             applyValidationErrors(setError, data.errors);
             break;
           default:
             UnreachableCheck(data.kind);
-            toast.error('An unexpected error occurred');
+            toast.error("An unexpected error occurred");
         }
       } else {
-        toast.error('An network error occurred. Please try again.');
+        toast.error("An network error occurred. Please try again.");
         throw e;
       }
     }
@@ -72,8 +74,8 @@ export function ForgotPasswordPage() {
         <AuthDetails>
           <AuthLabel>Username:</AuthLabel>
           <AuthGroup>
-            <AuthInput {...register('username')}/>
-            <AuthError error={errors.username}/>
+            <AuthInput {...register("username")} />
+            <AuthError error={errors.username} />
           </AuthGroup>
         </AuthDetails>
         <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
@@ -81,11 +83,8 @@ export function ForgotPasswordPage() {
         </AuthButton>
       </AuthForm>
       <AuthLinks>
-        <AuthLink href={getPath({ kind: Path.AccountLogin })}>
-          Go back to login
-        </AuthLink>
+        <AuthLink href={getPath({ kind: Path.AccountLogin })}>Go back to login</AuthLink>
       </AuthLinks>
     </AuthMain>
   );
-};
-
+}

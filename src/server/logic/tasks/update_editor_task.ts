@@ -30,7 +30,6 @@ import {
   dbToTaskDataOutputDTO,
 } from "./editor_utils";
 
-
 type Ordered<T> = T & {
   order: number;
 };
@@ -320,7 +319,7 @@ type TaskSampleWithExtras = TaskSampleIO_DTO & {
 async function upsertTaskSampleIO(
   trx: Transaction<Models>,
   taskId: string,
-  _sample_IO: TaskSampleIO_DTO[],
+  _sample_IO: TaskSampleIO_DTO[]
 ): Promise<Selectable<TaskSampleIOTable>[]> {
   const sample_IO: TaskSampleWithExtras[] = _sample_IO.map((sample, idx) => ({
     ...sample,
@@ -344,18 +343,18 @@ async function upsertTaskSampleIO(
     samplesNew.length <= 0
       ? []
       : await trx
-        .insertInto("task_sample_io")
-        .values(
-          samplesNew.map((sample) => ({
-            task_id: taskId,
-            order: sample.order,
-            input: sample.input,
-            output: sample.output,
-            explanation: sample.explanation,
-          }))
-        )
-        .returningAll()
-        .execute();
+          .insertInto("task_sample_io")
+          .values(
+            samplesNew.map((sample) => ({
+              task_id: taskId,
+              order: sample.order,
+              input: sample.input,
+              output: sample.output,
+              explanation: sample.explanation,
+            }))
+          )
+          .returningAll()
+          .execute();
 
   const dbSamplesUpdate =
     samplesOld.length <= 0
@@ -372,7 +371,7 @@ async function upsertTaskSampleIO(
               explanation: sample.explanation,
             }))
           )
-          .onConflict((oc) => 
+          .onConflict((oc) =>
             oc.column("id").doUpdateSet((eb) => ({
               task_id: eb.ref("excluded.task_id"),
               order: eb.ref("excluded.order"),
@@ -385,7 +384,7 @@ async function upsertTaskSampleIO(
           .execute();
 
   const dbSamples = [...dbSamplesNew, ...dbSamplesUpdate];
-  dbSamples.sort((a, b) => a.order - b.order );
+  dbSamples.sort((a, b) => a.order - b.order);
   return dbSamples;
 }
 
@@ -594,7 +593,7 @@ export async function updateEditorTask(task: TaskDTO): Promise<TaskDTO> {
         .where("id", "not in", currentScriptIds)
         .execute();
     }
-  
+
     if (dbTask.type === TaskType.Batch) {
       const result: TaskBatchDTO = {
         type: dbTask.type as TaskType.Batch,

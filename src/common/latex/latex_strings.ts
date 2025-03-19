@@ -1,9 +1,5 @@
 import { UnreachableError } from "common/errors";
-import {
-  LatexNodeString,
-  LatexNodeWhitespace,
-  NodePoint,
-} from "./latex_types";
+import { LatexNodeString, LatexNodeWhitespace, NodePoint } from "./latex_types";
 import { LATEX_STRINGS } from "./latex_macros";
 
 export type LatexNodeStringLike = LatexNodeString | LatexNodeWhitespace;
@@ -31,9 +27,9 @@ class TrieNode {
   output: string[];
 
   constructor() {
-    this.children = {};  // map from character -> TrieNode
-    this.fail = null;    // the "failure link" (points to another TrieNode)
-    this.output = [];    // list of patterns that end at this node
+    this.children = {}; // map from character -> TrieNode
+    this.fail = null; // the "failure link" (points to another TrieNode)
+    this.output = []; // list of patterns that end at this node
   }
 
   static build(dictionary: string[]): TrieNode {
@@ -77,9 +73,7 @@ class TrieNode {
         }
 
         // If we found a node with the same character, set child.fail to that node's child
-        child.fail = failCandidate
-          ? failCandidate.children[c]
-          : root;
+        child.fail = failCandidate ? failCandidate.children[c] : root;
 
         // Merge output patterns (if the fail link node has them, we add them)
         child.output = child.output.concat(child.fail.output);
@@ -120,9 +114,9 @@ export function latexProcessStringLike(nodes: LatexNodeStringLike[]): LatexNodeS
   // Create a linear list of splits that cover the entire range
   const linear = linearizeSplits(fragments, pruned);
   // Extract the fragments for reconstruction
-  const splits = linear.map(occ => extractSplit(fragments, occ));
+  const splits = linear.map((occ) => extractSplit(fragments, occ));
   // Reconstruct the LatexNodes from the fragments
-  return splits.map(split => fragmentReconstruct(split));
+  return splits.map((split) => fragmentReconstruct(split));
 }
 
 function fragmentBreakdown(node: LatexNodeString): StringFragment[] {
@@ -145,7 +139,7 @@ function fragmentWhitespace(node: LatexNodeWhitespace): StringFragment {
   // Make a fragment from a Whitespace node.
   // This intentionally returns the same shape as fragmentBreakdown for v8 optimization purposes
   return {
-    char: ' ',
+    char: " ",
     startLine: node.position.start.line,
     startColumn: node.position.start.column,
     startOffset: node.position.start.offset,
@@ -156,7 +150,7 @@ function fragmentWhitespace(node: LatexNodeWhitespace): StringFragment {
 }
 
 function fragmentReconstruct(fragments: StringFragment[]): LatexNodeStringLike {
-  const content = fragments.map(f => f.char).join("");
+  const content = fragments.map((f) => f.char).join("");
   const first = fragments[0];
   const start: NodePoint = {
     line: first.startLine,
@@ -226,7 +220,7 @@ function linearizeSplits(fragments: StringFragment[], splits: FragmentSplit[]): 
   const sorted = [...points.keys()].toSorted((a, b) => a - b);
   const result: FragmentSplit[] = [];
   for (let i = 1; i < sorted.length; i++) {
-    result.push({ start: sorted[i-1], end: sorted[i] });
+    result.push({ start: sorted[i - 1], end: sorted[i] });
   }
   return result;
 }

@@ -1,19 +1,21 @@
 "use client";
 
-import { AxiosError, AxiosResponse } from 'axios';
-import { useRouter } from 'next/navigation';
-import React, { useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { TaskCreateSimpleError, TaskCreateSimpleSuccess } from '@root/api/v1/tasks/simple/route';
-import http from 'client/http';
-import { APIPath, getAPIPath, getPath, Path } from 'client/paths';
-import { ResponseKind, applyValidationErrors } from 'common/responses';
-import { zTaskCreateSimple } from 'common/validation/task_validation';
-import { Modal } from '../modal';
-import { FormButton, FormError, FormInput, FormLabel } from '../form';
-
+import { AxiosError, AxiosResponse } from "axios";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type {
+  TaskCreateSimpleError,
+  TaskCreateSimpleSuccess,
+} from "@root/api/v1/tasks/simple/route";
+import http from "client/http";
+import { APIPath, getAPIPath, getPath, Path } from "client/paths";
+import { ResponseKind, applyValidationErrors } from "common/responses";
+import { zTaskCreateSimple } from "common/validation/task_validation";
+import { Modal } from "../modal";
+import { FormButton, FormError, FormInput, FormLabel } from "../form";
 
 type TaskForm = {
   slug: string;
@@ -27,7 +29,7 @@ export function TaskCreator() {
 
   const onButtonClick = useCallback(() => {
     setShowModal(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [showModal]);
 
   const onModalHide = useCallback(() => {
@@ -45,25 +47,28 @@ export function TaskCreator() {
 
   const onSubmit = async (data: TaskForm) => {
     try {
-      const response: AxiosResponse<TaskCreateSimpleSuccess> = await http.post(getAPIPath({ kind: APIPath.TaskCreateSimple }), data);
+      const response: AxiosResponse<TaskCreateSimpleSuccess> = await http.post(
+        getAPIPath({ kind: APIPath.TaskCreateSimple }),
+        data
+      );
       router.refresh();
       router.push(getPath({ kind: Path.TaskEdit, uuid: response.data.data.id }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
         const response: AxiosResponse<TaskCreateSimpleError> = e.response;
         const data = response.data;
-        switch(data.kind) {
+        switch (data.kind) {
           case ResponseKind.ForbiddenError:
-            toast.error('You are not allowed to create tasks');
+            toast.error("You are not allowed to create tasks");
             break;
           case ResponseKind.ValidationError:
             applyValidationErrors(setError, data.errors);
             break;
           default:
-            toast.error('An unexpected error occurred');
+            toast.error("An unexpected error occurred");
         }
       } else {
-        toast.error('An network error occurred. Please try again.');
+        toast.error("An network error occurred. Please try again.");
         return;
       }
     }
@@ -71,21 +76,19 @@ export function TaskCreator() {
 
   return (
     <>
-      <FormButton onClick={onButtonClick}>
-        New Task
-      </FormButton>
+      <FormButton onClick={onButtonClick}>New Task</FormButton>
 
       <Modal show={showModal} onBackgroundClick={onModalHide}>
-        <div className='w-96 max-w-full'>
+        <div className="w-96 max-w-full">
           <div>
-            <h3 className='text-center text-xl mb-4'>Create Task</h3>
+            <h3 className="text-center text-xl mb-4">Create Task</h3>
             <FormLabel>Slug</FormLabel>
-            <FormInput type='text' {...register('slug')} />
-            <FormError error={errors.slug}  className='mb-4'/>
+            <FormInput type="text" {...register("slug")} />
+            <FormError error={errors.slug} className="mb-4" />
             <FormLabel>Title</FormLabel>
-            <FormInput type='text' {...register('title')} />
-            <FormError error={errors.title} className='mb-4' />
-            <div className='text-center'>
+            <FormInput type="text" {...register("title")} />
+            <FormError error={errors.title} className="mb-4" />
+            <div className="text-center">
               <FormButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
                 Create
               </FormButton>
@@ -95,4 +98,4 @@ export function TaskCreator() {
       </Modal>
     </>
   );
-};
+}

@@ -1,8 +1,17 @@
 import { db } from "db";
-import { TaskBatchDTO, TaskCommunicationDTO, TaskDTO, TaskOutputDTO } from "common/validation/task_validation";
+import {
+  TaskBatchDTO,
+  TaskCommunicationDTO,
+  TaskDTO,
+  TaskOutputDTO,
+} from "common/validation/task_validation";
 import { TaskFlavor, TaskFlavorOutput, TaskType } from "common/types/constants";
 import { UnreachableError } from "common/errors";
-import { dbToTaskDataBatchDTO, dbToTaskDataCommunicationDTO, dbToTaskDataOutputDTO } from "./editor_utils";
+import {
+  dbToTaskDataBatchDTO,
+  dbToTaskDataCommunicationDTO,
+  dbToTaskDataOutputDTO,
+} from "./editor_utils";
 
 export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
   const task = await db
@@ -105,7 +114,7 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
       compile_memory_limit_byte: task.compile_memory_limit_byte,
       submission_size_limit_byte: task.submission_size_limit_byte,
       checker_kind: task.checker_kind,
-      checker_file_name: scripts.find(s => s.id === task.checker_id)?.file_name,
+      checker_file_name: scripts.find((s) => s.id === task.checker_id)?.file_name,
       scripts: scripts.map((script) => ({
         id: script.id,
         file_name: script.file_name,
@@ -151,7 +160,7 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
       is_public: task.is_public,
       submission_size_limit_byte: task.submission_size_limit_byte,
       checker_kind: task.checker_kind,
-      checker_file_name: scripts.find(s => s.id === task.checker_id)?.file_name,
+      checker_file_name: scripts.find((s) => s.id === task.checker_id)?.file_name,
       scripts: scripts.map((script) => ({
         id: script.id,
         file_name: script.file_name,
@@ -201,8 +210,8 @@ export async function getEditorTask(uuid: string): Promise<TaskDTO | null> {
       compile_memory_limit_byte: task.compile_memory_limit_byte,
       submission_size_limit_byte: task.submission_size_limit_byte,
       checker_kind: task.checker_kind,
-      checker_file_name: scripts.find(s => s.id === task.checker_id)?.file_name,
-      communicator_file_name: scripts.find(s => s.id === task.communicator_id)?.file_name ?? '',
+      checker_file_name: scripts.find((s) => s.id === task.checker_id)?.file_name,
+      communicator_file_name: scripts.find((s) => s.id === task.communicator_id)?.file_name ?? "",
       scripts: scripts.map((script) => ({
         id: script.id,
         file_name: script.file_name,

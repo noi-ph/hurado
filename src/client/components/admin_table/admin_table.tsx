@@ -15,7 +15,10 @@ import { ContestSummaryDTO } from "common/types";
 import { db } from "db";
 
 type TableProps = DetailedHTMLProps<HTMLAttributes<HTMLTableElement>, HTMLTableElement>;
-type TableSectionProps = DetailedHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
+type TableSectionProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLTableSectionElement>,
+  HTMLTableSectionElement
+>;
 type TableRowProps = DetailedHTMLProps<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>;
 type TableCellProps = DetailedHTMLProps<HTMLAttributes<HTMLTableCellElement>, HTMLTableCellElement>;
 
@@ -29,30 +32,15 @@ export function AdminTable(props: TableProps) {
 }
 
 export function AdminThead(props: TableSectionProps) {
-  return (
-    <thead
-      {...props}
-      className={classNames("bg-gray-200", props.className)}
-    />
-  );
+  return <thead {...props} className={classNames("bg-gray-200", props.className)} />;
 }
 
 export function AdminTbody(props: TableSectionProps) {
-  return (
-    <tbody
-      {...props}
-      className={classNames("bg-white", props.className)}
-    />
-  );
+  return <tbody {...props} className={classNames("bg-white", props.className)} />;
 }
 
 export function AdminTR(props: TableRowProps) {
-  return (
-    <tr
-      {...props}
-      className={classNames("border-b border-gray-300", props.className)}
-    />
-  );
+  return <tr {...props} className={classNames("border-b border-gray-300", props.className)} />;
 }
 
 export function AdminTH(props: TableCellProps) {
@@ -65,10 +53,5 @@ export function AdminTH(props: TableCellProps) {
 }
 
 export function AdminTD(props: TableCellProps) {
-  return (
-    <td
-      {...props}
-      className={classNames("px-4 py-2 text-gray-600", props.className)}
-    />
-  );
+  return <td {...props} className={classNames("px-4 py-2 text-gray-600", props.className)} />;
 }

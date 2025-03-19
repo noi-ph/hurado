@@ -31,16 +31,16 @@ type PasswordResetForm = {
 };
 
 export function PasswordResetPage() {
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState("");
   const [tokenBad, setTokenBad] = useState(true);
   const router = useRouter();
 
   // Get the token from the URL and check if it's "valid" (not empty)
   useEffect(() => {
-    const t = new URLSearchParams(window.location.search).get('token') ?? '';
+    const t = new URLSearchParams(window.location.search).get("token") ?? "";
     const bad = t.length == 0;
     if (bad) {
-      toast.error('Invalid token');
+      toast.error("Invalid token");
     } else {
       setToken(t);
       setTokenBad(bad);
@@ -63,26 +63,26 @@ export function PasswordResetPage() {
         token: token,
         password: data.password,
       });
-      toast.success('Successfully reset password!');
+      toast.success("Successfully reset password!");
       router.push(getPath({ kind: Path.AccountLogin }));
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
         const response: AxiosResponse<ResetPasswordError> = e.response;
         const data = response.data;
-        switch(data.kind) {
+        switch (data.kind) {
           case ResponseKind.ValidationError:
             applyValidationErrors(setError, data.errors);
             if (data.errors.token != null && data.errors.token.length > 0) {
-              toast.error('The password reset token is invalid');
+              toast.error("The password reset token is invalid");
               setTokenBad(true);
             }
             break;
           default:
             UnreachableCheck(data.kind);
-            toast.error('An unexpected error occurred');
+            toast.error("An unexpected error occurred");
         }
       } else {
-        toast.error('An network error occurred. Please try again.');
+        toast.error("An network error occurred. Please try again.");
         throw e;
       }
     }
@@ -95,13 +95,13 @@ export function PasswordResetPage() {
         <AuthDetails>
           <AuthLabel>Password:</AuthLabel>
           <AuthGroup>
-            <AuthInput type="password" disabled={tokenBad} {...register('password')}/>
-            <AuthError error={errors.password}/>
+            <AuthInput type="password" disabled={tokenBad} {...register("password")} />
+            <AuthError error={errors.password} />
           </AuthGroup>
           <AuthLabel>Confirm Password:</AuthLabel>
           <AuthGroup>
-            <AuthInput type="password" disabled={tokenBad} {...register('confirmPassword')}/>
-            <AuthError error={errors.confirmPassword}/>
+            <AuthInput type="password" disabled={tokenBad} {...register("confirmPassword")} />
+            <AuthError error={errors.confirmPassword} />
           </AuthGroup>
         </AuthDetails>
         <AuthButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting || tokenBad}>
@@ -110,5 +110,4 @@ export function PasswordResetPage() {
       </AuthForm>
     </AuthMain>
   );
-};
-
+}

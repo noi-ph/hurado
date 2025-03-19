@@ -34,14 +34,17 @@ export async function createSubmission(
       .returning(["id", "created_at"])
       .executeTakeFirstOrThrow();
 
-    await trx.insertInto("submission_files").values(
-      uploads.map((u) => ({
-        hash: u.hash,
-        size: u.size,
-        file_name: u.filename,
-        submission_id: submission.id,
-      }))
-    ).execute();
+    await trx
+      .insertInto("submission_files")
+      .values(
+        uploads.map((u) => ({
+          hash: u.hash,
+          size: u.size,
+          file_name: u.filename,
+          submission_id: submission.id,
+        }))
+      )
+      .execute();
 
     return {
       id: submission.id,
@@ -89,16 +92,18 @@ async function uploadSubmissionSources(
 
   const uploaded = new Set(dbsubfiles.map((s) => s.hash));
 
-  return Promise.all(hashes.map(async (source) => {
-    if (!uploaded.has(source.hash)) {
-      await uploadSubmissionFile(source.buffer, source.hash);
-    }
-    return {
-      filename: source.filename,
-      size: source.size,
-      hash: source.hash,
-    };
-  }));
+  return Promise.all(
+    hashes.map(async (source) => {
+      if (!uploaded.has(source.hash)) {
+        await uploadSubmissionFile(source.buffer, source.hash);
+      }
+      return {
+        filename: source.filename,
+        size: source.size,
+        hash: source.hash,
+      };
+    })
+  );
 }
 
 async function uploadSubmissionFile(buffer: Buffer, hash: string): Promise<string> {

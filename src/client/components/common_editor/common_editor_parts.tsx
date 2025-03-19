@@ -96,7 +96,7 @@ export const CommonEditorFooter = <T extends {}>({
     } finally {
       setSaving(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [object, saveObject]);
 
   return (
@@ -122,7 +122,11 @@ export const CommonEditorContent = ({ children }: PropsWithChildren) => {
 };
 
 export const CommonEditorDetails = ({ children }: PropsWithChildren) => {
-  return <div className={classNames(styles.detailEditor, "p-4 gap-x-12 gap-y-6 items-center")}>{children}</div>;
+  return (
+    <div className={classNames(styles.detailEditor, "p-4 gap-x-12 gap-y-6 items-center")}>
+      {children}
+    </div>
+  );
 };
 
 type CommonEditorAddButtonProps = {
@@ -191,7 +195,6 @@ export const CommonEditorSection = ({ title, children }: CommonEditorSectionProp
     </div>
   );
 };
-
 
 type CommonEditorLabelProps = {
   label: string;
@@ -313,12 +316,13 @@ type CommonEditorTableCellProps = {
 
 export const CommonEditorTableCell = ({ deleted, children }: CommonEditorTableCellProps) => {
   return (
-    <div className={classNames("font-roboto font-light text-gray-500 px-2", deleted && "line-through")}>
+    <div
+      className={classNames("font-roboto font-light text-gray-500 px-2", deleted && "line-through")}
+    >
       {children}
     </div>
   );
 };
-
 
 type CommonEditorFileInputProps = {
   style: "detail" | "task-data";
@@ -330,14 +334,7 @@ type CommonEditorFileInputProps = {
 };
 
 export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
-  const {
-    style,
-    filename,
-    file,
-    onFilenameChange,
-    onFileChange,
-    disabled,
-  } = props;
+  const { style, filename, file, onFilenameChange, onFileChange, disabled } = props;
   const pickerRef = useRef<HTMLInputElement>(null);
 
   const onPickerClick = useCallback(() => {
@@ -357,12 +354,12 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
       destructivelyComputeSHA1(newFile);
       onFileChange(newFile, curr.name);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [file, filename, onFileChange]);
 
   const onFileRemove = useCallback(() => {
     onFileChange(null, "");
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [file, filename, onFileChange]);
 
   const onNameChange = useCallback(
@@ -380,7 +377,8 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
           onClick={onPickerClick}
           disabled={disabled}
           className={classNames({
-            "font-mono px-3 py-2 border border-gray-300 rounded-lg text-start tracking-wide": style == "detail",
+            "font-mono px-3 py-2 border border-gray-300 rounded-lg text-start tracking-wide":
+              style == "detail",
             "text-gray-500 hover:cursor-default": style == "detail" && disabled,
             "text-gray-500": style == "task-data" && !disabled,
             "text-gray-300 hover:cursor-default": style == "task-data" && disabled,
@@ -395,39 +393,37 @@ export const CommonEditorFileInput = (props: CommonEditorFileInputProps) => {
     const downloadUrl = getPath({
       kind: Path.AdminFileDownload,
       hash: file.hash,
-      filename: filename ?? 'unnamed_file',
+      filename: filename ?? "unnamed_file",
     });
     return (
       <div className="flex flex-row items-center gap-2">
-        {style == "detail"
-          ? (
-            <CommonEditorInput
-              type="text"
-              className="px-3 py-2 flex-auto"
-              value={filename ?? ""}
-              onChange={onNameChange}
-              disabled={disabled}
-            />
-          ): (
-            <CommonEditorInputSubtle
-              className="flex-auto"
-              value={filename ?? ""}
-              onChange={onNameChange}
-              disabled={disabled}
-            />
-          )}
+        {style == "detail" ? (
+          <CommonEditorInput
+            type="text"
+            className="px-3 py-2 flex-auto"
+            value={filename ?? ""}
+            onChange={onNameChange}
+            disabled={disabled}
+          />
+        ) : (
+          <CommonEditorInputSubtle
+            className="flex-auto"
+            value={filename ?? ""}
+            onChange={onNameChange}
+            disabled={disabled}
+          />
+        )}
         {!disabled && (
           <>
-            {file.kind === EditorKind.Saved
-              ? (
-                <CommonEditorActionLink
-                  size={style == "detail" ? "bx-sm" : "bx-xs"}
-                  icon="bx-download"
-                  href={downloadUrl}
-                  tabIndex={-1}
-                  target="_blank"
-                />
-              ) : null}
+            {file.kind === EditorKind.Saved ? (
+              <CommonEditorActionLink
+                size={style == "detail" ? "bx-sm" : "bx-xs"}
+                icon="bx-download"
+                href={downloadUrl}
+                tabIndex={-1}
+                target="_blank"
+              />
+            ) : null}
             <CommonEditorActionButton
               size={style == "detail" ? "bx-sm" : "bx-xs"}
               icon="bx-x"

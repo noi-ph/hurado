@@ -22,10 +22,7 @@ export type TaskCreateSimpleError =
 
 export type TaskCreateSimpleSuccess = APISuccessResponse<{ id: string }>;
 
-export type TaskCreateSimpleResponse =
-  | TaskCreateSimpleError
-  | TaskCreateSimpleSuccess;
-
+export type TaskCreateSimpleResponse = TaskCreateSimpleError | TaskCreateSimpleSuccess;
 
 export async function POST(request: NextRequest): Promise<NextResponse<TaskCreateSimpleResponse>> {
   const session = await getSession(request);
@@ -49,9 +46,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<TaskCreat
       .execute();
 
     if (current.length > 0) {
-      return NextResponse.json(customValidationError({
-        slug: ["Slug already exists"],
-      }), { status: 400 });
+      return NextResponse.json(
+        customValidationError({
+          slug: ["Slug already exists"],
+        }),
+        { status: 400 }
+      );
     }
 
     const dbTask = await trx
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<TaskCreat
         {
           title: parsed.data.title,
           slug: parsed.data.slug,
-          statement: '',
+          statement: "",
           is_public: false,
           type: TaskType.Batch,
           score_max: 0,
@@ -71,8 +71,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<TaskCreat
       .returning(["id"])
       .executeTakeFirstOrThrow();
 
-    return NextResponse.json(makeSuccessResponse({
-      id: dbTask.id,
-    }));
+    return NextResponse.json(
+      makeSuccessResponse({
+        id: dbTask.id,
+      })
+    );
   });
 }

@@ -2,7 +2,10 @@
 import "server-only";
 
 function parseUploadStorageProvider(): "azure" | "aws" {
-  if (process.env.UPLOAD_STORAGE_PROVIDER !== "azure" && process.env.UPLOAD_STORAGE_PROVIDER !== "aws") {
+  if (
+    process.env.UPLOAD_STORAGE_PROVIDER !== "azure" &&
+    process.env.UPLOAD_STORAGE_PROVIDER !== "aws"
+  ) {
     throw new Error("UPLOAD_STORAGE_PROVIDER must be 'azure' or 'aws'");
   }
   return process.env.UPLOAD_STORAGE_PROVIDER;
@@ -57,8 +60,8 @@ export const AWS_SES_SECRET_ACCESS_KEY = process.env.AWS_SES_SECRET_ACCESS_KEY!;
 export const AWS_SES_REGION = process.env.AWS_SES_REGION!;
 
 // File cache configuration
-export const MAX_LOCAL_FILE_CACHE_MB = process.env.MAX_LOCAL_FILE_CACHE_MB 
-  ? parseInt(process.env.MAX_LOCAL_FILE_CACHE_MB, 10) 
+export const MAX_LOCAL_FILE_CACHE_MB = process.env.MAX_LOCAL_FILE_CACHE_MB
+  ? parseInt(process.env.MAX_LOCAL_FILE_CACHE_MB, 10)
   : 0; // Default to 0 (disabled) if not set
 
 // Allow for debugging contestant and judge scripts

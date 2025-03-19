@@ -1,10 +1,10 @@
-import { Worker, Job } from 'bullmq';
-import Redis from 'ioredis';
-import { UnreachableDefault } from 'common/errors';
-import { REDIS_HOST, REDIS_PORT } from 'server/secrets';
-import { judgeSubmission } from 'server/logic/submissions/judge_submission';
-import { resetPassword } from 'server/logic/users';
-import { __MAIN_QUEUE_NAME__, JobName, PasswordResetData, SubmissionJudgementData } from './types';
+import { Worker, Job } from "bullmq";
+import Redis from "ioredis";
+import { UnreachableDefault } from "common/errors";
+import { REDIS_HOST, REDIS_PORT } from "server/secrets";
+import { judgeSubmission } from "server/logic/submissions/judge_submission";
+import { resetPassword } from "server/logic/users";
+import { __MAIN_QUEUE_NAME__, JobName, PasswordResetData, SubmissionJudgementData } from "./types";
 
 const connection = new Redis({
   host: REDIS_HOST,
@@ -27,23 +27,22 @@ const worker = new Worker(__MAIN_QUEUE_NAME__, handleIncomingJob, {
 });
 
 // Handle worker events (optional)
-worker.on('completed', (job) => {
+worker.on("completed", (job) => {
   console.log(`Job ${job.id} has completed`);
 });
 
-worker.on('failed', (job, err) => {
+worker.on("failed", (job, err) => {
   console.error(`Job ${job?.id} failed:`, err);
 });
 
-worker.on('error', (err) => {
-  console.error('Worker error:', err);
+worker.on("error", (err) => {
+  console.error("Worker error:", err);
 });
-
 
 async function handleIncomingJob(job: Job) {
   console.log(`Processing job ${job.id}:`, job.name, job.data);
   const name: JobName = job.name as JobName;
-  switch(name) {
+  switch (name) {
     case JobName.SubmissionJudgement:
       return handleSubmissionJudgement(job.data);
     case JobName.PasswordReset:

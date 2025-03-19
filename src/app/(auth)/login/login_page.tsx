@@ -26,7 +26,6 @@ import { zUserLogin } from "common/validation/user_validation";
 import { applyValidationErrors, ResponseKind } from "common/responses";
 import type { UserLoginError, UserLoginSuccess } from "@root/api/v1/auth/login/route";
 
-
 type LoginForm = {
   username: string;
   password: string;
@@ -45,11 +44,10 @@ export function LoginPage() {
     resolver: zodResolver(zUserLogin),
   });
 
-
   const onSubmit = async (data: LoginForm) => {
     try {
       const url = getAPIPath({ kind: APIPath.Login });
-    const response: AxiosResponse<UserLoginSuccess> = await http.post(url, {
+      const response: AxiosResponse<UserLoginSuccess> = await http.post(url, {
         username: data.username,
         password: data.password,
       });
@@ -100,12 +98,10 @@ export function LoginPage() {
         <AuthLink href={getPath({ kind: Path.AccountForgotPassword })}>
           Forgot your password
         </AuthLink>
-        <AuthLink href={getPath({ kind: Path.AccountRegister })}>
-          Register an account
-        </AuthLink>
+        <AuthLink href={getPath({ kind: Path.AccountRegister })}>Register an account</AuthLink>
       </AuthLinks>
     </AuthMain>
   );
-};
+}
 
 export default LoginPage;

@@ -3,7 +3,5 @@ import { EmailSenderAbstract } from "./abstract";
 import { EmailSenderConsole } from "./console";
 import { EmailSenderSES } from "./ses";
 
-
-export const EmailSender: EmailSenderAbstract = EMAIL_PROVIDER == 'console'
-  ? new EmailSenderConsole()
-  : new EmailSenderSES();
+export const EmailSender: EmailSenderAbstract =
+  EMAIL_PROVIDER == "console" ? new EmailSenderConsole() : new EmailSenderSES();

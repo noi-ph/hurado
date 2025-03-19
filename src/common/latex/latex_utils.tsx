@@ -1,5 +1,10 @@
-import { LatexArgument, LatexNode, LatexNodeEnvironment, LatexNodeMacro, LatexNodeString } from "./latex_types";
-
+import {
+  LatexArgument,
+  LatexNode,
+  LatexNodeEnvironment,
+  LatexNodeMacro,
+  LatexNodeString,
+} from "./latex_types";
 
 export function latexBrokenInline(node: LatexNodeMacro, source: string) {
   const start = node.position.start.offset;
@@ -13,7 +18,10 @@ export function latexBrokenBlock(node: LatexNode, source: string) {
   return <div className="font-mono text-red-500">[err]{source.substring(start, end)}[err]</div>;
 }
 
-export function latexPositionalString(args: LatexArgument[] | undefined, index: number): string | null {
+export function latexPositionalString(
+  args: LatexArgument[] | undefined,
+  index: number
+): string | null {
   if (args == null || args.length <= index) {
     return null;
   }
@@ -28,7 +36,10 @@ export function latexPositionalString(args: LatexArgument[] | undefined, index: 
   return content.content;
 }
 
-export function latexPositionalArgument(args: LatexArgument[] | undefined, index: number): LatexNode[] | null {
+export function latexPositionalArgument(
+  args: LatexArgument[] | undefined,
+  index: number
+): LatexNode[] | null {
   if (args == null || args.length <= index) {
     return null;
   }
@@ -39,7 +50,10 @@ export function latexPositionalArgument(args: LatexArgument[] | undefined, index
   return arg.content;
 }
 
-export function latexParseKwargs(node: LatexNodeMacro | LatexNodeEnvironment, index: number): Record<string, LatexNode[]> {
+export function latexParseKwargs(
+  node: LatexNodeMacro | LatexNodeEnvironment,
+  index: number
+): Record<string, LatexNode[]> {
   // Something is strange with the parser. For some reason, it splits the content into multiple nodes
   // if it finds a '=' for environments, so you'll get ["key1", "=", "value1", ",", " ", "key2", "=", "value2"]
   // But if it's a macro, the args will be ["key2=value2, key2=value2"]
@@ -54,7 +68,11 @@ export function latexParseKwargs(node: LatexNodeMacro | LatexNodeEnvironment, in
   // Look for any strings in the content that contain "=" and split them into multiple nodes
   const processed: LatexNode[] = [];
   for (const child of arg.content) {
-    if (!latexGuardString(child) || isExactlyNodeString(child, "=") || !child.content.includes("=")) {
+    if (
+      !latexGuardString(child) ||
+      isExactlyNodeString(child, "=") ||
+      !child.content.includes("=")
+    ) {
       processed.push(child);
       continue;
     }
@@ -64,7 +82,6 @@ export function latexParseKwargs(node: LatexNodeMacro | LatexNodeEnvironment, in
 
   return kwargsFromNodes(processed);
 }
-
 
 function splitBySymbol(original: LatexNodeString, symbol: string): LatexNode[] {
   const pieces: LatexNode[] = [];
@@ -88,7 +105,7 @@ function splitBySymbol(original: LatexNodeString, symbol: string): LatexNode[] {
           column: original.position.start.column + offset + part.length,
           offset: original.position.start.offset + offset + part.length,
         },
-      }
+      },
     });
     offset += part.length;
   }

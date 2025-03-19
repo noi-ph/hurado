@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { TaskType } from "common/types/constants";
 import { REGEX_SLUG } from "common/validation/common_validation";
-import { zTaskSubtaskBatch, zTaskSubtaskCommunication, zTaskSubtaskOutput } from "common/validation/task_validation";
+import {
+  zTaskSubtaskBatch,
+  zTaskSubtaskCommunication,
+  zTaskSubtaskOutput,
+} from "common/validation/task_validation";
 import { db } from "db";
 import { canManageTasks } from "server/authorization";
 import { upsertTaskData, upsertTaskSubtasks } from "server/logic/tasks/update_editor_task";
@@ -54,10 +58,16 @@ const zKgUpdateTaskTypeOutput = z.object({
   subtasks: z.array(zTaskSubtaskOutput),
 });
 
-const zKgUpdateTaskSchema = z
-  .discriminatedUnion("type", [zKgUpdateTaskTypeBatch, zKgUpdateTaskTypeOutput, zKgUpdateTaskTypeCommunication]);
+const zKgUpdateTaskSchema = z.discriminatedUnion("type", [
+  zKgUpdateTaskTypeBatch,
+  zKgUpdateTaskTypeOutput,
+  zKgUpdateTaskTypeCommunication,
+]);
 
-type KgTaskDTO = z.infer<typeof zKgUpdateTaskTypeBatch> | z.infer<typeof zKgUpdateTaskTypeCommunication> | z.infer<typeof zKgUpdateTaskTypeOutput>;
+type KgTaskDTO =
+  | z.infer<typeof zKgUpdateTaskTypeBatch>
+  | z.infer<typeof zKgUpdateTaskTypeCommunication>
+  | z.infer<typeof zKgUpdateTaskTypeOutput>;
 
 async function updateKgTask(task: KgTaskDTO) {
   return db.transaction().execute(async (trx) => {
@@ -72,15 +82,7 @@ async function updateKgTask(task: KgTaskDTO) {
         time_limit_ms: "time_limit_ms" in task ? task.time_limit_ms : null,
       })
       .where("id", "=", task.id)
-      .returning([
-        "id",
-        "type",
-        "slug",
-        "title",
-        "is_public",
-        "score_max",
-        "time_limit_ms",
-      ])
+      .returning(["id", "type", "slug", "title", "is_public", "score_max", "time_limit_ms"])
       .executeTakeFirstOrThrow();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
@@ -96,6 +98,6 @@ async function updateKgTask(task: KgTaskDTO) {
       id: dbTask.id,
       slug: dbTask.slug,
       title: dbTask.title,
-    }
+    };
   });
 }

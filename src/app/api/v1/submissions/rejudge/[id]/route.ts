@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "db";
-import {
-  APIForbiddenError,
-} from "common/responses";
+import { APIForbiddenError } from "common/responses";
 import { canManageTasks } from "server/authorization";
 import { getSession } from "server/sessions";
 import { enqueueSubmissionJudgement } from "worker/queue";
@@ -30,7 +28,7 @@ export async function PUT(request: NextRequest, context: NextContext<RouteParams
       .select(["task_id", "official_verdict_id", "user_id", "contest_id"])
       .executeTakeFirstOrThrow();
     const tsk = await loadTask(trx, sub.task_id);
-    
+
     await trx
       .updateTable("submissions")
       .where("submissions.id", "=", context.params.id)

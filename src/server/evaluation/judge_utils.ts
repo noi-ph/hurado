@@ -82,7 +82,7 @@ export class IsolateUtils {
           timeWall = value;
           break;
         default:
-          // Do nothing
+        // Do nothing
       }
     }
 
@@ -101,11 +101,11 @@ export class IsolateUtils {
     }
 
     if (maxRSS != null && !isNaN(+maxRSS)) {
-      result.running_memory_byte = Math.round((+maxRSS) * 1000);
+      result.running_memory_byte = Math.round(+maxRSS * 1000);
     }
 
     if (time != null && !isNaN(+time)) {
-      result.running_time_ms = Math.round((+time) * 1000);
+      result.running_time_ms = Math.round(+time * 1000);
     }
 
     return result;
@@ -187,11 +187,7 @@ export function makeContestantArgv(
   if (spec.getInterpreterCommand == null) {
     argv.push(`/submission/${script.exe_name}`);
   } else if (script.exe_name != null) {
-    argv.push(...spec.getInterpreterCommand(
-      script.exe_name,
-      timeLimitMS,
-      memoryLimitByte,
-    ));
+    argv.push(...spec.getInterpreterCommand(script.exe_name, timeLimitMS, memoryLimitByte));
   } else {
     throw new Error("Missing script exe name");
   }

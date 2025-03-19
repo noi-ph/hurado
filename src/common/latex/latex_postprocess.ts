@@ -1,9 +1,5 @@
 import { UnreachableDefault } from "common/errors";
-import {
-  LatexArgument,
-  LatexNode,
-  LatexNodeMacro,
-} from "./latex_types";
+import { LatexArgument, LatexNode, LatexNodeMacro } from "./latex_types";
 import { LatexNodeStringLike, latexProcessStringLike } from "./latex_strings";
 
 export function latexProcessNode(node: LatexNode): LatexNode {
