@@ -20,7 +20,8 @@
     "db:seed": "node --conditions=react-server -r ts-node/register src/db/scripts/devtools db:seed",
     "lint": "next lint && prettier src --check",
     "lint:fix": "next lint --fix && prettier src --write",
-    "format": "prettier src --write"
+    "format": "prettier src --write",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -86,6 +87,8 @@
     "eslint-config-next": "14.1.4",
     "eslint-config-prettier": "^9.1.0",
     "eslint-interactive": "^11.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0",
     "nodemon": "^3.1.4",
     "postcss": "^8.4.41",
     "prettier": "^3.2.5",
