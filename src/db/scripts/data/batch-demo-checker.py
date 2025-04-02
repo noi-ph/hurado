@@ -36,8 +36,6 @@ if judge_score != 1.0:
 
 score = judge_output(solver_list)
 if score == 1.0:
-    print("ac")
     print(score)
 else:
-    print("wa")
     print(score)

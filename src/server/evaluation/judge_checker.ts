@@ -149,9 +149,9 @@ function makeCheckerArgv(opts: {
 
 function parseCheckerOutput(output: string): CheckerResult {
   const split = output.split("\n");
-  // Ignore the first line. We only care about the raw score
-  // const line1 = split[0];
-  const line2 = split[1];
+  // We only care about the raw score, from the first line
+  // Consistent with CMS
+  const line2 = split[0];
 
   const score = parseScore(line2);
   if (score == 1) {
