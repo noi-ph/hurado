@@ -79,6 +79,7 @@ export async function evaluateTaskDataForCommunication(
       communicatorResult: rCommunicator,
       checker: context.checker,
       task_root: context.task_root,
+      input_file_name: data.input_file_name,
       judge_file_name: data.judge_file_name,
       output_root: context.output_root,
       output_file_name: data.judge_file_name,
@@ -151,6 +152,7 @@ async function makeCommunicationVerdict(opts: {
   communicatorResult: IsolateResult;
   checker: JudgeChecker;
   task_root: string;
+  input_file_name: string;
   judge_file_name: string;
   output_root: string;
   output_file_name: string;
@@ -160,6 +162,7 @@ async function makeCommunicationVerdict(opts: {
     communicatorResult,
     checker,
     task_root,
+    input_file_name,
     judge_file_name,
     output_root,
     output_file_name,
@@ -195,6 +198,7 @@ async function makeCommunicationVerdict(opts: {
       const checkerResult = await checkSubmissionOutput({
         checker,
         task_root,
+        input_file_name,
         judge_file_name,
         output_root,
         output_file_name,

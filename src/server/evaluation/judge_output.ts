@@ -9,6 +9,7 @@ export async function evaluateTaskDataForOutput(
   const checkerResult = await checkSubmissionOutput({
     checker: context.checker,
     task_root: context.task_root,
+    input_file_name: data.input_file_name,
     judge_file_name: data.judge_file_name,
     output_root: context.submission_root,
     output_file_name: data.judge_file_name,

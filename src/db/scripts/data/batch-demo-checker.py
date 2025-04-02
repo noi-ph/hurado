@@ -1,25 +1,43 @@
 import sys
 
-judge_fname = sys.argv[1]
-solver_fname = sys.argv[2]
+input_fname = sys.argv[1]
+judge_fname = sys.argv[2]
+solver_fname = sys.argv[3]
+
+with open(input_fname) as input_file:
+    n_lines = int(next(input_file))
+    input_lines = [next(input_file).strip() for _ in range(n_lines)]
+
+def judge_output(submission_lines):
+    if len(submission_lines) != len(input_lines):
+        return 0
+    else:
+        return sum(
+            1
+            if submission_line == input_line.upper()
+            else 0
+            for input_line, submission_line in zip(input_lines, submission_lines)
+        ) / len(submission_lines)
+
 
 with open(judge_fname) as judge_file:
-    input_lines = judge_file.readlines()
-    n_lines = len(input_lines)
-    judge_list = [line.strip() for line in input_lines]
+    judge_list = [judge_file.readline().strip() for _ in range(n_lines)]
+    # extra_lines = judge_file.readlines()
 
 with open(solver_fname) as solver_file:
     solver_list = [solver_file.readline().strip() for _ in range(n_lines)]
-    extra_lines = solver_file.readlines()
+    # extra_lines = solver_file.readlines()
 
-score = sum(1 if j == s else 0 for j, s in zip(judge_list, solver_list))
-score -= len(extra_lines)
+judge_score = judge_output(judge_list)
+if judge_score != 1.0:
+    print(input_lines)
+    print(judge_list)
+    raise RuntimeError("judge failed")
 
-hps = len(judge_list)
-
-if score > hps:
+score = judge_output(solver_list)
+if score == 1.0:
     print("ac")
-    print(score / hps)
+    print(score)
 else:
     print("wa")
-    print(score / hps)
+    print(score)

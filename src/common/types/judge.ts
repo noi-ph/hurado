@@ -51,6 +51,8 @@ export type JudgeSubtaskOutput = {
 
 export type JudgeTaskDataOutput = {
   id: string;
+  input_file_name: string;
+  input_file_hash: string;
   judge_file_name: string;
   judge_file_hash: string;
 };

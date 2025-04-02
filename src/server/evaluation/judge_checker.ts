@@ -18,6 +18,7 @@ import {
 export async function checkSubmissionOutput(opts: {
   checker: JudgeChecker;
   task_root: string;
+  input_file_name: string;
   judge_file_name: string;
   output_root: string;
   output_file_name: string;
@@ -55,6 +56,7 @@ export async function checkSubmissionOutput(opts: {
 async function runCustomChecker(opts: {
   checker: JudgeScript;
   task_root: string;
+  input_file_name: string;
   judge_file_name: string;
   output_root: string;
   output_file_name: string;
@@ -88,11 +90,12 @@ function makeCheckerArgv(opts: {
   checker: JudgeScript;
   isolate: IsolateInstance;
   task_root: string;
+  input_file_name: string;
   judge_file_name: string;
   output_root: string;
   output_file_name: string;
 }): string[] {
-  const { checker, isolate, task_root, judge_file_name, output_root, output_file_name } = opts;
+  const { checker, isolate, task_root, input_file_name, judge_file_name, output_root, output_file_name } = opts;
 
   const spec = LANGUAGE_SPECS[checker.language];
   const timeLimit = TimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);
@@ -133,9 +136,11 @@ function makeCheckerArgv(opts: {
     throw new Error("Missing communicator exe_name");
   }
 
+  const inputPath = path.join("/task", input_file_name);
   const judgePath = path.join("/task", judge_file_name);
   const outputPath = path.join("/output", output_file_name);
 
+  argv.push(inputPath);
   argv.push(judgePath);
   argv.push(outputPath);
 

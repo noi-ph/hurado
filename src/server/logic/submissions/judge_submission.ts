@@ -235,7 +235,7 @@ async function loadSubtasksOutput(
       ? []
       : await trx
           .selectFrom("task_data")
-          .select(["id", "subtask_id", "judge_file_name", "judge_file_hash"])
+          .select(["id", "subtask_id", "input_file_name", "input_file_hash", "judge_file_name", "judge_file_hash"])
           .where("subtask_id", "in", subtaskIds)
           .orderBy(["subtask_id", "order"])
           .execute();
@@ -247,6 +247,15 @@ async function loadSubtasksOutput(
       .filter((d) => d.subtask_id == subtask.id)
       .map((d) => ({
         id: d.id,
+        /***
+         * TODO: Perform an overhaul to the DB so that output-only problems can have input files as well
+         * Currently, our only Output Onlies are TAMa (Project Euler style)
+         * But more properly, Output-Only in general needs an input file as well, see: https://oj.uz/problem/view/IOI17_nowruz
+         * (There are no such problems like the above in Hurado _yet_)
+         * This is just a quick band-aid fix so I can get custom-checkers to work for the others.
+        **/
+        input_file_name: d.input_file_name ?? d.judge_file_name,
+        input_file_hash: d.input_file_hash ?? d.judge_file_hash,
         judge_file_name: d.judge_file_name,
         judge_file_hash: d.judge_file_hash,
       })),
