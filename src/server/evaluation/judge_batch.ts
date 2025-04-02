@@ -44,12 +44,7 @@ export async function evaluateTaskDataForBatch(
         output_file_name: data.judge_file_name,
       });
       return {
-        verdict:
-          checkerResult.score_raw == 1
-            ? Verdict.Accepted
-            : checkerResult.score_raw == 0
-              ? Verdict.WrongAnswer
-              : Verdict.Partial,
+        verdict: checkerResult.verdict,
         score_raw: checkerResult.score_raw,
         running_time_ms: isolateResult.running_time_ms,
         running_memory_byte: isolateResult.running_memory_byte,

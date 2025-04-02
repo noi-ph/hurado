@@ -9,7 +9,7 @@ export type EvaluationResult = {
 };
 
 export type CheckerResult = {
-  verdict: Verdict.Accepted | Verdict.Partial | Verdict.WrongAnswer;
+  verdict: Verdict.Accepted | Verdict.Partial | Verdict.WrongAnswer | Verdict.JudgeFailed;
   score_raw: number;
 };
 

@@ -66,7 +66,7 @@ async function runCustomChecker(opts: {
       ...opts,
       isolate,
     });
-    const pCheckerOut = new Promise<string>((resolve) => {
+    const pCheckerOut = new Promise<CheckerResult>((resolve) => {
       const chunks: string[] = [];
       const child = ChildProcess.spawn(ISOLATE_BIN, argv, {
         stdio: ["ignore", "pipe", FORWARD_CHILD_STDERR ? process.stderr : "ignore"],
@@ -76,13 +76,30 @@ async function runCustomChecker(opts: {
         chunks.push(chunk);
       });
 
-      child.stdout.on("close", () => {
-        const combined = chunks.join("");
-        resolve(combined);
+      child.on("close", async () => {
+        try {
+          // Need this await so the catch block can catch exceptions
+          const result = await IsolateUtils.readResult(isolate);
+          if (result.verdict === Verdict.Accepted) {
+            const combined = chunks.join("");
+            const parsed = parseCheckerOutput(combined);
+            resolve(parsed);
+          } else {
+            resolve({
+              verdict: Verdict.JudgeFailed,
+              score_raw: 0,
+            });
+          }
+        } catch (e) {
+          console.error("Failed to parse isolate result", e);
+          resolve({
+            verdict: Verdict.JudgeFailed,
+            score_raw: 0,
+          });
+        }
       });
     });
-    const output = await pCheckerOut;
-    return parseCheckerOutput(output);
+    return pCheckerOut;
   });
 }
 

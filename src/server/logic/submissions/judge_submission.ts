@@ -254,8 +254,8 @@ async function loadSubtasksOutput(
          * (There are no such problems like the above in Hurado _yet_)
          * This is just a quick band-aid fix so I can get custom-checkers to work for the others.
         **/
-        input_file_name: d.input_file_name ?? d.judge_file_name,
-        input_file_hash: d.input_file_hash ?? d.judge_file_hash,
+        input_file_name: d.input_file_name ?? '',
+        input_file_hash: d.input_file_hash ?? '',
         judge_file_name: d.judge_file_name,
         judge_file_hash: d.judge_file_hash,
       })),
