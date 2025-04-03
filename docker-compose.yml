@@ -26,9 +26,6 @@ services:
     volumes:
       - ./:/app/
       - /tmp/hurado-cache:/tmp/file-storage-cache
-    networks:
-      - internal-net
-      - host-net  # For internet access
     logging: *default-logging
   hurado-judge:
     container_name: hurado-judge
@@ -48,9 +45,6 @@ services:
     volumes:
       - ./:/app/
       - /tmp/hurado-cache:/tmp/file-storage-cache
-    networks:
-      - internal-net
-      - host-net  # For internet access
     logging: *default-logging
   hurado-postgres:
     container_name: hurado-postgres
@@ -60,23 +54,17 @@ services:
     env_file:
       - .env
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
-    networks:
-      - internal-net
     logging: *default-logging
   hurado-redis:
     container_name: hurado-redis
     image: redis:7-alpine
     command: redis-server /usr/local/etc/redis/redis.conf
-    ports:
-      - "6379"  # Blob service
     volumes:
       - ./volumes/redis:/data
       - ./config/development/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    networks:
-      - internal-net
     logging: *default-logging
   hurado-minio:
     container_name: hurado-minio
@@ -86,17 +74,8 @@ services:
       - MINIO_ROOT_USER=hurado
       - MINIO_ROOT_PASSWORD=password
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
     volumes:
       - ./volumes/minio:/data
-    networks:
-      - internal-net
-      - host-net
     logging: *default-logging
-
-networks:
-  internal-net:
-    internal: true  # Restricts access to containers only
-  host-net:
-    internal: false

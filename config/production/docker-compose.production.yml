@@ -16,8 +16,6 @@ services:
       - IS_UNDER_DOCKER=true
     env_file:
       - .env
-    ports:
-      - 3000:3000
     restart: always
     depends_on:
       - hurado-postgres
@@ -26,9 +24,6 @@ services:
     volumes:
       - .:/app
       - /tmp/hurado-cache:/tmp/file-storage-cache
-    networks:
-      - internal-net
-      - host-net  # For internet access
     logging: *default-logging
   hurado-judge:
     container_name: hurado-judge
@@ -48,9 +43,6 @@ services:
     volumes:
       - ./:/app/
       - /tmp/hurado-cache:/tmp/file-storage-cache
-    networks:
-      - internal-net
-      - host-net  # For internet access
     logging: *default-logging
   hurado-postgres:
     container_name: hurado-postgres
@@ -59,24 +51,16 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - 5432:5432
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data/
-    networks:
-      - internal-net
     logging: *default-logging
   hurado-redis:
     container_name: hurado-redis
     image: redis:7-alpine
     command: redis-server /usr/local/etc/redis/redis.conf
-    ports:
-      - "6379"
     volumes:
       - ./volumes/redis:/data
       - ./config/production/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    networks:
-      - internal-net
     logging: *default-logging
   hurado-nginx:
     container_name: hurado-nginx
@@ -87,13 +71,4 @@ services:
       - ./config/production/nginx/:/etc/nginx/
       - ./private/nginx-certs/:/etc/nginx-certs/
       - ./build/:/var/www/hurado/:ro
-    networks:
-      - internal-net
-      - host-net
     logging: *default-logging
-
-networks:
-  internal-net:
-    internal: true  # Restricts access to containers only
-  host-net:
-    internal: false
