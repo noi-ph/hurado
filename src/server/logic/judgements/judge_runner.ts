@@ -269,13 +269,6 @@ async function judgeSubtask<Type extends TaskType>(
   };
 }
 
-function getTaskHash<Type extends TaskType>(task_data: JudgeTaskDataFor<Type>) {
-  if ('input_file_hash' in task_data) {
-    return task_data.input_file_hash;
-  }
-  return undefined;
-}
-
 async function judgeTaskData<Type extends TaskType>(
   type: Type,
   context: JudgeContextFor<Type>,
@@ -285,8 +278,10 @@ async function judgeTaskData<Type extends TaskType>(
   verdict_cache: Map<string, JudgeVerdictTaskData>,
   bad_subtask: boolean
 ): Promise<JudgeVerdictTaskData> {
-  const task_hash = getTaskHash(task_data);
-  const cached_verdict = task_hash != undefined ? verdict_cache.get(task_hash) : undefined;
+  // An empty task_data.input_file_hash means there is no input file (output-only task)
+  const cached_verdict = task_data.input_file_hash
+    ? verdict_cache.get(task_data.input_file_hash)
+    : undefined;
   let result: EvaluationResult;
   if (bad_subtask) {
     result = {
@@ -345,8 +340,8 @@ async function judgeTaskData<Type extends TaskType>(
     running_time_ms: result.running_time_ms,
     running_memory_byte: result.running_memory_byte,
   };
-  if (task_hash != undefined && returnResult.verdict !== Verdict.Skipped) {
-    verdict_cache.set(task_hash, returnResult);
+  if (task_data.input_file_hash && returnResult.verdict !== Verdict.Skipped) {
+    verdict_cache.set(task_data.input_file_hash, returnResult);
   }
   return returnResult;
 }
