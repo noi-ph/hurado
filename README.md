@@ -184,19 +184,9 @@ npm run db:recreate
 
 ## Testing
 
-### Installing dependencies
-
-To run end-to-end tests, additional dependencies must first be installed. In the [main container shell](https://github.com/noi-ph/hurado?tab=readme-ov-file#accessing-the-main-container-shell), run the following:
-
-```bash
-./scripts/local/playwright_init.sh
-```
-
-This only needs to done once, during set-up.
-
 ### Running tests
 
-Then, run end-to-end tests within the container using the following:
+Run end-to-end tests within the container using the following:
 
 ```bash
 npm run test

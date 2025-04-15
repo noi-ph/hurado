@@ -29,4 +29,6 @@ RUN /languages/install_pypy3.sh
 # Remove the entire /languages directory
 RUN rm -rf /languages
 
+RUN npx playwright install && npx playwright install-deps
+
 WORKDIR /app/
