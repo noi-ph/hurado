@@ -235,7 +235,14 @@ async function loadSubtasksOutput(
       ? []
       : await trx
           .selectFrom("task_data")
-          .select(["id", "subtask_id", "input_file_name", "input_file_hash", "judge_file_name", "judge_file_hash"])
+          .select([
+            "id",
+            "subtask_id",
+            "input_file_name",
+            "input_file_hash",
+            "judge_file_name",
+            "judge_file_hash",
+          ])
           .where("subtask_id", "in", subtaskIds)
           .orderBy(["subtask_id", "order"])
           .execute();
@@ -248,8 +255,8 @@ async function loadSubtasksOutput(
       .map((d) => ({
         id: d.id,
         // We put an empty string to mean no input file
-        input_file_name: d.input_file_name ?? '',
-        input_file_hash: d.input_file_hash ?? '',
+        input_file_name: d.input_file_name ?? "",
+        input_file_hash: d.input_file_hash ?? "",
         judge_file_name: d.judge_file_name,
         judge_file_hash: d.judge_file_hash,
       })),

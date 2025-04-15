@@ -112,7 +112,15 @@ function makeCheckerArgv(opts: {
   output_root: string;
   output_file_name: string;
 }): string[] {
-  const { checker, isolate, task_root, input_file_name, judge_file_name, output_root, output_file_name } = opts;
+  const {
+    checker,
+    isolate,
+    task_root,
+    input_file_name,
+    judge_file_name,
+    output_root,
+    output_file_name,
+  } = opts;
 
   const spec = LANGUAGE_SPECS[checker.language];
   const timeLimit = TimeLimitSeconds(LIMITS_JUDGE_TIME_LIMIT_MS);

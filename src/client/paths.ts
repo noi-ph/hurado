@@ -107,7 +107,7 @@ export function getPath(args: PathArguments) {
     case Path.UserView:
       return `/users/${args.username}`;
     case Path.UserEdit:
-      return `/users/${args.username}/edit`
+      return `/users/${args.username}/edit`;
     default:
       throw new UnreachableError(args);
   }

@@ -6,12 +6,7 @@ import styles from "client/components/common_editor/common_editor.module.css";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { InputChangeEvent, SelectChangeEvent } from "common/types/events";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-import {
-  CommonEditorContent,
-  CommonEditorDetails,
-  CommonEditorLabel,
-  CommonEditorSelect,
-} from "../common_editor";
+import { CommonEditorContent, CommonEditorDetails, CommonEditorLabel } from "../common_editor";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
 import { Scrollable } from "../scrollable";
 import { TaskED } from "./types";

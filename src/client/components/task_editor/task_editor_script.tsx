@@ -116,9 +116,8 @@ export const TaskEditorScriptArgument = ({
         ...script,
         argv: Arrays.replaceNth(script.argv, index, event.target.value),
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     },
-    [script, setScript]
+    [index, script, setScript]
   );
 
   const onArgumentRemove = useCallback(() => {

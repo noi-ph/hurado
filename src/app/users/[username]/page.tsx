@@ -10,11 +10,13 @@ async function getUser(username: string): Promise<UserLookupDTO | null> {
   return db.transaction().execute(async (trx) => {
     const user = await trx
       .selectFrom("users")
-      .select((["id", "username", "name", "school", "role"]))
+      .select(["id", "username", "name", "school", "role"])
       .where("username", "=", username)
       .executeTakeFirst();
-    
-    if (user == null) { return null; }
+
+    if (user == null) {
+      return null;
+    }
 
     return {
       id: user.id,
@@ -27,13 +29,15 @@ async function getUser(username: string): Promise<UserLookupDTO | null> {
 }
 
 type ProfilePageProps = {
-  params: { username: string; }
-}
+  params: { username: string };
+};
 
 async function Page(props: ProfilePageProps) {
   const user = await getUser(props.params.username);
 
-  if (user == null) { return notFound(); }
+  if (user == null) {
+    return notFound();
+  }
 
   const session = await getSession();
   const canEdit = canManageUser(session, user.id);

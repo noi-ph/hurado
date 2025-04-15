@@ -98,7 +98,10 @@ export const NavbarAccount = memo(() => {
   } else {
     return (
       <>
-        <NavbarLink href={getPath({ kind: Path.UserView, username: session.user.username })} className="lg:ml-auto mr-4">
+        <NavbarLink
+          href={getPath({ kind: Path.UserView, username: session.user.username })}
+          className="lg:ml-auto mr-4"
+        >
           {session.user.username}
         </NavbarLink>
         <NavbarLink href={getPath({ kind: Path.AccountLogout })}>Logout</NavbarLink>

@@ -69,8 +69,7 @@ const TaskTypeEditor = ({ task, setTask }: TaskEditorJudgingProps) => {
         throw new UnreachableError(type);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-    [task]
+    [task, setTask]
   );
 
   const onChangeTaskFlavor = useCallback(
@@ -81,8 +80,7 @@ const TaskTypeEditor = ({ task, setTask }: TaskEditorJudgingProps) => {
         flavor: flavor,
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-    [task]
+    [task, setTask]
   );
 
   const setCommunicatorScript = useCallback(
@@ -160,8 +158,7 @@ export const TaskCheckerEditor = ({ task, setTask }: TaskCheckerEditorProps) => 
           throw new UnreachableError(kind);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-    [task]
+    [task, setTask]
   );
 
   const setCheckerScript = useCallback(
@@ -200,41 +197,36 @@ export const TaskLimitsEditor = ({ task, setTask }: TaskLimitsEditorProps) => {
   const onChangeTimeLimitMS = useCallback(
     (event: InputChangeEvent) => {
       setTask({ ...task, time_limit_ms: event.target.value });
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     },
-    [task]
+    [task, setTask]
   );
 
   const onChangeMemoryLimitByte = useCallback(
     (event: InputChangeEvent) => {
       setTask({ ...task, memory_limit_byte: event.target.value });
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     },
-    [task]
+    [task, setTask]
   );
 
   const onChangeCompileTimeLimitMS = useCallback(
     (event: InputChangeEvent) => {
       setTask({ ...task, compile_time_limit_ms: event.target.value });
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     },
-    [task]
+    [task, setTask]
   );
 
   const onChangeCompileMemoryLimitMS = useCallback(
     (event: InputChangeEvent) => {
       setTask({ ...task, compile_memory_limit_byte: event.target.value });
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     },
-    [task]
+    [task, setTask]
   );
 
   const onChangeSubmissionSizeLimitByte = useCallback(
     (event: InputChangeEvent) => {
       setTask({ ...task, submission_size_limit_byte: event.target.value });
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
     },
-    [task]
+    [task, setTask]
   );
 
   return (

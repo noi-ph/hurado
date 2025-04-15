@@ -17,7 +17,7 @@ type CreateUserData = {
 type UpdateUserData = {
   name: string;
   school: string;
-}
+};
 
 export async function createUser(
   trx: Transaction<Models>,
@@ -107,8 +107,8 @@ export async function updateUser(id: string, data: UpdateUserData) {
       .updateTable("users")
       .where("id", "=", id)
       .set({
-        name: (data.name == "" ? null : data.name),
-        school: (data.school == "" ? null: data.school)
+        name: data.name == "" ? null : data.name,
+        school: data.school == "" ? null : data.school,
       })
       .executeTakeFirst();
 

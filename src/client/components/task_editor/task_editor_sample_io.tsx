@@ -23,8 +23,7 @@ export const TaskEditorSampleIO = ({ task, setTask }: TaskEditorSampleProps) => 
         },
       ],
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-  }, [task]);
+  }, [task, setTask]);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -52,9 +51,12 @@ type TaskSampleIOEditorProps = {
 };
 
 const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIOEditorProps) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks -- pre-existing error before eslint inclusion
-  const updateField = (field: "input" | "output" | "explanation") =>
-    useCallback(
+  const useUpdateField = (
+    field: "input" | "output" | "explanation",
+    task: TaskED,
+    setTask: (task: TaskED) => void
+  ) => {
+    return useCallback(
       (event: InputChangeEvent) => {
         const samples = [...task.sample_IO];
         samples[sampleIndex] = { ...samples[sampleIndex] };
@@ -64,9 +66,9 @@ const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIO
           sample_IO: samples,
         });
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-      [task, setTask]
+      [field, task, setTask]
     );
+  };
 
   const deleteSelf = useCallback(
     () => {
@@ -93,14 +95,14 @@ const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIO
         <CommonEditorInput
           type="textarea"
           value={sample.input}
-          onChange={updateField("input")}
+          onChange={useUpdateField("input", task, setTask)}
           placeholder="Sample Input"
           className="flex-auto"
         />
         <CommonEditorInput
           type="textarea"
           value={sample.output}
-          onChange={updateField("output")}
+          onChange={useUpdateField("output", task, setTask)}
           placeholder="Sample Output"
           className="flex-auto"
         />
@@ -108,7 +110,7 @@ const TaskSampleIOEditor = ({ sample, sampleIndex, task, setTask }: TaskSampleIO
       <CommonEditorInput
         type="textarea"
         value={sample.explanation}
-        onChange={updateField("explanation")}
+        onChange={useUpdateField("explanation", task, setTask)}
         placeholder="Explanation"
         className="flex-auto w-full"
       />
