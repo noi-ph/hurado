@@ -84,14 +84,6 @@ function hrd_deploy() {
     # This does a full deploy to the staging or production server
     # This assumes that the .env file is already set up on the respective server
     # and no new dependencies are needed to be installed (i.e. no need to rebuild the docker image)
-    # If you need to do any of those, you'll want to do it manually by doing the following:
-    #
-    # git push origin main
-    # hrd connect production
-    # git pull --ff-only origin main
-    # ./tools/docker_build.sh
-    # vim .env
-    # hrd restart
     #
     # Pre-requisites for this command:
     # You need to add something like the following to your ~/.ssh/config file:
@@ -144,6 +136,7 @@ function hrd_deploy_server() {
     # Server-side script for deploying the latest changes to the production server
     set -e
     cd ~/hurado/
+    ./scripts/docker_build.sh
     ./scripts/next_build.sh
     $HRD_CMD compose restart
     $HRD_CMD shell npm run db:migrate
