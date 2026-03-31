@@ -8,4 +8,5 @@ docker run \
     -v "$PROJECT_ROOT:/app" \
     -w /app \
     --user $(id -u):$(id -g) \
+    -e NPM_CONFIG_CACHE=/app/.npm \
     noiph/hurado:latest npm ci
