@@ -13,6 +13,7 @@ RUN apt-get install -y pkg-config libcap-dev libsystemd-dev git make gcc
 
 # Checkout and get isolate
 RUN git clone https://github.com/ioi/isolate /isolate/
+RUN git checkout b5e87ec10c5c83830b0ab4b9d908437e4c14e426
 
 # Build isolate
 RUN make isolate
