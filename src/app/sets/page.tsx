@@ -3,6 +3,7 @@ import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ProblemSetSummaryDTO } from "common/types/problem_sets";
 import { ProblemSetCard } from "client/components/cards";
+import { ProblemSearchBar } from "client/components/problem_search_bar/problem_search_bar";
 import { EmptyNoticePage } from "client/components/empty_notice";
 
 async function getProblemSetsData(): Promise<ProblemSetSummaryDTO[]> {
@@ -33,6 +34,7 @@ export async function ProblemSetListPage() {
 
   return (
     <DefaultLayout>
+      <ProblemSearchBar />
       <div className="flex flex-col items-center gap-4">
         {sets.map((set) => (
           <ProblemSetCard key={set.slug} set={set} />

@@ -9,6 +9,7 @@ export enum Path {
   AccountForgotPassword = "AccountForgotPassword",
   AccountPasswordReset = "AccountPasswordReset",
   Submission = "Submission",
+  TaskSearch = "TaskSearch",
   TaskList = "TaskList",
   TaskView = "TaskView",
   TaskEdit = "TaskEdit",
@@ -37,6 +38,7 @@ export type PathArguments =
   | { kind: Path.AccountForgotPassword }
   | { kind: Path.AccountPasswordReset; token: string }
   | { kind: Path.Submission; uuid: string }
+  | { kind: Path.TaskSearch; query: string }
   | { kind: Path.TaskList }
   | { kind: Path.TaskView; slug: string }
   | { kind: Path.TaskEdit; uuid: string }
@@ -72,6 +74,8 @@ export function getPath(args: PathArguments) {
       return `/password-reset?token=${args.token}`;
     case Path.Submission:
       return `/submissions/${uuidToHuradoID(args.uuid)}`;
+    case Path.TaskSearch:
+      return addSearchParameters("/search", { query: args.query });
     case Path.TaskList:
       return "/tasks";
     case Path.TaskView:
