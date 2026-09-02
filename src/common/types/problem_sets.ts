@@ -1,6 +1,6 @@
 import { Generated, Insertable, Selectable, Updateable } from "kysely";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-import { TaskScoredSummaryDTO, TaskSummaryDTO } from "./tasks";
+import { TaskLookupDTO, TaskScoredSummaryDTO, TaskSummaryDTO } from "./tasks";
 
 export type ProblemSetTable = {
   id: Generated<string>;
@@ -17,6 +17,12 @@ export type ProblemSetTaskTable = {
   order: number;
 };
 
+export type ProblemSetNestedTable = {
+  parent_id: string;
+  child_id: string;
+  order: number;
+};
+
 export type ProblemSet = Selectable<ProblemSetTable>;
 export type ProblemSetCreate = Insertable<ProblemSetTable>;
 export type ProblemSetUpdate = Updateable<ProblemSetTable>;
@@ -27,8 +33,8 @@ export type ProblemSetViewerDTO = {
   title: string;
   description: string;
   is_public: boolean;
-  order: number;
   tasks: TaskScoredSummaryDTO[];
+  nesteds: ProblemSetSummaryDTO[];
 };
 
 export type ProblemSetSummaryDTO = {
@@ -37,3 +43,17 @@ export type ProblemSetSummaryDTO = {
   description: string;
   order: number;
 };
+
+export type NestedLookupDTO = {
+  id: string;
+  slug: string;
+  title: string;
+};
+
+export type ChildLookupDTO = TaskLookupDTO | NestedLookupDTO;
+
+// export type ProblemSetCardSummaryDTO =
+//   {
+//     kind: ProblemSetCardType.Task,
+//     value:
+//   };

@@ -62,14 +62,16 @@ export type SaveResult<T> = SaveResultSuccess<T> | SaveResultFailure;
 
 type CommonEditorFooterProps<T> = {
   initial: T;
+  origObject: T;
   object: T;
   setObject(object: T): void;
-  saveObject(object: T): Promise<SaveResult<T>>;
+  saveObject(origObject: T, object: T): Promise<SaveResult<T>>;
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- pre-existing error before eslint inclusion
 export const CommonEditorFooter = <T extends {}>({
   initial,
+  origObject,
   object,
   setObject,
   saveObject,
@@ -79,7 +81,7 @@ export const CommonEditorFooter = <T extends {}>({
   const handleSave = useCallback(async () => {
     setSaving(true);
     try {
-      const result = await saveObject(object);
+      const result = await saveObject(origObject, object);
       if (result.success) {
         setObject(result.value);
         toast("Great success!", { type: "success" });

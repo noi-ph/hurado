@@ -32,6 +32,7 @@ export const ContestEditor = ({ dto }: ContestEditorProps) => {
   const [tab, setTab] = useState(coerceContestEditorTab(getLocationHash()));
   const [contest, setContest] = useState<ContestED>(initialContest);
   const [isMounted, setIsMounted] = useState(false);
+  const [origContest] = useState<ContestED>(initialContest);
 
   // NextJS hack to detect when hash changes and run some code
   // https://github.com/vercel/next.js/discussions/49465#discussioncomment-5845312
@@ -76,6 +77,7 @@ export const ContestEditor = ({ dto }: ContestEditorProps) => {
       <ContestEditorTabComponent tab={tab} slug={contest.slug} />
       {content}
       <CommonEditorFooter
+        origObject={origContest}
         object={contest}
         setObject={setContest}
         initial={initialContest}

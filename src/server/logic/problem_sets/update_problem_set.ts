@@ -6,6 +6,8 @@ import {
   ProblemSetEditorDTO,
   ProblemSetTaskUpdateDTO,
   ProblemSetTaskEditorDTO,
+  ProblemSetNestedUpdateDTO,
+  ProblemSetNestedEditorDTO,
 } from "common/validation/problem_set_validation";
 import { notNull } from "common/utils/guards";
 
@@ -81,6 +83,67 @@ async function upsertProblemSetTasks(
   return dtos;
 }
 
+async function upsertProblemSetNesteds(
+  trx: Transaction<Models>,
+  problemSetId: string,
+  nesteds: ProblemSetNestedUpdateDTO[]
+): Promise<ProblemSetNestedEditorDTO[]> {
+  const setsOrdered = makeOrdered(nesteds);
+  await trx.deleteFrom("problem_set_nesteds").where("parent_id", "=", problemSetId).execute();
+
+  const dbProblemSetNesteds =
+    setsOrdered.length <= 0
+      ? []
+      : await trx
+          .insertInto("problem_set_nesteds")
+          .values(
+            setsOrdered.map((nested) => ({
+              parent_id: problemSetId,
+              child_id: nested.child_id,
+              order: nested.order,
+            }))
+          )
+          .returning(["parent_id", "child_id", "order"])
+          .execute();
+
+  dbProblemSetNesteds.sort((a, b) => a.order - b.order);
+
+  const dbNesteds =
+    setsOrdered.length <= 0
+      ? []
+      : await trx
+          .selectFrom("problem_sets")
+          .where(
+            "id",
+            "in",
+            dbProblemSetNesteds.map((s) => s.child_id)
+          )
+          .select(["id", "slug", "title"])
+          .execute();
+
+  const nestedMap = new Map(dbNesteds.map((s) => [s.id, s]));
+  const nestedToOrder = new Map(dbProblemSetNesteds.map((s) => [s.child_id, s.order]));
+
+  const dtos: ProblemSetNestedEditorDTO[] = dbProblemSetNesteds
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
+    .map((ct, index) => {
+      const nested = nestedMap.get(ct.child_id);
+      const order = nestedToOrder.get(ct.child_id);
+      if (nested == null || order == null) {
+        return null;
+      }
+      return {
+        child_id: nested.id,
+        slug: nested.slug!,
+        title: nested.title!,
+        order: order,
+      };
+    })
+    .filter(notNull);
+
+  return dtos;
+}
+
 export async function updateProblemSet(
   problemSet: ProblemSetUpdateDTO
 ): Promise<ProblemSetEditorDTO> {
@@ -99,6 +162,7 @@ export async function updateProblemSet(
       .executeTakeFirstOrThrow();
 
     const problemSetTasks = await upsertProblemSetTasks(trx, problemSet.id, problemSet.tasks);
+    const problemSetNesteds = await upsertProblemSetNesteds(trx, problemSet.id, problemSet.nesteds);
 
     return {
       id: dbProblemSet.id,
@@ -108,6 +172,7 @@ export async function updateProblemSet(
       is_public: dbProblemSet.is_public,
       order: dbProblemSet.order,
       tasks: problemSetTasks,
+      nesteds: problemSetNesteds,
     };
   });
 }

@@ -6,7 +6,7 @@ import { memo } from "react";
 import { LatexDisplay } from "client/components/latex_display";
 import { getPath, Path } from "client/paths";
 import { ProblemSetViewerDTO } from "common/types";
-import { TaskCard } from "../cards";
+import { ProblemSetCard, TaskCard } from "../cards";
 
 type ProblemSetTitleDisplayProps = {
   title: string;
@@ -58,6 +58,9 @@ export const ProblemSetViewer = ({ set, canEdit }: ProblemSetViewerProps) => {
         {set.description && <LatexDisplay>{set.description}</LatexDisplay>}
       </div>
       <div className="flex flex-col items-center gap-4 mt-8">
+        {set.nesteds.map((nested) => (
+          <ProblemSetCard key={nested.slug} set={nested} />
+        ))}
         {set.tasks.map((task) => (
           <TaskCard key={task.slug} task={task} />
         ))}

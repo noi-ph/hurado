@@ -41,8 +41,8 @@ import {
 } from "./types";
 import { coerceTaskED } from "./coercion";
 
-export async function saveTask(task: TaskED): Promise<SaveResult<TaskED>> {
-  const errors = validateTask(task);
+export async function saveTask(origTask: TaskED, task: TaskED): Promise<SaveResult<TaskED>> {
+  const errors = validateTask(origTask, task);
   if (errors.length > 0) {
     return {
       success: false,
@@ -71,7 +71,7 @@ export async function saveTask(task: TaskED): Promise<SaveResult<TaskED>> {
   };
 }
 
-function validateTask(task: TaskED): string[] {
+function validateTask(origTask: TaskED, task: TaskED): string[] {
   if (task.type === TaskType.Communication) {
     if (task.communicator == null || task.communicator.file_name.trim() == "") {
       return ["Communication script must have a file"];

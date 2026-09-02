@@ -5,10 +5,11 @@ export type ProblemSetED = {
   description: string;
   is_public: boolean;
   order: number;
-  tasks: ProblemSetTaskED[];
+  tasks: ProblemSetChildED[];
+  nesteds: ProblemSetChildED[];
 };
 
-export type ProblemSetTaskED = {
+export type ProblemSetChildED = {
   id: string;
   slug: string;
   title: string;

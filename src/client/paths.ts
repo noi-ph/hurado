@@ -132,6 +132,7 @@ export enum APIPath {
   TaskSubmissions = "TaskSubmissions",
   ProblemSetCreate = "ProblemSetCreate",
   ProblemSetUpdate = "ProblemSetUpdate",
+  ProblemSetLookup = "ProblemSetLookup",
   ContestCreate = "ContestCreate",
   ContestUpdate = "ContestUpdate",
   UserEdit = "UserEdit",
@@ -155,6 +156,7 @@ export type APIPathArguments =
   | { kind: APIPath.TaskSubmissions; id: string }
   | { kind: APIPath.ProblemSetCreate }
   | { kind: APIPath.ProblemSetUpdate; id: string }
+  | { kind: APIPath.ProblemSetLookup; id: string }
   | { kind: APIPath.ContestCreate }
   | { kind: APIPath.ContestUpdate; id: string }
   | { kind: APIPath.UserEdit; id: string };
@@ -196,6 +198,8 @@ export function getAPIPath(args: APIPathArguments) {
     case APIPath.ProblemSetCreate:
       return "/api/v1/sets";
     case APIPath.ProblemSetUpdate:
+      return `/api/v1/sets/${args.id}`;
+    case APIPath.ProblemSetLookup:
       return `/api/v1/sets/${args.id}`;
     case APIPath.ContestCreate:
       return "/api/v1/contests";

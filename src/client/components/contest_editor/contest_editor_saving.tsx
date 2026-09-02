@@ -24,8 +24,11 @@ import {
 import { coerceContestED } from "./contest_coercion";
 import { ContestED, ContestTaskED } from "./types";
 
-export async function saveContest(contest: ContestED): Promise<SaveResult<ContestED>> {
-  const errors = validateContest(contest);
+export async function saveContest(
+  oldContest: ContestED,
+  contest: ContestED
+): Promise<SaveResult<ContestED>> {
+  const errors = validateContest(oldContest, contest);
   if (errors.length > 0) {
     return {
       success: false,
@@ -54,7 +57,7 @@ export async function saveContest(contest: ContestED): Promise<SaveResult<Contes
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-function validateContest(contest: ContestED): string[] {
+function validateContest(oldContest: ContestED, contest: ContestED): string[] {
   return [];
 }
 

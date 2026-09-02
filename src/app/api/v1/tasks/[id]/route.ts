@@ -5,7 +5,7 @@ import { updateEditorTask } from "server/logic/tasks/update_editor_task";
 import { getSession } from "server/sessions";
 import { NextContext } from "types/nextjs";
 import { TaskLookupDTO } from "common/types";
-import { lookupFromSlugOrId } from "./utils";
+import { lookupTaskFromSlugOrId } from "./utils";
 
 type RouteParams = {
   id: string;
@@ -13,7 +13,7 @@ type RouteParams = {
 
 export async function PUT(request: NextRequest) {
   const session = await getSession(request);
-  if (!canManageTasks(session, request)) {
+  if (!canManageTasks(session)) {
     return NextResponse.json({}, { status: 403 });
   }
 
@@ -29,13 +29,13 @@ export async function PUT(request: NextRequest) {
 
 export async function GET(request: NextRequest, context: NextContext<RouteParams>) {
   const session = await getSession(request);
-  if (!canManageTasks(session, request)) {
+  if (!canManageTasks(session)) {
     return NextResponse.json({}, { status: 403 });
   }
 
   // Accept any of slug, uuid, or hurado id
   const slug = context.params.id;
-  const first = await lookupFromSlugOrId(slug);
+  const first = await lookupTaskFromSlugOrId(slug);
   if (first == null) {
     return NextResponse.json(null, { status: 404 });
   }

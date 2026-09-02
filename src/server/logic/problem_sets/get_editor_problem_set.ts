@@ -27,6 +27,20 @@ export async function getEditorProblemSet(uuid: string): Promise<ProblemSetEdito
       ])
       .execute();
 
+    const dbNesteds = await trx
+      .selectFrom("problem_sets")
+      .innerJoin("problem_set_nesteds", "problem_sets.id", "problem_set_nesteds.child_id")
+      .orderBy(["problem_set_nesteds.order", "problem_sets.title"])
+      .where("problem_set_nesteds.parent_id", "=", set.id)
+      .select([
+        "problem_set_nesteds.order",
+        "problem_sets.id",
+        "problem_sets.slug",
+        "problem_sets.title",
+        "problem_sets.description",
+      ])
+      .execute();
+
     return {
       id: set.id,
       slug: set.slug,
@@ -39,6 +53,12 @@ export async function getEditorProblemSet(uuid: string): Promise<ProblemSetEdito
         title: task.title,
         slug: task.slug,
         order: task.order,
+      })),
+      nesteds: dbNesteds.map((nested) => ({
+        child_id: nested.id,
+        title: nested.title,
+        slug: nested.slug,
+        order: nested.order,
       })),
     } satisfies ProblemSetEditorDTO;
   });
