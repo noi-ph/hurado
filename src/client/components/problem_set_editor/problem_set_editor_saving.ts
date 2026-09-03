@@ -4,14 +4,18 @@ import {
   ProblemSetEditorDTO,
   ProblemSetUpdateDTO,
   ProblemSetTaskUpdateDTO,
+  ProblemSetNestedUpdateDTO,
 } from "common/validation/problem_set_validation";
 import { APIPath, getAPIPath } from "client/paths";
 import { SaveResult } from "client/components/common_editor";
 import { coerceProblemSetED } from "./problem_set_coercion";
-import { ProblemSetED, ProblemSetTaskED } from "./types";
+import { ProblemSetED, ProblemSetChildED } from "./types";
 
-export async function saveProblemSet(set: ProblemSetED): Promise<SaveResult<ProblemSetED>> {
-  const errors = validateProblemSet(set);
+export async function saveProblemSet(
+  origSet: ProblemSetED,
+  set: ProblemSetED
+): Promise<SaveResult<ProblemSetED>> {
+  const errors = validateProblemSet(origSet, set);
   if (errors.length > 0) {
     return {
       success: false,
@@ -29,13 +33,16 @@ export async function saveProblemSet(set: ProblemSetED): Promise<SaveResult<Prob
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-function validateProblemSet(set: ProblemSetED): string[] {
+function validateProblemSet(origSet: ProblemSetED, set: ProblemSetED): string[] {
+  if (origSet.slug === "root" && origSet.slug !== set.slug) {
+    return ["Cannot change the slug of root"];
+  }
   return [];
 }
 
 function coerceProblemSetUpdateDTO(ed: ProblemSetED): ProblemSetUpdateDTO {
-  function isGoodTask(task: ProblemSetTaskED): boolean {
-    return !task.deleted && !!task.id;
+  function isGoodChild(child: ProblemSetChildED): boolean {
+    return !child.deleted && !!child.id;
   }
 
   return {
@@ -45,13 +52,24 @@ function coerceProblemSetUpdateDTO(ed: ProblemSetED): ProblemSetUpdateDTO {
     description: ed.description,
     is_public: ed.is_public,
     order: ed.order,
-    tasks: ed.tasks.filter(isGoodTask).map(coerceProblemSetTaskDTO),
+    tasks: ed.tasks.filter(isGoodChild).map(coerceProblemSetTaskDTO),
+    nesteds: ed.nesteds.filter(isGoodChild).map(coerceProblemSetNestedDTO),
   };
 }
 
-function coerceProblemSetTaskDTO(ed: ProblemSetTaskED, index: number): ProblemSetTaskUpdateDTO {
+function coerceProblemSetTaskDTO(ed: ProblemSetChildED, index: number): ProblemSetTaskUpdateDTO {
   return {
     task_id: ed.id,
+    order: index,
+  };
+}
+
+function coerceProblemSetNestedDTO(
+  ed: ProblemSetChildED,
+  index: number
+): ProblemSetNestedUpdateDTO {
+  return {
+    child_id: ed.id,
     order: index,
   };
 }

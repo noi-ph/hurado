@@ -134,9 +134,14 @@ export type TaskViewerSampleIO_DTO = {
   explanation: string;
 };
 
-export type TaskSummaryDTO = Pick<Task, "title" | "slug" | "description">;
+export type TaskSummaryDTO = Pick<Task, "title" | "slug" | "description"> & { order: number };
 export type TaskScoredSummaryDTO = TaskSummaryDTO & {
   score_overall: number | null;
   score_max: number | null;
 };
-export type TaskLookupDTO = Pick<Task, "id" | "slug" | "title">;
+
+export type TaskLookupDTO = {
+  id: string;
+  slug: string;
+  title: string;
+};

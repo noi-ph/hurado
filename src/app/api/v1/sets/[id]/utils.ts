@@ -1,11 +1,11 @@
 import { checkUUIDv4, huradoIDToUUID } from "common/utils/uuid";
 import { db } from "db";
 
-export async function lookupTaskFromSlugOrId(slug: string) {
+export async function lookupSetFromSlugOrId(slug: string) {
   const uuid = huradoIDToUUID(slug) ?? checkUUIDv4(slug);
 
   const lookups = await db
-    .selectFrom("tasks")
+    .selectFrom("problem_sets")
     .where((eb) => {
       if (uuid != null) {
         return eb.or([eb("id", "=", uuid), eb("slug", "=", slug)]);

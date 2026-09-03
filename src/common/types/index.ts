@@ -16,7 +16,7 @@ import {
   VerdictTaskDataTable,
 } from "./verdicts";
 import { UserTable } from "./users";
-import { ProblemSetTable, ProblemSetTaskTable } from "./problem_sets";
+import { ProblemSetNestedTable, ProblemSetTable, ProblemSetTaskTable } from "./problem_sets";
 import {
   ContestAttachmentTable,
   ContestTable,
@@ -42,6 +42,7 @@ export interface Models {
   overall_verdicts: OverallVerdictTable;
   problem_sets: ProblemSetTable;
   problem_set_tasks: ProblemSetTaskTable;
+  problem_set_nesteds: ProblemSetNestedTable;
   contests: ContestTable;
   contest_attachments: ContestAttachmentTable;
   contest_tasks: ContestTaskTable;

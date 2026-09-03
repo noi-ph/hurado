@@ -29,11 +29,11 @@ import {
 import commonStyles from "client/components/common_editor/common_editor.module.css";
 import http from "client/http";
 import { APIPath, getAPIPath, getPath, Path } from "client/paths";
-import { TaskLookupDTO } from "common/types";
+import { ChildLookupDTO } from "common/types";
 import { InputChangeEvent } from "common/types/events";
 import { Arrays } from "common/utils/arrays";
 import { ProblemSetEditorDTO } from "common/validation/problem_set_validation";
-import { ProblemSetED, ProblemSetTaskED } from "./types";
+import { ProblemSetED, ProblemSetChildED } from "./types";
 import { coerceProblemSetED } from "./problem_set_coercion";
 import { saveProblemSet } from "./problem_set_editor_saving";
 import styles from "./problem_set_editor.module.css";
@@ -49,7 +49,7 @@ export const ProblemSetEditor = ({ dto }: ProblemSetEditorProps) => {
   const [tab, setTab] = useState(coerceProblemSetEditorTab(getLocationHash()));
   const [problemSet, setProblemSet] = useState<ProblemSetED>(initialProblemSet);
   const [isMounted, setIsMounted] = useState(false);
-
+  const [origProbSet] = useState<ProblemSetED>(initialProblemSet);
   // hacks copy-pasted from the task editor!
 
   // NextJS hack to detect when hash changes and run some code
@@ -85,6 +85,7 @@ export const ProblemSetEditor = ({ dto }: ProblemSetEditorProps) => {
       <ProblemSetEditorTabComponent tab={tab} slug={problemSet.slug} />
       {content}
       <CommonEditorFooter
+        origObject={origProbSet}
         object={problemSet}
         setObject={setProblemSet}
         initial={initialProblemSet}
@@ -113,7 +114,12 @@ export const ProblemSetEditorDetails = ({
         <CommonEditorLabel label="Title" />
         <CommonEditorInput type="text" value={problemSet.title} onChange={onChangeTitle} />
         <CommonEditorLabel label="Slug" />
-        <CommonEditorInput type="text" value={problemSet.slug} onChange={onChangeSlug} />
+        <CommonEditorInput
+          type="text"
+          value={problemSet.slug}
+          onChange={onChangeSlug}
+          disabled={problemSet.slug === "root"}
+        />
         <CommonEditorLabel label="Description" />
         <CommonEditorInput
           type="textarea"
@@ -123,144 +129,165 @@ export const ProblemSetEditorDetails = ({
         />
         <CommonEditorLabel label="UUID" />
         <div className="text-gray-300">{problemSet.id}</div>
+        <CommonEditorLabel label="Nested Sets" />
+        <ProblemSetEditorChildren
+          problemSet={problemSet}
+          args={{
+            setChildren: (problemSet: ProblemSetED, children: ProblemSetChildED[]) => {
+              setProblemSet({
+                ...problemSet,
+                nesteds: children,
+              });
+            },
+            childrenOf: (problemSet: ProblemSetED) => problemSet.nesteds,
+            label: "Nested Set",
+            viewPath: Path.ProblemSetView,
+            lookupPath: APIPath.ProblemSetLookup,
+          }}
+        />
         <CommonEditorLabel label="Tasks" />
-        <ProblemSetEditorTasks problemSet={problemSet} setProblemSet={setProblemSet} />
+        <ProblemSetEditorChildren
+          problemSet={problemSet}
+          args={{
+            setChildren: (problemSet: ProblemSetED, children: ProblemSetChildED[]) => {
+              setProblemSet({
+                ...problemSet,
+                tasks: children,
+              });
+            },
+            childrenOf: (problemSet: ProblemSetED) => problemSet.tasks,
+            label: "Task",
+            viewPath: Path.TaskView,
+            lookupPath: APIPath.TaskLookup,
+          }}
+        />
       </CommonEditorDetails>
     </CommonEditorContent>
   );
 };
 
-type ProblemSetEditorTasksProps = {
-  problemSet: ProblemSetED;
-  setProblemSet(problemSet: ProblemSetED): void;
+type ChildArgs = {
+  setChildren(problemSet: ProblemSetED, children: ProblemSetChildED[]): void;
+  childrenOf(problemSet: ProblemSetED): ProblemSetChildED[];
+  label: string;
+  viewPath: Path.TaskView | Path.ProblemSetView;
+  lookupPath: APIPath.TaskLookup | APIPath.ProblemSetLookup;
 };
 
-export const ProblemSetEditorTasks = ({
-  problemSet,
-  setProblemSet,
-}: ProblemSetEditorTasksProps) => {
-  const onAddTask = useCallback(() => {
-    setProblemSet({
-      ...problemSet,
-      tasks: [
-        ...problemSet.tasks,
-        {
-          id: "",
-          slug: "",
-          title: "",
-          deleted: false,
-        },
-      ],
-    });
+type ProblemSetEditorChildrenProps = {
+  problemSet: ProblemSetED;
+  args: ChildArgs;
+};
+
+export const ProblemSetEditorChildren = ({ problemSet, args }: ProblemSetEditorChildrenProps) => {
+  const { label, setChildren, childrenOf } = args;
+  const onAddChild = useCallback(() => {
+    setChildren(problemSet, [
+      ...childrenOf(problemSet),
+      {
+        id: "",
+        slug: "",
+        title: "",
+        deleted: false,
+      },
+    ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [problemSet]);
 
   return (
     <div className="flex flex-col gap-2">
       <div className={classNames(styles.tasks, "border border-gray-300 rounded-lg text-center")}>
-        <CommonEditorTableHeader text="Task" />
+        <CommonEditorTableHeader text={label} />
         <CommonEditorTableHeader text="Actions" />
-        {problemSet.tasks.map((task, idx) => (
-          <ProblemSetTaskEditor
+        {childrenOf(problemSet).map((child, idx) => (
+          <ProblemSetChildEditor
             key={idx}
-            task={task}
-            taskIndex={idx}
+            child={child}
+            index={idx}
             problemSet={problemSet}
-            setProblemSet={setProblemSet}
+            args={args}
           />
         ))}
       </div>
       <div className="text-center">
-        <CommonEditorAddButton label="Add Task" onClick={onAddTask} />
+        <CommonEditorAddButton label={`Add ${label}`} onClick={onAddChild} />
       </div>
     </div>
   );
 };
 
-type ProblemSetTaskEditorProps = {
-  task: ProblemSetTaskED;
-  taskIndex: number;
+type ProblemSetChildEditorProps = {
+  child: ProblemSetChildED;
+  index: number;
   problemSet: ProblemSetED;
-  setProblemSet(problemSet: ProblemSetED): void;
+  args: ChildArgs;
 };
 
-const ProblemSetTaskEditor = ({
-  task,
-  taskIndex,
-  problemSet,
-  setProblemSet,
-}: ProblemSetTaskEditorProps) => {
-  const replaceThisTask = useCallback(
-    (newTask: ProblemSetTaskED) => {
-      setProblemSet({
-        ...problemSet,
-        tasks: Arrays.replaceNth(problemSet.tasks, taskIndex, newTask),
-      });
+const ProblemSetChildEditor = ({ child, index, problemSet, args }: ProblemSetChildEditorProps) => {
+  const { childrenOf, setChildren } = args;
+  const replaceThisChild = useCallback(
+    (newChild: ProblemSetChildED) => {
+      setChildren(problemSet, Arrays.replaceNth(childrenOf(problemSet), index, newChild));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
-    [problemSet, taskIndex]
+    [problemSet, index]
   );
 
-  const setThisTask = useCallback(
-    (value: ProblemSetTaskED | null) => {
+  const setThisChild = useCallback(
+    (value: ProblemSetChildED | null) => {
       if (value == null) {
         // empty id means it doesn't point to a task
-        replaceThisTask({
+        replaceThisChild({
           id: "",
           slug: "",
           title: "",
-          deleted: task.deleted,
+          deleted: child.deleted,
         });
         return;
       }
-      replaceThisTask(value);
+      replaceThisChild(value);
     },
-    [task, replaceThisTask]
+    [child, replaceThisChild]
   );
 
-  const onTaskMoveUp = useCallback(() => {
-    setProblemSet({
-      ...problemSet,
-      tasks: Arrays.moveUp(problemSet.tasks, taskIndex),
-    });
-  }, [problemSet, taskIndex, setProblemSet]);
+  const onChildMoveUp = useCallback(() => {
+    setChildren(problemSet, Arrays.moveUp(childrenOf(problemSet), index));
+  }, [problemSet, index, setChildren, childrenOf]);
 
-  const onTaskMoveDown = useCallback(() => {
-    setProblemSet({
-      ...problemSet,
-      tasks: Arrays.moveDown(problemSet.tasks, taskIndex),
-    });
-  }, [problemSet, taskIndex, setProblemSet]);
+  const onChildMoveDown = useCallback(() => {
+    setChildren(problemSet, Arrays.moveDown(childrenOf(problemSet), index));
+  }, [problemSet, index, setChildren, childrenOf]);
 
-  const onTaskRemove = useCallback(() => {
-    replaceThisTask({
-      ...task,
-      deleted: !task.deleted,
+  const onChildRemove = useCallback(() => {
+    replaceThisChild({
+      ...child,
+      deleted: !child.deleted,
     });
-  }, [task, replaceThisTask]);
+  }, [child, replaceThisChild]);
 
   return (
     <>
       <CommonEditorTableCell>
-        <ProblemSetTaskPicker value={task} setValue={setThisTask} />
+        <ProblemSetChildPicker value={child} setValue={setThisChild} args={args} />
       </CommonEditorTableCell>
       <CommonEditorTableCell>
-        <CommonEditorActionButton size="bx-sm" icon="bx-chevron-up" onClick={onTaskMoveUp} />
-        <CommonEditorActionButton size="bx-sm" icon="bx-chevron-down" onClick={onTaskMoveDown} />
-        <CommonEditorActionButton size="bx-sm" icon="bx-x" onClick={onTaskRemove} />
+        <CommonEditorActionButton size="bx-sm" icon="bx-chevron-up" onClick={onChildMoveUp} />
+        <CommonEditorActionButton size="bx-sm" icon="bx-chevron-down" onClick={onChildMoveDown} />
+        <CommonEditorActionButton size="bx-sm" icon="bx-x" onClick={onChildRemove} />
       </CommonEditorTableCell>
     </>
   );
 };
 
-type ProblemSetTaskPickerProps = {
-  value: ProblemSetTaskED;
-  setValue(value: ProblemSetTaskED | null): void;
+type ProblemSetChildPickerProps = {
+  value: ProblemSetChildED;
+  setValue(value: ProblemSetChildED | null): void;
+  args: ChildArgs;
 };
 
-const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
-  const { value, setValue } = props;
-
+const ProblemSetChildPicker = (props: ProblemSetChildPickerProps) => {
+  const { value, setValue, args } = props;
+  const { label, viewPath, lookupPath } = args;
   const [text, setText] = useState("");
   const [searching, setSearching] = useState(false);
 
@@ -271,15 +298,15 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
     [setText]
   );
 
-  const onTaskSearch = useCallback(async () => {
+  const onChildSearch = useCallback(async () => {
     if (searching) {
       return;
     }
 
     setSearching(true);
-    const lookupURL = getAPIPath({ kind: APIPath.TaskLookup, id: text });
+    const lookupURL = getAPIPath({ kind: lookupPath, id: text });
     try {
-      const response: AxiosResponse<TaskLookupDTO> = await http.get(lookupURL);
+      const response: AxiosResponse<ChildLookupDTO> = await http.get(lookupURL);
       setValue({
         id: response.data.id,
         slug: response.data.slug,
@@ -288,7 +315,7 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
       });
     } catch (e) {
       if (e instanceof AxiosError && e.response != null && e.response.status == 404) {
-        toast("Task does not exist", {
+        toast(`${label} does not exist`, {
           type: "error",
         });
       }
@@ -298,7 +325,7 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- pre-existing error before eslint inclusion
   }, [searching, text]);
 
-  const onTaskClear = useCallback(() => {
+  const onChildClear = useCallback(() => {
     setValue(null);
   }, [setValue]);
 
@@ -309,13 +336,13 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
           className="flex-auto"
           value={text}
           onChange={onTextChange}
-          placeholder="Task id or slug"
+          placeholder="id or slug"
         />
-        <CommonEditorActionButton size="bx-sm" icon="bx-search" onClick={onTaskSearch} />
+        <CommonEditorActionButton size="bx-sm" icon="bx-search" onClick={onChildSearch} />
       </div>
     );
   } else {
-    const url = getPath({ kind: Path.TaskView, slug: value.slug });
+    const url = getPath({ kind: viewPath, slug: value.slug });
     return (
       <div className="flex justify-center align-center mr-4">
         <Link
@@ -325,7 +352,12 @@ const ProblemSetTaskPicker = (props: ProblemSetTaskPickerProps) => {
         >
           {value.title}
         </Link>
-        <CommonEditorActionButton size="bx-sm" icon="bx-x" onClick={onTaskClear} className="ml-2" />
+        <CommonEditorActionButton
+          size="bx-sm"
+          icon="bx-x"
+          onClick={onChildClear}
+          className="ml-2"
+        />
       </div>
     );
   }

@@ -1,8 +1,9 @@
 import classNames from "classnames";
 import Link from "next/link";
-import { memo } from "react";
+import { memo, Suspense } from "react";
 import { getPath, Path } from "client/paths";
 import { useSession } from "client/sessions";
+import { SourceSetButton } from "../source_set_button/source_set_button";
 
 export enum TaskViewerTab {
   Statement = "statement",
@@ -66,7 +67,12 @@ export const TaskViewerTabComponent = memo(
           <TabItem tab={TaskViewerTab.Submissions} current={tab} label="Submissions" />
         )}
         <TabItem tab={TaskViewerTab.Editorial} current={tab} label="Editorial" />
-        {canEdit && <TaskEditLink taskId={taskId} label="Edit" />}
+        <div className="ml-auto flex items-center gap-2">
+          <Suspense fallback={<div className="w-16 h-8" />}>
+            <SourceSetButton />
+          </Suspense>
+          {canEdit && <TaskEditLink taskId={taskId} label="Edit" />}
+        </div>
       </div>
     );
   }

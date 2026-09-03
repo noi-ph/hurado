@@ -78,7 +78,7 @@ const SubmissionRow = memo(({ submission, showUser }: SubmissionRowProps) => {
     </>
   );
 });
-SubmissionRow.displayName = 'SubmissionRow';
+SubmissionRow.displayName = "SubmissionRow";
 
 type SubmissionCellProps = {
   className?: string;
@@ -97,7 +97,7 @@ const SubmissionHeader = memo(({ className, children }: SubmissionCellProps) => 
     </div>
   );
 });
-SubmissionHeader.displayName = 'SubmissionHeader';
+SubmissionHeader.displayName = "SubmissionHeader";
 
 const SubmissionCell = memo(({ className, children }: SubmissionCellProps) => {
   return (
@@ -111,7 +111,7 @@ const SubmissionCell = memo(({ className, children }: SubmissionCellProps) => {
     </div>
   );
 });
-SubmissionCell.displayName = 'SubmissionCell';
+SubmissionCell.displayName = "SubmissionCell";
 
 type OverallScoreProps = {
   overallVerdict: OverallVerdictDisplayDTO | undefined;
@@ -144,4 +144,4 @@ export const OverallScoreDisplay = memo(({ overallVerdict, className }: OverallS
     </div>
   );
 });
-OverallScoreDisplay.displayName = 'OverallScoreDisplay';
+OverallScoreDisplay.displayName = "OverallScoreDisplay";

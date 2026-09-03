@@ -2,11 +2,17 @@ import { z } from "zod";
 import { ProblemSet } from "common/types";
 import { REGEX_SLUG } from "./common_validation";
 
+export type ProblemSetNestedUpdateDTO = z.infer<typeof zProblemSetNested>;
 export type ProblemSetTaskUpdateDTO = z.infer<typeof zProblemSetTask>;
 export type ProblemSetUpdateDTO = z.infer<typeof zProblemSet>;
 
 const zProblemSetTask = z.object({
   task_id: z.string().uuid(),
+  order: z.number(),
+});
+
+const zProblemSetNested = z.object({
+  child_id: z.string().uuid(),
   order: z.number(),
 });
 
@@ -18,6 +24,7 @@ export const zProblemSet = z.object({
   is_public: z.boolean(),
   order: z.number().int(),
   tasks: z.array(zProblemSetTask),
+  nesteds: z.array(zProblemSetNested),
 });
 
 type ProblemSetEditorKeys = "id" | "slug" | "title" | "description" | "is_public" | "order";
@@ -29,8 +36,16 @@ export type ProblemSetTaskEditorDTO = {
   order: number;
 };
 
+export type ProblemSetNestedEditorDTO = {
+  child_id: string;
+  slug: string;
+  title: string;
+  order: number;
+};
+
 export type ProblemSetEditorDTO = Pick<ProblemSet, ProblemSetEditorKeys> & {
   tasks: ProblemSetTaskEditorDTO[];
+  nesteds: ProblemSetNestedEditorDTO[];
 };
 
 export const zProblemSetCreate = zProblemSet.pick({

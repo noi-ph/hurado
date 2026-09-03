@@ -39,6 +39,8 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
 
   const [isMounted, setIsMounted] = useState(false);
 
+  const [origTask] = useState<TaskED>(initialTask);
+
   // NextJS hack to detect when hash changes and run some code
   // https://github.com/vercel/next.js/discussions/49465#discussioncomment-5845312
   const params = useParams();
@@ -85,6 +87,7 @@ export const TaskEditor = ({ dto }: TaskEditorProps) => {
       <TaskEditorTabComponent tab={tab} slug={task.slug} />
       {content}
       <CommonEditorFooter
+        origObject={origTask}
         object={task}
         setObject={setTask}
         initial={initialTask}

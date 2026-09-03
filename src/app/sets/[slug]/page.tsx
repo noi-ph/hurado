@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-import { ProblemSetViewerDTO, TaskScoredSummaryDTO, TaskSummaryDTO } from "common/types";
+import { ProblemSetSummaryDTO, ProblemSetViewerDTO, TaskScoredSummaryDTO } from "common/types";
 import { db } from "db";
 import { DefaultLayout } from "client/components/layouts/default_layout";
 import { ProblemSetViewer } from "client/components/problem_set_viewer/problem_set_viewer";
@@ -26,6 +26,7 @@ async function getProblemSetData(
 
     const dbTasks = await trx
       .selectFrom("tasks")
+      .where("tasks.is_public", "=", true)
       .innerJoin("problem_set_tasks", "tasks.id", "problem_set_tasks.task_id")
       .orderBy(["problem_set_tasks.order", "tasks.title"])
       .where("problem_set_tasks.set_id", "=", set.id)
@@ -40,8 +41,24 @@ async function getProblemSetData(
         "tasks.slug",
         "tasks.title",
         "tasks.description",
+        "problem_set_tasks.order",
         "overall_verdicts.score_overall",
         "overall_verdicts.score_max",
+      ])
+      .execute();
+
+    const dbNesteds = await trx
+      .selectFrom("problem_sets")
+      .where("problem_sets.is_public", "=", true)
+      .innerJoin("problem_set_nesteds", "problem_sets.id", "problem_set_nesteds.child_id")
+      .orderBy(["problem_set_nesteds.order", "problem_sets.title"])
+      .where("problem_set_nesteds.parent_id", "=", set.id)
+      .select([
+        "problem_sets.id",
+        "problem_sets.slug",
+        "problem_sets.title",
+        "problem_sets.description",
+        "problem_set_nesteds.order",
       ])
       .execute();
 
@@ -50,8 +67,17 @@ async function getProblemSetData(
       slug: t.slug,
       title: t.title,
       description: t.description,
+      order: t.order,
       score_overall: t.score_overall,
       score_max: t.score_max,
+    }));
+
+    const nesteds: ProblemSetSummaryDTO[] = dbNesteds.map((s) => ({
+      id: s.id,
+      slug: s.slug,
+      title: s.title,
+      description: s.description,
+      order: s.order,
     }));
 
     return {
@@ -60,13 +86,13 @@ async function getProblemSetData(
       title: set.title,
       description: set.description,
       is_public: set.is_public,
-      order: set.order,
       tasks: tasks,
+      nesteds: nesteds,
     } satisfies ProblemSetViewerDTO;
   });
 }
 
-const getCachedProblemSetData = cache(getProblemSetData);
+export const getCachedProblemSetData = cache(getProblemSetData);
 
 type ProblemSetPageProps = {
   params: {
@@ -88,7 +114,7 @@ export async function generateMetadata(props: ProblemSetPageProps): Promise<Meta
   };
 }
 
-async function Page(props: ProblemSetPageProps) {
+export async function ProblemSetPage(props: ProblemSetPageProps) {
   const session = await getSession();
   const set = await getCachedProblemSetData(props.params.slug, session?.user?.id ?? null);
 
@@ -104,4 +130,4 @@ async function Page(props: ProblemSetPageProps) {
   );
 }
 
-export default Page;
+export default ProblemSetPage;
