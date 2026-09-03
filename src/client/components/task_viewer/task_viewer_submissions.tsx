@@ -13,7 +13,7 @@ type TaskViewerSubmissionsProps = {
 };
 
 export const TaskViewerSubmissions = ({ task, cache }: TaskViewerSubmissionsProps) => {
-  const [loaded, setLoaded] =  useState(cache.loaded);
+  const [loaded, setLoaded] = useState(cache.loaded);
 
   const loadSubmissions = useCallback(async () => {
     if (cache.loaded) {
