@@ -2,11 +2,12 @@
 
 import classNames from "classnames";
 import Link from "next/link";
-import { memo } from "react";
+import { memo, Suspense } from "react";
 import { LatexDisplay } from "client/components/latex_display";
 import { getPath, Path } from "client/paths";
 import { ProblemSetViewerDTO } from "common/types";
 import { ProblemSetCard, TaskCard } from "../cards";
+import { SourceSetButton } from "../source_set_button/source_set_button";
 
 type ProblemSetTitleDisplayProps = {
   title: string;
@@ -50,8 +51,11 @@ type ProblemSetViewerProps = {
 export const ProblemSetViewer = ({ set, canEdit }: ProblemSetViewerProps) => {
   return (
     <>
-      <div className="flex items-center">
+      <div className="flex items-center gap-4">
         <ProblemSetViewerTitle title={set.title} />
+        <Suspense fallback={<div className="w-16 h-8" />}>
+          <SourceSetButton />
+        </Suspense>
         {canEdit && <ProblemSetEditLink id={set.id} label="Edit" />}
       </div>
       <div className="mt-4">
@@ -59,10 +63,10 @@ export const ProblemSetViewer = ({ set, canEdit }: ProblemSetViewerProps) => {
       </div>
       <div className="flex flex-col items-center gap-4 mt-8">
         {set.nesteds.map((nested) => (
-          <ProblemSetCard key={nested.slug} set={nested} />
+          <ProblemSetCard key={nested.slug} source={set} set={nested} />
         ))}
         {set.tasks.map((task) => (
-          <TaskCard key={task.slug} task={task} />
+          <TaskCard key={task.slug} source={set} task={task} />
         ))}
       </div>
     </>

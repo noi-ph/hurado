@@ -3,8 +3,15 @@
 import Link from "next/link";
 import classNames from "classnames";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- pre-existing error before eslint inclusion
-import { ContestSummaryDTO, ProblemSetSummaryDTO, TaskScoredSummaryDTO } from "common/types";
+import {
+  ContestSummaryDTO,
+  ProblemSetSummaryDTO,
+  ProblemSetViewerDTO,
+  TaskScoredSummaryDTO,
+} from "common/types";
 import { getPath, Path } from "client/paths";
+
+const TRAIL_KEY = "problem_set_trail";
 
 type CommonCardProps = {
   url: string;
@@ -25,15 +32,38 @@ export function CommonCard({ url, title, description }: CommonCardProps) {
 }
 
 type ProblemSetCardProps = {
+  source: ProblemSetViewerDTO;
   set: ProblemSetSummaryDTO;
 };
 
-export function ProblemSetCard({ set }: ProblemSetCardProps) {
+export function ProblemSetCard({ source, set }: ProblemSetCardProps) {
   const url = getPath({ kind: Path.ProblemSetView, slug: set.slug });
+
+  const handleCardClick = () => {
+    const rawTrail = sessionStorage.getItem(TRAIL_KEY);
+    let trail = [];
+
+    try {
+      if (rawTrail) {
+        trail = JSON.parse(rawTrail);
+      }
+    } catch {
+      trail = [];
+    }
+
+    trail.push({
+      path: getPath({ kind: Path.ProblemSetView, slug: source.slug }),
+      name: source.title,
+    });
+
+    sessionStorage.setItem(TRAIL_KEY, JSON.stringify(trail));
+  };
+
   return (
     <Link
       key={set.slug}
       href={url}
+      onClick={handleCardClick}
       className="w-[96rem] max-w-full p-4 border border-gray-800 rounded-2xl hover:bg-gray-150"
     >
       <h2 className="text-2xl mb-1">{set.title}</h2>
@@ -65,11 +95,32 @@ export function ContestCard({ contest }: ContestCardProps) {
 }
 
 type TaskCardProps = {
+  source: ProblemSetViewerDTO;
   task: TaskScoredSummaryDTO;
 };
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ source, task }: TaskCardProps) {
   const url = getPath({ kind: Path.TaskView, slug: task.slug });
+
+  const handleCardClick = () => {
+    const rawTrail = sessionStorage.getItem(TRAIL_KEY);
+    let trail = [];
+
+    try {
+      if (rawTrail) {
+        trail = JSON.parse(rawTrail);
+      }
+    } catch {
+      trail = [];
+    }
+
+    trail.push({
+      path: getPath({ kind: Path.ProblemSetView, slug: source.slug }),
+      name: source.title,
+    });
+
+    sessionStorage.setItem(TRAIL_KEY, JSON.stringify(trail));
+  };
 
   let top_class =
     "p-[1rem] border-t border-l border-r border-black rounded-tl-2xl rounded-tr-2xl group-hover:bg-gray-150";
@@ -100,8 +151,14 @@ export function TaskCard({ task }: TaskCardProps) {
       top_class = classNames(top_class, "bg-green-100 group-hover:bg-green-200");
     }
   }
+
   return (
-    <Link className="w-[96rem] max-w-full group" key={task.slug} href={url}>
+    <Link
+      className="w-[96rem] max-w-full group"
+      key={task.slug}
+      href={url}
+      onClick={handleCardClick}
+    >
       <div className={top_class}>
         <h2 className="text-2xl mb-1">{task.title}</h2>
         <p className="font-light">
