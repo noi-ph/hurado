@@ -67,6 +67,7 @@ async function getProblemSetData(
       slug: t.slug,
       title: t.title,
       description: t.description,
+      order: t.order,
       score_overall: t.score_overall,
       score_max: t.score_max,
     }));
